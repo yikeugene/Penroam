@@ -5,7 +5,7 @@ using Moye.Services;
 
 namespace Moye.ViewModels;
 
-public sealed class MainViewModel : ObservableObject, IDisposable
+public sealed partial class MainViewModel : ObservableObject, IDisposable
 {
     public INotebookRepository Repository { get; }
     public IPdfService Pdf { get; }
@@ -130,9 +130,12 @@ public sealed class MainViewModel : ObservableObject, IDisposable
     private void FilterLibrary()
     {
         Notebooks.Clear();
-        foreach (var note in _library.Where(n => string.IsNullOrWhiteSpace(Search) || n.Title.Contains(Search, StringComparison.CurrentCultureIgnoreCase) || n.Folder.Contains(Search, StringComparison.CurrentCultureIgnoreCase))) Notebooks.Add(note);
+        var matches = _library.Where(n => (string.IsNullOrEmpty(CategoryFilter) || n.Folder == CategoryFilter) &&
+            (string.IsNullOrWhiteSpace(Search) || n.Title.Contains(Search, StringComparison.CurrentCultureIgnoreCase) || n.Folder.Contains(Search, StringComparison.CurrentCultureIgnoreCase)));
+        foreach (var note in (SortNotebooksByName ? matches.OrderByDescending(n => n.IsPinned).ThenBy(n => n.Title, StringComparer.CurrentCultureIgnoreCase) : matches.OrderByDescending(n => n.IsPinned).ThenByDescending(n => n.ModifiedUtc))) Notebooks.Add(note);
         Notify(nameof(HasNotebooks)); Notify(nameof(HasVisibleNotebooks)); Notify(nameof(LibraryCountText));
         Notify(nameof(EmptyLibraryTitle)); Notify(nameof(EmptyLibraryDescription));
+        Notify(nameof(Categories));
     }
 
     public async Task OpenAsync(string id)
@@ -257,8 +260,9 @@ public sealed class MainViewModel : ObservableObject, IDisposable
         var summary = _library.FirstOrDefault(n => n.Id == Document.Id);
         if (summary is not null)
         {
-            bool metadataChanged = summary.Title != Document.Title || summary.Folder != Document.Folder || summary.PageCount != Document.Pages.Count;
+            bool metadataChanged = summary.Title != Document.Title || summary.Folder != Document.Folder || summary.PageCount != Document.Pages.Count || summary.IsPinned != Document.IsPinned || summary.CoverColor != Document.CoverColor;
             summary.Title = Document.Title; summary.Folder = Document.Folder; summary.PageCount = Document.Pages.Count; summary.ModifiedUtc = Document.ModifiedUtc;
+            summary.IsPinned = Document.IsPinned; summary.CoverColor = Document.CoverColor; summary.IsQuickInbox = Document.IsQuickInbox;
             if (metadataChanged) FilterLibrary();
         }
     }

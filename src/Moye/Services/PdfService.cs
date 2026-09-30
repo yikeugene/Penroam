@@ -28,7 +28,11 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
     private long _cacheBytes;
 
     public async Task<IReadOnlyList<NotePage>> ImportAsync(string path, CancellationToken cancellationToken = default)
+        => await ImportAsync(path, null, cancellationToken);
+
+    public async Task<IReadOnlyList<NotePage>> ImportAsync(string path, IProgress<DocumentProgress>? progress, CancellationToken cancellationToken = default)
     {
+        progress?.Report(new("Reading PDF…"));
         var bytes = await File.ReadAllBytesAsync(path, cancellationToken);
         if (bytes.Length == 0) throw new InvalidDataException("The PDF file is empty.");
         // Validate both readers before storing an asset or adding notebook pages.
@@ -41,6 +45,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
         if (native.PageCount != metadata.Count) throw new InvalidDataException("The PDF readers reported different page counts. The file was not imported.");
         for (uint index = 0; index < native.PageCount; index++)
         {
+            progress?.Report(new($"Validating page {index + 1} of {native.PageCount}…", (int)index, (int)native.PageCount));
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
@@ -71,6 +76,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
         cancellationToken.ThrowIfCancellationRequested();
         var asset = await repository.PutAssetAsync(Path.GetFileName(path), "application/pdf", bytes);
         foreach (var page in metadata) page.Pdf!.AssetId = asset.Id;
+        progress?.Report(new("PDF ready", metadata.Count, metadata.Count));
         return metadata;
     }
 
@@ -125,10 +131,14 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
     }
 
     public async Task ExportAsync(string path, NotebookDocument document, CancellationToken cancellationToken = default)
+        => await ExportAsync(path, document, null, cancellationToken);
+
+    public async Task ExportAsync(string path, NotebookDocument document, IProgress<DocumentProgress>? progress, CancellationToken cancellationToken = default)
     {
         var snapshot = document.Snapshot();
         if (snapshot.Pages.Count == 0) throw new InvalidOperationException("Add a page to the notebook first.");
         var assets = new Dictionary<string, AssetData>();
+        progress?.Report(new("Loading export attachments…"));
         foreach (var id in snapshot.Pages.SelectMany(p => p.Images.Select(i => i.AssetId)
                      .Concat(p.Pdf is null ? [] : new[] { p.Pdf.AssetId })).Distinct())
         {
@@ -149,8 +159,10 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                 result.Options.CompressContentStreams = false;
                 result.Info.Title = snapshot.Title;
                 result.Info.Creator = "Moye";
+                var completed = 0;
                 foreach (var note in snapshot.Pages)
                 {
+                    progress?.Report(new($"Exporting page {completed + 1} of {snapshot.Pages.Count}…", completed, snapshot.Pages.Count));
                     cancellationToken.ThrowIfCancellationRequested();
                     PdfPage outputPage;
                     if (note.Pdf is { } source)
@@ -214,6 +226,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                     }
                     graphics.Dispose(); // Commit the appended content before encoding it.
                     WriteValidFlate(outputPage.Contents.Elements.GetDictionary(outputPage.Contents.Elements.Count - 1)!);
+                    completed++;
                 }
                 cancellationToken.ThrowIfCancellationRequested();
                 using var file = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None);
@@ -224,6 +237,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
             cancellationToken.ThrowIfCancellationRequested();
             if (File.Exists(destination)) File.Replace(temporary, destination, null);
             else File.Move(temporary, destination);
+            progress?.Report(new("PDF exported", snapshot.Pages.Count, snapshot.Pages.Count));
         }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }

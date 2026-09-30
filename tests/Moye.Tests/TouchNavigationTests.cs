@@ -227,6 +227,136 @@ public sealed class TouchNavigationTests
         Assert.InRange(frame.ScrollDelta.Length, 2.9, 3);
     }
 
+    [Fact]
+    public void MarginTapAndRepeatedJitterDoNotMoveOrFlingThePage()
+    {
+        var session = new TouchNavigationSession();
+        session.BeginContact(1, new(100, 200), 0, minimumPanDistance: 12);
+        for (var index = 1; index <= 12; index++)
+        {
+            // The travelled path is much longer than 12 DIP, but the contact
+            // remains near its origin and never becomes an intentional drag.
+            session.MoveContact(1, new(100 + (index % 2 == 0 ? 9 : -9), 200), index * 10);
+            Assert.False(session.HasPendingFrame);
+            Assert.False(session.TryTakeFrame(index * 10, out _));
+        }
+        session.MoveContact(1, new(100, 200), 130);
+        session.EndContact(1, 130);
+        Assert.False(session.IsInertiaActive);
+        Assert.False(session.HasPendingFrame);
+    }
+
+    [Fact]
+    public void SlowMarginDragAccumulatesIntentAndDiscardsOnlyTheDeadZone()
+    {
+        var session = new TouchNavigationSession();
+        session.BeginContact(1, new(100, 200), 0, minimumPanDistance: 12);
+        for (var distance = 1; distance <= 12; distance++)
+        {
+            session.MoveContact(1, new(100, 200 - distance), distance * 20);
+            Assert.False(session.TryTakeFrame(distance * 20, out _));
+        }
+
+        session.MoveContact(1, new(100, 185), 300);
+        Assert.True(session.TryTakeFrame(300, out var first));
+        Assert.Equal(new Point(100, 188), first.PreviousCenter);
+        Assert.Equal(new Vector(0, 3), first.ScrollDelta);
+        session.MoveContact(1, new(100, 184), 320);
+        Assert.True(session.TryTakeFrame(320, out var next));
+        Assert.Equal(new Vector(0, 1), next.ScrollDelta);
+        session.MoveContact(1, new(100, 187), 340);
+        Assert.True(session.TryTakeFrame(340, out var reversed));
+        Assert.Equal(new Vector(0, -3), reversed.ScrollDelta);
+    }
+
+    [Fact]
+    public void DiagonalMarginDragUsesRadialIntentDistanceAndRetainsExcess()
+    {
+        var session = new TouchNavigationSession();
+        session.BeginContact(1, new(100, 200), 0, minimumPanDistance: 12);
+        session.MoveContact(1, new(109, 188), 20); // 15 DIP, a 3-4-5 triangle.
+        Assert.True(session.TryTakeFrame(20, out var frame));
+        Assert.Equal(-1.8, frame.ScrollDelta.X, 8);
+        Assert.Equal(2.4, frame.ScrollDelta.Y, 8);
+        Assert.Equal(3, frame.ScrollDelta.Length, 8);
+    }
+
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(11, 0)]
+    [InlineData(12, 0)]
+    [InlineData(20, 8)]
+    public void FinalReleasePacketRespectsMarginIntentWithoutCreatingMomentum(double distance, double expectedScroll)
+    {
+        var session = new TouchNavigationSession();
+        session.BeginContact(1, new(100, 200), 0, minimumPanDistance: 12);
+        session.MoveContact(1, new(100, 200 - distance), 30);
+        Assert.Equal(expectedScroll > 0, session.TryTakeFrame(30, out var frame));
+        if (expectedScroll > 0) Assert.Equal(new Vector(0, expectedScroll), frame.ScrollDelta);
+        session.EndContact(1, 30);
+        Assert.False(session.IsInertiaActive);
+        Assert.False(session.HasPendingFrame);
+    }
+
+    [Fact]
+    public void IntentionalMarginDragBuildsMomentumOnlyAfterActivation()
+    {
+        var session = new TouchNavigationSession();
+        session.BeginContact(1, new(100, 200), 0, minimumPanDistance: 12);
+        session.MoveContact(1, new(100, 191), 10);
+        session.MoveContact(1, new(100, 186), 20);
+        Assert.True(session.TryTakeFrame(20, out var first));
+        Assert.Equal(new Vector(0, 2), first.ScrollDelta);
+        session.MoveContact(1, new(100, 176), 40);
+        Assert.True(session.TryTakeFrame(40, out _));
+        session.EndContact(1, 40);
+        Assert.True(session.IsInertiaActive);
+        Assert.True(session.TryTakeFrame(50, out var inertia));
+        Assert.True(inertia.IsInertial);
+        // Active motion is 10 DIP / 20 ms, not 24 DIP / 40 ms.
+        Assert.Equal(.5 * (1 - Math.Exp(-.006 * 10)) / .006, inertia.ScrollDelta.Y, 8);
+    }
+
+    [Fact]
+    public void SecondFingerImmediatelyRebaselinesPendingMarginIntentAndPinch()
+    {
+        var session = new TouchNavigationSession();
+        session.BeginContact(1, new(100, 200), 0, minimumPanDistance: 12);
+        session.MoveContact(1, new(100, 191), 10);
+        Assert.False(session.TryTakeFrame(10, out _));
+        session.BeginContact(2, new(200, 191), 11, minimumPanDistance: 12);
+        Assert.False(session.TryTakeFrame(11, out _));
+        session.MoveContact(1, new(99, 190), 20);
+        session.MoveContact(2, new(201, 190), 20);
+        Assert.True(session.TryTakeFrame(20, out var pinch));
+        Assert.Equal(new Vector(0, 1), pinch.ScrollDelta);
+        Assert.Equal(1.02, pinch.Scale, 8);
+        session.EndContact(2, 21);
+        Assert.False(session.TryTakeFrame(21, out _));
+        session.MoveContact(1, new(99, 189), 22);
+        Assert.True(session.TryTakeFrame(22, out var pan));
+        Assert.Equal(new Vector(0, 1), pan.ScrollDelta);
+    }
+
+    [Fact]
+    public void CancelAndNewContactResetMarginIntentWithoutAffectingPaperPanning()
+    {
+        var session = new TouchNavigationSession();
+        session.BeginContact(1, new(100, 200), 0, minimumPanDistance: 12);
+        session.MoveContact(1, new(100, 191), 10);
+        session.Cancel();
+        session.BeginContact(2, new(100, 200), 20);
+        session.MoveContact(2, new(100, 199), 21);
+        Assert.True(session.TryTakeFrame(21, out var paper));
+        Assert.Equal(new Vector(0, 1), paper.ScrollDelta);
+        session.EndContact(2, 22);
+        session.BeginContact(3, new(100, 200), 30, minimumPanDistance: 12);
+        session.MoveContact(3, new(100, 189), 40);
+        Assert.False(session.TryTakeFrame(40, out _));
+        session.EndContact(3, 40);
+        Assert.False(session.IsInertiaActive);
+    }
+
     private static Vector InertiaTravel(int frameRate)
     {
         var session = new TouchNavigationSession();

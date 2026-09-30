@@ -13,6 +13,7 @@ namespace Moye;
 public partial class MainWindow
 {
     private const string InkClipboardFormat = "Moye.Ink.ISF.v1";
+    private const string SelectionClipboardFormat = "Moye.Selection.v1";
     private const string PresetDragFormat = "Moye.WritingPreset.v1";
     private readonly WritingPreferencesStore _preferencesStore;
     private WritingPreferences _preferences = WritingPreferences.CreateDefault();
@@ -186,6 +187,7 @@ public partial class MainWindow
             FavouritePresets.Children.Add(button);
         }
         if (index == 0) FavouritePresets.Children.Add(new TextBlock { Text = "Add favorites in Manage pens", VerticalAlignment = VerticalAlignment.Center, Foreground = (Brush)FindResource("MutedInk"), Margin = new Thickness(8) });
+        RefreshFocusPresets();
     }
 
     private void ManagePresetsClick(object sender, RoutedEventArgs e)
@@ -216,33 +218,70 @@ public partial class MainWindow
         UpdateTool(); QueuePreferencesSave();
     }
 
-    private void CopyInk(bool cut)
+    private async void CopyInk(bool cut)
     {
-        var editor = CurrentEditor; var bytes = editor?.ExportSelectedInk(); if (bytes is null) return;
-        try
+        var editor = CurrentEditor;
+        if (editor?.HasSelection != true) return;
+        await RunAsync(cut ? "Cutting selection…" : "Copying selection…", async () =>
         {
-            using var stream = new MemoryStream(bytes, false);
+            var selection = await editor.ExportSelectionAsync();
+            if (selection is null) return;
+            using var stream = new MemoryStream(selection.Encode(), false);
             var data = new DataObject();
-            // Raw stream data marshals as bytes, without object serialization.
-            data.SetData(InkClipboardFormat, stream, autoConvert: false);
+            data.SetData(SelectionClipboardFormat, stream, autoConvert: false);
+            // Keep the legacy ink format for older Moye instances and plain text
+            // for other apps. The composite format takes precedence when pasted.
+            using var ink = new MemoryStream(selection.InkData, false);
+            if (selection.InkData.Length > 0) data.SetData(InkClipboardFormat, ink, autoConvert: false);
+            if (selection.Texts.Count > 0) data.SetText(string.Join(Environment.NewLine, selection.Texts.Select(text => text.Text)), TextDataFormat.UnicodeText);
             Clipboard.SetDataObject(data, true);
-            // Cutting is safe only after the clipboard accepted the editable copy.
-            if (cut) editor!.DeleteSelection();
-            ViewModel.Status = cut ? "Ink cut · Paste onto another page with Ctrl+V" : "Ink copied · Paste onto another page with Ctrl+V";
-        }
-        catch (Exception ex) { ViewModel.Status = "Clipboard unavailable: " + ex.Message; }
+            if (cut) editor.DeleteSelection();
+            ViewModel.Status = cut ? "Selection cut · Paste onto another page with Ctrl+V" : "Selection copied · Paste onto another page with Ctrl+V";
+        });
     }
     private async Task PasteContentAsync()
     {
         if (CurrentEditor is not { } editor) return;
         try
         {
+            if (Clipboard.ContainsData(SelectionClipboardFormat))
+            {
+                var value = Clipboard.GetData(SelectionClipboardFormat);
+                var bytes = value switch { byte[] b => b, MemoryStream stream => stream.ToArray(), _ => null };
+                if (bytes is null) throw new InvalidDataException("Unsupported clipboard selection.");
+                var payload = NoteSelection.Decode(bytes);
+                var position = GetPastePosition(editor.Page);
+                await RunAsync("Pasting selection…", async () =>
+                {
+                    var assets = new Dictionary<string, string>(StringComparer.Ordinal);
+                    foreach (var asset in payload.Assets)
+                    {
+                        var stored = await ViewModel.Repository.PutAssetAsync(asset.FileName, asset.ContentType, asset.Bytes);
+                        assets.Add(asset.Id, stored.Id);
+                    }
+                    SetTool(InkTool.Lasso);
+                    editor.ImportSelection(payload, position, assets);
+                    PageList.Focus();
+                    ViewModel.Status = "Selection pasted";
+                });
+                return;
+            }
             if (Clipboard.ContainsData(InkClipboardFormat))
             {
                 var data = Clipboard.GetData(InkClipboardFormat);
                 var bytes = data switch { byte[] b => b, MemoryStream stream => stream.ToArray(), _ => null };
                 if (bytes is null || bytes.Length > 64 * 1024 * 1024) throw new InvalidDataException("Unsupported clipboard ink.");
-                SetTool(InkTool.Lasso); editor.ImportInk(bytes); PageList.Focus(); return;
+                SetTool(InkTool.Lasso); editor.ImportInk(bytes, GetPastePosition(editor.Page)); PageList.Focus(); return;
+            }
+            if (!Clipboard.ContainsImage() && Clipboard.ContainsText(TextDataFormat.UnicodeText))
+            {
+                var text = Clipboard.GetText(TextDataFormat.UnicodeText);
+                if (text.Length > 2_000_000) throw new InvalidDataException("The text is too long to paste into one box.");
+                SetTool(InkTool.Text);
+                editor.SetTextDefaults(_textDefaults);
+                editor.AddTextAt(GetPastePosition(editor.Page), text);
+                UpdateTextToolbar();
+                return;
             }
             await PasteImageAsync();
         }
@@ -251,6 +290,15 @@ public partial class MainWindow
     private void CopyInkClick(object sender, RoutedEventArgs e) => CopyInk(false);
     private void CutInkClick(object sender, RoutedEventArgs e) => CopyInk(true);
     private async void PasteContentClick(object sender, RoutedEventArgs e) => await PasteContentAsync();
+
+    private Point GetPastePosition(NotePage page)
+    {
+        var editor = _editors.Values.FirstOrDefault(candidate => ReferenceEquals(candidate.Page, page));
+        if (editor is null || !editor.IsLoaded) return new Point(72, 72);
+        var visible = Viewport.TranslatePoint(new Point(28, 28), editor);
+        return new Point(Math.Clamp(visible.X, 24, Math.Max(24, page.Width - 100)),
+            Math.Clamp(visible.Y, 24, Math.Max(24, page.Height - 60)));
+    }
 
     private void BeginTemporaryPan()
     {
@@ -295,8 +343,15 @@ public partial class MainWindow
         WritingHeader.Visibility = _focusMode ? Visibility.Collapsed : Visibility.Visible;
         EditorFooter.Visibility = _focusMode && !ViewModel.HasSaveError ? Visibility.Collapsed : Visibility.Visible;
         FocusToolbar.Visibility = _focusMode ? Visibility.Visible : Visibility.Collapsed;
-        // Reserve a slim rail so Fit Width and horizontal panning cannot put
-        // handwriting underneath the floating buttons.
-        Viewport.Margin = _focusMode ? new Thickness(92, 0, 0, 0) : new Thickness(0);
+        // Reserve the measured tools on their chosen side, including favorites.
+        // The reference pane shares this inset so neither reading nor writing
+        // can be hidden beneath the floating buttons.
+        if (_focusMode)
+        {
+            FocusToolbar.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            var inset = Math.Ceiling(FocusToolbar.DesiredSize.Width) + 8;
+            EditingSurface.Margin = _workspace.FocusToolsOnRight ? new Thickness(0, 0, inset, 0) : new Thickness(inset, 0, 0, 0);
+        }
+        else EditingSurface.Margin = new Thickness(0);
     }
 }

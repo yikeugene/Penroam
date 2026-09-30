@@ -113,10 +113,13 @@ public partial class MainWindow
     }
 
     private static bool HasInputAncestor<T>(DependencyObject? current) where T : DependencyObject
+        => FindInputAncestor<T>(current) is not null;
+
+    private static T? FindInputAncestor<T>(DependencyObject? current) where T : DependencyObject
     {
         while (current is not null)
         {
-            if (current is T) return true;
+            if (current is T match) return match;
             current = current switch
             {
                 Visual or Visual3D => VisualTreeHelper.GetParent(current),
@@ -124,6 +127,6 @@ public partial class MainWindow
                 _ => LogicalTreeHelper.GetParent(current)
             };
         }
-        return false;
+        return null;
     }
 }

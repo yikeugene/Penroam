@@ -137,7 +137,7 @@ public partial class MainWindow
     private void MoveSectionUpClick(object sender, RoutedEventArgs e) => RunSectionAction(sender, () => ViewModel.MoveSection(-1));
     private void MoveSectionDownClick(object sender, RoutedEventArgs e) => RunSectionAction(sender, () => ViewModel.MoveSection(1));
 
-    private void DeleteSectionClick(object sender, RoutedEventArgs e)
+    private async void DeleteSectionClick(object sender, RoutedEventArgs e)
     {
         if (AnyPenDown || sender is not MenuItem { Tag: SectionActionTarget target } ||
             ResolveSectionActionTarget(ViewModel, target) is null) return;
@@ -148,9 +148,17 @@ public partial class MainWindow
         }
         CommitEditors();
         if (ResolveSectionActionTarget(ViewModel, target) is not { } section) return;
-        if (MessageBox.Show(this, $"Delete \"{section.Title}\" and its {section.PageCountText}?\n\nYou can undo this while the notebook remains open. To keep these pages, move them to another section first.",
+        if (MessageBox.Show(this, $"Delete \"{section.Title}\" and its {section.PageCountText}?\n\nUndo is available while open. A notebook recovery copy is also kept for 30 days in Backup & recovery.",
             "Delete Section", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
-            RunSectionAction(sender, () => ViewModel.DeleteSection());
+        {
+            await RunAsync("Keeping a recovery copy…", async () =>
+            {
+                await PreserveDeletedAsync(target.Document, "Section deleted");
+                if (!ReferenceEquals(ViewModel.Document, target.Document) || ViewModel.Sections.All(candidate => candidate.Id != target.SectionId)) return;
+                ViewModel.SelectedSection = ViewModel.Sections.First(candidate => candidate.Id == target.SectionId);
+                ViewModel.DeleteSection(); ScrollToSelected();
+            });
+        }
     }
 
     private void MovePageSectionMenuOpened(object sender, RoutedEventArgs e)

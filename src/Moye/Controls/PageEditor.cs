@@ -18,7 +18,7 @@ namespace Moye.Controls;
 /// A single page in fixed DIP coordinates. The shell owns zoom, virtualization,
 /// history and persistence; completed edits update Page before ContentChanged fires.
 /// </summary>
-public sealed class PageEditor : Grid
+public sealed partial class PageEditor : Grid
 {
     private readonly Func<string, Task<AssetData>> _loadAsset;
     private readonly PaperVisual _paper = new();
@@ -81,11 +81,13 @@ public sealed class PageEditor : Grid
         _ink.StrokeCollected += (_, _) => { MarkInkDirty(); FlushChanges(); };
         _ink.StrokeErased += (_, _) => MarkInkDirty();
         _ink.StrokeErasing += (_, e) => { if (_eraseHighlightOnly && !e.Stroke.DrawingAttributes.IsHighlighter) e.Cancel = true; };
-        _ink.SelectionMoved += (_, _) => { MarkInkDirty(); FlushChanges(); };
-        _ink.SelectionResized += (_, _) => { MarkInkDirty(); FlushChanges(); };
+        _ink.SelectionMoved += (_, _) => CompleteSelectionTransform();
+        _ink.SelectionResized += (_, _) => CompleteSelectionTransform();
+        _ink.SelectionMoving += (_, e) => e.NewRectangle = ConstrainSelection(e.NewRectangle);
+        _ink.SelectionResizing += (_, e) => e.NewRectangle = ConstrainSelection(e.NewRectangle);
         _ink.InputCompleted += (_, _) => FlushChanges();
         _ink.PenContactChanged += (_, _) => PenContactChanged?.Invoke(this, EventArgs.Empty);
-        _ink.SelectionChanged += (_, _) => { if (_ink.GetSelectedStrokes().Count > 0) SelectItem(null); };
+        _ink.SelectionChanged += (_, _) => UpdateMixedSelection();
         _items.MouseLeftButtonDown += (_, e) =>
         {
             if (PenInkCanvas.IsTouch(e.StylusDevice)) return;
@@ -137,6 +139,9 @@ public sealed class PageEditor : Grid
             _composingTexts.Clear();
             _items.Children.Clear();
             _frames.Clear();
+            _ink.Children.Clear();
+            _selectionProxies.Clear();
+            _selectedFrames.Clear();
             foreach (var image in page.Images) AddImageFrame(image);
             foreach (var text in page.Texts) AddTextFrame(text);
             _inkDirty = _contentDirty = false;
@@ -169,7 +174,7 @@ public sealed class PageEditor : Grid
         _ink.EraserShape = new EllipseStylusShape(_eraserSize, _eraserSize);
         // InkCanvas.Select changes EditingMode even when clearing a selection.
         // Clear first, then apply the requested tool so erasers stay erasers.
-        if (_tool != InkTool.Lasso && _ink.GetSelectedStrokes().Count > 0) _ink.Select(new StrokeCollection());
+        if (_tool != InkTool.Lasso && (_ink.GetSelectedStrokes().Count > 0 || _ink.GetSelectedElements().Count > 0)) _ink.Select(new StrokeCollection());
         _ink.SetRequestedMode(_tool switch
         {
             InkTool.Pen or InkTool.Highlighter => InkCanvasEditingMode.Ink,
@@ -193,7 +198,9 @@ public sealed class PageEditor : Grid
                 if (!editObjects) text.ScrollToVerticalOffset(0);
             }
         }
-        if (!editObjects) SelectItem(null);
+        foreach (var proxy in _selectionProxies.Values) proxy.Visibility = _tool == InkTool.Lasso ? Visibility.Visible : Visibility.Collapsed;
+        if (!editObjects && _tool != InkTool.Lasso) SelectItem(null);
+        if (_tool == InkTool.Lasso) UpdateMixedSelection();
         Cursor = _tool == InkTool.Hand ? Cursors.Hand : Cursors.Arrow;
     }
 
@@ -380,54 +387,20 @@ public sealed class PageEditor : Grid
 
     public void DeleteSelection()
     {
-        if (_selectedItem is not null)
-        {
-            if (_selectedItem.Item is NoteText text) { Page.Texts.Remove(text); _overflowingTexts.Remove(text.Id); }
-            if (_selectedItem.ItemContent is TextBox box) _composingTexts.Remove(box);
-            if (_selectedItem.Item is NoteImage image) Page.Images.Remove(image);
-            _items.Children.Remove(_selectedItem);
-            _frames.Remove(_selectedItem);
-            SelectItem(null);
-            MarkContentDirty();
-        }
-        else
-        {
-            var selected = _ink.GetSelectedStrokes();
-            if (selected.Count == 0) return;
-            _ink.Strokes.Remove(selected);
-            MarkInkDirty();
-        }
+        var frames = _selectedFrames.ToArray();
+        var selected = _ink.GetSelectedStrokes();
+        if (frames.Length == 0 && selected.Count == 0) return;
+        _ink.Select(new StrokeCollection());
+        SelectItem(null);
+        foreach (var frame in frames) RemoveFrame(frame);
+        if (frames.Length > 0) MarkContentDirty();
+        if (selected.Count > 0) { _ink.Strokes.Remove(selected); MarkInkDirty(); }
         FlushChanges();
     }
 
     public void DuplicateSelection()
     {
-        if (_selectedItem?.Item is NoteText text)
-        {
-            var copy = text with { Id = Guid.NewGuid().ToString("N"), X = Math.Min(text.X + 20, Math.Max(0, Page.Width - text.Width)), Y = Math.Min(text.Y + 20, Math.Max(0, Page.Height - text.Height)) };
-            Page.Texts.Add(copy);
-            SelectItem(AddTextFrame(copy));
-            MarkContentDirty();
-        }
-        else if (_selectedItem?.Item is NoteImage image)
-        {
-            var copy = image with { Id = Guid.NewGuid().ToString("N"), X = Math.Min(image.X + 20, Math.Max(0, Page.Width - image.Width)), Y = Math.Min(image.Y + 20, Math.Max(0, Page.Height - image.Height)) };
-            Page.Images.Add(copy);
-            SelectItem(AddImageFrame(copy));
-            MarkContentDirty();
-        }
-        else
-        {
-            var selected = _ink.GetSelectedStrokes();
-            if (selected.Count == 0) return;
-            var copy = selected.Clone();
-            var bounds = copy.GetBounds();
-            copy.Transform(new Matrix(1, 0, 0, 1, Math.Min(20, Page.Width - bounds.Right), Math.Min(20, Page.Height - bounds.Bottom)), false);
-            _ink.Strokes.Add(copy);
-            _ink.Select(copy);
-            MarkInkDirty();
-        }
-        FlushChanges();
+        DuplicateMixedSelection();
     }
 
     public void SelectAllInk()
@@ -460,7 +433,7 @@ public sealed class PageEditor : Grid
         return stream.ToArray();
     }
 
-    public bool ImportInk(byte[] bytes)
+    public bool ImportInk(byte[] bytes, Point? position = null)
     {
         if (bytes.Length == 0) return false;
         // Parse completely before touching the document or changing history.
@@ -471,8 +444,8 @@ public sealed class PageEditor : Grid
             throw new InvalidDataException("The clipboard ink has invalid bounds.");
         var scale = Math.Min(1, Math.Min(Math.Max(1, Page.Width - 32) / Math.Max(1, bounds.Width), Math.Max(1, Page.Height - 32) / Math.Max(1, bounds.Height)));
         if (scale < 1) { strokes.Transform(new Matrix(scale, 0, 0, scale, 0, 0), true); bounds = strokes.GetBounds(); }
-        var x = Math.Min(72, Math.Max(0, Page.Width - bounds.Width - 16));
-        var y = Math.Min(72, Math.Max(0, Page.Height - bounds.Height - 16));
+        var x = Math.Clamp(position?.X ?? 72, 0, Math.Max(0, Page.Width - bounds.Width - 16));
+        var y = Math.Clamp(position?.Y ?? 72, 0, Math.Max(0, Page.Height - bounds.Height - 16));
         strokes.Transform(new Matrix(1, 0, 0, 1, x - bounds.Left, y - bounds.Top), false);
         CommitPendingEdits();
         _tool = InkTool.Lasso; ApplyTool();
@@ -689,6 +662,7 @@ public sealed class PageEditor : Grid
             {
                 text.Height = height;
                 frame.Height = height;
+                UpdateSelectionProxy(frame);
                 MarkContentDirty();
             }
         }
@@ -748,6 +722,7 @@ public sealed class PageEditor : Grid
         Canvas.SetTop(frame, y);
         _frames.Add(frame);
         _items.Children.Add(frame);
+        AddSelectionProxy(frame);
         frame.Selected += (_, _) => SelectItem(frame);
         frame.GeometryChanged += (_, _) =>
         {
@@ -763,6 +738,7 @@ public sealed class PageEditor : Grid
                 image.Width = frame.Width; image.Height = frame.Height;
             }
             MarkContentDirty();
+            UpdateSelectionProxy(frame);
         };
         frame.EditCompleted += (_, _) => FlushChanges();
         return frame;
@@ -770,10 +746,12 @@ public sealed class PageEditor : Grid
 
     private void SelectItem(NoteItemFrame? frame)
     {
-        if (_selectedItem == frame) return;
+        if (_selectedItem == frame && _selectedFrames.Count == (frame is null ? 0 : 1)) return;
         var previousText = SelectedText;
-        _selectedItem?.SetSelected(false);
+        foreach (var selected in _selectedFrames) selected.SetSelected(false);
+        _selectedFrames.Clear();
         _selectedItem = frame;
+        if (frame is not null) _selectedFrames.Add(frame);
         _selectedItem?.SetSelected(true);
         if (SelectedText is { } text) _lastTextId = text.Id;
         if (previousText is not null || SelectedText is not null) NotifyTextSelectionChanged();
@@ -794,6 +772,9 @@ public sealed class PageEditor : Grid
     private void HandleKeyDown(object sender, KeyEventArgs e)
     {
         if (Keyboard.FocusedElement is TextBox) return;
+        var step = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 10 : 1;
+        var delta = e.Key switch { Key.Left => new Vector(-step, 0), Key.Right => new Vector(step, 0), Key.Up => new Vector(0, -step), Key.Down => new Vector(0, step), _ => new Vector() };
+        if (delta.Length > 0 && (Keyboard.Modifiers & ~ModifierKeys.Shift) == ModifierKeys.None && NudgeSelection(delta.X, delta.Y)) { e.Handled = true; return; }
         if (e.Key == Key.Delete) { DeleteSelection(); e.Handled = true; }
         if (e.Key == Key.D && Keyboard.Modifiers == ModifierKeys.Control) { DuplicateSelection(); e.Handled = true; }
         if (e.Key == Key.Escape) { SelectItem(null); _ink.Select(new StrokeCollection()); }
@@ -807,11 +788,12 @@ public sealed class PageEditor : Grid
         CommitPendingEdits();
         var selected = _selectedItem;
         var strokes = _ink.GetSelectedStrokes();
+        var elements = _ink.GetSelectedElements().ToArray();
         var textViews = _frames.Select(frame => frame.ItemContent).OfType<TextBox>()
             .Select(box => (Box: box, Offset: box.VerticalOffset, Visibility: box.VerticalScrollBarVisibility)).ToArray();
         _suppressTextSelectionNotifications = true;
         SelectItem(null);
-        if (strokes.Count > 0) _ink.Select(new StrokeCollection());
+        if (strokes.Count > 0 || elements.Length > 0) _ink.Select(new StrokeCollection());
         try
         {
             foreach (var view in textViews)
@@ -825,7 +807,7 @@ public sealed class PageEditor : Grid
         {
             ApplyTool();
             SelectItem(selected);
-            if (_tool == InkTool.Lasso) _ink.Select(strokes);
+            if (_tool == InkTool.Lasso) _ink.Select(strokes, elements);
             foreach (var view in textViews)
             {
                 view.Box.VerticalScrollBarVisibility = view.Visibility;

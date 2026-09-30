@@ -51,7 +51,7 @@ public sealed class SectionBackupMemoryTests
 
         await new BackupService(source).ExportAsync(path, [original]);
         using (var archive = ZipFile.OpenRead(path))
-            Assert.Equal(2, ReadJson(archive.GetEntry("manifest.json")!)["version"]!.GetValue<int>());
+            Assert.Equal(3, ReadJson(archive.GetEntry("manifest.json")!)["version"]!.GetValue<int>());
         var restored = Assert.Single(await new BackupService(destination).ImportAsync(path));
 
         Assert.NotEqual(original.Id, restored.Id);

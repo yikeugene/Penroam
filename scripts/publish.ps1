@@ -59,6 +59,7 @@ try {
         'docs/THIRD-PARTY-NOTICES.md',
         ('docs/RELEASE_NOTES_' + $MoyeVersion + '.md'),
         'docs/licenses/Apache-2.0.txt',
+        'docs/licenses/PDFPIG-LICENSE.txt',
         'docs/licenses/CSWINRT-LICENSE.txt',
         'docs/licenses/WINDOWS-SDK-LICENSE.txt',
         'docs/licenses/WINDOWS-SDK-NOTICE.md'

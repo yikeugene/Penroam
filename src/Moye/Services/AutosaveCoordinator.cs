@@ -31,6 +31,7 @@ public sealed class AutosaveCoordinator : IDisposable
     }
 
     public event EventHandler? StateChanged;
+    public DraftRecoveryStore? RecoveryJournal { get; set; }
     public bool IsDirty { get { lock (_sync) return _pending.Count > 0; } }
     public bool IsSaving { get { lock (_sync) return _isSaving; } }
     public Exception? LastError { get { lock (_sync) return _lastError; } }
@@ -46,6 +47,7 @@ public sealed class AutosaveCoordinator : IDisposable
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
             _pending[document.Id] = new Pending(++_revision, snapshot);
+            RecoveryJournal?.Queue(snapshot, _revision);
             _firstPendingTimestamp ??= _timeProvider.GetTimestamp();
             var remaining = TimeSpan.FromSeconds(2) - _timeProvider.GetElapsedTime(_firstPendingTimestamp.Value);
             var due = remaining < _delay ? remaining : _delay;
@@ -78,6 +80,8 @@ public sealed class AutosaveCoordinator : IDisposable
                     lock (_sync) _lastError = exception;
                     throw;
                 }
+                if (RecoveryJournal is { } journal)
+                    await journal.MarkCommittedAsync(next.Document.Id, next.Revision).ConfigureAwait(false);
                 lock (_sync)
                 {
                     if (_pending.TryGetValue(next.Document.Id, out var current) && current.Revision == next.Revision)

@@ -52,6 +52,9 @@ public partial class MainWindow
         var menu = new ContextMenu { Tag = target };
         menu.Items.Add(CreateMenuHeading($"Page {page.Number}"));
         menu.Items.Add(new Separator());
+        Add("Rename Page…", "\uE8AC", RenamePageClick);
+        Add(page.Page.IsBookmarked ? "Remove Bookmark" : "Bookmark Page", "\uE734", TogglePageBookmarkClick);
+        menu.Items.Add(new Separator());
         Add("Duplicate Page", "\uE8C8", DuplicatePageClick);
         Add("Move Page Up", "\uE74A", MovePageUpClick, ViewModel.Pages.IndexOf(page) > 0);
         Add("Move Page Down", "\uE74B", MovePageDownClick, ViewModel.Pages.IndexOf(page) < ViewModel.Pages.Count - 1);
@@ -72,7 +75,7 @@ public partial class MainWindow
             if (danger)
             {
                 item.Style = (Style)FindResource("DangerMenuItem");
-                item.ToolTip = "Delete this page · Undo available while the notebook stays open";
+                item.ToolTip = "Delete this page · Undo while open, or restore a notebook copy from Recently deleted within 30 days";
             }
             item.Click += click; menu.Items.Add(item);
         }

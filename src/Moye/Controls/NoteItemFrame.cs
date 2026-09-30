@@ -73,11 +73,14 @@ internal sealed class NoteItemFrame : Grid
         text.SetValue(TextBlock.HorizontalAlignmentProperty, HorizontalAlignment.Center);
         text.SetValue(TextBlock.VerticalAlignmentProperty, VerticalAlignment.Center);
         background.AppendChild(text);
-        return new Thumb
+        var handle = new Thumb
         {
-            Width = 44, Height = 44, Cursor = cursor, ToolTip = tooltip,
+            Width = 44, Height = 44, Cursor = cursor, ToolTip = tooltip, Focusable = true, IsTabStop = true,
             HorizontalAlignment = horizontal, VerticalAlignment = vertical,
             Template = new ControlTemplate(typeof(Thumb)) { VisualTree = background }
         };
+        System.Windows.Automation.AutomationProperties.SetName(handle, tooltip);
+        System.Windows.Automation.AutomationProperties.SetHelpText(handle, "Arrow keys move the selected object. Hold Shift for larger steps.");
+        return handle;
     }
 }

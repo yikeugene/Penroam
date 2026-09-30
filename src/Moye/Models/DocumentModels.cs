@@ -21,11 +21,14 @@ public sealed class NotebookDocument
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public string Title { get; set; } = "Untitled Notebook";
     public string Folder { get; set; } = "My Notes";
+    public bool IsPinned { get; set; }
+    public string CoverColor { get; set; } = "";
+    public bool IsQuickInbox { get; set; }
     public DateTimeOffset CreatedUtc { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset ModifiedUtc { get; set; } = DateTimeOffset.UtcNow;
     public List<NoteSection> Sections { get; set; } = [];
     public List<NotePage> Pages { get; set; } = [];
-    public NotebookDocument Snapshot() => new() { Id = Id, Title = Title, Folder = Folder, CreatedUtc = CreatedUtc, ModifiedUtc = ModifiedUtc, Sections = Sections.Select(s => s with {}).ToList(), Pages = Pages.Select(p => p.Snapshot()).ToList() };
+    public NotebookDocument Snapshot() => new() { Id = Id, Title = Title, Folder = Folder, IsPinned = IsPinned, CoverColor = CoverColor, IsQuickInbox = IsQuickInbox, CreatedUtc = CreatedUtc, ModifiedUtc = ModifiedUtc, Sections = Sections.Select(s => s with {}).ToList(), Pages = Pages.Select(p => p.Snapshot()).ToList() };
 }
 
 public sealed record NoteSection
@@ -81,6 +84,11 @@ public sealed class NotebookSummary
     public string Id { get; set; } = "";
     public string Title { get; set; } = "";
     public string Folder { get; set; } = "";
+    public bool IsPinned { get; set; }
+    public string CoverColor { get; set; } = "";
+    public bool IsQuickInbox { get; set; }
+    public string DisplayCoverColor => NotebookAppearance.ColorFor(Id, CoverColor);
+    public string PinLabel => IsPinned ? "Pinned" : "";
     public DateTimeOffset ModifiedUtc { get; set; }
     public int PageCount { get; set; }
     public string PageCountText => $"{PageCount} {(PageCount == 1 ? "page" : "pages")}";
@@ -90,6 +98,8 @@ public sealed class NotePage
 {
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public string SectionId { get; set; } = "";
+    public string Title { get; set; } = "";
+    public bool IsBookmarked { get; set; }
     public double Width { get; set; } = 793.700787;
     public double Height { get; set; } = 1122.519685;
     public PaperTemplate Template { get; set; }
@@ -98,7 +108,20 @@ public sealed class NotePage
     public List<NoteText> Texts { get; set; } = [];
     public List<NoteImage> Images { get; set; } = [];
     public PdfPageSource? Pdf { get; set; }
-    public NotePage Snapshot() => new() { Id = Id, SectionId = SectionId, Width = Width, Height = Height, Template = Template, InkData = InkData, Texts = Texts.Select(t => t with {}).ToList(), Images = Images.Select(i => i with {}).ToList(), Pdf = Pdf is null ? null : Pdf with {} };
+    public NotePage Snapshot() => new() { Id = Id, SectionId = SectionId, Title = Title, IsBookmarked = IsBookmarked, Width = Width, Height = Height, Template = Template, InkData = InkData, Texts = Texts.Select(t => t with {}).ToList(), Images = Images.Select(i => i with {}).ToList(), Pdf = Pdf is null ? null : Pdf with {} };
+}
+
+public static class NotebookAppearance
+{
+    public static IReadOnlyList<string> Colors { get; } = ["#3B6656", "#536980", "#8B624B", "#726482", "#85633D", "#566B70"];
+    public static bool IsValidColor(string? color) => color is { Length: 7 } && color[0] == '#' && color.Skip(1).All(Uri.IsHexDigit);
+    public static string ColorFor(string id, string? customColor)
+    {
+        if (IsValidColor(customColor)) return customColor!;
+        // Stable across sessions, filtering and framework hash randomization.
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(id));
+        return Colors[hash[0] % Colors.Count];
+    }
 }
 
 public sealed record NoteText

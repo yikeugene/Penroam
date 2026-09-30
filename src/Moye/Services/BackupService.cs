@@ -19,7 +19,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
     private sealed class Manifest
     {
         [JsonRequired] public string Format { get; set; } = "moye";
-        [JsonRequired] public int Version { get; set; } = 2;
+        [JsonRequired] public int Version { get; set; } = 3;
         public DateTimeOffset CreatedUtc { get; set; } = DateTimeOffset.UtcNow;
         [JsonRequired] public List<DocumentEntry> Notebooks { get; set; } = [];
         [JsonRequired] public List<AssetEntry> Assets { get; set; } = [];
@@ -142,7 +142,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
                 AddBytes(ref total, entry.Length);
             }
             var manifest = Deserialize<Manifest>(await ReadAsync(Get(entries, "manifest.json"), MaxDocumentBytes, cancellationToken).ConfigureAwait(false));
-            if (manifest.Format != "moye" || manifest.Version is not (1 or 2)) throw Invalid("This backup format or version is not supported.");
+            if (manifest.Format != "moye" || manifest.Version is not (1 or 2 or 3)) throw Invalid("This backup format or version is not supported.");
             if (manifest.Notebooks is null || manifest.Assets is null || manifest.Notebooks.Count > 10_000) throw Invalid("Invalid backup index.");
             var referencedPaths = new HashSet<string>(StringComparer.Ordinal) { "manifest.json" };
             var assets = new Dictionary<string, AssetEntry>(StringComparer.Ordinal);
@@ -161,7 +161,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
                 if (descriptor is null || descriptor.Inks is null || !referencedPaths.Add(descriptor.Path)) throw Invalid("Invalid notebook index.");
                 var documentBytes = await ReadVerifiedAsync(entries, descriptor.Path, descriptor.Sha256, MaxDocumentBytes, cancellationToken).ConfigureAwait(false);
                 var document = DeserializeDocument(documentBytes, manifest.Version);
-                ValidateDocument(document, requireSections: manifest.Version == 2);
+                ValidateDocument(document, requireSections: manifest.Version >= 2);
                 if (manifest.Version == 1) NotebookStructure.Normalize(document);
                 if (!originalIds.Add(document.Id) || descriptor.Inks.Count != document.Pages.Count) throw Invalid("Invalid notebook or ink index.");
                 var inks = new Dictionary<string, InkEntry>(StringComparer.Ordinal);
@@ -195,6 +195,8 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
             {
                 document.Id = Guid.NewGuid().ToString("N");
                 document.Title += " (restored copy)";
+                // A restored copy must not silently become the quick-capture destination.
+                document.IsQuickInbox = false;
                 document.CreatedUtc = document.ModifiedUtc = DateTimeOffset.UtcNow;
                 var sectionIds = document.Sections.ToDictionary(section => section.Id, _ => Guid.NewGuid().ToString("N"), StringComparer.Ordinal);
                 foreach (var section in document.Sections) section.Id = sectionIds[section.Id];
@@ -256,7 +258,8 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
     private static void ValidateDocument(NotebookDocument document, bool requireSections = true)
     {
         if (!ValidId(document.Id) || document.Title is null || document.Title.Length > 10_000 || document.Folder is null || document.Folder.Length > 10_000
-            || document.Pages is null || document.Pages.Count > 20_000) throw Invalid("Invalid notebook structure.");
+            || document.Pages is null || document.Pages.Count > 20_000 || document.CoverColor is null
+            || (document.CoverColor.Length != 0 && !NotebookAppearance.IsValidColor(document.CoverColor))) throw Invalid("Invalid notebook structure.");
         var sectionOrder = new Dictionary<string, int>(StringComparer.Ordinal);
         if (requireSections)
         {
@@ -275,7 +278,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
         {
             if (page is null || !ValidId(page.Id) || !pageIds.Add(page.Id) || !Dimension(page.Width) || !Dimension(page.Height)
                 || !Enum.IsDefined(page.Template) || page.InkData is null || page.Texts is null || page.Images is null
-                || page.Texts.Count > 50_000 || page.Images.Count > 50_000) throw Invalid("Invalid page structure.");
+                || page.Title is null || page.Title.Length > 10_000 || page.Texts.Count > 50_000 || page.Images.Count > 50_000) throw Invalid("Invalid page structure.");
             if (requireSections)
             {
                 if (!ValidId(page.SectionId) || !sectionOrder.TryGetValue(page.SectionId, out var currentSection) || currentSection < previousSection)
@@ -334,6 +337,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
         using var json = JsonDocument.Parse(bytes);
         var root = json.RootElement;
         RequireFields(root, "id", "title", "folder", "createdUtc", "modifiedUtc", "pages");
+        if (version >= 3) RequireFields(root, "isPinned", "coverColor", "isQuickInbox");
         if (version >= 2)
         {
             RequireFields(root, "sections");
@@ -343,6 +347,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
         {
             RequireFields(page, "id", "width", "height", "template", "inkData", "texts", "images");
             if (version >= 2) RequireFields(page, "sectionId");
+            if (version >= 3) RequireFields(page, "title", "isBookmarked");
             foreach (var text in RequireArray(page, "texts"))
                 RequireFields(text, "id", "x", "y", "width", "height", "text", "fontFamily", "fontSize", "color");
             foreach (var image in RequireArray(page, "images"))

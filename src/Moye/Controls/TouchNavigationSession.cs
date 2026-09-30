@@ -29,6 +29,7 @@ public sealed class TouchNavigationSession
     private double _lastMovementAt;
     private Point _baselineCenter;
     private double _baselineDistance;
+    private double _minimumPanDistance;
     private bool _pendingFrame;
     private Vector _inertiaVelocity;
     private Point _inertiaCenter;
@@ -39,19 +40,40 @@ public sealed class TouchNavigationSession
     public int Count => _contacts.Count;
     public bool IsInertiaActive { get; private set; }
     public bool HasPendingFrame => _pendingFrame || IsInertiaActive;
+    public bool RequireTwoFingers { get; set; }
+    public bool ZoomLocked { get; set; }
 
-    public void BeginContact(int id, Point position, double nowMs)
+    public void BeginContact(int id, Point position, double nowMs, double minimumPanDistance = 0)
     {
         if (!IsFinite(position) || !double.IsFinite(nowMs)) return;
+        var firstContact = _contacts.Count == 0;
         StopInertia();
         _contacts[id] = position;
         Rebaseline(nowMs);
+        if (firstContact && double.IsFinite(minimumPanDistance) && minimumPanDistance > 0)
+            _minimumPanDistance = minimumPanDistance;
     }
 
     public void MoveContact(int id, Point position, double nowMs)
     {
         if (!IsFinite(position) || !double.IsFinite(nowMs) || !_contacts.TryGetValue(id, out var previous)) return;
         _contacts[id] = position;
+        if (RequireTwoFingers && _contacts.Count < 2) { Rebaseline(nowMs); return; }
+        if (_contacts.Count == 1 && _minimumPanDistance > 0)
+        {
+            var movement = position - _baselineCenter;
+            var distance = movement.Length;
+            if (distance <= _minimumPanDistance) return;
+
+            // Margin touches must establish intent before moving the paper.
+            // Discard the dead zone once, rather than jumping by the entire
+            // distance accumulated while the finger was being held still.
+            _baselineCenter += movement * (_minimumPanDistance / distance);
+            _minimumPanDistance = 0;
+            // Rejected jitter must not contribute to release momentum. A
+            // release-only crossing moves the excess, without inventing speed.
+            _sampleStart = _sampleCount = 0;
+        }
         if (_contacts.Count == 1) AddVelocitySample(position, nowMs, previous != position);
         if (_contacts.Count <= 2 && previous != position) _pendingFrame = true;
     }
@@ -60,7 +82,7 @@ public sealed class TouchNavigationSession
     {
         if (!_contacts.TryGetValue(id, out var position)) return;
         var velocity = default(Vector);
-        var fling = _contacts.Count == 1 && allowInertia && double.IsFinite(nowMs) &&
+        var fling = !RequireTwoFingers && _contacts.Count == 1 && _minimumPanDistance == 0 && allowInertia && double.IsFinite(nowMs) &&
                     TryGetReleaseVelocity(position, nowMs, out velocity);
         _contacts.Remove(id);
         StopInertia();
@@ -79,6 +101,7 @@ public sealed class TouchNavigationSession
         _pendingFrame = false;
         _baselineCenter = default;
         _baselineDistance = 0;
+        _minimumPanDistance = 0;
         StopInertia();
     }
 
@@ -89,7 +112,7 @@ public sealed class TouchNavigationSession
         if (_pendingFrame && _contacts.Count is 1 or 2)
         {
             GetGeometry(out var center, out var distance);
-            var scale = _contacts.Count == 2 && _baselineDistance > MinimumPinchDistance && distance > MinimumPinchDistance
+            var scale = !ZoomLocked && _contacts.Count == 2 && _baselineDistance > MinimumPinchDistance && distance > MinimumPinchDistance
                 ? distance / _baselineDistance : 1;
             var delta = _baselineCenter - center;
             frame = new(_baselineCenter, center, scale, delta, false);
@@ -130,6 +153,9 @@ public sealed class TouchNavigationSession
     private void Rebaseline(double nowMs)
     {
         _pendingFrame = false;
+        // A contact-count transition expresses a new gesture: pinch should
+        // respond immediately, as should the remaining finger after a pinch.
+        _minimumPanDistance = 0;
         GetGeometry(out _baselineCenter, out _baselineDistance);
         _sampleStart = _sampleCount = 0;
         _lastMovementAt = nowMs;

@@ -88,7 +88,8 @@ public static class InteractivePreview
                     .Select(document => new NotebookSummary
                     {
                         Id = document.Id, Title = document.Title, Folder = document.Folder,
-                        ModifiedUtc = document.ModifiedUtc, PageCount = document.Pages.Count
+                        ModifiedUtc = document.ModifiedUtc, PageCount = document.Pages.Count,
+                        IsPinned = document.IsPinned, CoverColor = document.CoverColor, IsQuickInbox = document.IsQuickInbox
                     }).ToList());
             }
         }

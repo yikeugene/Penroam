@@ -1,17 +1,20 @@
-Upgrading to Moye 1.12.0
+Upgrading to Moye 2.0.0
 
 Before continuing, use your current Moye version to back up your notebooks
 (More > Back Up All Notebooks). Keep that backup separately if you need
 to return to an older release.
 
-Moye 1.12.0 keeps the same notebook and backup formats as Moye 1.7.0 through 1.11.0.
-When upgrading from 1.6.2 or earlier, opening the app upgrades older libraries
-to database schema 2 for notebook sections. New .moye backups use format 2.
-Moye 1.6.2 and earlier cannot open the upgraded library or new backups.
-Existing version 1 backups
-can still be restored as new copies in Moye 1.12.0.
+Moye 2.0.0 upgrades existing libraries to database schema 3 when opened.
+New .moye backups use format 3. Moye 1.12.0 and earlier cannot open the
+upgraded library or new backups. Keep a backup made by the older app
+before opening your library in 2.0.0 if you need to return to that version.
+
+Moye 2.0.0 reads backup formats 1, 2 and 3. Restoring creates new notebook
+copies and does not overwrite existing notebooks. Writing preferences
+remain format 1; workspace settings and recovery files stay device-local.
 
 Your notebooks stay outside the installed program folder. Uninstalling Moye
-keeps your notes, but does not reverse the library upgrade.
+keeps your notes, but does not reverse the library upgrade. Draft recovery
+is best effort and is not a replacement for a separate notebook backup.
 
 Setup creates desktop and Start menu shortcuts automatically.

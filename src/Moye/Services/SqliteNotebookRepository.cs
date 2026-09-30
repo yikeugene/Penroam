@@ -9,7 +9,7 @@ using Moye.Models;
 namespace Moye.Services;
 
 /// <summary>Local, transactional notebook storage. All SQLite work runs off the UI thread.</summary>
-public sealed class SqliteNotebookRepository : INotebookRepository
+public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNotebookRepository
 {
     private readonly string _path;
     private readonly SemaphoreSlim _gate = new(1, 1);
@@ -26,20 +26,39 @@ public sealed class SqliteNotebookRepository : INotebookRepository
 
     public Task InitializeAsync() => RunAsync(connection => true);
 
+    /// <summary>Search reads metadata only; ink blobs and image/PDF payloads stay on disk.</summary>
+    public Task<IReadOnlyList<NotebookDocument>> LoadSearchDocumentsAsync() => RunAsync<IReadOnlyList<NotebookDocument>>(connection =>
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT id,title,folder FROM notebooks ORDER BY is_pinned DESC,modified_utc DESC,id";
+        var documents = new Dictionary<string, NotebookDocument>(StringComparer.Ordinal);
+        using (var reader = command.ExecuteReader())
+            while (reader.Read()) documents.Add(reader.GetString(0), new() { Id = reader.GetString(0), Title = reader.GetString(1), Folder = reader.GetString(2) });
+        command.CommandText = "SELECT notebook_id,id,title FROM sections ORDER BY ordinal,id";
+        using (var reader = command.ExecuteReader())
+            while (reader.Read()) documents[reader.GetString(0)].Sections.Add(new() { Id = reader.GetString(1), Title = reader.GetString(2) });
+        command.CommandText = "SELECT notebook_id,metadata_json FROM pages ORDER BY ordinal";
+        using (var reader = command.ExecuteReader())
+            while (reader.Read()) documents[reader.GetString(0)].Pages.Add(JsonSerializer.Deserialize<NotePage>(reader.GetString(1), DocumentJson.Options)
+                ?? throw new InvalidDataException("The page metadata is corrupted."));
+        return documents.Values.ToArray();
+    });
+
     public Task<IReadOnlyList<NotebookSummary>> ListAsync() => RunAsync<IReadOnlyList<NotebookSummary>>(connection =>
     {
         using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT n.id,n.title,n.folder,n.modified_utc,COUNT(p.id)
+            SELECT n.id,n.title,n.folder,n.modified_utc,COUNT(p.id),n.is_pinned,n.cover_color,n.is_quick_inbox
             FROM notebooks n LEFT JOIN pages p ON p.notebook_id=n.id
-            GROUP BY n.id ORDER BY n.modified_utc DESC,n.id
+            GROUP BY n.id ORDER BY n.is_pinned DESC,n.modified_utc DESC,n.id
             """;
         using var reader = command.ExecuteReader();
         var result = new List<NotebookSummary>();
         while (reader.Read()) result.Add(new NotebookSummary
         {
             Id = reader.GetString(0), Title = reader.GetString(1), Folder = reader.GetString(2),
-            ModifiedUtc = ParseDate(reader.GetString(3)), PageCount = reader.GetInt32(4)
+            ModifiedUtc = ParseDate(reader.GetString(3)), PageCount = reader.GetInt32(4),
+            IsPinned = reader.GetBoolean(5), CoverColor = reader.GetString(6), IsQuickInbox = reader.GetBoolean(7)
         });
         return result;
     });
@@ -47,7 +66,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository
     public Task<NotebookDocument?> LoadAsync(string id) => RunAsync<NotebookDocument?>(connection =>
     {
         using var command = connection.CreateCommand();
-        command.CommandText = "SELECT title,folder,created_utc,modified_utc FROM notebooks WHERE id=$id";
+        command.CommandText = "SELECT title,folder,created_utc,modified_utc,is_pinned,cover_color,is_quick_inbox FROM notebooks WHERE id=$id";
         command.Parameters.AddWithValue("$id", id);
         NotebookDocument document;
         using (var reader = command.ExecuteReader())
@@ -56,7 +75,8 @@ public sealed class SqliteNotebookRepository : INotebookRepository
             document = new NotebookDocument
             {
                 Id = id, Title = reader.GetString(0), Folder = reader.GetString(1),
-                CreatedUtc = ParseDate(reader.GetString(2)), ModifiedUtc = ParseDate(reader.GetString(3))
+                CreatedUtc = ParseDate(reader.GetString(2)), ModifiedUtc = ParseDate(reader.GetString(3)),
+                IsPinned = reader.GetBoolean(4), CoverColor = reader.GetString(5), IsQuickInbox = reader.GetBoolean(6)
             };
         }
         command.CommandText = "SELECT id,title FROM sections WHERE notebook_id=$id ORDER BY ordinal,id";
@@ -75,30 +95,44 @@ public sealed class SqliteNotebookRepository : INotebookRepository
         return document;
     });
 
-    public Task SaveAsync(NotebookDocument document)
+    public Task SaveAsync(NotebookDocument document) => SaveBatchAsync([document]);
+
+    public Task SaveBatchAsync(IReadOnlyList<NotebookDocument> documents)
     {
         // Snapshot before dispatch, while the caller still owns the editable model.
-        var snapshot = document.Snapshot();
-        NotebookStructure.Normalize(snapshot);
-        foreach (var page in snapshot.Pages) page.InkData = page.InkData.ToArray();
+        var snapshots = documents.Select(document => document.Snapshot()).ToArray();
+        if (snapshots.Select(document => document.Id).Distinct().Count() != snapshots.Length)
+            throw new InvalidDataException("A notebook may appear only once in an atomic update.");
+        foreach (var snapshot in snapshots)
+        {
+            NotebookStructure.Normalize(snapshot);
+            foreach (var page in snapshot.Pages) page.InkData = page.InkData.ToArray();
+        }
         return RunAsync(connection =>
         {
+            using var transaction = connection.BeginTransaction();
+            foreach (var snapshot in snapshots)
+            {
             if (string.IsNullOrWhiteSpace(snapshot.Id) || snapshot.Pages.Select(p => p.Id).Distinct().Count() != snapshot.Pages.Count)
                 throw new InvalidDataException("Invalid notebook or page ID.");
             if (snapshot.Sections.Count > 20_000 || snapshot.Sections.Any(section => section.Id.Length > 200 || section.Title.Length > 10_000))
                 throw new InvalidDataException("Invalid notebook section structure.");
-            using var transaction = connection.BeginTransaction();
+            if (snapshot.CoverColor is null || (snapshot.CoverColor.Length != 0 && !NotebookAppearance.IsValidColor(snapshot.CoverColor)) || snapshot.Pages.Any(page => page.Title is null || page.Title.Length > 10_000))
+                throw new InvalidDataException("Invalid notebook or page organization metadata.");
             using var command = connection.CreateCommand();
             command.Transaction = transaction;
             command.CommandText = """
-                INSERT INTO notebooks(id,title,folder,created_utc,modified_utc) VALUES($id,$title,$folder,$created,$modified)
-                ON CONFLICT(id) DO UPDATE SET title=excluded.title,folder=excluded.folder,modified_utc=excluded.modified_utc
+                INSERT INTO notebooks(id,title,folder,created_utc,modified_utc,is_pinned,cover_color,is_quick_inbox) VALUES($id,$title,$folder,$created,$modified,$pinned,$color,$inbox)
+                ON CONFLICT(id) DO UPDATE SET title=excluded.title,folder=excluded.folder,modified_utc=excluded.modified_utc,is_pinned=excluded.is_pinned,cover_color=excluded.cover_color,is_quick_inbox=excluded.is_quick_inbox
                 """;
             command.Parameters.AddWithValue("$id", snapshot.Id);
             command.Parameters.AddWithValue("$title", snapshot.Title);
             command.Parameters.AddWithValue("$folder", snapshot.Folder);
             command.Parameters.AddWithValue("$created", FormatDate(snapshot.CreatedUtc));
             command.Parameters.AddWithValue("$modified", FormatDate(snapshot.ModifiedUtc));
+            command.Parameters.AddWithValue("$pinned", snapshot.IsPinned);
+            command.Parameters.AddWithValue("$color", snapshot.CoverColor);
+            command.Parameters.AddWithValue("$inbox", snapshot.IsQuickInbox);
             command.ExecuteNonQuery();
 
             command.CommandText = "DELETE FROM sections WHERE notebook_id=$id";
@@ -161,6 +195,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository
                 command.Parameters.AddWithValue("$note", snapshot.Id);
                 command.Parameters.AddWithValue("$page", removed);
                 command.ExecuteNonQuery();
+            }
             }
             transaction.Commit();
             return true;
@@ -238,7 +273,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository
         using var command = connection.CreateCommand();
         command.CommandText = "PRAGMA user_version";
         var version = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-        if (version > 2)
+        if (version > 3)
             throw new InvalidDataException("This database was created by a newer version of Moye. Update the app before opening it.");
         command.CommandText = "PRAGMA journal_mode=WAL";
         command.ExecuteNonQuery();
@@ -272,8 +307,18 @@ public sealed class SqliteNotebookRepository : INotebookRepository
                 command.ExecuteNonQuery();
             }
         }
+        if (version < 3)
+        {
+            command.Parameters.Clear();
+            command.CommandText = """
+                ALTER TABLE notebooks ADD COLUMN is_pinned INTEGER NOT NULL DEFAULT 0;
+                ALTER TABLE notebooks ADD COLUMN cover_color TEXT NOT NULL DEFAULT '';
+                ALTER TABLE notebooks ADD COLUMN is_quick_inbox INTEGER NOT NULL DEFAULT 0;
+                """;
+            command.ExecuteNonQuery();
+        }
         command.Parameters.Clear();
-        command.CommandText = "PRAGMA user_version=2";
+        command.CommandText = "PRAGMA user_version=3";
         command.ExecuteNonQuery();
         transaction.Commit();
     }

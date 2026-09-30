@@ -11,7 +11,7 @@
     <RootNamespace>Moye</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets/Moye.ico</ApplicationIcon>
-    <Version>1.12.0</Version>
+    <Version>2.0.0</Version>
     <Description>Offline handwritten notebooks for Windows with pressure-sensitive ink and PDF annotation.</Description>
     <Authors>Moye contributors</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -21,5 +21,6 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
     <PackageReference Include="PDFsharp-WPF" Version="6.2.4" />
+    <PackageReference Include="PdfPig" Version="0.1.16" />
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Ink;
 using System.Windows.Media;
@@ -17,6 +18,65 @@ namespace Moye.Tests;
 /// </summary>
 public sealed class InputViewportStabilityTests(ITestOutputHelper output)
 {
+    [Fact]
+    public void DocumentScrollBarGuardRecognizesBothBarsAndTheirTrackThumbAndButtons()
+    {
+        Sta(() =>
+        {
+            var fixture = new ScrollBarFixture();
+            var bars = Descendants<ScrollBar>(fixture.Scroll)
+                .Where(bar => NearestScrollViewer(bar) == fixture.Scroll).ToArray();
+            Assert.Equal(2, bars.Length);
+            Assert.Contains(bars, bar => bar.Orientation == Orientation.Vertical);
+            Assert.Contains(bars, bar => bar.Orientation == Orientation.Horizontal);
+            foreach (var bar in bars)
+            {
+                Assert.True(IsDocumentScrollBar(bar, fixture.Scroll));
+                Assert.True(IsDocumentScrollBar(Descendants<Track>(bar).Single(), fixture.Scroll));
+                Assert.True(IsDocumentScrollBar(Descendants<Thumb>(bar).Single(), fixture.Scroll));
+                var buttons = Descendants<RepeatButton>(bar).ToArray();
+                Assert.NotEmpty(buttons);
+                Assert.All(buttons, button => Assert.True(IsDocumentScrollBar(button, fixture.Scroll)));
+            }
+        });
+    }
+
+    [Fact]
+    public void DocumentScrollBarGuardLeavesNestedTextScrollingAndPaperContentAlone()
+    {
+        Sta(() =>
+        {
+            var fixture = new ScrollBarFixture();
+            var nested = Descendants<ScrollViewer>(fixture.Text).Single();
+            var nestedBars = Descendants<ScrollBar>(nested).ToArray();
+            Assert.NotEmpty(nestedBars);
+            foreach (var bar in nestedBars)
+            {
+                Assert.False(IsDocumentScrollBar(bar, fixture.Scroll));
+                Assert.All(Descendants<Thumb>(bar), thumb => Assert.False(IsDocumentScrollBar(thumb, fixture.Scroll)));
+                Assert.True(IsDocumentScrollBar(bar, nested));
+            }
+            Assert.False(IsDocumentScrollBar(fixture.Text, fixture.Scroll));
+            Assert.False(IsDocumentScrollBar(fixture.Content, fixture.Scroll));
+            Assert.False(IsDocumentScrollBar(fixture.Scroll, fixture.Scroll));
+        });
+    }
+
+    [Fact]
+    public void DocumentScrollBarGuardRequiresTheMatchingDocumentScrollViewer()
+    {
+        Sta(() =>
+        {
+            var fixture = new ScrollBarFixture();
+            var bar = Descendants<ScrollBar>(fixture.Scroll)
+                .First(item => NearestScrollViewer(item) == fixture.Scroll);
+            Assert.False(IsDocumentScrollBar(null, fixture.Scroll));
+            Assert.False(IsDocumentScrollBar(bar, null));
+            Assert.False(IsDocumentScrollBar(bar, new ScrollViewer()));
+            Assert.False(IsDocumentScrollBar(new ScrollBar(), fixture.Scroll));
+        });
+    }
+
     [Fact]
     public void TouchdownGuardKeepsPartiallyVisiblePageAndInkCoordinatesStationary()
     {
@@ -232,6 +292,47 @@ public sealed class InputViewportStabilityTests(ITestOutputHelper output)
             output.WriteLine($"Synthetic 240 Hz input / 60 Hz frames: {packetCount} packets, {frameCount} scroll updates, {totalDistance:F0} DIP retained. This verifies batching and distance, not hardware frame timing.");
             session.Cancel();
         });
+    }
+
+    private static bool IsDocumentScrollBar(DependencyObject? source, ScrollViewer? scroll) =>
+        (bool)InvokeShell("IsDocumentScrollBar", source, scroll)!;
+
+    private static ScrollViewer? NearestScrollViewer(DependencyObject element)
+    {
+        for (var current = VisualTreeHelper.GetParent(element); current is not null; current = VisualTreeHelper.GetParent(current))
+            if (current is ScrollViewer scroll) return scroll;
+        return null;
+    }
+
+    private sealed class ScrollBarFixture
+    {
+        public Canvas Content { get; } = new() { Width = 900, Height = 1800 };
+        public TextBox Text { get; } = new()
+        {
+            Width = 260, Height = 140, AcceptsReturn = true,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Visible,
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Visible,
+            Text = string.Join("\n", Enumerable.Repeat("Editable text with its own scrollbar, independent of the notebook page.", 20))
+        };
+        public ScrollViewer Scroll { get; }
+
+        public ScrollBarFixture()
+        {
+            Content.Children.Add(Text);
+            Scroll = new ScrollViewer
+            {
+                Width = 440, Height = 320, Content = Content,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Visible,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Visible
+            };
+            Scroll.Measure(new Size(440, 320));
+            Scroll.Arrange(new Rect(0, 0, 440, 320));
+            Scroll.UpdateLayout();
+            PumpDispatcher();
+            Scroll.UpdateLayout();
+            Assert.True(Scroll.ScrollableHeight > 0);
+            Assert.True(Scroll.ScrollableWidth > 0);
+        }
     }
 
     private sealed class PagesFixture

@@ -11,12 +11,15 @@ public sealed class DocumentImportService(IPdfService pdf, IOfficePdfConverter c
         ".pdf" or ".docx" or ".pptx" or ".ppsx" or ".odt" or ".odp";
 
     public async Task<IReadOnlyList<NotePage>> ImportAsync(string path, CancellationToken cancellationToken = default)
+        => await ImportAsync(path, null, cancellationToken);
+
+    public async Task<IReadOnlyList<NotePage>> ImportAsync(string path, IProgress<DocumentProgress>? progress, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (!IsSupported(path)) throw new NotSupportedException("Choose a PDF, DOCX, PPTX, PPSX, ODT or ODP document.");
         var source = Path.GetFullPath(path);
         if (Path.GetExtension(source).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-            return await pdf.ImportAsync(source, cancellationToken);
+            return pdf is PdfService directPdf ? await directPdf.ImportAsync(source, progress, cancellationToken) : await pdf.ImportAsync(source, cancellationToken);
 
         // Conversion works on a disposable copy, including when Office writes
         // lock files next to the document. Nothing is added until PDF validation succeeds.
@@ -29,11 +32,12 @@ public sealed class DocumentImportService(IPdfService pdf, IOfficePdfConverter c
             await using (var to = new FileStream(input, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
                 await from.CopyToAsync(to, cancellationToken);
             var output = Path.Combine(work, Path.GetFileNameWithoutExtension(source) + ".pdf");
+            progress?.Report(new("Converting document locally…"));
             await converter.ConvertAsync(input, output, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             if (!File.Exists(output) || new FileInfo(output).Length == 0)
                 throw new InvalidDataException("The document converter did not produce a PDF. No pages were imported.");
-            return await pdf.ImportAsync(output, cancellationToken);
+            return pdf is PdfService convertedPdf ? await convertedPdf.ImportAsync(output, progress, cancellationToken) : await pdf.ImportAsync(output, cancellationToken);
         }
         finally
         {

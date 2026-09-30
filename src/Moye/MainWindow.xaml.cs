@@ -52,6 +52,8 @@ public partial class MainWindow : Window
         InitializeTouchNavigation();
         InitializeWritingUi();
         InitializeTypingUi();
+        InitializeWorkspace();
+        InitializeDocumentWorkflows(ReferenceHost);
         Width = Math.Min(1400, SystemParameters.WorkArea.Width - 24);
         Height = Math.Min(960, SystemParameters.WorkArea.Height - 24);
         SystemEvents.PowerModeChanged += PowerModeChanged;
@@ -66,7 +68,7 @@ public partial class MainWindow : Window
 
     private async void WindowLoaded(object sender, RoutedEventArgs e)
     {
-        await RunAsync("Loading your notebooks…", async () => { await LoadPreferencesAsync(); await ViewModel.InitializeAsync(); _ready = true; UpdateTool(); });
+        await RunAsync("Loading your notebooks…", async () => { await LoadPreferencesAsync(); await ViewModel.InitializeAsync(); await LoadWorkspaceAsync(); _ready = true; UpdateTool(); });
         if (_preferencesLoadWarning is not null) MessageBox.Show(this, _preferencesLoadWarning, "Writing Settings", MessageBoxButton.OK, MessageBoxImage.Warning);
     }
 
@@ -104,7 +106,11 @@ public partial class MainWindow : Window
         ViewModel.IsBusy = true; ViewModel.Operation = "Saving before closing…";
         try
         {
-            EndTemporaryPan(); ClearTouches(); CommitEditors(); await ViewModel.Autosave.FlushAsync(); await SavePreferencesAsync(true);
+            _automaticBackupCancellation?.Cancel();
+            if (_automaticBackupCompletion is { } backupCompletion) await backupCompletion.Task;
+            EndTemporaryPan(); ClearTouches(); CommitEditors(); CaptureReadingPosition(); await SaveWorkspaceAsync(); await ViewModel.Autosave.FlushAsync(); await SavePreferencesAsync(true);
+            _workspaceTimer.Stop(); _backupTimer.Stop();
+            if (_draftRecovery is not null) await _draftRecovery.DrainAsync();
             _closing = true; _thumbnailTimer.Stop(); _pdfZoomTimer.Stop(); SystemEvents.PowerModeChanged -= PowerModeChanged;
             foreach (var cts in _loading.Values) cts.Cancel();
             ViewModel.Dispose(); _ = Dispatcher.BeginInvoke(Close);
@@ -116,6 +122,7 @@ public partial class MainWindow : Window
     {
         if (!_ready || _closing) return;
         EndTemporaryPan(); ClearTouches(); CommitEditors();
+        CaptureReadingPosition(); await SaveWorkspaceAsync();
         try { await ViewModel.Autosave.FlushAsync(); } catch { /* Visible save status retains the error and unsaved snapshots. */ }
     }
 
@@ -148,11 +155,13 @@ public partial class MainWindow : Window
         if (id is null) return;
         CloseSettingsPopups();
         if (MessageBox.Show(this,
-            $"Delete \"{title}\" and all its pages?\n\nThis cannot be undone. To keep a copy, cancel and back up the notebook first.",
+            $"Move \"{title}\" and all its pages to Recently deleted?\n\nA recovery copy is kept for 30 days in Backup & recovery.",
             "Delete Notebook", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
         await RunAsync("Deleting notebook…", async () =>
         {
             ClearTouches(); CommitEditors();
+            var deleting = ViewModel.Document?.Id == id ? ViewModel.Document.Snapshot() : await ViewModel.Repository.LoadAsync(id);
+            if (deleting is not null) await PreserveDeletedAsync(deleting, "Notebook deleted");
             await ViewModel.DeleteNotebookAsync(id);
             SelectLibraryCurrent();
             if (ViewModel.IsLibraryVisible)
@@ -186,19 +195,28 @@ public partial class MainWindow : Window
     private void ClearSearchClick(object sender, RoutedEventArgs e)
     {
         ViewModel.Search = "";
+        ViewModel.CategoryFilter = "";
         var searchBox = ViewModel.IsLibraryVisible ? HomeSearch : LibrarySearch;
         searchBox.Focus();
     }
     private async Task OpenNotebookAsync(string id)
     {
-        CommitEditors(); ClearTouches();
-        await RunAsync("Opening notebook…", async () => { await ViewModel.OpenAsync(id); await PrepareNotebookViewAsync(); });
+        await RunAsync("Opening notebook…", async () =>
+        {
+            CommitEditors(); ClearTouches(); CaptureReadingPosition(); await SaveWorkspaceAsync();
+            await ViewModel.OpenAsync(id); await PrepareNotebookViewAsync();
+        });
     }
-    private async Task PrepareNotebookViewAsync()
+    private async Task PrepareNotebookViewAsync(bool restoreReadingPosition = true)
     {
         _fitWidthActive = false;
         SelectLibraryCurrent(); ShowSidebarTab(false); ScrollToSelected();
-        await Dispatcher.InvokeAsync(FitPage, DispatcherPriority.Loaded);
+        if (!restoreReadingPosition || !await RestoreReadingPositionAsync())
+        {
+            _restoringReadingPosition = true;
+            try { await Dispatcher.InvokeAsync(FitPage, DispatcherPriority.Loaded); }
+            finally { _restoringReadingPosition = false; }
+        }
         PageList.Focus();
     }
     private void SelectLibraryCurrent() => NotebookList.SelectedItem = ViewModel.Notebooks.FirstOrDefault(n => n.Id == ViewModel.Document?.Id);
@@ -523,7 +541,16 @@ public partial class MainWindow : Window
     private void DuplicatePageClick(object sender, RoutedEventArgs e) => RunPageAction(sender, ViewModel.DuplicatePage);
     private void MovePageUpClick(object sender, RoutedEventArgs e) => RunPageAction(sender, () => ViewModel.MovePage(-1));
     private void MovePageDownClick(object sender, RoutedEventArgs e) => RunPageAction(sender, () => ViewModel.MovePage(1));
-    private void DeletePageClick(object sender, RoutedEventArgs e) => RunPageAction(sender, ViewModel.DeletePage);
+    private async void DeletePageClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not MenuItem { Tag: PageActionTarget target } || !ActivatePageAction(target)) return;
+        await RunAsync("Keeping a recovery copy…", async () =>
+        {
+            await PreserveDeletedAsync(target.Document, "Page deleted");
+            if (ReferenceEquals(ViewModel.Document, target.Document) && ViewModel.SelectedPage?.Page.Id == target.PageId)
+            { ViewModel.DeletePage(); ScrollToSelected(); }
+        });
+    }
     private void SyncPageTemplate()
     {
         if (TemplatePicker is null) return;
@@ -623,9 +650,11 @@ public partial class MainWindow : Window
         CommitEditors(); var bitmap = new BitmapImage(); using (var stream = new MemoryStream(bytes)) { bitmap.BeginInit(); bitmap.CacheOption = BitmapCacheOption.OnLoad; bitmap.StreamSource = stream; bitmap.EndInit(); bitmap.Freeze(); }
         if (bitmap.PixelWidth > 20000 || bitmap.PixelHeight > 20000 || (long)bitmap.PixelWidth * bitmap.PixelHeight > 80_000_000) throw new InvalidDataException("This image is too large. Resize it to at most 80 million pixels, with neither side exceeding 20,000 pixels.");
         var asset = await ViewModel.Repository.PutAssetAsync(name, contentType, bytes);
-        var page = ViewModel.SelectedPage.Page; var width = Math.Min(page.Width - 96, bitmap.PixelWidth * .75); var height = width * bitmap.PixelHeight / bitmap.PixelWidth;
-        if (height > page.Height - 96) { width *= (page.Height - 96) / height; height = page.Height - 96; }
-        var image = new NoteImage { AssetId = asset.Id, X = 48, Y = 48, Width = width, Height = height };
+        var page = ViewModel.SelectedPage.Page; var width = Math.Min(Math.Max(1, page.Width - Math.Min(96, page.Width / 2)), bitmap.PixelWidth * .75); var height = width * bitmap.PixelHeight / bitmap.PixelWidth;
+        var availableHeight = Math.Max(1, page.Height - Math.Min(96, page.Height / 2));
+        if (height > availableHeight) { width *= availableHeight / height; height = availableHeight; }
+        var position = GetPastePosition(page);
+        var image = new NoteImage { AssetId = asset.Id, X = Math.Clamp(position.X, 0, Math.Max(0, page.Width - width)), Y = Math.Clamp(position.Y, 0, Math.Max(0, page.Height - height)), Width = width, Height = height };
         var editor = CurrentEditor;
         if (editor is not null) editor.AddImage(image); else { page.Images.Add(image); ViewModel.Changed(true); }
         SetTool(InkTool.Select);
@@ -639,23 +668,7 @@ public partial class MainWindow : Window
     }
     private async void BackupNoteClick(object sender, RoutedEventArgs e) => await BackupAsync(false);
     private async void BackupAllClick(object sender, RoutedEventArgs e) => await BackupAsync(true);
-    private async Task BackupAsync(bool all)
-    {
-        if (!all && ViewModel.Document is null) return;
-        CommitEditors(); var dialog = new SaveFileDialog { Filter = "Moye backups|*.moye", FileName = (all ? "All Moye Notebooks" : SafeFileName(ViewModel.Title)) + $"-{DateTime.Now:yyyyMMdd}.moye" };
-        if (dialog.ShowDialog(this) != true) return;
-        await RunAsync("Creating editable backup…", async () =>
-        {
-            var documents = new List<NotebookDocument>();
-            if (all)
-            {
-                foreach (var summary in await ViewModel.Repository.ListAsync()) { var doc = await ViewModel.Repository.LoadAsync(summary.Id); if (doc is not null) documents.Add(doc); }
-                foreach (var pending in ViewModel.Autosave.PendingDocuments) { documents.RemoveAll(d => d.Id == pending.Id); documents.Add(pending.Snapshot()); }
-            }
-            if (ViewModel.Document is { } current) { documents.RemoveAll(d => d.Id == current.Id); documents.Add(current.Snapshot()); }
-            await ViewModel.Backup.ExportAsync(dialog.FileName, documents); ViewModel.Status = "Backup exported · " + Path.GetFileName(dialog.FileName);
-        });
-    }
+    private async Task BackupAsync(bool all) => await BackupWithProgressAsync(all);
     private async void RestoreClick(object sender, RoutedEventArgs e)
     {
         var dialog = new OpenFileDialog { Filter = "Moye backups|*.moye", Title = "Restore as New Notebook Copies" };
@@ -672,15 +685,14 @@ public partial class MainWindow : Window
     }
     private async void RetrySaveClick(object sender, RoutedEventArgs e) => await RunAsync("Retrying save…", async () => { await ViewModel.Autosave.RetryAsync(); await SavePreferencesAsync(true); });
     private void MoreClick(object sender, RoutedEventArgs e) { var button = (Button)sender; button.ContextMenu.PlacementTarget = button; button.ContextMenu.Placement = PlacementMode.Bottom; button.ContextMenu.IsOpen = true; }
-    private void HelpClick(object sender, RoutedEventArgs e) => MessageBox.Show(this,
-        "Write with a pen. Pan with one finger and pinch with two.\nTouch gestures pause while the pen is down.\nMy notebooks saves and returns home. Click the title to rename.\nContents organizes your notebook into sections and pages.\nUse + beside SECTIONS for each topic. Right-click a section to\nrename, reorder or delete it; Shift+F10 also opens its menu.\nRight-click a page or thumbnail to duplicate, move, delete\nor change its paper. Insert adds pages and documents.\nFit Width fills the writing area; click the zoom percentage for Actual Size.\n\nUse Manage pens for your everyday pens; press 1–9 to switch.\nPen Settings offers color swatches and a Thickness slider with preview.\nMore Colors opens the visual palette. Manage pens controls\nopacity, pressure and smoothing. Draw and Hold straightens lines.\nHold a line about 0.65 seconds, adjust its endpoint, then lift to finish.\nClick Eraser for Pixel or Stroke, size and highlighter-only erasing.\n\nType starts or resumes a text box. Use ＋ Text box or click the\npaper in Type mode for another. Formatting applies to the whole box:\nfont, 6–96 pt size, bold, italic, color and left/center/right alignment.\n• List and 1. List add plain text markers to current or selected lines.\nEnter continues a list; Enter on an empty item ends it.\nWhile typing: Ctrl+B Bold · Ctrl+I Italic · Ctrl+Enter or Esc returns to Pen.\nText keeps its own clipboard and undo. Finish typing to undo box formatting.\nBoxes grow to the page bottom, then scroll. Move overflow to a new\nbox on the next page before PDF export; pagination is manual.\n\nB Pen · H Highlighter · E Eraser · L Lasso · T Type · V Select\nCtrl+Z Undo · Ctrl+Y / Ctrl+Shift+Z Redo · Ctrl+D Duplicate\nOutside text: Ctrl+C / Ctrl+X Copy / Cut ink · Ctrl+V Paste ink or image\nSpace + mouse drag Pan · Delete Remove selection · Ctrl+S Save\nCtrl+wheel Zoom · F9 Sidebar · F11 Focus Mode\nFocus keeps floating pen tools, settings, Undo and Redo on the left.\nExit Focus restores the editor. Esc finishes typing before leaving focus.\nIn Select mode, use the top-right handle to move an object,\nand the bottom-right handle to resize it.\n\nNotes save on this device. More creates editable .moye backups.\nExport saves only the selected section as a PDF,\nwith flattened annotations and outlined added text.\n\nMoye · Offline Windows notebooks", "Moye User Guide");
+    private void HelpClick(object sender, RoutedEventArgs e) => ShowCommandsClick(sender, e);
 
     private void SidebarTabClick(object sender, RoutedEventArgs e) => ShowSidebarTab((string)((Button)sender).Tag == "Notebooks");
     private async void ShowNotebooksClick(object sender, RoutedEventArgs e)
     {
-        ClearTouches(); CommitEditors();
         await RunAsync("Saving and returning to your notebooks…", async () =>
         {
+            ClearTouches(); CommitEditors(); CaptureReadingPosition(); await SaveWorkspaceAsync();
             await ViewModel.ReturnToLibraryAsync();
             _fitWidthActive = false;
             if (_focusMode) ToggleFocus();
@@ -717,6 +729,7 @@ public partial class MainWindow : Window
     private void FitWidthClick(object sender, RoutedEventArgs e) { ClearTouches(); FitWidth(); }
     private void FitWidth()
     {
+        if (_workspace.LockZoom && !_restoringReadingPosition) { ViewModel.Status = "Zoom is locked · Change it in Workspace settings"; return; }
         if (ViewModel.IsLibraryVisible || AnyPenDown || ViewModel.SelectedPage is not { } target || Viewport.ActualWidth < 100) return;
         // Reserve the real scrollbar width even before it appears. The paper
         // retains a small gutter on either side and never runs under the sidebar.
@@ -747,6 +760,7 @@ public partial class MainWindow : Window
     private void ActualSizeClick(object sender, RoutedEventArgs e) => ChangeZoom(1, new Point(Viewport.ActualWidth / 2, Viewport.ActualHeight / 2));
     private void FitPage()
     {
+        if (_workspace.LockZoom && !_restoringReadingPosition) { ViewModel.Status = "Zoom is locked · Change it in Workspace settings"; return; }
         ClearTouches();
         if (AnyPenDown || ViewModel.SelectedPage is not { } target || Viewport.ActualWidth < 100 || Viewport.ActualHeight < 140) return;
         ClearFitWidth();
@@ -767,6 +781,7 @@ public partial class MainWindow : Window
     }
     private void ChangeZoom(double zoom, Point anchor)
     {
+        if (_workspace.LockZoom && !_restoringReadingPosition) return;
         if (!_applyingTouchFrame) ClearTouches();
         if (AnyPenDown || !double.IsFinite(zoom)) return;
         ClearFitWidth();
@@ -895,6 +910,10 @@ public partial class MainWindow : Window
         if (e.Key == Key.Escape && _documentImportCancellation is not null)
         { CancelDocumentImportClick(sender, e); e.Handled = true; return; }
         if (!_ready || ViewModel.IsBusy) return;
+        if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift) && e.Key == Key.P)
+        { ShowCommandsClick(this, new()); e.Handled = true; return; }
+        if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift) && e.Key == Key.F)
+        { SearchContentsClick(this, new()); e.Handled = true; return; }
         ClearTouches();
         // Library search keeps its text shortcuts; editor commands cannot act
         // on the notebook retained in memory while the home screen is visible.
@@ -922,6 +941,14 @@ public partial class MainWindow : Window
         }
         // Do not steal IME, clipboard, or text undo from an active text box.
         if (Keyboard.FocusedElement is TextBoxBase) return;
+        if (ctrl && e.Key == Key.F) { SearchContentsClick(this, new()); e.Handled = true; return; }
+        if (ctrl && e.Key == Key.G) { GoToPageClick(this, new()); e.Handled = true; return; }
+        if (!ctrl && PageList.IsKeyboardFocusWithin && e.Key is Key.Left or Key.Right or Key.Up or Key.Down)
+        {
+            var step = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 10 : 1;
+            if (CurrentEditor?.NudgeSelection(e.Key == Key.Left ? -step : e.Key == Key.Right ? step : 0,
+                e.Key == Key.Up ? -step : e.Key == Key.Down ? step : 0) == true) { e.Handled = true; return; }
+        }
         // Section navigation and its context-menu keys must not edit ink on
         // the current page. Notebook undo/redo remains available after a move.
         if (SectionList.IsKeyboardFocusWithin && !(ctrl && e.Key is Key.Z or Key.Y)) return;
@@ -933,7 +960,7 @@ public partial class MainWindow : Window
                 case Key.Z: CommitEditors(); if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift)) ViewModel.Redo(); else ViewModel.Undo(); e.Handled = true; break;
                 case Key.Y: CommitEditors(); ViewModel.Redo(); e.Handled = true; break;
                 case Key.D: CurrentEditor?.DuplicateSelection(); e.Handled = true; break;
-                case Key.A: SetTool(InkTool.Lasso); CurrentEditor?.SelectAllInk(); e.Handled = true; break;
+                case Key.A: SetTool(InkTool.Lasso); CurrentEditor?.SelectAllContent(); e.Handled = true; break;
                 case Key.C: CopyInk(false); e.Handled = true; break;
                 case Key.X: CopyInk(true); e.Handled = true; break;
                 case Key.V: await PasteContentAsync(); e.Handled = true; break;

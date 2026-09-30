@@ -6,6 +6,7 @@ using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Media;
@@ -39,6 +40,9 @@ internal static class Program
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
             var application = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
             application.Resources = ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml"));
+            DocumentWorkflowPreviewScenes.Run(output);
+            OrganizationPreviewScenes.Run(output);
+            WorkspacePreviewScenes.Run(output);
             using var repository = new FixtureRepository();
             var window = new MainWindow(repository);
             VerifyWritingCommands(window);
@@ -135,7 +139,7 @@ internal static class Program
                 // Template bindings need not appear in ReadLocalValue; use the
                 // resolved dimensions to identify the actual page-host Border.
                 foreach (var host in Descendants<Border>(pageList).Where(b => b.DataContext is PageViewModel &&
-                             double.IsFinite(b.Width) && double.IsFinite(b.Height)))
+                             double.IsFinite(b.Width) && double.IsFinite(b.Height) && !InsidePageEditor(b)).ToArray())
                 {
                     var item = (PageViewModel)host.DataContext;
                     if (host.Child is not null) continue;
@@ -174,12 +178,14 @@ internal static class Program
                 reports.Add(report);
             }
 
+            VerifyDocumentScrollBarTouchGuard(window, content);
             VerifyTypingCommandsAndLayout(window, content, repository, output, reports);
             VerifySectionNavigationLayout(window, content, repository, output, reports);
             VerifyPageMenus(window);
 
             var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
             VerifyFocusTools(window, content, repository, output, reports);
+            VerifyWorkspaceGuardTools(window, content, output, reports);
 
             var presetFixture = WritingPreferences.CreateDefault();
             presetFixture.Presets[0].Width = .5; presetFixture.Presets[0].Opacity = .65;
@@ -371,17 +377,17 @@ internal static class Program
             menu.GetBindingExpression(FrameworkElement.DataContextProperty)?.UpdateTarget();
             menu.ApplyTemplate();
             var actions = menu.Items.OfType<MenuItem>().ToArray();
-            if (!ReferenceEquals(menu.DataContext, summary) || actions.Length != 2 ||
+            if (!ReferenceEquals(menu.DataContext, summary) || actions.Length != 4 ||
                 actions.Any(action => !ReferenceEquals(action.DataContext, summary)))
-                throw new InvalidOperationException($"Options for {summary.Title} must pass that notebook to both menu actions.");
+                throw new InvalidOperationException($"Options for {summary.Title} must pass that notebook to every menu action.");
             if (menu.IsOpen || PresentationSource.FromVisual(menu) is not null)
                 throw new InvalidOperationException("Notebook menu verification must remain detached and unopened.");
         }
 
         var covers = Descendants<Border>(content).Where(border => border.Name == "NotebookCover").ToArray();
-        if (covers.Length != expectedCount || covers.Any(cover => cover.Background is not SolidColorBrush) ||
-            covers.Select(cover => ((SolidColorBrush)cover.Background).Color).Distinct().Count() != Math.Min(expectedCount, 4))
-            throw new InvalidOperationException("The four notebook cards must resolve distinct cover colors through their actual item containers.");
+        if (covers.Length != expectedCount || covers.Any(cover => cover.Background is not SolidColorBrush ||
+            cover.DataContext is not NotebookSummary note || ((SolidColorBrush)cover.Background).Color != (Color)ColorConverter.ConvertFromString(note.DisplayCoverColor)))
+            throw new InvalidOperationException("Every cover must keep the notebook's own color independently of its list position.");
     }
 
     private static void VerifyLibrarySearchRecovery(MainWindow window, FrameworkElement content, FixtureRepository repository)
@@ -595,6 +601,121 @@ internal static class Program
             throw new InvalidOperationException("The broad stroke preview must visibly differ from the thinnest stroke.");
     }
 
+    private static void VerifyDocumentScrollBarTouchGuard(MainWindow window, FrameworkElement content)
+    {
+        const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        object? Call(string name, params object?[] args) => typeof(MainWindow).GetMethod(name, flags)!.Invoke(window, args);
+        T Get<T>(string name) => (T)typeof(MainWindow).GetField(name, flags)!.GetValue(window)!;
+        void Set(string name, object? value) => typeof(MainWindow).GetField(name, flags)!.SetValue(window, value);
+        void Check(bool condition, string message) { if (!condition) throw new InvalidOperationException("Scrollbar touch guard: " + message); }
+        var viewport = (Grid)window.FindName("Viewport");
+        var scroll = (ScrollViewer)Call("GetScroll")!;
+        var blocked = Get<HashSet<int>>("_blockedTouches");
+        var touches = Get<Dictionary<int, TouchDevice>>("_touches");
+        var navigation = Get<TouchNavigationSession>("_touchNavigation");
+        var ready = Get<bool>("_ready");
+        var ignoreUntil = Get<long>("_ignoreTouchUntil");
+        var originalOffset = scroll.VerticalOffset;
+        var selected = window.ViewModel.SelectedPage;
+        var testButton = new Button { Width = 44, Height = 44, Content = "Fixture" };
+        viewport.Children.Add(testButton);
+
+        // Raise managed routed events only in the detached application tree.
+        // This checks gate ordering and lifecycle, not native touch promotion,
+        // pen hardware, capture delivery or real palm classification.
+        TouchEventArgs Route(UIElement target, SyntheticTouchDevice device, RoutedEvent route)
+        {
+            var args = new TouchEventArgs(device, 0) { RoutedEvent = route, Source = target };
+            // Content is detached for rendering. Replay its Window ancestor's
+            // tunnel handler first, then route through the real content tree.
+            window.RaiseEvent(args);
+            if (!args.Handled) target.RaiseEvent(args);
+            return args;
+        }
+
+        void CheckRejectedLifetime(UIElement target, int id)
+        {
+            var device = new SyntheticTouchDevice(id);
+            Check(Route(target, device, UIElement.PreviewTouchDownEvent).Handled && blocked.Contains(id),
+                "a document scrollbar contact must be consumed before its thumb or repeat button handles it.");
+            Call("ClearTouches", false);
+            Check(blocked.Contains(id), "clearing navigation must retain an already rejected contact until it lifts.");
+            Check(Route(viewport, device, UIElement.PreviewTouchMoveEvent).Handled,
+                "a rejected contact moving away from the bar must remain consumed.");
+            Check(Route(viewport, device, UIElement.PreviewTouchUpEvent).Handled && !blocked.Contains(id),
+                "the rejected contact must be consumed and released on TouchUp.");
+        }
+
+        try
+        {
+            Set("_ready", true); Set("_ignoreTouchUntil", 0L);
+            scroll.ScrollToVerticalOffset(Math.Min(250, scroll.ScrollableHeight / 2));
+            Arrange(content, 1024, 700);
+            Check(scroll.ScrollableHeight > 500 && scroll.VerticalOffset > 0, "the fixture must contain a partially scrolled notebook.");
+            var before = scroll.VerticalOffset;
+            var vertical = Descendants<ScrollBar>(scroll).First(bar => bar.Orientation == Orientation.Vertical && bar.TemplatedParent == scroll);
+            var targets = new UIElement[] { vertical, Descendants<Thumb>(vertical).Single(), Descendants<RepeatButton>(vertical).First() };
+            for (var i = 0; i < targets.Length; i++) CheckRejectedLifetime(targets[i], 10001 + i);
+            Arrange(content, 1024, 700);
+            Check(scroll.VerticalOffset == before && window.ViewModel.SelectedPage == selected,
+                "rejected scrollbar contacts must not move or select a notebook page.");
+
+            // A pen-contact guard must also run before the ordinary button
+            // exception, and lifting the pen must not revive a resting palm.
+            Set("_viewportPenDeviceId", 9001);
+            var palm = new SyntheticTouchDevice(10010);
+            Check(Route(testButton, palm, UIElement.PreviewTouchDownEvent).Handled && blocked.Contains(palm.Id),
+                "pen contact must reject a touch on a viewport button before the button exception.");
+            Call("ClearTouches", false);
+            Set("_viewportPenDeviceId", null);
+            Check(Route(viewport, palm, UIElement.PreviewTouchMoveEvent).Handled,
+                "a palm rejected during writing must stay rejected after the pen lifts.");
+            Check(Route(viewport, palm, UIElement.PreviewTouchUpEvent).Handled && !blocked.Contains(palm.Id),
+                "a rejected palm must leave no stale blocked ID after lifting.");
+
+            var reused = new SyntheticTouchDevice(10011);
+            Check(Route(vertical, reused, UIElement.PreviewTouchDownEvent).Handled && blocked.Contains(reused.Id),
+                "the reused-ID fixture must begin with a rejected contact.");
+            Call("ClearTouches", false);
+            Check(!Route(testButton, reused, UIElement.PreviewTouchDownEvent).Handled && !blocked.Contains(reused.Id),
+                "a new TouchDown may reuse an ID from an old contact without inheriting its rejection.");
+
+            var canceledPan = new SyntheticTouchDevice(10012);
+            touches[canceledPan.Id] = canceledPan;
+            navigation.BeginContact(canceledPan.Id, new Point(100, 200), 0);
+            Call("ClearTouches", true); Call("ClearTouches", false);
+            Check(touches.Count == 0 && navigation.Count == 0 && blocked.Contains(canceledPan.Id),
+                "pen interruption must stop a pan without forgetting that its finger is still down.");
+            Check(Route(viewport, canceledPan, UIElement.PreviewTouchMoveEvent).Handled &&
+                Route(viewport, canceledPan, UIElement.PreviewTouchUpEvent).Handled && !blocked.Contains(canceledPan.Id),
+                "an interrupted pan must remain rejected through its final contact packet.");
+
+            // Normal mouse scrollbar commands remain available. Execute the
+            // actual WPF command binding without generating desktop input.
+            Check(ScrollBar.PageDownCommand.CanExecute(null, vertical), "the mouse scrollbar page command must remain enabled.");
+            ScrollBar.PageDownCommand.Execute(null, vertical);
+            Arrange(content, 1024, 700);
+            Check(scroll.VerticalOffset > before, "a scrollbar page command must still move the document.");
+            VerifyDetached(content, window);
+        }
+        finally
+        {
+            viewport.Children.Remove(testButton);
+            Call("ClearTouches", false); blocked.Clear();
+            Set("_viewportPenDeviceId", null); Set("_ready", ready); Set("_ignoreTouchUntil", ignoreUntil);
+            scroll.ScrollToVerticalOffset(originalOffset);
+            Arrange(content, 1024, 700);
+        }
+    }
+
+    private sealed class SyntheticTouchDevice(int id) : TouchDevice(id)
+    {
+        public override TouchPoint GetTouchPoint(IInputElement? relativeTo) =>
+            new(this, new Point(100, 200), new Rect(98, 198, 4, 4), TouchAction.Move);
+        public override TouchPointCollection GetIntermediateTouchPoints(IInputElement? relativeTo) =>
+            [GetTouchPoint(relativeTo)];
+    }
+
     private static void VerifyWritingCommands(MainWindow window)
     {
         const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
@@ -805,6 +926,52 @@ internal static class Program
         VerifyDetached(content, window);
     }
 
+    private static void VerifyWorkspaceGuardTools(MainWindow window, FrameworkElement content, string output, List<PreviewReport> reports)
+    {
+        const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        void Call(string method) => typeof(MainWindow).GetMethod(method, flags)!.Invoke(window, null);
+        var preferences = (WorkspacePreferences)typeof(MainWindow).GetField("_workspace", flags)!.GetValue(window)!;
+        var original = (preferences.TwoFingerNavigationOnly, preferences.LockZoom, preferences.FocusToolsOnRight);
+        var sidebar = (FrameworkElement)window.FindName("Sidebar"); var column = (ColumnDefinition)window.FindName("SidebarColumn");
+        var oldVisibility = sidebar.Visibility; var oldWidth = column.Width;
+        try
+        {
+            preferences.TwoFingerNavigationOnly = true; preferences.LockZoom = true; Call("ApplyWorkspaceOptions");
+            var fileName = "ui-preview-editor-writing-guard-1024.png";
+            SaveImage(output, fileName, RenderElement(content, 1024, 700));
+            reports.Add(MeasureButtons(content, 1024, 700, fileName, "editor-writing-guard", "EditorGuardButton"));
+            typeof(MainWindow).GetField("_focusMode", flags)!.SetValue(window, true);
+            sidebar.Visibility = Visibility.Collapsed; column.Width = new GridLength(0);
+            foreach (var dockRight in new[] { false, true })
+            {
+                preferences.FocusToolsOnRight = dockRight; Call("ApplyWorkspaceOptions"); Call("ApplyFocusChrome");
+                var name = dockRight ? "focus-guard-right" : "focus-guard-left";
+                fileName = $"ui-preview-{name}-1024.png"; SaveImage(output, fileName, RenderElement(content, 1024, 700));
+                reports.Add(MeasureButtons(content, 1024, 700, fileName, name, "FocusGuardButton", "ExitFocusButton"));
+                var favorites = ((Panel)window.FindName("FocusPresetPanel")).Children.OfType<Button>().ToArray();
+                if (favorites.Length != 3) throw new InvalidOperationException("Focus mode must expose the first three favorite pens.");
+                foreach (var button in favorites.Append((Button)window.FindName("FocusGuardButton")))
+                {
+                    var area = button.TransformToAncestor(content).TransformBounds(new Rect(button.RenderSize));
+                    DependencyObject? hit = null;
+                    VisualTreeHelper.HitTest(content,
+                        visual => visual is UIElement element && (element.Visibility != Visibility.Visible || !element.IsHitTestVisible)
+                            ? HitTestFilterBehavior.ContinueSkipSelfAndChildren : HitTestFilterBehavior.Continue,
+                        result => { hit = result.VisualHit; return HitTestResultBehavior.Stop; },
+                        new PointHitTestParameters(new Point(area.Left + area.Width / 2, area.Top + area.Height / 2)));
+                    while (hit is not null && hit != button) hit = VisualTreeHelper.GetParent(hit);
+                    if (hit != button) throw new InvalidOperationException($"{name}: {ControlName(button)} does not receive its pointer hit.");
+                }
+            }
+        }
+        finally
+        {
+            (preferences.TwoFingerNavigationOnly, preferences.LockZoom, preferences.FocusToolsOnRight) = original;
+            typeof(MainWindow).GetField("_focusMode", flags)!.SetValue(window, false); Call("ApplyWorkspaceOptions"); Call("ApplyFocusChrome");
+            sidebar.Visibility = oldVisibility; column.Width = oldWidth; Arrange(content, 1024, 700);
+        }
+    }
+
     private static void VerifyTypingCommandsAndLayout(MainWindow window, FrameworkElement content, FixtureRepository repository,
         string output, List<PreviewReport> reports)
     {
@@ -898,7 +1065,7 @@ internal static class Program
             sectionList.ScrollIntoView(target);
             Arrange(content, width, height);
             foreach (var host in Descendants<Border>(pageList).Where(b => b.DataContext is PageViewModel &&
-                         double.IsFinite(b.Width) && double.IsFinite(b.Height)))
+                         double.IsFinite(b.Width) && double.IsFinite(b.Height) && !InsidePageEditor(b)).ToArray())
                 host.Child ??= CreateEditor((PageViewModel)host.DataContext, repository);
             foreach (var row in Descendants<ListBoxItem>(sectionList))
                 if (row.ActualHeight < 44) throw new InvalidOperationException("Section rows must be at least 44 DIP tall.");
@@ -917,6 +1084,13 @@ internal static class Program
             reports.Add(MeasureButtons(content, width, height, fileName, "empty-section", "EmptySectionAddPageButton", "AddSectionButton"));
         }
         window.ViewModel.SelectedSection = original;
+    }
+
+    private static bool InsidePageEditor(Border candidate)
+    {
+        for (var parent = VisualTreeHelper.GetParent(candidate); parent is not null; parent = VisualTreeHelper.GetParent(parent))
+            if (parent is PageEditor) return true;
+        return false;
     }
 
     private static void SaveImage(string output, string fileName, BitmapSource bitmap)

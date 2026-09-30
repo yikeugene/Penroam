@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -23,27 +24,42 @@ public partial class MainWindow
     {
         // A real mouse action (including a scrollbar or tool button) takes over
         // from a fling. Touch-promoted mouse events must not cancel their gesture.
-        PreviewMouseDown += (_, e) => { if (e.StylusDevice is null) ClearTouches(); };
-        PreviewStylusDown += (_, e) => { if (e.StylusDevice.TabletDevice.Type == TabletDeviceType.Stylus) ClearTouches(); };
+        PreviewMouseDown += (_, e) => { if (e.StylusDevice is null) ClearTouches(true); };
+        PreviewStylusDown += (_, e) => { if (e.StylusDevice.TabletDevice.Type == TabletDeviceType.Stylus) ClearTouches(true); };
         PreviewTouchDown += (_, e) =>
         {
-            if (e.OriginalSource is DependencyObject source && source != Viewport && !Viewport.IsAncestorOf(source)) ClearTouches();
+            // A fresh Down can reuse a device ID after an interrupted contact.
+            _blockedTouches.Remove(e.TouchDevice.Id);
+            if (e.OriginalSource is DependencyObject source && source != Viewport && !Viewport.IsAncestorOf(source)) ClearTouches(true);
         };
+        PreviewTouchMove += (_, e) => { if (_blockedTouches.Contains(e.TouchDevice.Id)) e.Handled = true; };
+        PreviewTouchUp += (_, e) => { if (_blockedTouches.Remove(e.TouchDevice.Id)) e.Handled = true; };
+        // Some drivers promote touch to mouse. Never let a document scrollbar
+        // track button turn an accidental finger/palm contact into PageDown.
+        Viewport.PreviewMouseDown += SuppressScrollbarTouchMouse;
+        Viewport.PreviewMouseMove += SuppressScrollbarTouchMouse;
+        Viewport.PreviewMouseUp += SuppressScrollbarTouchMouse;
         ViewModel.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(ViewModel.IsBusy) && ViewModel.IsBusy) ClearTouches();
         };
-        Closed += (_, _) => { ClearTouches(); ResetThumbnailWork(); };
+        Deactivated += (_, _) => _blockedTouches.Clear();
+        Closed += (_, _) => { ClearTouches(); _blockedTouches.Clear(); ResetThumbnailWork(); };
     }
 
     private void ViewportTouchDown(object sender, TouchEventArgs e)
     {
-        if (HasInputAncestor<ButtonBase>(e.OriginalSource as DependencyObject) ||
-            HasInputAncestor<ScrollBar>(e.OriginalSource as DependencyObject)) { ClearTouches(); return; }
         e.Handled = true;
         if (!_ready || _closing || ViewModel.IsBusy || ViewModel.IsLibraryVisible || AnyPenDown || Environment.TickCount64 < _ignoreTouchUntil)
         { _blockedTouches.Add(e.TouchDevice.Id); return; }
         var scroll = GetScroll();
+        var source = e.OriginalSource as DependencyObject;
+        if (IsDocumentScrollBar(source, scroll))
+        { _blockedTouches.Add(e.TouchDevice.Id); return; }
+        // Keep deliberate controls, including text-box scrollbars, available
+        // after applying the pen guard. Only the outer page scrollbar is touch-free.
+        if (HasInputAncestor<ButtonBase>(source) || HasInputAncestor<ScrollBar>(source))
+        { e.Handled = false; ClearTouches(true); return; }
         if (scroll is null) return;
         if (_touches.Count == 0)
         {
@@ -56,8 +72,22 @@ public partial class MainWindow
         _blockedTouches.Remove(e.TouchDevice.Id);
         if (!e.TouchDevice.Capture(Viewport)) return;
         _touches[e.TouchDevice.Id] = e.TouchDevice;
-        _touchNavigation.BeginContact(e.TouchDevice.Id, e.GetTouchPoint(Viewport).Position, TouchTime);
+        _touchNavigation.BeginContact(e.TouchDevice.Id, e.GetTouchPoint(Viewport).Position, TouchTime,
+            minimumPanDistance: HasInputAncestor<PageEditor>(source) ? 0 : 12);
         _viewportQuietAfter = Environment.TickCount64 + 180;
+    }
+
+    private void SuppressScrollbarTouchMouse(object sender, MouseEventArgs e)
+    {
+        if (PenInkCanvas.IsTouch(e.StylusDevice) && IsDocumentScrollBar(e.OriginalSource as DependencyObject, GetScroll()))
+            e.Handled = true;
+    }
+
+    private static bool IsDocumentScrollBar(DependencyObject? source, ScrollViewer? documentScroll)
+    {
+        if (documentScroll is null) return false;
+        var bar = FindInputAncestor<ScrollBar>(source);
+        return bar is not null && ReferenceEquals(FindInputAncestor<ScrollViewer>(bar), documentScroll);
     }
 
     private void ViewportTouchMove(object sender, TouchEventArgs e)
@@ -162,7 +192,9 @@ public partial class MainWindow
         if (_touchRendering) { CompositionTarget.Rendering -= RenderTouchFrame; _touchRendering = false; }
         _touchNavigation.Cancel();
         var devices = _touches.Values.ToArray();
-        if (block) foreach (var id in _touches.Keys) _blockedTouches.Add(id); else _blockedTouches.Clear();
+        // A rejected palm stays rejected until Up, even when a pen, another
+        // touch, navigation or a popup cancels the active gesture in between.
+        if (block) foreach (var id in _touches.Keys) _blockedTouches.Add(id);
         _touches.Clear();
         foreach (var device in devices) if (device.Captured == Viewport) device.Capture(null);
         if (moving && GetScroll() is { } scroll)

@@ -66,6 +66,21 @@ public partial class MainWindow
         UpdateTextToolbar();
     }
     private async void AddTextBoxClick(object sender, RoutedEventArgs e) => await StartTypingAsync(true);
+    private async void ContinueTextOnNextPageClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.IsBusy || CurrentEditor is not { SelectedText: { } text, IsTextComposing: false } editor) return;
+        CommitEditors();
+        var continuation = TextFlow.CreateContinuation(editor.Page, text);
+        if (continuation is null) { ViewModel.Status = "This text already fits on its page."; return; }
+        // Commit the split and page insertion together in notebook history.
+        if (!ViewModel.ContinueTextOnNewPage(editor.Page.Id, text.Id, continuation.RetainedText, continuation.Text)) return;
+        SetTool(InkTool.Text);
+        ScrollToSelected(); PageList.UpdateLayout();
+        await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Loaded);
+        if (ViewModel.SelectedPage?.Page.Texts.FirstOrDefault() is { } next) CurrentEditor?.BeginTypingText(next.Id);
+        UpdateTextToolbar();
+        ViewModel.Status = "Text continued on a new page · Undo restores the original";
+    }
     private void FinishTyping()
     {
         _typingRequest++;
@@ -81,7 +96,7 @@ public partial class MainWindow
         if (TextToolbar is null || _syncingTextToolbar) return;
         bool typing = _tool == InkTool.Text || _tool == InkTool.Select && CurrentEditor?.SelectedText is not null;
         TextToolbar.Visibility = typing ? Visibility.Visible : Visibility.Collapsed;
-        FavouriteToolbar.Visibility = typing ? Visibility.Collapsed : Visibility.Visible;
+        FavouriteToolbar.Visibility = typing || _workspace.CompactToolbar ? Visibility.Collapsed : Visibility.Visible;
         if (!typing) return;
         // A delayed autosave/selection notification must not replace a font size
         // the user is still entering in the toolbar.
@@ -101,8 +116,13 @@ public partial class MainWindow
             System.Windows.Automation.AutomationProperties.SetHelpText(TextItalicButton, text.Italic ? "Italic is on" : "Italic is off");
             TextColorButton.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(text.Color));
             bool overflow = CurrentEditor?.HasTextOverflow == true;
+            if (FindName("ContinueTextButton") is Button continuationButton)
+            {
+                continuationButton.Visibility = overflow ? Visibility.Visible : Visibility.Collapsed;
+                continuationButton.IsEnabled = CurrentEditor?.IsTextComposing == false;
+            }
             TypingHint.Text = overflow
-                ? "Text exceeds this page. Move the extra text to a new page before PDF export."
+                ? "Text exceeds this page. Continue on a new page to keep all text visible in PDF export."
                 : "Type here, or click the paper to add another box. Ctrl+Enter returns to Pen.";
             TypingHint.Foreground = overflow ? (Brush)FindResource("Danger") : (Brush)FindResource("MutedInk");
         }
