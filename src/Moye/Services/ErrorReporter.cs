@@ -22,8 +22,8 @@ public sealed class ErrorReporter(string logPath)
         for (Exception? cause = exception; cause is not null; cause = cause.InnerException)
         {
             if (cause.HResult == unchecked((int)0x800711C7))
-                return "Windows application control blocked a component required by Moye. " +
-                    "Install the latest Moye update. If it is still blocked, share the error log with support or your administrator." +
+                return "Windows application control blocked a component required by Penroam. " +
+                    "Install the latest Penroam update. If it is still blocked, share the error log with support or your administrator." +
                     "\n\n" + cause.Message;
         }
         var root = exception.GetBaseException();

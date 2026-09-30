@@ -71,7 +71,7 @@ public sealed class LibreOfficePdfConverter : IOfficePdfConverter
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         deadline.CancelAfter(_timeout);
         var token = deadline.Token;
-        var work = Directory.CreateTempSubdirectory("Moye-LibreOffice-").FullName;
+        var work = Directory.CreateTempSubdirectory("Penroam-LibreOffice-").FullName;
         string? pendingOutput = null;
         var canCleanWork = true;
         try

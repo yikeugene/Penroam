@@ -102,7 +102,7 @@ public partial class MainWindow : Window
     {
         if (_closing) return;
         e.Cancel = true;
-        if (ViewModel.IsBusy) { MessageBox.Show(this, "Please wait for the current operation to finish before closing.", "Moye"); return; }
+        if (ViewModel.IsBusy) { MessageBox.Show(this, "Please wait for the current operation to finish before closing.", "Penroam"); return; }
         ViewModel.IsBusy = true; ViewModel.Operation = "Saving before closing…";
         try
         {
@@ -671,7 +671,7 @@ public partial class MainWindow : Window
     private async Task BackupAsync(bool all) => await BackupWithProgressAsync(all);
     private async void RestoreClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog { Filter = "Moye backups|*.moye", Title = "Restore as New Notebook Copies" };
+        var dialog = new OpenFileDialog { Filter = "Penroam backups|*.moye", Title = "Restore as New Notebook Copies" };
         if (dialog.ShowDialog(this) != true) return;
         CommitEditors(); await RunAsync("Validating and restoring backup…", async () =>
         {

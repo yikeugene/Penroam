@@ -1,24 +1,26 @@
-# Moye user guide
+# Penroam user guide
 
-This guide describes the English interface in **Moye 2.0.0** for Windows 11 x64. Historical release and device-check notes below keep their original scope.
+This guide describes the English interface in **Penroam 1.0.0** for Windows 11 x64. Historical release and device-check notes below keep their original scope.
+
+Penroam is the new name for Moye. Penroam 1.0.0 restarts version numbering with all current features and the new name/icon; it supersedes the previous Moye releases. Existing notebook data, preferences, recovery files and `.moye` backups keep their current names and locations. Moye 2.0 libraries and backups already use the same formats; changing the name to Penroam adds no migration.
 
 Version 1.6.0 adds the **Type** button and text-formatting workflow described below.
 
-**Before upgrading to Moye 2.0.0:** create a `.moye` backup using your current app and keep it separately. Moye 2.0 migrates libraries to schema 3 and writes format 3 backups, while reading backups in formats 1, 2 and 3. Published Moye 1.12.0 and earlier cannot reopen schema 3 or format 3. Uninstalling does not reverse this migration.
+**Before upgrading to Penroam 1.0.0:** create a `.moye` backup using your current app and keep it separately. Penroam 1.0 migrates libraries to schema 3 and writes format 3 backups, while reading backups in formats 1, 2 and 3. Published Moye 1.12.0 and earlier cannot reopen schema 3 or format 3. Uninstalling does not reverse this migration.
 
 ## Install, update and uninstall
 
-Download `Moye-2.0.0-Setup-win-x64.exe` from the GitHub Release and run it. Setup installs Moye for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. The default application folder is `%LOCALAPPDATA%\Programs\Moye`.
+Download and run [Penroam-1.0.0-Setup-win-x64.exe](https://github.com/yikeugene/moye/releases/download/v1.0.0/Penroam-1.0.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/moye/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
 
-Open the **Moye** desktop shortcut after installation. When updating, close the app and run the newer installer. Existing notes stay in `%LOCALAPPDATA%\Moye`; the installer does not move or replace them. If you previously used a portable ZIP with the default library, the installed app uses that same library. A custom `--data-dir` library still needs its custom launch argument.
+Open the **Penroam** desktop shortcut after installation. When updating, close the app and run the newer installer. Setup recognizes an existing Moye installation as the same application. Existing notes stay in `%LOCALAPPDATA%\Moye`; the installer does not move or replace them. If you previously used a portable ZIP with the default library, the installed app uses that same library. A custom `--data-dir` library still needs its custom launch argument.
 
-Remove Moye through **Windows Settings → Apps → Installed apps → Moye → Uninstall**. This removes installed program files and shortcuts while retaining notebook data and writing preferences. Use Moye's backup commands to make a portable copy of your notes.
+Remove Penroam through **Windows Settings → Apps → Installed apps → Penroam → Uninstall**. This removes installed program files and shortcuts while retaining notebook data and writing preferences. Use Penroam's backup commands to make a portable copy of your notes.
 
 ## Notebooks, sections and pages
 
-The **1.9.0 interface** uses a warm neutral workspace with forest green controls, clearer notebook covers and visible keyboard focus. Version 1.11.0 refines buttons, pen badges and focus indicators. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. The navigation names below describe 2.0.0; version 1.8.0 uses **All Notes**, **Presets…** and **Create a Notebook** for the corresponding actions.
+The **1.9.0 interface** uses a warm neutral workspace with forest green controls, clearer notebook covers and visible keyboard focus. Version 1.11.0 refines buttons, pen badges and focus indicators. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. The navigation names below describe Penroam 1.0.0; version 1.8.0 uses **All Notes**, **Presets…** and **Create a Notebook** for the corresponding actions.
 
-Open `Moye.exe` to see **Your notebooks**. Moye starts on this home screen and waits for you to choose a notebook. An empty library shows **Create your first notebook**; it does not create a notebook automatically. Notebook cards show the title, category and page count. **Continue** opens the last notebook at its saved reading position. **Quick note** creates a page in an Inbox notebook and selects Pen, ready to write; use the page organizer to move it into a course later.
+Open `Penroam.exe` to see **Your notebooks**. Penroam starts on this home screen and waits for you to choose a notebook. An empty library shows **Create your first notebook**; it does not create a notebook automatically. Notebook cards show the title, category and page count. **Continue** opens the last notebook at its saved reading position. **Quick note** creates a page in an Inbox notebook and selects Pen, ready to write; use the page organizer to move it into a course later.
 
 Each card's options menu offers **Pin / Unpin** and **Choose Cover Color…**. Pinned notebooks stay above other notebooks. **Library Options → Sort & Filter Library…** filters by the existing single category and chooses name order or recent-modification order. The filter and sort choice apply to the current app session; pin and cover choices are notebook content and survive saving/backups.
 
@@ -41,7 +43,7 @@ Select a page thumbnail, then use **Insert → Add Page**, or **Add Page** benea
 
 Right-click the page and choose **Paper Style**, select a visual template, and click **Apply Paper** to change an existing page. Your writing, text and images stay in place. This changes only that ordinary page; PDF pages keep their original background.
 
-To delete a notebook, open its **Notebook options (⋯)** menu below the cover and choose **Delete Notebook…**, or open the notebook and choose **More → Delete Notebook…**. The confirmation names the notebook and defaults to **No**. Before deleting a notebook, section or pages, Moye preserves a complete notebook copy for up to 30 days in **Backup & Recovery → Recently deleted**. Restoring creates another notebook; it does not put individual pages back automatically. Deleting the open notebook returns you to the home screen. If saving, recovery-copy creation or deletion fails, retry after addressing the error.
+To delete a notebook, open its **Notebook options (⋯)** menu below the cover and choose **Delete Notebook…**, or open the notebook and choose **More → Delete Notebook…**. The confirmation names the notebook and defaults to **No**. Before deleting a notebook, section or pages, Penroam preserves a complete notebook copy for up to 30 days in **Backup & Recovery → Recently deleted**. Restoring creates another notebook; it does not put individual pages back automatically. Deleting the open notebook returns you to the home screen. If saving, recovery-copy creation or deletion fails, retry after addressing the error.
 
 ## Organizing a course
 
@@ -92,7 +94,7 @@ Page thumbnails update in the background without changing your selected writing 
 
 Finger input is reserved for navigation: drag with one finger to scroll, or use two fingers to pan and zoom. A quick one-finger swipe continues with a gentle slowdown after release; holding still before releasing stops without a fling. Touch the page again, use a tool or keyboard command, or put your pen down to stop the motion. Input is combined for each display update so rapid touch packets do not lose movement. Page gestures pause while the pen is down. Pen response, scrolling frame rate and palm rejection depend on your laptop, pen, and drivers, and still need validation on the device you use.
 
-In Moye 2.0, the outer page scrollbars ignore finger touches to prevent accidental track taps from jumping a page. Use a mouse or pen on the scrollbar, or drag the paper with a finger. A one-finger gesture starting in the gray margin waits for more than 12 screen DIP of movement before panning; small taps and jitter leave the page still. Two-finger pan/zoom remains responsive. Contacts rejected during pen input stay rejected until lifted, even if the pen lifts or a gesture is canceled first. Text-box scrollbars retain their separate behavior.
+In Penroam 1.0, the outer page scrollbars ignore finger touches to prevent accidental track taps from jumping a page. Use a mouse or pen on the scrollbar, or drag the paper with a finger. A one-finger gesture starting in the gray margin waits for more than 12 screen DIP of movement before panning; small taps and jitter leave the page still. Two-finger pan/zoom remains responsive. Contacts rejected during pen input stay rejected until lifted, even if the pen lifts or a gesture is canceled first. Text-box scrollbars retain their separate behavior.
 
 With **Pen** or **Highlighter**, draw a line and keep the tip down near its endpoint for about **0.65 seconds**. It straightens while you are still holding. Continue dragging to adjust its length and angle, then lift to finish. The same gesture works by holding the left mouse button. Pressure and ink appearance are retained, and the result saves as one editable stroke. Short marks, circles, and strongly curved handwriting stay freehand. **Pen Settings → Draw and Hold** is enabled by default; turn it off for uninterrupted freehand drawing. This switch applies to both Pen and Highlighter and is remembered between launches.
 
@@ -125,7 +127,7 @@ Open **Commands & Help** from More or Library Options, or press `Ctrl+Shift+P`. 
 
 ## Typing notes
 
-Click **Type** to begin typing on the current page or continue editing the selected or most recently used text box on that page. If no text box exists, Moye creates one. Click an existing box to place the caret there. To add another box, use **＋ Text box** in the text bar or click an empty part of the page while Type is selected.
+Click **Type** to begin typing on the current page or continue editing the selected or most recently used text box on that page. If no text box exists, Penroam creates one. Click an existing box to place the caret there. To add another box, use **＋ Text box** in the text bar or click an empty part of the page while Type is selected.
 
 The text bar controls the selected box's font family, font size (**6–96 pt**), bold, italic, color and Left/Center/Right alignment. **All formatting applies to the entire box**, even if you have selected just one word. To use different formatting for a heading and body, create separate text boxes.
 
@@ -139,7 +141,7 @@ Font, size, bold, italic, color and alignment are stored with the text box. Exis
 
 ## Images and object placement
 
-Choose **Insert → Insert Image** for PNG or JPEG files. Outside text editing, `Ctrl+V` accepts an editable Moye selection, legacy Moye ink, ordinary text, or an image/screenshot. A mixed Moye selection carries its own image assets and can be pasted into another notebook.
+Choose **Insert → Insert Image** for PNG or JPEG files. Outside text editing, `Ctrl+V` accepts an editable Penroam selection, legacy Moye ink, ordinary text, or an image/screenshot. A mixed Penroam selection carries its own image assets and can be pasted into another notebook.
 
 Choose **Select** and click a text box or image. Drag its upper-right move handle to reposition it, or its lower-right handle to resize it. Press `Ctrl+D` to duplicate the selected object or `Delete` to remove it.
 
@@ -153,11 +155,11 @@ Click **Export** to choose the current section, current page, whole notebook or 
 
 Import validation and PDF export show progress and provide cancellation at supported steps. After accepted import pages start saving, the operation finishes the commit instead of reporting an unchanged notebook. Export writes a temporary file and replaces the destination only when complete. On success, choose **Open PDF**, **Show in folder**, or **Done**.
 
-Added ink and text become PDF page content rather than editable Moye objects. Pressure ink stays vector-based, preserving its changing width and solid joins. New text boxes are exported as vector outlines: their appearance is retained, but the exported text cannot be selected or searched. Original PDF text retains its existing capabilities. Keep a `.moye` backup if you need to edit the contents later.
+Added ink and text become PDF page content rather than editable Penroam objects. Pressure ink stays vector-based, preserving its changing width and solid joins. New text boxes are exported as vector outlines: their appearance is retained, but the exported text cannot be selected or searched. Original PDF text retains its existing capabilities. Keep a `.moye` backup if you need to edit the contents later.
 
 **New in 1.10.0:** supported annotations containing page jumps or interactive actions no longer block PDF import. The notebook displays static pages and keeps the original PDF bytes in the library and `.moye` backups. Exported copies preserve page content and annotation appearances while disabling internal destinations and interactive actions, including chained actions on web links. Ordinary URI links remain. Your source file is not changed.
 
-Encrypted documents, interactive forms, digital signatures and unsupported interactive annotation types are not supported. Empty form metadata without fields is accepted. For unsupported annotation types, flatten their visible appearance in another PDF tool before importing. Moye validates the document before adding its pages and reports the affected page when page validation fails. If a file still fails, keep the original and include the error message when reporting it.
+Encrypted documents, interactive forms, digital signatures and unsupported interactive annotation types are not supported. Empty form metadata without fields is accepted. For unsupported annotation types, flatten their visible appearance in another PDF tool before importing. Penroam validates the document before adding its pages and reports the affected page when page validation fails. If a file still fails, keep the original and include the error message when reporting it.
 
 ## Office document import
 
@@ -169,17 +171,17 @@ Open a notebook and section, choose **Insert → Import Document…**, then sele
 | PPTX, PPSX | Microsoft PowerPoint or LibreOffice |
 | ODT, ODP | LibreOffice |
 
-Moye uses the installed desktop application to convert the file locally, then opens the same page preview, range and destination choices as PDF import. It does not bundle or download an Office application or conversion runtime. If none is available, export a PDF in the source application and import that instead. Fonts and layout depend on the installed converter.
+Penroam uses the installed desktop application to convert the file locally, then opens the same page preview, range and destination choices as PDF import. It does not bundle or download an Office application or conversion runtime. If none is available, export a PDF in the source application and import that instead. Fonts and layout depend on the installed converter.
 
-Imported pages are fixed PDF backgrounds. Add editable Moye handwriting, highlights, text boxes and images over them; the original Word text and slide objects cannot be edited in Moye. Slides are static: animations, video playback and internal page or slide jumps are not retained. Ordinary web links remain in the PDF. The source file is untouched. Only the converted PDF, together with your Moye annotations, is stored in the library and `.moye` backups; keep the original document separately.
+Imported pages are fixed PDF backgrounds. Add editable Penroam handwriting, highlights, text boxes and images over them; the original Word text and slide objects cannot be edited in Moye. Slides are static: animations, video playback and internal page or slide jumps are not retained. Ordinary web links remain in the PDF. The source file is untouched. Only the converted PDF, together with your Penroam annotations, is stored in the library and `.moye` backups; keep the original document separately.
 
-Use **Cancel** or press `Esc` during import preparation. Conversion has a two-minute timeout. Password-protected files, files containing macros, and documents with linked external resources are rejected with an explanation; embed linked content or export a PDF from the source application. PowerPoint may need to be closed before conversion because it can share one running application instance. If Moye reports that PowerPoint is in use, save your work and close it before retrying, or export a PDF there.
+Use **Cancel** or press `Esc` during import preparation. Conversion has a two-minute timeout. Password-protected files, files containing macros, and documents with linked external resources are rejected with an explanation; embed linked content or export a PDF from the source application. PowerPoint may need to be closed before conversion because it can share one running application instance. If Penroam reports that PowerPoint is in use, save your work and close it before retrying, or export a PDF there.
 
 ## Autosave and backups
 
 Completed edits are queued for background saving, with a coalescing delay of at most two seconds. Completion time depends on the disk and document size. The saved status appears only after a successful database transaction. Switching notebooks, leaving the window, and closing normally also attempt to save.
 
-The default library is `%LOCALAPPDATA%\Moye\moye.db`. SQLite may create `moye.db-wal` and `moye.db-shm` beside it. Do not move only the database or delete its journal files while the app is open. Moye 2.0 upgrades libraries to schema 3 and writes format 3 backups. It reads formats 1, 2 and 3, placing legacy pages without sections in **General**. Published Moye 1.12.0 and earlier cannot open schema 3 / format 3. The new fields preserve page names/bookmarks and notebook pins, cover colors and the quick-note destination marker. See [File format](FILE_FORMAT.md).
+The default library is `%LOCALAPPDATA%\Moye\moye.db`. SQLite may create `moye.db-wal` and `moye.db-shm` beside it. Do not move only the database or delete its journal files while the app is open. Penroam 1.0 upgrades libraries to schema 3 and writes format 3 backups. It reads formats 1, 2 and 3, placing legacy pages without sections in **General**. Published Moye 1.12.0 and earlier cannot open schema 3 / format 3. The new fields preserve page names/bookmarks and notebook pins, cover colors and the quick-note destination marker. See [File format](FILE_FORMAT.md).
 
 Writing preferences are saved separately in `%LOCALAPPDATA%\Moye\writing-preferences.json`. This file contains presets and writing settings, and is **not included in `.moye` backups**. For a library started with `--data-dir`, both the database and preferences stay in that selected directory. A damaged settings file is preserved before defaults are offered; an unreadable or unsupported-version file is protected from replacement. A writing-settings warning offers details and retry when available. When an existing preferences file cannot be read or belongs to a newer version, tool changes apply to the current session only; notebooks still save and the app can close normally. Restart after resolving that file. A later write failure retains pending settings for retry.
 
@@ -195,7 +197,7 @@ Use the **More** menu to move or preserve your notes:
 
 A `.moye` backup preserves ink, pressure, editable text, images, page order, and original PDFs. Its uncompressed contents are limited to 2 GB, with a 512 MB limit per asset and 64 MB per notebook metadata file or page of ISF ink. Backups are not encrypted.
 
-**Workspace Settings → Automatic local backups** chooses a folder, an interval of **1–168 hours**, and **1–100 completed backups** to retain. These backups run only while Moye is open, defer during busy work or active pen input, and include current/pending notebook snapshots. They are not a Windows background task. Retention deletes only automatic backups belonging to this library; manual backup files remain separate. **Backup & Recovery** shows the last successful automatic backup and any failure, with settings and manual backup actions. A backup folder on another device/storage location provides protection that another copy on the same failing disk cannot.
+**Workspace Settings → Automatic local backups** chooses a folder, an interval of **1–168 hours**, and **1–100 completed backups** to retain. These backups run only while Penroam is open, defer during busy work or active pen input, and include current/pending notebook snapshots. They are not a Windows background task. Retention deletes only automatic backups belonging to this library; manual backup files remain separate. **Backup & Recovery** shows the last successful automatic backup and any failure, with settings and manual backup actions. A backup folder on another device/storage location provides protection that another copy on the same failing disk cannot.
 
 **Backup & Recovery → Recently deleted** lists complete notebook copies saved before deleting a notebook, section or pages, retained for up to **30 days**. Restore as a new copy and move back any wanted pages yourself; existing notebooks are not overwritten. **Delete permanently…** removes the selected recovery copy after confirmation. These recovery files stay under the library's `recovery/deleted` directory and are not an encrypted archive or a general version-history browser.
 
@@ -232,7 +234,7 @@ If saving fails, pending content stays in memory. Use **Retry Save**, or export 
 
 ## Startup and operation errors
 
-Operation errors include the underlying cause and, when the log can be written, its location. The log is `error.log` beside the notebook database, including for a custom `--data-dir` library. If Windows application control blocks a required component, install the latest Moye update; if the block persists, provide the log to support or your administrator. Keep your notebook database and journal files in place. Logs can contain local paths and operation details; review them before sharing.
+Operation errors include the underlying cause and, when the log can be written, its location. The log is `error.log` beside the notebook database, including for a custom `--data-dir` library. If Windows application control blocks a required component, install the latest Penroam update; if the block persists, provide the log to support or your administrator. Keep your notebook database and journal files in place. Logs can contain local paths and operation details; review them before sharing.
 
 ## Device checks still needed
 

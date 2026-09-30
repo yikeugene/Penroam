@@ -1,6 +1,8 @@
-# Contributing to Moye
+# Contributing to Penroam
 
-Moye is a native, offline Windows handwriting notebook. Contributions that improve writing, document editing, reliability, accessibility, or the clarity of the interface are welcome.
+Penroam is a native, offline Windows handwriting notebook. Contributions that improve writing, document editing, reliability, accessibility, or the clarity of the interface are welcome.
+
+Penroam was previously named Moye. Internal project paths (`src/Moye`, `tests/Moye.Tests` and `tools/Moye.UiPreview`) and the GitHub repository address retain that name. The executable is `Penroam.exe`; the existing `%LOCALAPPDATA%\Moye` library and `.moye` formats remain unchanged by the rebrand.
 
 ## Set up a development environment
 
@@ -16,7 +18,7 @@ If a .NET 10 SDK is unavailable, `.\scripts\build.ps1 -InstallSdk` installs one 
 Start the app with a separate sample library when testing:
 
 ```powershell
-.\src\Moye\bin\Debug\net10.0-windows10.0.26100.0\Moye.exe --data-dir .\sample-library
+.\src\Moye\bin\Debug\net10.0-windows10.0.26100.0\Penroam.exe --data-dir .\sample-library
 ```
 
 Keep sample libraries, generated packages, logs, build output, credentials, editor/assistant settings, and internal QA records out of commits. The repository's `.gitignore` excludes these local files, including `docs/TEST_REPORT.md`. Use synthetic notes and documents in examples and test fixtures. Review `git diff --cached --name-only` before committing; ignore rules do not remove files that are already tracked.
@@ -55,10 +57,10 @@ Use the [verification and limitations](README.md#verification-and-limitations) s
 
 Explain what changed, the user-visible result, and how it was checked. Include concise reproduction steps or before/after screenshots when useful. Remove personal information, machine-specific paths, and real notebook content from attachments and logs.
 
-The release installer is produced by `.\scripts\publish-installer.ps1 -InstallCompiler`. It uses `publish.ps1` for the self-contained Windows x64 payload and compiles `installer/Moye.iss` with the pinned, SHA-256-verified Inno Setup compiler. The EXE and its checksum are written to `artifacts`; only those two files belong on the new GitHub Release. The intermediate portable ZIP remains available for local development.
+The release installer is produced by `.\scripts\publish-installer.ps1 -InstallCompiler`. It uses `publish.ps1` for the self-contained Windows x64 payload and compiles `installer/Moye.iss` with the pinned, SHA-256-verified Inno Setup compiler. `Penroam-2.0.0-Setup-win-x64.exe` and its checksum are written to `artifacts`; only those two files belong on a new GitHub Release. The intermediate `Penroam-2.0.0-win-x64.zip` remains available for local development. The Penroam branding update has not been published; package creation does not publish a release.
 
-The payload includes an explicit list of user documentation and required third-party notices. Keep that list current, keep the installer AppId stable for upgrades, and keep notebook data outside the installed application folder. Desktop and Start menu shortcuts are created automatically. Run `scripts/test-installer.ps1 -AllowDesktopChanges` only in a disposable Windows account: it installs, reinstalls and uninstalls the real package, checks shortcuts and file hashes, and verifies that synthetic notebook data survives. The script refuses an account with existing Moye data, an installation or shortcuts. GitHub CI runs this smoke test before uploading the installer artifact. Release publication is handled by the maintainers.
+The payload includes an explicit list of user documentation and required third-party notices. Keep that list current, preserve the original installer AppId so upgrades recognize Moye installations, and keep notebook data outside the installed application folder. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades may retain the existing folder. Desktop and Start menu shortcuts are created automatically. Run `scripts/test-installer.ps1 -AllowDesktopChanges` only in a disposable Windows account: it installs, reinstalls and uninstalls the real package, checks shortcuts and file hashes, and verifies that synthetic notebook data survives. The script refuses an account with existing Moye or Penroam data, an installation or shortcuts. GitHub CI runs this smoke test before uploading the installer artifact. Release publication is handled by the maintainers.
 
-Publishing also runs the actual self-contained `Moye.exe` with `--check-storage <new-directory>` before accepting the payload. This check creates and reopens a synthetic notebook and asset, verifies database integrity, and records the native SQLite version. It refuses an existing directory. Run `scripts/test-package.ps1 -PackagePath artifacts/Moye-win-x64` to repeat it; reports stay in `artifacts/package-check-*`. The installer smoke test repeats this check after installation and reinstallation. Test on a Windows account with Smart App Control enabled as well: success on a build runner alone does not establish application-control compatibility.
+Publishing also runs the actual self-contained `Penroam.exe` with `--check-storage <new-directory>` before accepting the payload. This check creates and reopens a synthetic notebook and asset, verifies database integrity, and records the native SQLite version. It refuses an existing directory. Run `scripts/test-package.ps1 -PackagePath artifacts/Penroam-win-x64` to repeat it; reports stay in `artifacts/package-check-*`. The installer smoke test repeats this check after installation and reinstallation. Test on a Windows account with Smart App Control enabled as well: success on a build runner alone does not establish application-control compatibility.
 
 By submitting a contribution for inclusion, you agree that it can be distributed under the project's [MIT License](LICENSE). Third-party code remains subject to its own license.

@@ -28,7 +28,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public event EventHandler? DocumentReplaced;
     public event EventHandler? HistoryChanged;
     public NotebookDocument? Document { get => _document; private set { _document = value; Notify(); Notify(nameof(Title)); Notify(nameof(Folder)); Notify(nameof(PageCountText)); } }
-    public string Title => Document?.Title ?? "Moye";
+    public string Title => Document?.Title ?? "Penroam";
     public string Folder => Document?.Folder ?? "My Notes";
     public string PageCountText => $"{Document?.Pages.Count ?? 0} {(Document?.Pages.Count == 1 ? "page" : "pages")}";
     public string SectionPageCountText => $"{Pages.Count} {(Pages.Count == 1 ? "page" : "pages")}";

@@ -274,7 +274,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
         command.CommandText = "PRAGMA user_version";
         var version = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
         if (version > 3)
-            throw new InvalidDataException("This database was created by a newer version of Moye. Update the app before opening it.");
+            throw new InvalidDataException("This database was created by a newer version of Penroam. Update the app before opening it.");
         command.CommandText = "PRAGMA journal_mode=WAL";
         command.ExecuteNonQuery();
         using var transaction = connection.BeginTransaction();

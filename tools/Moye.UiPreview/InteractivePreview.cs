@@ -24,7 +24,7 @@ public static class InteractivePreview
         var preferences = new WritingPreferencesStore(Path.Combine(preferencesDirectory, "writing-preferences.json"));
         var window = new MainWindow(repository, preferences)
         {
-            Title = "Moye · Synthetic UI Test (memory only)"
+            Title = "Penroam · Synthetic UI Test (memory only)"
         };
         if (compact) { window.Width = 1024; window.Height = 700; }
         return application.Run(window);

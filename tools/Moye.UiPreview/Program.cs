@@ -1246,7 +1246,7 @@ internal static class Program
 
     private static string Describe(IEnumerable<PreviewReport> reports)
     {
-        var text = new StringBuilder("# Moye WPF offscreen layout preview\n\nUses the actual MainWindow.Content, application resources, and PageEditor with an in-memory test fixture. No user database is accessed. No windows are displayed, no input is sent, and no UI Automation client or desktop capture is used.\n\nThis Measure / Arrange / RenderTargetBitmap preview checks layout only. It does not validate live UI interaction, touch, pen input, window DPI, popup menus, or the system title bar. Image dimensions describe the content area in DIP, rendered at 96 DPI. Controls outside an intentional scroll viewport are listed separately; dialog top/bottom scenes check the revealed controls and fixed action buttons. Slider geometry is checked for the new color and thickness controls.\n\n");
+        var text = new StringBuilder("# Penroam WPF offscreen layout preview\n\nUses the actual MainWindow.Content, application resources, and PageEditor with an in-memory test fixture. No user database is accessed. No windows are displayed, no input is sent, and no UI Automation client or desktop capture is used.\n\nThis Measure / Arrange / RenderTargetBitmap preview checks layout only. It does not validate live UI interaction, touch, pen input, window DPI, popup menus, or the system title bar. Image dimensions describe the content area in DIP, rendered at 96 DPI. Controls outside an intentional scroll viewport are listed separately; dialog top/bottom scenes check the revealed controls and fixed action buttons. Slider geometry is checked for the new color and thickness controls.\n\n");
         foreach (var report in reports)
         {
             text.AppendLine($"## {report.Scene}: {report.Width} × {report.Height}\n\nImage: {report.Image}\n");
@@ -1311,7 +1311,7 @@ internal static class Program
                         new() { X = 58, Y = 108, Width = 670, Height = 240, FontSize = 22,
                             Text = "Put your ideas on paper. Make sense of them later.\n\nA few things to remember today\n• Keep a notebook ready for the next idea\n• Use a little color to organize your thoughts\n• Leave some space for your next project" },
                         new() { X = 58, Y = 410, Width = 670, Height = 70, FontSize = 18, Color = "#FF326AE8",
-                            Text = "This local Moye test note is used to check offscreen layout." }
+                            Text = "This local Penroam test note is used to check offscreen layout." }
                     ]
                 },
                 new() { SectionId = "algebra", Template = PaperTemplate.Grid },

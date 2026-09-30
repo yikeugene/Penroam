@@ -212,7 +212,7 @@ public static class OfficeConversionWorker
     }
 
     private static InvalidOperationException SharedApplication(string name) => new(
-        $"{name} is already in use. Moye left that session untouched. Close {name} and retry, or export a PDF there and import the PDF.");
+        $"{name} is already in use. Penroam left that session untouched. Close {name} and retry, or export a PDF there and import the PDF.");
 
     private static void Try(Action action) { try { action(); } catch { /* Never replace a conversion error during cleanup. */ } }
     private static void Release(object? value) { if (value is not null && Marshal.IsComObject(value)) Try(() => Marshal.FinalReleaseComObject(value)); }

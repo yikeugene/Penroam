@@ -158,7 +158,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                 // We write standards-compliant zlib streams below, including the checksum trailer.
                 result.Options.CompressContentStreams = false;
                 result.Info.Title = snapshot.Title;
-                result.Info.Creator = "Moye";
+                result.Info.Creator = "Penroam";
                 var completed = 0;
                 foreach (var note in snapshot.Pages)
                 {
@@ -493,7 +493,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
             try { cancellationToken.ThrowIfCancellationRequested(); completion.TrySetResult(action()); }
             catch (OperationCanceledException) { completion.TrySetCanceled(cancellationToken); }
             catch (Exception ex) { completion.TrySetException(ex); }
-        }) { IsBackground = true, Name = "Moye PDF worker" };
+        }) { IsBackground = true, Name = "Penroam PDF worker" };
         thread.SetApartmentState(ApartmentState.STA); thread.Start(); return completion.Task;
     }
 

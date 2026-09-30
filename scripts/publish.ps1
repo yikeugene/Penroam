@@ -32,11 +32,11 @@ function Remove-MoyeArtifact([string]$Candidate) {
 }
 
 $MoyeBuildId = [Guid]::NewGuid().ToString('N')
-$MoyeStaging = Assert-MoyeArtifactPath (Join-Path $MoyeArtifacts ('.moye-publish-' + $MoyeBuildId))
-$MoyeStagingZip = Assert-MoyeArtifactPath (Join-Path $MoyeArtifacts ('.moye-package-' + $MoyeBuildId + '.zip'))
-$MoyeOutput = Assert-MoyeArtifactPath (Join-Path $MoyeArtifacts 'Moye-win-x64')
-$MoyePrevious = Assert-MoyeArtifactPath (Join-Path $MoyeArtifacts ('.moye-previous-' + $MoyeBuildId))
-$MoyeZip = Assert-MoyeArtifactPath (Join-Path $MoyeArtifacts ('Moye-' + $MoyeVersion + '-win-x64.zip'))
+$MoyeStaging = Assert-MoyeArtifactPath (Join-Path $MoyeArtifacts ('.penroam-publish-' + $MoyeBuildId))
+$MoyeStagingZip = Assert-MoyeArtifactPath (Join-Path $MoyeArtifacts ('.penroam-package-' + $MoyeBuildId + '.zip'))
+$MoyeOutput = Assert-MoyeArtifactPath (Join-Path $MoyeArtifacts 'Penroam-win-x64')
+$MoyePrevious = Assert-MoyeArtifactPath (Join-Path $MoyeArtifacts ('.penroam-previous-' + $MoyeBuildId))
+$MoyeZip = Assert-MoyeArtifactPath (Join-Path $MoyeArtifacts ('Penroam-' + $MoyeVersion + '-win-x64.zip'))
 $MoyeMovedPrevious = $false
 
 try {
@@ -44,7 +44,7 @@ try {
     if ($NoRestore) { $MoyePublishArguments += '--no-restore' }
     & $MoyeEnvironment.Dotnet @MoyePublishArguments
     if ($LASTEXITCODE -ne 0) { throw "Publish failed with exit code $LASTEXITCODE." }
-    foreach ($MoyeRequired in @('Moye.exe', 'Moye.dll', 'coreclr.dll', 'PresentationFramework.dll', 'e_sqlite3.dll')) {
+    foreach ($MoyeRequired in @('Penroam.exe', 'Penroam.dll', 'coreclr.dll', 'PresentationFramework.dll', 'e_sqlite3.dll')) {
         if (-not (Test-Path -LiteralPath (Join-Path $MoyeStaging $MoyeRequired) -PathType Leaf)) { throw "The self-contained package is missing $MoyeRequired." }
     }
     & (Join-Path $PSScriptRoot 'test-package.ps1') -PackagePath $MoyeStaging
@@ -127,7 +127,7 @@ try {
     }
     # Published deps provide the resolved identity even when a preinstalled SDK
     # targeting pack did not need a NuGet download on this runner.
-    $MoyePublishedDeps = Get-Content -LiteralPath (Join-Path $MoyeStaging 'Moye.deps.json') -Raw | ConvertFrom-Json
+    $MoyePublishedDeps = Get-Content -LiteralPath (Join-Path $MoyeStaging 'Penroam.deps.json') -Raw | ConvertFrom-Json
     foreach ($MoyeRuntimeLibrary in $MoyePublishedDeps.libraries.PSObject.Properties) {
         if ($MoyeRuntimeLibrary.Name -like 'runtimepack.Microsoft.Windows.SDK.NET.Ref/*') {
             [void]$MoyeSdkIdentities.Add($MoyeRuntimeLibrary.Name.Substring('runtimepack.'.Length))

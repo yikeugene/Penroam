@@ -1,10 +1,12 @@
-# Moye notebook formats
+# Penroam notebook formats
 
-**Moye 2.0.0** writes SQLite schema 3 and `.moye` format 3. Published Moye 1.7.0–1.12.0 uses schema 2 and backup format 2. Application versions, SQLite schema versions, preference versions and backup format versions are independent.
+**Penroam 1.0.0** writes SQLite schema 3 and `.moye` format 3. Published Moye 1.7.0–1.12.0 uses schema 2 and backup format 2. Application versions, SQLite schema versions, preference versions and backup format versions are independent.
+
+Penroam is the new product name for Moye. Restarting product numbering at 1.0.0 does not change SQLite schema 3, backup format 3, the `.moye` extension or the manifest identifier `"moye"`. Existing Moye 2.0 files remain compatible. The default library remains `%LOCALAPPDATA%\Moye\moye.db`; preferences and recovery files also stay in their existing locations.
 
 ## Compatibility
 
-| File | Moye 2.0.0 writer | Moye 2.0.0 reader | Published Moye 1.7.0–1.12.0 |
+| File | Penroam 1.0.0 writer | Penroam 1.0.0 reader | Published Moye 1.7.0–1.12.0 |
 |---|---|---|---|
 | SQLite library | Schema 3 | Migrates schema 0/1/2; reads 3 | Writes schema 2; rejects 3 |
 | `.moye` backup | Format 3 | Reads 1, 2 and 3 | Writes format 2; reads 1/2; rejects 3 |
@@ -12,7 +14,7 @@
 | Workspace preferences | Format 1 | Format 1; keeps unreadable/newer files | Not used |
 | Recovery drafts | Format 1 | Format 1; keeps unreadable/newer files | Not used |
 
-Opening an older library migrates its schema in one transaction. Libraries without sections receive a **General** section for each notebook; section IDs are derived deterministically from the notebook ID. Existing page IDs, order, content and ISF ink are retained. Schema 3 adds notebook pins, cover color and a quick-note destination marker; missing page titles/bookmarks read with empty/false defaults. Back up with the older app first if you need a copy usable by that app. Published 1.12.0 and earlier cannot open schema 3 / backup format 3; 1.6.2 and earlier also reject schema 2 / format 2. Uninstalling does not roll back a migration. Format 1 backups restore into General; all restores create new IDs and do not overwrite existing notebooks.
+Opening an older library migrates its schema in one transaction. Libraries without sections receive a **General** section for each notebook; section IDs are derived deterministically from the notebook ID. Existing page IDs, order, content and ISF ink are retained. Schema 3 adds notebook pins, cover color and a quick-note destination marker; missing page titles/bookmarks read with empty/false defaults. Back up with the older app first if you need a copy usable by that app. Legacy Moye 1.12.0 and earlier cannot open schema 3 / backup format 3; 1.6.2 and earlier also reject schema 2 / format 2. Uninstalling does not roll back a migration. Format 1 backups restore into General; all restores create new IDs and do not overwrite existing notebooks.
 
 ## Notebook structure
 
@@ -45,7 +47,7 @@ Pages also contain `template`, `texts`, `images`, and an optional `pdf` backgrou
 
 Moye 1.10.0 also accepts supported PDF annotations with internal destinations or interactive actions. Stored original PDF bytes are unchanged. Export normalizes only its in-memory source document, disabling those actions before copying pages while retaining annotation appearances and ordinary URI links. This requires no database or backup format change.
 
-Moye 1.9.0 also imports Office documents by converting them locally to PDF. These pages use the existing PDF asset/reference fields, so no format migration is required. Backups contain the converted PDF and editable Moye annotations; the original DOCX, PPTX, PPSX, ODT or ODP file remains outside the notebook and is not modified.
+Moye 1.9.0 also imports Office documents by converting them locally to PDF. These pages use the existing PDF asset/reference fields, so no format migration is required. Backups contain the converted PDF and editable Penroam annotations; the original DOCX, PPTX, PPSX, ODT or ODP file remains outside the notebook and is not modified.
 
 The library uses `PRAGMA user_version=3`, foreign keys and WAL transactions. `notebooks` stores notebook identity, title, category and timestamps, plus `is_pinned`, `cover_color` and `is_quick_inbox`. `sections` stores `(notebook_id, id, ordinal, title)` with a composite primary key and a cascading notebook foreign key. `pages` stores notebook/page identity, global ordinal, JSON metadata, an ISF BLOB and a content hash. Metadata includes `sectionId`, `title` and `isBookmarked`; section membership is validated by the application. `assets` stores original attachment bytes keyed by a SHA-256 content hash.
 

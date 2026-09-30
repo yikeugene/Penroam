@@ -38,7 +38,7 @@ if ($LASTEXITCODE -ne 0 -or ($MoyeCompilerVersion -join '').Trim() -ne '7.1.0') 
 $MoyeVersion = $MoyeProject.SelectSingleNode('/Project/PropertyGroup/Version').InnerText.Trim()
 if ($MoyeVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid application version.' }
 $MoyeArtifacts = Join-Path $MoyeRoot 'artifacts'
-$MoyePayload = Join-Path $MoyeArtifacts 'Moye-win-x64'
+$MoyePayload = Join-Path $MoyeArtifacts 'Penroam-win-x64'
 Copy-Item -LiteralPath (Join-Path $MoyeCompilerFolder 'license.txt') -Destination (Join-Path $MoyePayload 'third-party/INNO-SETUP-LICENSE.txt')
 $MoyePayloadFiles = @(Get-ChildItem -LiteralPath $MoyePayload -File -Recurse -Force)
 $MoyeForbidden = '(?i)(^|/)(AGENTS?\.md|TEST_REPORT\.md|writing-preferences[^/]*)$|(^|/)(\.git|\.codex|\.agents|\.tools|artifacts|sample-library|qa-library|TestResults)(/|$)|ui-preview|\.(db|db3|db-wal|db-shm|db-journal|sqlite|sqlite3|moye|pfx|p12|key|pem|log|trx|pdb|cs|xaml|ps1|bundle)$|(^|/)\.env'
@@ -47,12 +47,12 @@ foreach ($MoyeFile in $MoyePayloadFiles) {
     $MoyeRelativePath = [IO.Path]::GetRelativePath($MoyePayload, $MoyeFile.FullName).Replace('\', '/')
     if ($MoyeRelativePath -match $MoyeForbidden) { throw "Local-only file in installer payload: $MoyeRelativePath" }
 }
-$MoyeProductVersion = [Diagnostics.FileVersionInfo]::GetVersionInfo((Join-Path $MoyePayload 'Moye.dll')).ProductVersion
+$MoyeProductVersion = [Diagnostics.FileVersionInfo]::GetVersionInfo((Join-Path $MoyePayload 'Penroam.dll')).ProductVersion
 if ($MoyeProductVersion.Split('+')[0] -ne $MoyeVersion) { throw 'Published application version does not match the project.' }
 
 & $MoyeCompiler '--quiet-progress' ('--define=MoyeVersion=' + $MoyeVersion) ('--define=MoyePayload=' + $MoyePayload) ('--define=MoyeOutput=' + $MoyeArtifacts) (Join-Path $MoyeRoot 'installer/Moye.iss')
 if ($LASTEXITCODE -ne 0) { throw "Installer compilation failed with exit code $LASTEXITCODE." }
-$MoyeInstaller = Join-Path $MoyeArtifacts ('Moye-' + $MoyeVersion + '-Setup-win-x64.exe')
+$MoyeInstaller = Join-Path $MoyeArtifacts ('Penroam-' + $MoyeVersion + '-Setup-win-x64.exe')
 if (-not (Test-Path -LiteralPath $MoyeInstaller -PathType Leaf)) { throw 'Installer compiler produced no EXE.' }
 $MoyeInstallerVersion = [Diagnostics.FileVersionInfo]::GetVersionInfo($MoyeInstaller).FileVersion.Trim()
 if ($MoyeInstallerVersion -ne ($MoyeVersion + '.0')) { throw "Unexpected installer version: $MoyeInstallerVersion" }

@@ -46,7 +46,7 @@ public sealed class WorkspaceOptionsDialog
         var compact = Check("Hide the favorite pen row in the main toolbar", preferences.CompactToolbar);
         var right = Check("Dock focus tools on the right", preferences.FocusToolsOnRight);
         panel.Children.Add(WorkspaceDialogUi.Text("Automatic local backups"));
-        var enabled = Check("Back up while Moye is open", preferences.BackupEnabled);
+        var enabled = Check("Back up while Penroam is open", preferences.BackupEnabled);
         var directory = new TextBox { Text = preferences.BackupDirectory, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
         panel.Children.Add(directory);
         panel.Children.Add(WorkspaceDialogUi.Button("Choose backup folder…", (_, _) =>

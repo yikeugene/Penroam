@@ -43,7 +43,7 @@ public sealed class OfficeConversionProcess : IOfficePdfConverter
             try { await Task.WhenAll(errorTask, outputTask).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false); }
             catch (Exception exception) when (exception is IOException or ObjectDisposedException or TimeoutException) { }
             if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
-            throw new TimeoutException("Office conversion took too long. Moye stopped its conversion worker without closing your Office sessions. " +
+            throw new TimeoutException("Office conversion took too long. Penroam stopped its conversion worker without closing your Office sessions. " +
                 "If Office is waiting for a password, repair, activation or another dialog, resolve it there, then export a PDF and import that copy.");
         }
         var error = (await errorTask.ConfigureAwait(false)).Trim();
@@ -78,11 +78,11 @@ public sealed class OfficeConversionProcess : IOfficePdfConverter
     private static string ResolveWorkerExecutable()
     {
         // Environment.ProcessPath can point at testhost or dotnet. The worker
-        // is always the apphost beside Moye.dll (also used in the portable ZIP).
+        // is always the apphost beside Penroam.dll (also used in the portable ZIP).
         var assembly = typeof(OfficeConversionProcess).Assembly.Location;
         var executable = string.IsNullOrEmpty(assembly) ? null : Path.ChangeExtension(assembly, ".exe");
         if (executable is not null && File.Exists(executable)) return executable;
-        throw new FileNotFoundException("Moye's document conversion worker is missing. Extract the complete Moye ZIP and try again.");
+        throw new FileNotFoundException("Penroam's document conversion worker is missing. Extract the complete Penroam ZIP and try again.");
     }
 
     private static async Task StopWorkerAsync(Process process)

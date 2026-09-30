@@ -70,6 +70,7 @@ public sealed class LocalSafetyService(string directory, IBackupService backup)
 
 public sealed class ScheduledBackupService(string libraryIdentity, IBackupService backup)
 {
+    // Keep the established prefix so retention still includes pre-rebrand backups.
     private readonly string _prefix = "Moye-auto-" + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(Path.GetFullPath(libraryIdentity).ToUpperInvariant())))[..12] + "-";
 
     public static bool IsDue(WorkspacePreferences preferences, DateTimeOffset now) => preferences.BackupEnabled &&

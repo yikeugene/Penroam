@@ -9,6 +9,8 @@ public sealed record LibraryLocation(string DatabasePath, string PreferencesPath
 {
     public static LibraryLocation Resolve(string? dataDirectory = null, string? localApplicationData = null)
     {
+        // Penroam retains Moye's storage and mutex identities so existing libraries
+        // reopen in place and old/new executables cannot write to one library together.
         var directory = dataDirectory ?? Path.Combine(
             localApplicationData ?? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Moye");
         var databasePath = Path.GetFullPath(Path.Combine(Path.GetFullPath(directory), "moye.db"));
@@ -54,10 +56,10 @@ public partial class App : Application
         var location = LibraryLocation.Resolve(dataIndex >= 0 && dataIndex + 1 < e.Args.Length ? e.Args[dataIndex + 1] : null);
         var errors = new ErrorReporter(Path.Combine(Path.GetDirectoryName(location.DatabasePath)!, "error.log"));
         _instanceMutex = new(true, location.MutexName, out bool first);
-        if (!first) { MessageBox.Show("Moye is already open. Please use the existing window.", "Moye"); Shutdown(); return; }
+        if (!first) { MessageBox.Show("Penroam is already open. Please use the existing window.", "Penroam"); Shutdown(); return; }
         DispatcherUnhandledException += (_, args) =>
         {
-            MessageBox.Show("The operation could not be completed. Previously saved notes are unaffected.\n\n" + errors.Report(args.Exception), "Moye", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("The operation could not be completed. Previously saved notes are unaffected.\n\n" + errors.Report(args.Exception), "Penroam", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
         };
         var window = new MainWindow(new SqliteNotebookRepository(location.DatabasePath), new WritingPreferencesStore(location.PreferencesPath), errors);

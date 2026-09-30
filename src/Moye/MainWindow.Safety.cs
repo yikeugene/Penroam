@@ -81,7 +81,7 @@ public partial class MainWindow
     {
         if (!all && ViewModel.Document is null) return;
         CommitEditors();
-        var dialog = new SaveFileDialog { Filter = "Moye backups|*.moye", FileName = (all ? "All Moye Notebooks" : SafeFileName(ViewModel.Title)) + $"-{DateTime.Now:yyyyMMdd}.moye" };
+        var dialog = new SaveFileDialog { Filter = "Penroam backups|*.moye", FileName = (all ? "All Penroam Notebooks" : SafeFileName(ViewModel.Title)) + $"-{DateTime.Now:yyyyMMdd}.moye" };
         if (dialog.ShowDialog(this) != true) return;
         await RunAsync("Creating editable backup…", async () =>
         {
@@ -104,7 +104,7 @@ public partial class MainWindow
 
     private async void RestoreSelectedClick(object sender, RoutedEventArgs e)
     {
-        var picker = new OpenFileDialog { Filter = "Moye backups|*.moye", Title = "Choose notebooks to restore as new copies" };
+        var picker = new OpenFileDialog { Filter = "Penroam backups|*.moye", Title = "Choose notebooks to restore as new copies" };
         if (picker.ShowDialog(this) != true) return;
         CommitEditors();
         await RunAsync("Inspecting backup…", async () =>
@@ -157,7 +157,7 @@ public partial class MainWindow
         var window = WorkspaceDialogUi.Window(this, "Backup & recovery", 760, 660);
         var layout = new DockPanel { Margin = new Thickness(22) };
         var summary = WorkspaceDialogUi.Text($"Last automatic backup: {(_workspace.LastBackupUtc?.ToLocalTime().ToString("g") ?? "Never")}\n" +
-            (_workspace.LastBackupError.Length > 0 ? "Backup error: " + _workspace.LastBackupError : _workspace.BackupEnabled ? "Automatic backups run while Moye is open." : "Automatic backups are off.") +
+            (_workspace.LastBackupError.Length > 0 ? "Backup error: " + _workspace.LastBackupError : _workspace.BackupEnabled ? "Automatic backups run while Penroam is open." : "Automatic backups are off.") +
             (_draftRecovery.LastError is { } error ? "\nDraft recovery: " + error : ""));
         DockPanel.SetDock(summary, Dock.Top); layout.Children.Add(summary);
         var actions = new WrapPanel(); DockPanel.SetDock(actions, Dock.Top); layout.Children.Add(actions);
@@ -192,7 +192,7 @@ public partial class MainWindow
         }));
         draftPanel.Children.Add(draftList); tabs.Items.Add(new TabItem { Header = $"Interrupted drafts ({drafts.Count})", Content = draftPanel, MinHeight = 44 });
         var deletedPanel = new DockPanel { Margin = new Thickness(12) };
-        var deletedNote = WorkspaceDialogUi.Text("Before deleting a notebook, section or pages, Moye keeps the complete notebook for 30 days. Restore it as a new copy, then move back any pages you need.");
+        var deletedNote = WorkspaceDialogUi.Text("Before deleting a notebook, section or pages, Penroam keeps the complete notebook for 30 days. Restore it as a new copy, then move back any pages you need.");
         DockPanel.SetDock(deletedNote, Dock.Top); deletedPanel.Children.Add(deletedNote);
         var deletedList = new ListBox { ItemsSource = deleted, DisplayMemberPath = "Label" };
         var deletedActions = new WrapPanel(); DockPanel.SetDock(deletedActions, Dock.Bottom); deletedPanel.Children.Add(deletedActions);

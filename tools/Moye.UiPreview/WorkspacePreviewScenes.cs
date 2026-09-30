@@ -16,7 +16,7 @@ internal static class WorkspacePreviewScenes
     public static void Run(string output)
     {
         var owner = new Window(); var reports = new List<object>();
-        var preferences = new WorkspacePreferences { TwoFingerNavigationOnly = true, LockZoom = true, BackupEnabled = true, BackupDirectory = @"C:\Example\Moye Backups" };
+        var preferences = new WorkspacePreferences { TwoFingerNavigationOnly = true, LockZoom = true, BackupEnabled = true, BackupDirectory = @"C:\Example\Penroam Backups" };
         var original = JsonSerializer.Serialize(preferences);
         foreach (var (width, height) in new[] { (600, 670), (420, 500) })
         {

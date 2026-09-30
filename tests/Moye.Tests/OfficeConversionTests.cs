@@ -103,7 +103,7 @@ public sealed class OfficeConversionTests : IDisposable
     [Fact]
     public void WorkerArgumentsKeepSpecialCharactersInSeparatePathArguments()
     {
-        var executable = Path.Combine(_directory, "Moye.exe");
+        var executable = Path.Combine(_directory, "Penroam.exe");
         var source = Path.Combine(_directory, "Lecture 1 & 'quoted' $(text).docx");
         var output = Path.Combine(_directory, "converted pages.pdf");
         var start = (ProcessStartInfo)typeof(OfficeConversionProcess).GetMethod("CreateStartInfo", BindingFlags.Static | BindingFlags.NonPublic)!

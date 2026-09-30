@@ -1,12 +1,14 @@
-# University Note-Taking Roadmap
+# Penroam University Note-Taking Roadmap
 
 **Write fast. Organize easily. Review quickly.**
 
-Moye should support a complete university workflow: write during a lecture, annotate course material, organize knowledge, and revisit it without losing time or notes. This roadmap preserves all 41 requested feature areas. It is a development plan, not a claim that every listed feature is available.
+Penroam should support a complete university workflow: write during a lecture, annotate course material, organize knowledge, and revisit it without losing time or notes. This roadmap preserves all 41 requested feature areas. It is a development plan, not a claim that every listed feature is available.
 
-This status reflects **Moye 2.0.0**, reviewed on **2026-09-30**. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. Version 1.11.0 adds selected-section PDF export, 21 fixed pen thickness levels and button/interface polish. Version 1.10.0 adds floating focus tools, page context menus and PDF navigation annotation import fixes. Version 1.9.0 adds the refreshed workspace, local Office document import and PDF compatibility fixes. Version 1.8.0 adds visual color selection, live stroke-thickness previews and touch-navigation scheduling/inertia, while retaining notebook sections and the SQLite startup repair from 1.7.0. The EXE installer continues to create desktop and Start menu shortcuts automatically. Checked items describe implemented behavior, including the first writing-workflow milestone below; unchecked items remain work to complete. Implementation and automated coverage do not establish successful physical pen or desktop interaction.
+Penroam is the new name for Moye. Version numbering restarts at 1.0.0 with the complete current feature set and new name/icon; the existing library location and `.moye` file compatibility remain unchanged. Dated verification below retains the scope of the original Moye checks.
 
-**Moye 2.0.0, 2026-09-30:** this major release adds the workflows below. It does not complete all 41 roadmap areas or establish device acceptance.
+This status reflects **Penroam 1.0.0**, reviewed on **2026-09-30**. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. Version 1.11.0 adds selected-section PDF export, 21 fixed pen thickness levels and button/interface polish. Version 1.10.0 adds floating focus tools, page context menus and PDF navigation annotation import fixes. Version 1.9.0 adds the refreshed workspace, local Office document import and PDF compatibility fixes. Version 1.8.0 adds visual color selection, live stroke-thickness previews and touch-navigation scheduling/inertia, while retaining notebook sections and the SQLite startup repair from 1.7.0. The EXE installer continues to create desktop and Start menu shortcuts automatically. Checked items describe implemented behavior, including the first writing-workflow milestone below; unchecked items remain work to complete. Implementation and automated coverage do not establish successful physical pen or desktop interaction.
+
+**Penroam 1.0.0, 2026-09-30:** this release establishes the current workflows below as the new 1.0 baseline. It does not complete all 41 roadmap areas or establish device acceptance.
 
 - Saved reading position/zoom and Continue; quick capture into an Inbox notebook.
 - Notebook pinning, cover colors and session category/name ordering; page titles/bookmarks, local typed/PDF text search and return navigation.
@@ -16,7 +18,7 @@ This status reflects **Moye 2.0.0**, reviewed on **2026-09-30**. Version 1.12.0 
 - Two-finger-only navigation and zoom lock, compact toolbar, left/right focus-tool docking with favorite pens/Type/Select, direct page numbers, and searchable Commands & Help.
 - Atomic best-effort pending draft files, complete-notebook recovery copies before deletion retained for 30 days, selected-notebook restoration, and automatic local backups with retention while the app is open.
 
-Moye 2.0 writes **schema 3 / backup format 3**, reads backup formats 1/2/3 and leaves writing preferences at format 1. Older published apps cannot open schema 3 or format 3. Workspace/reading settings remain device-local. See [file compatibility](docs/FILE_FORMAT.md) before opening a library. PDF search has no OCR; recovery does not guarantee the last input events; the reference pane is read-only; full persistent version history and hardware acceptance remain open.
+Penroam 1.0 writes **schema 3 / backup format 3**, reads backup formats 1/2/3 and leaves writing preferences at format 1. Legacy Moye 1.12.0 and earlier cannot open schema 3 or format 3; Moye 2.0.0 uses the same formats as Penroam 1.0.0. Workspace/reading settings remain device-local. See [file compatibility](docs/FILE_FORMAT.md) before opening a library. PDF search has no OCR; recovery does not guarantee the last input events; the reference pane is read-only; full persistent version history and hardware acceptance remain open.
 
 Version 1.6.0 adds an explicit Type action, contextual text controls and whole-box formatting. Basic live desktop typing and Chinese IME candidate selection have been checked. Its scope and remaining acceptance work are recorded in area 24; publication does not mark those outstanding checks complete.
 
@@ -26,9 +28,9 @@ Version 1.11.0 changes that slider to 21 fixed thickness levels, with visible ti
 
 The 1.8.0 finger-navigation implementation combines touch packets once per display update, adds elapsed-time swipe inertia, and defers thumbnail work during movement. Synthetic tests cover retained movement, pinch/contact transitions, boundary reversal and cancellation; these are correctness checks, not measured hardware frame-rate or latency acceptance.
 
-Moye 2.0 blocks finger input on document scrollbars, keeps rejected contacts blocked until release, and requires deliberate movement before a one-finger margin touch pans. Mouse/pen scrollbar use and ordinary paper pan/pinch remain available. Hardware palm-rejection and touch acceptance remain outstanding.
+Penroam 1.0 blocks finger input on document scrollbars, keeps rejected contacts blocked until release, and requires deliberate movement before a one-finger margin touch pans. Mouse/pen scrollbar use and ordinary paper pan/pinch remain available. Hardware palm-rejection and touch acceptance remain outstanding.
 
-**Added in 1.9.0:** local Office document import through **Insert → Import Document…**. DOCX uses installed Microsoft Word or LibreOffice, PPTX/PPSX use PowerPoint or LibreOffice, and ODT/ODP require LibreOffice. Pages become fixed PDF backgrounds in the current section, with editable Moye annotations. The source document remains untouched and only the converted PDF is embedded in the library and backups. No converter is bundled or downloaded.
+**Added in 1.9.0:** local Office document import through **Insert → Import Document…**. DOCX uses installed Microsoft Word or LibreOffice, PPTX/PPSX use PowerPoint or LibreOffice, and ODT/ODP require LibreOffice. Pages become fixed PDF backgrounds in the current section, with editable Penroam annotations. The source document remains untouched and only the converted PDF is embedded in the library and backups. No converter is bundled or downloaded.
 
 ## Status and evidence
 
@@ -51,15 +53,15 @@ Code and tests provide the following evidence:
 | Preset application, editable ink clipboard, selection width, eraser filtering and thumbnail tool preservation | [writing UI](src/Moye/MainWindow.Writing.cs), [writing workflow tests](tests/Moye.Tests/WritingWorkflowTests.cs) |
 | Monotonic autosave scheduling and canonical library identity | [autosave timing tests](tests/Moye.Tests/AutosaveTimingTests.cs), [library location tests](tests/Moye.Tests/LibraryLocationTests.cs), [application startup](src/Moye/App.xaml.cs) |
 | PDF rendering/export and editable backup packages | [PdfService](src/Moye/Services/PdfService.cs), [BackupService](src/Moye/Services/BackupService.cs), [PDF tests](tests/Moye.Tests/PdfTests.cs), [PDF performance fixtures](tests/Moye.Tests/PdfPerformanceTests.cs), [backup tests](tests/Moye.Tests/BackupTests.cs) |
-| Moye 2.0 import/export selection, staged assets and local PDF text extraction | [document workflows](src/Moye/MainWindow.DocumentWorkflows.cs), [workflow service](src/Moye/Services/DocumentWorkflows.cs), [PDF extraction](src/Moye/Services/PdfTextExtractionService.cs), [workflow tests](tests/Moye.Tests/DocumentWorkflowTests.cs), [PDF search tests](tests/Moye.Tests/PdfTextExtractionTests.cs) |
-| Moye 2.0 page organization, search and mixed selection | [organization view model](src/Moye/ViewModels/MainViewModel.Organization.cs), [page organizer](src/Moye/Controls/PageManagerDialog.cs), [mixed selection](src/Moye/Controls/PageEditor.Selection.cs), [text flow](src/Moye/Controls/TextFlow.cs), [organization tests](tests/Moye.Tests/OrganizationTests.cs) |
-| Moye 2.0 workspace, backup and recovery | [workspace UI](src/Moye/MainWindow.Workspace.cs), [recovery UI](src/Moye/MainWindow.Safety.cs), [draft journal](src/Moye/Services/DraftRecoveryStore.cs), [local safety](src/Moye/Services/LocalSafetyService.cs), [safety tests](tests/Moye.Tests/WorkspaceSafetyTests.cs) |
+| Penroam 1.0 import/export selection, staged assets and local PDF text extraction | [document workflows](src/Moye/MainWindow.DocumentWorkflows.cs), [workflow service](src/Moye/Services/DocumentWorkflows.cs), [PDF extraction](src/Moye/Services/PdfTextExtractionService.cs), [workflow tests](tests/Moye.Tests/DocumentWorkflowTests.cs), [PDF search tests](tests/Moye.Tests/PdfTextExtractionTests.cs) |
+| Penroam 1.0 page organization, search and mixed selection | [organization view model](src/Moye/ViewModels/MainViewModel.Organization.cs), [page organizer](src/Moye/Controls/PageManagerDialog.cs), [mixed selection](src/Moye/Controls/PageEditor.Selection.cs), [text flow](src/Moye/Controls/TextFlow.cs), [organization tests](tests/Moye.Tests/OrganizationTests.cs) |
+| Penroam 1.0 workspace, backup and recovery | [workspace UI](src/Moye/MainWindow.Workspace.cs), [recovery UI](src/Moye/MainWindow.Safety.cs), [draft journal](src/Moye/Services/DraftRecoveryStore.cs), [local safety](src/Moye/Services/LocalSafetyService.cs), [safety tests](tests/Moye.Tests/WorkspaceSafetyTests.cs) |
 
 The linked public test sources describe reproducible automated coverage. Tests and detached layout renders do not prove current hardware latency, palm rejection, high-refresh rendering, sleep recovery, or live IME composition. Benchmark numbers from small synthetic fixtures must not be presented as guarantees for scanned textbooks or long lectures.
 
 ## First writing-workflow milestone
 
-Version 1.6.1 adds notebook deletion from home cards and the editor's More menu, with confirmation. Tests cover failed-save/delete recovery, pending-save ordering, and clearing the deleted notebook's history. Earlier isolated desktop checks on 2026-09-14 covered canceling and confirming deletion from both entry points. Moye 2.0 adds complete-notebook recovery copies before notebook/section/page deletion, with 30-day retention and restore as a new copy; it does not merge individual deleted pages back automatically.
+Version 1.6.1 adds notebook deletion from home cards and the editor's More menu, with confirmation. Tests cover failed-save/delete recovery, pending-save ordering, and clearing the deleted notebook's history. Earlier isolated desktop checks on 2026-09-14 covered canceling and confirming deletion from both entry points. Penroam 1.0 adds complete-notebook recovery copies before notebook/section/page deletion, with 30-day retention and restore as a new copy; it does not merge individual deleted pages back automatically.
 
 - [x] Persistent named pen/highlighter presets with rename, duplicate, delete, reorder and favorite visibility; favorite preset buttons support drag reordering.
 - [x] Per-preset pen opacity, pressure sensitivity and smoothing, plus exact preset widths. Highlighters retain native 50% compositing.
@@ -94,15 +96,15 @@ P0 acceptance requires recorded device checks and failure-path evidence. Existin
 - [ ] Extend customization to the fixed tool buttons and separate favorite/recent color management.
 - [ ] Extend the existing draw-and-hold line feature into explicit shape tools with predictable undo and pressure behavior.
 - [ ] Add richer paper templates and template management without changing existing notebooks unexpectedly.
-- [x] Added in 2.0.0: PDF page/range previews and import/export choices; editable mixed-object clipboard and ordinary text paste.
-- [x] Added in 2.0.0: page bookmarks and a read-only reference pane for material beside handwritten notes.
+- [x] Included in Penroam 1.0.0: PDF page/range previews and import/export choices; editable mixed-object clipboard and ordinary text paste.
+- [x] Included in Penroam 1.0.0: page bookmarks and a read-only reference pane for material beside handwritten notes.
 - [ ] Continue native interaction and representative long-document validation; image cropping/rotation and fully editable split panes remain future work.
 
 Each feature must retain editing, save/reopen, backup and PDF behavior where applicable. Keep primary actions usable with a pen and at least 44 DIP touch targets. Introduce these changes in small releases rather than marking the whole milestone complete at once.
 
 ### P2 — Organize and revisit knowledge
 
-- [x] Added in 2.0.0: page titles, typed/PDF content search with coverage messages, and return navigation after search/quick capture.
+- [x] Included in Penroam 1.0.0: page titles, typed/PDF content search with coverage messages, and return navigation after search/quick capture.
 - [ ] Add tags, internal notebook links and broader persistent navigation history.
 - [ ] Add durable version history with safe restore and comparison.
 - [ ] Add infinite canvas as an optional document mode with a minimap and a defined export strategy.
@@ -154,7 +156,7 @@ P2 changes that introduce new persistent fields or document modes need a documen
 - [x] Select ink, move, resize, duplicate, delete and recolor it.
 - [x] Selected-stroke width changes and editable ink copy/cut/paste across pages, with pressure/metadata retained and a single undoable paste.
 - [ ] Add rotation, grouping and ungrouping.
-- [x] Added in 2.0.0: select, move, resize and copy mixed ink/text/image selections across pages, retaining image assets and undo.
+- [x] Included in Penroam 1.0.0: select, move, resize and copy mixed ink/text/image selections across pages, retaining image assets and undo.
 - [ ] Extend mixed selection to future shape objects and validate native clipboard/focus transitions.
 
 ### 6. Natural Gestures
@@ -195,7 +197,7 @@ P2 changes that introduce new persistent fields or document modes need a documen
 
 - [x] Sidebar toggle and fullscreen focus mode with the system window frame, writing toolbar and notebook title hidden; an exit control restores editing chrome and save failures remain accessible.
 - Version 1.10.0 adds a floating focus toolbar for writing tools, color/width, undo/redo and exit. Page management also moves to each thumbnail/paper's right-click menu. Device touch and pen acceptance remains outstanding.
-- Added in 2.0.0: dock focus tools left/right; keep three favorite pens, Type and Select available; optionally hide the main favorite-pen row. These are device-local workspace settings.
+- Included in Penroam 1.0.0: dock focus tools left/right; keep three favorite pens, Type and Select available; optionally hide the main favorite-pen row. These are device-local workspace settings.
 - [ ] Add independent visibility preferences for the writing toolbar, notebook title and other chrome outside the combined focus mode.
 - [ ] Add temporary/hover tool access suitable for both pen and keyboard use.
 
@@ -205,7 +207,7 @@ P2 changes that introduce new persistent fields or document modes need a documen
 
 - [x] Basic tool shortcuts, undo/redo, duplicate, delete, save, sidebar and focus shortcuts; text-box shortcuts are protected.
 - [x] Space plus mouse drag pans temporarily; 1–9/numpad keys select favorite presets; Ctrl+C/X/V transfers editable ink between pages.
-- [x] Added in 2.0.0: mixed ink/text/image copy/cut/paste, plain-text paste as a box, keyboard object movement, page-number entry and searchable Commands & Help.
+- [x] Included in Penroam 1.0.0: mixed ink/text/image copy/cut/paste, plain-text paste as a box, keyboard object movement, page-number entry and searchable Commands & Help.
 - [ ] Validate native focus/clipboard transitions, including mixed selections and IME; add customizable mappings with conflict detection.
 
 ### 12. Better Than Paper
@@ -223,7 +225,7 @@ P2 changes that introduce new persistent fields or document modes need a documen
 - [x] Startup notebook home, explicit creation/opening, titles, category strings, title/category search and recently modified ordering.
 - Implemented in 1.12.0: section context menus for rename, reorder and confirmed deletion, with stable targets and first/last/only-section boundaries. Native menu interaction remains unverified.
 - Implemented in 1.7.0: **Notebook → Section → Page**, with section names/order, page transfer, undo/redo, autosave and versioned backup migration. Existing pages are assigned to **General**. This structure supports **Course → Topic → Notes**; it does not add filesystem folders or nested sections.
-- [x] Added in 2.0.0: notebook pins and cover colors, session category filtering/name sorting, Quick Notes inbox, and saved reading position/Continue.
+- [x] Included in Penroam 1.0.0: notebook pins and cover colors, session category filtering/name sorting, Quick Notes inbox, and saved reading position/Continue.
 - [ ] Add real folders/subfolders, notebook duplication and a dedicated recent-notebooks view.
 - [ ] Make organizational changes reversible where possible and preserve library search/selection during updates.
 
@@ -232,7 +234,7 @@ P2 changes that introduce new persistent fields or document modes need a documen
 **Status: Partial. Priority: P0.**
 
 - [x] Page thumbnails, add, delete, duplicate and reorder using move-up/down commands.
-- [x] Added in 2.0.0: multi-page thumbnail selection, drag/button reordering, bulk duplicate/delete, section moves and atomic cross-notebook move/copy. Checked Undo Transfer refuses to overwrite later changes.
+- [x] Included in Penroam 1.0.0: multi-page thumbnail selection, drag/button reordering, bulk duplicate/delete, section moves and atomic cross-notebook move/copy. Checked Undo Transfer refuses to overwrite later changes.
 - [ ] Add page rotation and validate organizer drag/keyboard/touch behavior on the native desktop.
 - [ ] Preserve ink, text, image and PDF alignment during page transformations and bulk operations.
 
@@ -240,7 +242,7 @@ P2 changes that introduce new persistent fields or document modes need a documen
 
 **Status: Partial. Priority: P1.**
 
-- [x] Added in 2.0.0: bookmark/unbookmark pages, name them with page titles, list/filter bookmarks and open stable page targets. Reordering/moving retains the mark; deleted pages disappear from current search results.
+- [x] Included in Penroam 1.0.0: bookmark/unbookmark pages, name them with page titles, list/filter bookmarks and open stable page targets. Reordering/moving retains the mark; deleted pages disappear from current search results.
 - [ ] Add multiple named locations within one page if needed; validate native bookmark/navigation workflows.
 
 ### 16. Tags
@@ -273,7 +275,7 @@ P2 changes that introduce new persistent fields or document modes need a documen
 - [x] Import all supported PDF pages into the current section; retain the original PDF asset.
 - Implemented in **1.9.0**: append locally converted DOCX/PPTX/PPSX/ODT/ODP pages through **Import Document…**, with **Cancel Import**/Esc and a two-minute conversion timeout. Imported Word text and slide objects are fixed backgrounds; animations, video playback and internal jumps are omitted while ordinary URI links are retained. Unsupported encryption, macros and linked external resources produce an error. An existing PowerPoint session may need to be closed before conversion.
 - [ ] Complete representative Office/LibreOffice layout and conversion acceptance across supported formats and installed application versions. Converter availability and installed fonts affect the result; this does not add editable Word or presentation documents.
-- [x] Added in 2.0.0: staged import with thumbnails, selected-page/range selection, destination section/new section/new notebook and current-page/end placement. Canceling before acceptance leaves the notebook unchanged.
+- [x] Included in Penroam 1.0.0: staged import with thumbnails, selected-page/range selection, destination section/new section/new notebook and current-page/end placement. Canceling before acceptance leaves the notebook unchanged.
 - Implemented in **1.10.0**: import supported annotations with internal destinations or interactive actions as static annotations. Original PDF bytes remain in the library and backups; exported copies disable these actions while retaining annotation appearances and ordinary URI links, including after page reordering or duplication.
 - [ ] Keep clear validation for unsupported files. Encrypted PDFs, interactive forms, signatures and unsupported interactive annotation types remain unsupported.
 
@@ -291,7 +293,7 @@ P2 changes that introduce new persistent fields or document modes need a documen
 
 - [x] Selected-section export with original PDF content, vector ink outlines, images and flattened annotations (since 1.11.0; earlier releases export the whole notebook).
 - [x] Added text boxes export as vector glyph outlines; original PDF text keeps its original capabilities.
-- [x] Added in 2.0.0: current-page/section/notebook/checklist/range export with preview/count, full-range text-overflow preflight, progress/cancel and completed-file actions.
+- [x] Included in Penroam 1.0.0: current-page/section/notebook/checklist/range export with preview/count, full-range text-overflow preflight, progress/cancel and completed-file actions.
 - [ ] Add searchable/selectable added text with correct Unicode/font behavior. Current added text remains vector outlines; PDF text extraction does not change that export limitation.
 
 ### 22. Images
@@ -319,7 +321,7 @@ Implemented locally: Type creates or resumes a box; the contextual bar formats t
 - [x] Editable Unicode text boxes, line wrapping, movement/resizing and selected text-object color changes. The model stores font family and size.
 - [ ] Complete and verify the local Type workflow: start/continue a text box, add another box, and expose font family/size, bold, italic, color and alignment for the whole box. Preserve formatting through save/reopen, editable backup and vector PDF export.
 - [ ] Verify local plain bullet/number prefixes, Ctrl+B/Ctrl+I whole-box formatting, Ctrl+Enter to finish, and Escape focus handling with native text clipboard and undo.
-- [x] Added in 2.0.0: explicit Continue text on next page preserves the remainder and formatting as one undoable edit; export preflight checks all selected pages and can jump to an overflowing box.
+- [x] Included in Penroam 1.0.0: explicit Continue text on next page preserves the remainder and formatting as one undoable edit; export preflight checks all selected pages and can jump to an overflowing box.
 - [ ] Verify automatic box-height growth, internal overflow scrolling and continuation with native IME/clipboard interaction. Continuous automatic flow between pages remains unavailable.
 - [ ] Add per-range rich text and structured list behavior if needed; plain line prefixes and whole-box font controls do not complete those capabilities.
 - [ ] Extend the short live candidate/cancellation checks to long or interrupted composition, additional candidate choices and mixed-language editing across pages. Direct Unicode persistence tests do not cover composition, and short desktop checks do not complete IME acceptance.
@@ -329,7 +331,7 @@ Implemented locally: Type creates or resumes a box; the contextual bar formats t
 **Status: Partial. Priority: P2.**
 
 - [x] Notebook-title and category search.
-- [x] Added in 2.0.0: search notebook/category/section/page names, bookmarks, typed notes and extractable original PDF text, with snippets and page navigation. PDF extraction is local, bounded and reports incomplete/no-text coverage.
+- [x] Included in Penroam 1.0.0: search notebook/category/section/page names, bookmarks, typed notes and extractable original PDF text, with snippets and page navigation. PDF extraction is local, bounded and reports incomplete/no-text coverage.
 - [ ] Add tags and search them; validate search performance with representative course libraries.
 - [ ] Consider handwriting/OCR search later, with an explicit offline capability and storage design rather than an assumed external service.
 
@@ -338,14 +340,14 @@ Implemented locally: Type creates or resumes a box; the contextual bar formats t
 **Status: Partial. Priority: P2.**
 
 - [x] Page numbers and template/PDF captions in page navigation.
-- [x] Added in 2.0.0: manually editable page titles persist through moves, save/reopen and backups, and appear in bookmarks/search. Quick Notes pages receive a date/time title.
+- [x] Included in Penroam 1.0.0: manually editable page titles persist through moves, save/reopen and backups, and appear in bookmarks/search. Quick Notes pages receive a date/time title.
 - [ ] Add configurable date/number naming patterns for ordinary pages.
 
 ### 27. Links
 
 **Status: Partial navigation; internal links planned. Priority: P2.**
 
-- [x] Added in 2.0.0: session back navigation after a content-search or quick-note visit.
+- [x] Included in Penroam 1.0.0: session back navigation after a content-search or quick-note visit.
 - [ ] Add links to pages and notebooks and copyable internal links.
 - [ ] Define stable targets, broken-link handling, and behavior when a notebook is restored as a new copy. Retained external URI annotations in a source PDF are not internal notebook links.
 
@@ -353,7 +355,7 @@ Implemented locally: Type creates or resumes a box; the contextual bar formats t
 
 **Status: Partial. Priority: P1.**
 
-- [x] Added in 2.0.0: a read-only reference snapshot beside the main editor, including other notebooks or PDF pages; independent page navigation, zoom, refresh and return-to-writing action.
+- [x] Included in Penroam 1.0.0: a read-only reference snapshot beside the main editor, including other notebooks or PDF pages; independent page navigation, zoom, refresh and return-to-writing action.
 - [ ] Support adjustable ratios and horizontal/vertical arrangements.
 - [ ] Define the active editing pane, shared-document save/history ownership, independent navigation and safe pen focus transfer.
 
@@ -380,7 +382,7 @@ Implemented locally: Type creates or resumes a box; the contextual bar formats t
 - [x] Completed edits schedule background transactional saves; pending revisions coalesce with a two-second target during continuous edits.
 - [x] Notebook changes/normal close flush pending saves; errors retain memory snapshots and offer retry/backup rather than falsely reporting success.
 - [x] Monotonic autosave scheduling with deterministic wall-clock-change regression coverage.
-- [x] Added in 2.0.0: atomic local pending-draft snapshots and explicit recovery-as-copy. Committed revisions cannot remove a newer draft; recovery remains best effort and may miss the final events.
+- [x] Included in Penroam 1.0.0: atomic local pending-draft snapshots and explicit recovery-as-copy. Committed revisions cannot remove a newer draft; recovery remains best effort and may miss the final events.
 - [ ] Validate deadline behavior, memory/snapshot overhead and journal write cost with heavy content and abrupt termination/disk failure.
 - [ ] Validate crash boundaries on representative devices: committed SQLite data, queued drafts and active input have different durability; draft files still depend on library assets.
 
@@ -404,8 +406,8 @@ Implemented locally: Type creates or resumes a box; the contextual bar formats t
 **Status: Partial. Priority: P0 for recovery; P1 for automation.**
 
 - [x] Manual single-notebook/all-notebook `.moye` packages, integrity checks and restore as new copies.
-- [x] Added in 2.0.0: automatic local backups while Moye is open, folder/interval/retention settings, last-success/failure display, selected-notebook restoration and 30-day deleted-notebook recovery copies.
-- [ ] Validate interruption, unavailable destinations and retention on representative large libraries. No backup task runs while Moye is closed.
+- [x] Included in Penroam 1.0.0: automatic local backups while Penroam is open, folder/interval/retention settings, last-success/failure display, selected-notebook restoration and 30-day deleted-notebook recovery copies.
+- [ ] Validate interruption, unavailable destinations and retention on representative large libraries. No backup task runs while Penroam is closed.
 - [ ] Exercise restore against large real course libraries. Backups are currently unencrypted, and copying a live database file is not a replacement for a consistent export.
 
 ### 35. Open Format

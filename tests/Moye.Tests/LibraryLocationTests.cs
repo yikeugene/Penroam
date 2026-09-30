@@ -1,10 +1,47 @@
 using System.IO;
+using Moye.Models;
 using Moye.Services;
 
 namespace Moye.Tests;
 
 public sealed class LibraryLocationTests
 {
+    [Fact]
+    public async Task PenroamReopensLegacyMoyeNotebooksAndPreferencesInPlace()
+    {
+        using var directory = new StorageTestDirectory();
+        var legacyDirectory = Path.Combine(directory.Root, "Moye");
+        var legacyDatabase = Path.Combine(legacyDirectory, "moye.db");
+        var notebook = new NotebookDocument
+        {
+            Title = "Existing notes 舊筆記",
+            Pages = [new NotePage { Texts = [new NoteText { Text = "Keep this content unchanged." }] }]
+        };
+        using (var oldRepository = new SqliteNotebookRepository(legacyDatabase))
+        {
+            await oldRepository.InitializeAsync();
+            await oldRepository.SaveAsync(notebook);
+        }
+        var preferences = WritingPreferences.CreateDefault();
+        preferences.Presets[0].Name = "My existing pen";
+        var legacyPreferences = Path.Combine(legacyDirectory, "writing-preferences.json");
+        await new WritingPreferencesStore(legacyPreferences).SaveAsync(preferences);
+        var originalPreferences = await File.ReadAllBytesAsync(legacyPreferences);
+
+        var location = LibraryLocation.Resolve(localApplicationData: directory.Root);
+        using var reopened = new SqliteNotebookRepository(location.DatabasePath);
+        await reopened.InitializeAsync();
+        var loaded = await reopened.LoadAsync(notebook.Id);
+        Assert.NotNull(loaded);
+        Assert.Equal(notebook.Title, loaded.Title);
+        Assert.Equal("Keep this content unchanged.", Assert.Single(Assert.Single(loaded.Pages).Texts).Text);
+        var loadedPreferences = await new WritingPreferencesStore(location.PreferencesPath).LoadAsync();
+        Assert.Null(loadedPreferences.Warning);
+        Assert.Equal("My existing pen", loadedPreferences.Preferences.Presets[0].Name);
+        Assert.Equal(originalPreferences, await File.ReadAllBytesAsync(legacyPreferences));
+        Assert.False(Directory.Exists(Path.Combine(directory.Root, "Penroam")));
+    }
+
     [Fact]
     public void DefaultDatabasePathRemainsCompatibleWithExistingRepository()
     {

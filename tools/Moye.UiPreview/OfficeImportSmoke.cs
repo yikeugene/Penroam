@@ -46,7 +46,7 @@ internal static class OfficeImportSmoke
             await File.WriteAllBytesAsync(Path.Combine(output, name + "-converted.pdf"), asset.Bytes);
             var notebook = new NotebookDocument { Title = "Synthetic " + name, Pages = pages.ToList() };
             NotebookStructure.Normalize(notebook);
-            notebook.Pages[0].Texts.Add(new NoteText { X = 60, Y = 180, Text = "Moye annotation 筆記", Color = "#FF2563EB" });
+            notebook.Pages[0].Texts.Add(new NoteText { X = 60, Y = 180, Text = "Penroam annotation 筆記", Color = "#FF2563EB" });
             notebook.Pages[0].InkData = await Sta(() =>
             {
                 var ink = new StrokeCollection

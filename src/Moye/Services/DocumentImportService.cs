@@ -23,7 +23,7 @@ public sealed class DocumentImportService(IPdfService pdf, IOfficePdfConverter c
 
         // Conversion works on a disposable copy, including when Office writes
         // lock files next to the document. Nothing is added until PDF validation succeeds.
-        var work = Path.Combine(Path.GetTempPath(), "MoyeImport-" + Guid.NewGuid().ToString("N"));
+        var work = Path.Combine(Path.GetTempPath(), "PenroamImport-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(work);
         try
         {

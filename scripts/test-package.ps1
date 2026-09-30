@@ -4,13 +4,16 @@ param([Parameter(Mandatory)][string]$PackagePath)
 $ErrorActionPreference = 'Stop'
 $MoyeRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $MoyePackage = (Resolve-Path -LiteralPath $PackagePath).Path
-foreach ($MoyeRequired in @('Moye.exe', 'Moye.dll', 'Moye.deps.json', 'Moye.runtimeconfig.json', 'coreclr.dll', 'PresentationFramework.dll', 'Microsoft.Data.Sqlite.dll', 'SQLitePCLRaw.batteries_v2.dll', 'SQLitePCLRaw.core.dll', 'SQLitePCLRaw.provider.e_sqlite3.dll', 'e_sqlite3.dll')) {
+foreach ($MoyeRequired in @('Penroam.exe', 'Penroam.dll', 'Penroam.deps.json', 'Penroam.runtimeconfig.json', 'coreclr.dll', 'PresentationFramework.dll', 'Microsoft.Data.Sqlite.dll', 'SQLitePCLRaw.batteries_v2.dll', 'SQLitePCLRaw.core.dll', 'SQLitePCLRaw.provider.e_sqlite3.dll', 'e_sqlite3.dll')) {
     if (-not (Test-Path -LiteralPath (Join-Path $MoyePackage $MoyeRequired) -PathType Leaf)) { throw "The package is missing $MoyeRequired." }
+}
+foreach ($MoyeLegacyFile in @('Moye.exe', 'Moye.dll', 'Moye.deps.json', 'Moye.runtimeconfig.json')) {
+    if (Test-Path -LiteralPath (Join-Path $MoyePackage $MoyeLegacyFile)) { throw "The package still contains a legacy application file: $MoyeLegacyFile" }
 }
 $MoyeCheckRoot = Join-Path $MoyeRoot ('artifacts/package-check-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $MoyeCheckRoot | Out-Null
 $MoyeData = Join-Path $MoyeCheckRoot 'Synthetic library 測試'
-$MoyeStart = [Diagnostics.ProcessStartInfo]::new((Join-Path $MoyePackage 'Moye.exe'))
+$MoyeStart = [Diagnostics.ProcessStartInfo]::new((Join-Path $MoyePackage 'Penroam.exe'))
 $MoyeStart.UseShellExecute = $false
 $MoyeStart.CreateNoWindow = $true
 $MoyeStart.WindowStyle = [Diagnostics.ProcessWindowStyle]::Hidden
