@@ -185,6 +185,7 @@ public partial class MainWindow
         {
             commands.AddRange([
                 new("Manage pages", "Select multiple thumbnails; reorder, move, duplicate or delete them as one change.", () => ManagePagesClick(this, new())),
+                new("Extend page", "Add writing space on any side of this page, preserving the original PDF size and your notes.", () => ExtendPageClick(this, new())),
                 new("Reference view", "Read another notebook beside your writing area, with independent navigation and zoom.", () => ShowReferenceClick(this, new())),
                 new("Import document", "Preview a PDF or locally converted Office document and choose its pages and destination.", () => ImportDocumentWorkflowClick(this, new())),
                 new("Export PDF", "Choose pages and check text overflow before sharing.", () => ExportDocumentWorkflowClick(this, new())),

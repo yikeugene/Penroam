@@ -31,7 +31,7 @@ public sealed class StorageTests(ITestOutputHelper output)
         {
             connection.Open();
             using var command = connection.CreateCommand();
-            command.CommandText = "PRAGMA user_version=4; CREATE TABLE future_data(value TEXT); INSERT INTO future_data VALUES('keep');";
+            command.CommandText = "PRAGMA user_version=5; CREATE TABLE future_data(value TEXT); INSERT INTO future_data VALUES('keep');";
             command.ExecuteNonQuery();
         }
         using var repository = new SqliteNotebookRepository(directory.DatabasePath);
@@ -40,7 +40,7 @@ public sealed class StorageTests(ITestOutputHelper output)
         verification.Open();
         using var query = verification.CreateCommand();
         query.CommandText = "PRAGMA user_version";
-        Assert.Equal(4L, query.ExecuteScalar());
+        Assert.Equal(5L, query.ExecuteScalar());
         query.CommandText = "SELECT value FROM future_data";
         Assert.Equal("keep", query.ExecuteScalar());
     }

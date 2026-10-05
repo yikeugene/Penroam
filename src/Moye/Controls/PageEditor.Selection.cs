@@ -35,6 +35,7 @@ public sealed partial class PageEditor
 
     private void UpdateMixedSelection()
     {
+        FinishSelectionDrag(false);
         var selected = _ink.GetSelectedElements();
         var frames = _selectionProxies.Where(pair => selected.Contains(pair.Value)).Select(pair => pair.Key).ToArray();
         var previous = SelectedText;

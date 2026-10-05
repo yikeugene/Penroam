@@ -16,7 +16,7 @@ The Windows SDK projections and Microsoft runtime may contain additional third-p
 
 Full Apache 2.0 license: [licenses/Apache-2.0.txt](licenses/Apache-2.0.txt). SQLitePCLRaw is used without modifications. SQLite itself is dedicated to the public domain by its authors.
 
-Penroam 1.0.0 uses unmodified PdfPig 0.1.16 for local PDF text extraction. Its complete upstream combined license is preserved at [licenses/PDFPIG-LICENSE.txt](licenses/PDFPIG-LICENSE.txt), including the PDFBox/FontBox redistribution conditions and Adobe font-metric/CMap terms. The file comes from the [exact source commit recorded in the NuGet package](https://raw.githubusercontent.com/UglyToad/PdfPig/a7bb35662bbbf405efddad50aedc9bcdcf515afc/LICENSE); the packaging whitelist includes it.
+Penroam 1.1.0 uses unmodified PdfPig 0.1.16 for local PDF text extraction. Its complete upstream combined license is preserved at [licenses/PDFPIG-LICENSE.txt](licenses/PDFPIG-LICENSE.txt), including the PDFBox/FontBox redistribution conditions and Adobe font-metric/CMap terms. The file comes from the [exact source commit recorded in the NuGet package](https://raw.githubusercontent.com/UglyToad/PdfPig/a7bb35662bbbf405efddad50aedc9bcdcf515afc/LICENSE); the packaging whitelist includes it.
 
 ## MIT license
 

@@ -89,7 +89,7 @@ public sealed class NotebookStructureStorageTests
             Assert.Empty(empty.Pages);
         }
         using var connection = Open(directory.DatabasePath);
-        Assert.Equal(3L, Scalar(connection, "PRAGMA user_version"));
+        Assert.Equal(4L, Scalar(connection, "PRAGMA user_version"));
         Assert.Equal(2L, Scalar(connection, "SELECT COUNT(*) FROM sections"));
         var metadata = JsonNode.Parse((string)Scalar(connection, "SELECT metadata_json FROM pages WHERE id='page-b'")!)!;
         Assert.Equal("preserve me", metadata["extension"]!["value"]!.GetValue<string>());

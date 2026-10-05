@@ -57,7 +57,7 @@ public sealed class TextPersistenceTests(Xunit.Abstractions.ITestOutputHelper ou
         var path = Path.Combine(sourceDirectory.Root, "styled-text.moye");
         await new BackupService(source).ExportAsync(path, [snapshot]);
         using (var archive = ZipFile.OpenRead(path))
-            Assert.Equal(3, ReadJson(archive.GetEntry("manifest.json")!)["version"]!.GetValue<int>());
+            Assert.Equal(4, ReadJson(archive.GetEntry("manifest.json")!)["version"]!.GetValue<int>());
         using var destination = new SqliteNotebookRepository(destinationDirectory.DatabasePath);
         var restored = Assert.Single(await new BackupService(destination).ImportAsync(path));
         Assert.NotEqual(original.Id, restored.Id);

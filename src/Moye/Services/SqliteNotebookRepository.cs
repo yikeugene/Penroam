@@ -39,8 +39,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
             while (reader.Read()) documents[reader.GetString(0)].Sections.Add(new() { Id = reader.GetString(1), Title = reader.GetString(2) });
         command.CommandText = "SELECT notebook_id,metadata_json FROM pages ORDER BY ordinal";
         using (var reader = command.ExecuteReader())
-            while (reader.Read()) documents[reader.GetString(0)].Pages.Add(JsonSerializer.Deserialize<NotePage>(reader.GetString(1), DocumentJson.Options)
-                ?? throw new InvalidDataException("The page metadata is corrupted."));
+            while (reader.Read()) documents[reader.GetString(0)].Pages.Add(ReadPageMetadata(reader.GetString(1)));
         return documents.Values.ToArray();
     });
 
@@ -86,8 +85,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
         using var pages = command.ExecuteReader();
         while (pages.Read())
         {
-            var page = JsonSerializer.Deserialize<NotePage>(pages.GetString(0), DocumentJson.Options)
-                ?? throw new InvalidDataException("The page data is corrupted.");
+            var page = ReadPageMetadata(pages.GetString(0));
             page.InkData = pages.GetFieldValue<byte[]>(1);
             document.Pages.Add(page);
         }
@@ -160,6 +158,8 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
             for (var index = 0; index < snapshot.Pages.Count; index++)
             {
                 var page = snapshot.Pages[index];
+                if (!PdfPagePlacement.IsValid(page)) throw new InvalidDataException("Invalid PDF placement on the page.");
+                if (!PaperPagePlacement.IsValid(page)) throw new InvalidDataException("Invalid paper guide placement on the page.");
                 var ink = page.InkData;
                 page.InkData = [];
                 var json = JsonSerializer.Serialize(page, DocumentJson.Options);
@@ -273,7 +273,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
         using var command = connection.CreateCommand();
         command.CommandText = "PRAGMA user_version";
         var version = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-        if (version > 3)
+        if (version > 4)
             throw new InvalidDataException("This database was created by a newer version of Penroam. Update the app before opening it.");
         command.CommandText = "PRAGMA journal_mode=WAL";
         command.ExecuteNonQuery();
@@ -318,9 +318,20 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
             command.ExecuteNonQuery();
         }
         command.Parameters.Clear();
-        command.CommandText = "PRAGMA user_version=3";
+        // Version 4 protects PDF and paper-guide placement stored in page JSON from older writers.
+        // Legacy page JSON remains untouched; zero placement fields retain its original layout.
+        command.CommandText = "PRAGMA user_version=4";
         command.ExecuteNonQuery();
         transaction.Commit();
+    }
+
+    private static NotePage ReadPageMetadata(string json)
+    {
+        var page = JsonSerializer.Deserialize<NotePage>(json, DocumentJson.Options)
+            ?? throw new InvalidDataException("The page metadata is corrupted.");
+        if (!PdfPagePlacement.IsValid(page)) throw new InvalidDataException("Invalid PDF placement on the page.");
+        if (!PaperPagePlacement.IsValid(page)) throw new InvalidDataException("Invalid paper guide placement on the page.");
+        return page;
     }
 
     private static string FormatDate(DateTimeOffset date) => date.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture);

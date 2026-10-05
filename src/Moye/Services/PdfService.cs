@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
 using System.Windows;
 using System.Windows.Ink;
 using System.Windows.Media;
@@ -83,14 +84,20 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
     public async Task<BitmapSource> RenderAsync(NotePage page, double scale, CancellationToken cancellationToken = default)
     {
         if (!ValidDimension(page.Width) || !ValidDimension(page.Height)) throw new InvalidDataException("Invalid page dimensions.");
+        if (!PdfPagePlacement.IsValid(page)) throw new InvalidDataException("Invalid PDF background placement.");
+        // The PDF remains at its original size when the writing canvas grows.
+        // Rasterize only that source area: large margins must not lower its resolution.
+        var displayWidth = page.Pdf is { DisplayWidth: > 0 } pdfWidth ? pdfWidth.DisplayWidth : page.Width;
+        var displayHeight = page.Pdf is { DisplayHeight: > 0 } pdfHeight ? pdfHeight.DisplayHeight : page.Height;
+        if (!ValidDimension(displayWidth) || !ValidDimension(displayHeight)) throw new InvalidDataException("Invalid PDF display dimensions.");
         scale = double.IsFinite(scale) ? Math.Clamp(scale, .1, 6) : 1;
-        scale = Math.Min(scale, Math.Min(8192 / page.Width, 8192 / page.Height));
-        scale = Math.Min(scale, Math.Sqrt(MaxPixels / (page.Width * page.Height)));
-        var width = Math.Max(1, (int)Math.Ceiling(page.Width * scale));
-        var height = Math.Max(1, (int)Math.Ceiling(page.Height * scale));
+        scale = Math.Min(scale, Math.Min(8192 / displayWidth, 8192 / displayHeight));
+        scale = Math.Min(scale, Math.Sqrt(MaxPixels / (displayWidth * displayHeight)));
+        var width = Math.Max(1, (int)Math.Ceiling(displayWidth * scale));
+        var height = Math.Max(1, (int)Math.Ceiling(displayHeight * scale));
         var key = page.Pdf is { } source
             ? $"{source.AssetId}:{source.PageIndex}:{width}:{height}"
-            : $"paper:{page.Template}:{page.Width:R}:{page.Height:R}:{width}:{height}";
+            : $"paper:{page.Template}:{page.Width:R}:{page.Height:R}:{page.PaperLayout}:{width}:{height}";
         cancellationToken.ThrowIfCancellationRequested();
         lock (_cacheLock)
         {
@@ -176,6 +183,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                         outputPage = result.AddPage(originalPage);
                         if (AnnotationCount(outputPage) != AnnotationCount(originalPage))
                             throw new InvalidDataException("The existing PDF annotations could not be fully preserved. The export file was not overwritten.");
+                        ExtendPdfCanvas(note, outputPage);
                     }
                     else
                     {
@@ -343,6 +351,161 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
         return visible;
     }
 
+    private static void ExtendPdfCanvas(NotePage note, PdfPage page)
+    {
+        if (!PdfPagePlacement.IsValid(note)) throw new InvalidDataException("Invalid PDF background placement.");
+        var source = note.Pdf!;
+        var displayWidth = source.DisplayWidth > 0 ? source.DisplayWidth : note.Width;
+        var displayHeight = source.DisplayHeight > 0 ? source.DisplayHeight : note.Height;
+        var right = note.Width - source.OffsetX - displayWidth;
+        var bottom = note.Height - source.OffsetY - displayHeight;
+        if (!ValidDimension(displayWidth) || !ValidDimension(displayHeight) ||
+            !double.IsFinite(source.OffsetX) || !double.IsFinite(source.OffsetY) ||
+            source.OffsetX < 0 || source.OffsetY < 0 || right < -.001 || bottom < -.001)
+            throw new InvalidDataException("The PDF background is outside its writing page.");
+        if (source.OffsetX == 0 && source.OffsetY == 0 && Math.Abs(right) < .001 && Math.Abs(bottom) < .001) return;
+
+        var crop = VisibleBox(page);
+        var rotation = ((page.Rotate % 360) + 360) % 360;
+        var sx = (rotation is 90 or 270 ? crop.Height : crop.Width) / displayWidth;
+        var sy = (rotation is 90 or 270 ? crop.Width : crop.Height) / displayHeight;
+        var left = source.OffsetX * sx;
+        var top = source.OffsetY * sy;
+        right = Math.Max(0, right) * sx;
+        bottom = Math.Max(0, bottom) * sy;
+        var expanded = rotation switch
+        {
+            0 => Rectangle(crop.X1 - left, crop.Y1 - bottom, crop.X2 + right, crop.Y2 + top),
+            90 => Rectangle(crop.X1 - top, crop.Y1 - left, crop.X2 + bottom, crop.Y2 + right),
+            180 => Rectangle(crop.X1 - right, crop.Y1 - top, crop.X2 + left, crop.Y2 + bottom),
+            270 => Rectangle(crop.X1 - bottom, crop.Y1 - right, crop.X2 + top, crop.Y2 + left),
+            _ => throw new InvalidDataException("The PDF page rotation is not supported.")
+        };
+
+        // Preserve the vector content and fonts in their original coordinate system.
+        // The former CropBox must remain a clip: merely enlarging it can reveal
+        // material that the author cropped off the source PDF.
+        var original = page.Contents.CreateSingleContent().Stream.UnfilteredValue;
+        var prefix = Encoding.ASCII.GetBytes(FormattableString.Invariant($"q\n{crop.X1:R} {crop.Y1:R} {crop.Width:R} {crop.Height:R} re W n\n"));
+        var clipped = new byte[prefix.Length + original.Length + 3];
+        prefix.CopyTo(clipped, 0);
+        original.CopyTo(clipped, prefix.Length);
+        Encoding.ASCII.GetBytes("\nQ\n").CopyTo(clipped, prefix.Length + original.Length);
+        page.Contents.Elements.Clear();
+        page.Contents.AppendContent().CreateStream(clipped);
+        KeepAnnotationsInsideOriginalCrop(page, crop);
+        page.MediaBox = expanded;
+        page.CropBox = expanded;
+        // A printer honoring an explicit old TrimBox must also include the new notes.
+        if (page.HasTrimBox) page.TrimBox = expanded;
+        if (page.HasBleedBox) page.BleedBox = expanded;
+        if (page.HasArtBox) page.ArtBox = expanded;
+    }
+
+    private static PdfRectangle Rectangle(double x1, double y1, double x2, double y2) =>
+        new(new XPoint(x1, y1), new XPoint(x2, y2));
+
+    private static void KeepAnnotationsInsideOriginalCrop(PdfPage page, PdfRectangle crop)
+    {
+        var annotations = page.Elements.GetArray("/Annots");
+        if (annotations is null) return;
+        for (var index = 0; index < annotations.Elements.Count; index++)
+        {
+            var annotation = annotations.Elements.GetDictionary(index)!;
+            var bounds = annotation.Elements.GetRectangle("/Rect");
+            var x1 = Math.Max(crop.X1, bounds.X1);
+            var y1 = Math.Max(crop.Y1, bounds.Y1);
+            var x2 = Math.Min(crop.X2, bounds.X2);
+            var y2 = Math.Min(crop.Y2, bounds.Y2);
+            if (x2 <= x1 || y2 <= y1)
+            {
+                // Keep the annotation data, but do not reveal an annotation that was
+                // wholly outside the visible source page before extension.
+                annotation.Elements.SetInteger("/F", annotation.Elements.GetInteger("/F") | 2);
+                continue;
+            }
+            var intersection = Rectangle(x1, y1, x2, y2);
+            if (intersection == bounds) continue;
+            var appearances = annotation.Elements.GetDictionary("/AP");
+            if (appearances?.Elements.GetDictionary("/N") is not { } normal || !HasSavedAppearance(normal))
+                throw new InvalidDataException("An original PDF annotation crosses the cropped page edge without a saved appearance. " +
+                    "Flatten the source PDF annotations before importing it, or undo the page extension before exporting. The export file was not overwritten.");
+            // Multiple annotations may share an appearance dictionary. Clip only
+            // this annotation, never a shared appearance used elsewhere on the page.
+            appearances = CopyDictionary(page.Owner, appearances);
+            annotation.Elements["/AP"] = appearances;
+            foreach (var name in new[] { "/N", "/R", "/D" })
+            {
+                var appearance = appearances.Elements.GetDictionary(name);
+                if (appearance is null) continue;
+                if (!HasSavedAppearance(appearance)) throw InvalidAnnotationAppearance();
+                if (appearance.Stream is not null)
+                    appearances.Elements[name] = ClipAnnotationAppearance(page.Owner, appearance, bounds, intersection).Reference!;
+                else
+                {
+                    appearance = CopyDictionary(page.Owner, appearance);
+                    appearances.Elements[name] = appearance;
+                    foreach (var state in appearance.Elements.Keys.ToArray())
+                        if (appearance.Elements.GetDictionary(state) is { Stream: not null } stateAppearance)
+                            appearance.Elements[state] = ClipAnnotationAppearance(page.Owner, stateAppearance, bounds, intersection).Reference!;
+                }
+            }
+        }
+    }
+
+    private static PdfDictionary CopyDictionary(PdfDocument owner, PdfDictionary original)
+    {
+        var copy = new PdfDictionary(owner);
+        foreach (var key in original.Elements.Keys) copy.Elements[key] = original.Elements[key];
+        return copy;
+    }
+
+    private static bool HasSavedAppearance(PdfDictionary appearance) => appearance.Stream is not null ||
+        (appearance.Elements.Count > 0 && appearance.Elements.Keys.All(key =>
+            appearance.Elements.GetDictionary(key) is { Stream: not null }));
+
+    private static InvalidDataException InvalidAnnotationAppearance() => new(
+        "An original PDF annotation has an invalid saved appearance. " +
+        "Flatten the source PDF annotations before importing it, or undo the page extension before exporting. The export file was not overwritten.");
+
+    private static PdfDictionary ClipAnnotationAppearance(PdfDocument owner, PdfDictionary appearance,
+        PdfRectangle annotation, PdfRectangle visible)
+    {
+        if (appearance.Reference is null) owner.Internals.AddObject(appearance);
+        var box = appearance.Elements.GetRectangle("/BBox");
+        var matrix = appearance.Elements.GetArray("/Matrix");
+        if (matrix is not null)
+        {
+            if (matrix.Elements.Count != 6 || Enumerable.Range(0, 6).Any(index => !double.IsFinite(matrix.Elements.GetReal(index))))
+                throw InvalidAnnotationAppearance();
+            var transform = new XMatrix(matrix.Elements.GetReal(0), matrix.Elements.GetReal(1), matrix.Elements.GetReal(2),
+                matrix.Elements.GetReal(3), matrix.Elements.GetReal(4), matrix.Elements.GetReal(5));
+            var corners = new[] { new XPoint(box.X1, box.Y1), new XPoint(box.X1, box.Y2),
+                new XPoint(box.X2, box.Y1), new XPoint(box.X2, box.Y2) };
+            transform.Transform(corners);
+            box = Rectangle(corners.Min(p => p.X), corners.Min(p => p.Y), corners.Max(p => p.X), corners.Max(p => p.Y));
+        }
+        if (!ValidDimension(box.Width) || !ValidDimension(box.Height))
+            throw InvalidAnnotationAppearance();
+        var sx = box.Width / annotation.Width;
+        var sy = box.Height / annotation.Height;
+        var clip = Rectangle(box.X1 + (visible.X1 - annotation.X1) * sx, box.Y1 + (visible.Y1 - annotation.Y1) * sy,
+            box.X1 + (visible.X2 - annotation.X1) * sx, box.Y1 + (visible.Y2 - annotation.Y1) * sy);
+        var objects = new PdfDictionary(owner);
+        objects.Elements["/Original"] = appearance.Reference!;
+        var resources = new PdfDictionary(owner);
+        resources.Elements["/XObject"] = objects;
+        var wrapper = new PdfDictionary(owner);
+        wrapper.Elements.SetName("/Type", "/XObject");
+        wrapper.Elements.SetName("/Subtype", "/Form");
+        wrapper.Elements.SetRectangle("/BBox", box);
+        wrapper.Elements["/Resources"] = resources;
+        wrapper.CreateStream(Encoding.ASCII.GetBytes(FormattableString.Invariant(
+            $"q\n{clip.X1:R} {clip.Y1:R} {clip.Width:R} {clip.Height:R} re W n\n/Original Do\nQ\n")));
+        owner.Internals.AddObject(wrapper);
+        return wrapper;
+    }
+
     private static XMatrix PageTransform(NotePage note, PdfPage page)
     {
         if (note.Pdf is null) return new XMatrix(.75, 0, 0, .75, 0, 0);
@@ -429,12 +592,17 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
     private static void DrawPaper(XGraphics graphics, NotePage page)
     {
         graphics.DrawRectangle(XBrushes.White, 0, 0, page.Width, page.Height);
-        foreach (var line in Controls.PaperPattern.Lines(page.Template, page.Width, page.Height))
+        var layout = page.PaperLayout ?? new PaperPageLayout { Width = page.Width, Height = page.Height };
+        var state = graphics.Save();
+        graphics.TranslateTransform(layout.X, layout.Y);
+        graphics.IntersectClip(new XRect(0, 0, layout.Width, layout.Height));
+        foreach (var line in Controls.PaperPattern.Lines(page.Template, layout.Width, layout.Height))
             graphics.DrawLine(new XPen(XColor.FromArgb(line.Color.R, line.Color.G, line.Color.B), line.Thickness),
                 line.Start.X, line.Start.Y, line.End.X, line.End.Y);
-        foreach (var dot in Controls.PaperPattern.Dots(page.Template, page.Width, page.Height))
+        foreach (var dot in Controls.PaperPattern.Dots(page.Template, layout.Width, layout.Height))
             graphics.DrawEllipse(new XSolidBrush(XColor.FromArgb(dot.Color.R, dot.Color.G, dot.Color.B)),
                 dot.Center.X - dot.Radius, dot.Center.Y - dot.Radius, dot.Radius * 2, dot.Radius * 2);
+        graphics.Restore(state);
     }
 
     private static BitmapSource RenderPaper(NotePage page, int width, int height)
@@ -443,7 +611,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
         using (var drawing = visual.RenderOpen())
         {
             drawing.PushTransform(new ScaleTransform(width / page.Width, height / page.Height));
-            Controls.PaperPattern.Draw(drawing, page.Template, page.Width, page.Height);
+            Controls.PaperPattern.Draw(drawing, page.Template, page.Width, page.Height, page.PaperLayout);
             drawing.Pop();
         }
         var bitmap = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);

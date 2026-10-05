@@ -910,6 +910,8 @@ public partial class MainWindow : Window
         if (e.Key == Key.Escape && _documentImportCancellation is not null)
         { CancelDocumentImportClick(sender, e); e.Handled = true; return; }
         if (!_ready || ViewModel.IsBusy) return;
+        if (e.Key == Key.Escape && CurrentEditor?.CancelSelectionDrag() == true)
+        { e.Handled = true; return; }
         if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift) && e.Key == Key.P)
         { ShowCommandsClick(this, new()); e.Handled = true; return; }
         if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift) && e.Key == Key.F)

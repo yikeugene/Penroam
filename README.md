@@ -4,11 +4,11 @@ An offline handwriting notebook for Windows 11. Penroam, formerly Moye, combines
 
 [Downloads and releases](https://github.com/yikeugene/moye/releases) · [User guide](docs/USER_GUIDE.md) · [Roadmap](ROADMAP.md) · [Contributing](https://github.com/yikeugene/moye/blob/master/CONTRIBUTING.md)
 
-**Penroam 1.0.0** starts a new version baseline with the complete current feature set, formerly published as Moye 2.0.0, plus the Penroam name and icon. The repository address, existing library location and `.moye` backup extension stay unchanged. Product numbering restarts; notebook data formats do not.
+**Penroam 1.1.0** adds writable page margins and live movement of lasso selections. See the [1.1 release notes](docs/RELEASE_NOTES_1.1.0.md), including the required backup guidance before upgrading.
 
 ## Get started
 
-1. Download and run [Penroam-1.0.0-Setup-win-x64.exe](https://github.com/yikeugene/moye/releases/download/v1.0.0/Penroam-1.0.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/moye/releases/latest).
+1. Download and run [Penroam-1.1.0-Setup-win-x64.exe](https://github.com/yikeugene/moye/releases/download/v1.1.0/Penroam-1.1.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/moye/releases/latest).
 2. Complete the installer, then open **Penroam** from the desktop shortcut it creates automatically. A Start menu shortcut is also added. The .NET runtime is included; no separate .NET installation or administrator account is needed.
 3. On **Your Notebooks**, open a notebook cover or choose **New Notebook** and select Blank, Ruled, Grid, Dot Grid, Cornell or Graph paper. Choose a favorite pen and start writing. Open **Manage pens** to customize your tools, or **Pen Settings** to change the current color and width. A mouse works too.
 
@@ -18,7 +18,7 @@ New installations use `%LOCALAPPDATA%\Programs\Penroam` by default. An upgrade r
 
 ## Features
 
-**Penroam 1.0.0** adds the workflows below: resume and quick capture, searchable notebooks, batch page organization, flexible document import/export, a reference pane and local backup/recovery. See [1.0 release notes](docs/RELEASE_NOTES_1.0.0.md) for the upgrade and verification details.
+**Penroam 1.1.0** includes the workflows below: resume and quick capture, searchable notebooks, batch page organization, flexible document import/export, a reference pane and local backup/recovery. See [1.1 release notes](docs/RELEASE_NOTES_1.1.0.md) for the upgrade and verification details.
 
 - **Resume and quick capture:** notebooks remember the page, reading position, zoom and Fit Width setting on this device. **Continue** returns to the last notebook; **Quick note** adds a page to an Inbox notebook.
 - **Find and organize:** notebook pins, cover colors, category filtering and name/date ordering; page titles and bookmarks; content search across titles, sections, typed notes and extractable PDF text, with context and a return action. PDF search runs locally and reports incomplete coverage; it does not recognize handwriting or scanned images.
@@ -28,7 +28,9 @@ New installations use `%LOCALAPPDATA%\Programs\Penroam` by default. An upgrade r
 - **Adjust the workspace:** optional two-finger-only navigation, zoom lock, a compact main toolbar, left/right focus-tool docking, three favorite pens plus Type/Select in focus mode, keyboard object movement, direct page numbers, and searchable **Commands & Help**.
 - **Backup and recovery:** choose notebooks when restoring a backup, configure local backup intervals/retention while Penroam is open, recover interrupted draft snapshots as copies, and restore the complete notebook saved before a deletion for up to 30 days. Recovery is best effort and does not guarantee that the latest input event reached disk.
 
-**Before opening an existing library with Penroam 1.0.0, keep a backup made by your current app.** Penroam 1.0 migrates the library to **schema 3**, writes **format 3** `.moye` backups and reads formats 1, 2 and 3. Published Moye 1.12.0 and earlier cannot open schema 3 or format 3. Uninstalling does not undo the migration. See [File format](docs/FILE_FORMAT.md) and the [current user guide](docs/USER_GUIDE.md).
+**Penroam 1.1.0** adds **Extend Page**: increase the writing space on any side of a PDF or paper page while retaining the original PDF size and annotation alignment. Page extensions support undo/redo, saving, editable backups and PDF export. Lasso selections also move visibly while you drag, with one-step Undo and Esc cancellation.
+
+**Before opening an existing library with Penroam 1.1.0, keep a backup made by your current app.** Penroam 1.1 migrates the library to **schema 4**, writes **format 4** `.moye` backups and reads formats 1, 2, 3 and 4. Released Penroam 1.0.0 and Moye 2.0.0 use schema/format 3 and cannot open schema/format 4. Uninstalling does not undo the migration. See [File format](docs/FILE_FORMAT.md) and the [current user guide](docs/USER_GUIDE.md).
 
 Penroam 1.0 reduces accidental page jumps at the paper edges: document scrollbars ignore finger input, and a one-finger gesture starting in the gray margin needs a deliberate drag before moving the page. Mouse and pen scrollbar controls remain available. These changes still need physical touch/palm validation.
 
@@ -69,7 +71,7 @@ The English interface puts the document title at the top, with **Contents** and 
 
 The starting presets are Black Pen **0.45 mm**, Blue Pen **0.45 mm**, Red Pen **0.35 mm** and Yellow Highlighter **3 mm**. Preset widths range from approximately **0.132292 to 6.35 mm**. Pen opacity is adjustable from **10% to 100%**; highlighters use native **50%** transparency. Use **Pen Settings → Save Current as Preset…** to keep a new tool. **Manage pens** manages up to 40 presets; the first nine favorites appear in the toolbar.
 
-Paper previews, page backgrounds and exported PDFs use the same template geometry. Dot Grid offers dotted guides, Cornell separates cues, notes and a summary, and Graph uses fine squares with stronger major guides. New paper pages are A4 with fixed spacing; custom paper sizes, spacing and template management remain future work.
+Paper previews, page backgrounds and exported PDFs use the same template geometry. Dot Grid offers dotted guides, Cornell separates cues, notes and a summary, and Graph uses fine squares with stronger major guides. New paper pages start at A4 with fixed spacing; Penroam 1.1 can extend their width or height. Custom spacing and template management remain future work.
 
 With Pen or Highlighter, pause at a line endpoint for about 0.65 seconds to straighten it, drag to adjust, then lift. **Pen Settings → Draw and Hold** toggles this behavior and remembers the choice. **Eraser Settings** offers Pixel or Stroke erasing, a **12–120 DIP** size control, and **Erase highlighter only**.
 
@@ -89,9 +91,9 @@ Renaming Moye to Penroam does not move or rename the library, preferences, recov
 
 Backups include editable ink, pressure, text, images, section/page order, and original PDFs. They are not encrypted. Writing tools live in `%LOCALAPPDATA%\Moye\writing-preferences.json`. Penroam 1.0 stores reading positions, workspace options and backup settings in `workspace-preferences.json`; neither preferences file is included in `.moye` notebook backups. Drafts and deleted-notebook recovery copies are local files under `recovery`; drafts refer to attachments in the library and are not portable backups.
 
-Published Moye 1.7.0–1.12.0 uses schema 2 / backup format 2; Penroam 1.0 uses schema 3 / backup format 3 for page titles/bookmarks and notebook organization metadata. Keep a backup made with the older app if you need to return to it. See the [format guide](docs/FILE_FORMAT.md).
+Published Moye 1.7.0–1.12.0 uses schema 2 / backup format 2; released Moye 2.0.0 and Penroam 1.0.0 use schema 3 / backup format 3. Penroam 1.1 uses schema 4 / backup format 4 to preserve PDF placement on extended pages. Keep a backup made with the older app if you need to return to it. See the [format guide](docs/FILE_FORMAT.md).
 
-The [roadmap](ROADMAP.md) describes **41 feature areas**, including future work. Version 1.5.0 delivers the first slice of that plan: persistent tools, faster editing shortcuts and selected reliability improvements. The complete roadmap is not implemented. Infinite canvas is planned; the current editor uses fixed pages. Cloud sync, recording, handwriting recognition and AI features are also unavailable.
+The [roadmap](ROADMAP.md) describes **41 feature areas**, including future work. Version 1.5.0 delivers the first slice of that plan: persistent tools, faster editing shortcuts and selected reliability improvements. The complete roadmap is not implemented. Infinite canvas is planned; the editor uses finite pages that can be extended. Cloud sync, recording, handwriting recognition and AI features are also unavailable.
 
 Autosave deadlines and temporary touch suppression now use elapsed time that is unaffected by system-clock adjustments. Equivalent default and explicit library paths share the same single-instance identity, helping prevent two app instances from opening the same library through different launch forms. Background thumbnail refresh also preserves the selected writing or eraser mode.
 
@@ -113,8 +115,8 @@ CLI and NuGet caches are kept in `.tools\cli` and `.tools\nuget`. CLI telemetry 
 |---|---|
 | `build.ps1 -Configuration Release` | Build the Release configuration. |
 | `test.ps1 -Filter 'FullyQualifiedName~StorageTests'` | Run selected tests; TRX output is written to `artifacts\TestResults`. |
-| `publish.ps1` | Read the version from the project and create `artifacts\Penroam-win-x64`, `Penroam-1.0.0-win-x64.zip`, and its SHA-256 file. Close any app running from the output folder first. |
-| `publish-installer.ps1 -InstallCompiler` | Build the self-contained payload and `artifacts\Penroam-1.0.0-Setup-win-x64.exe` with its SHA-256 file. |
+| `publish.ps1` | Read the version from the project and create `artifacts\Penroam-win-x64`, `Penroam-1.1.0-win-x64.zip`, and its SHA-256 file. Close any app running from the output folder first. |
+| `publish-installer.ps1 -InstallCompiler` | Build the self-contained payload and `artifacts\Penroam-1.1.0-Setup-win-x64.exe` with its SHA-256 file. |
 | `test-installer.ps1 -AllowDesktopChanges` | In a disposable Windows account, verify installation, automatic shortcuts, reinstallation, uninstallation and retained notebook data. CI runs this automatically. |
 | `preview-ui.ps1` | Render the real WPF layout with an in-memory sample at two sizes, with a button-size report in `artifacts`. It does not open a desktop window or read your notes database. |
 
@@ -122,11 +124,13 @@ For a separate library, use `Penroam.exe --data-dir .\sample-library`. The app k
 
 ## Verification and limitations
 
+The 1.1.0 Release links automated test, layout, storage and installation results for its exact published commit. Page-extension checks cover PDF crop/rotation and annotation clipping, paper-guide alignment, legacy data migration and format-4 backup round trips. Native device and printer acceptance remain limited as described in the [release notes](docs/RELEASE_NOTES_1.1.0.md).
+
 **Penroam branding checks, 2026-09-30:** the local Release build completed with **0 warnings and 0 errors**, and all **512 automated tests passed**, with no failures or skipped tests. The detached WPF preview completed **69 layout scenes**: 42 main-window/tool scenes, 9 document-workflow scenes, 10 organization scenes and 8 workspace scenes. The 42 main-layout reports recorded no undersized controls, overlaps or clipping; the other scene groups passed their implemented size and boundary checks. The self-contained app passed its SQLite notebook/asset save-and-reopen check. A native desktop check with an isolated synthetic library confirmed the Penroam title, home logo, window icons and workspace-settings wording. The installer compiled successfully; the 1.0.0 Release records final CI installation, synthetic legacy upgrade, shortcut replacement and uninstall results for its published commit.
 
 The earlier Moye results below are historical baselines. Their packaged storage, installer and desktop results apply to their original builds, not to the renamed Penroam package.
 
-On **2026-09-30**, the Moye 2.0.0 source passed **511 automated tests** and **69 detached WPF layout scenes**, covering migration, organization, document workflows, workspace settings and recovery. These are historical Moye results; the current Release links verification for Penroam 1.0.0. Native interaction with the new workflows, clipboard/drag-and-drop/focus, physical pen/touch/palm input and broader IME behavior remains unverified; detached rendering and managed tests do not establish device acceptance.
+On **2026-09-30**, the Moye 2.0.0 source passed **511 automated tests** and **69 detached WPF layout scenes**, covering migration, organization, document workflows, workspace settings and recovery. These are historical Moye results; the current Release links verification for Penroam 1.1.0. Native interaction with the new workflows, clipboard/drag-and-drop/focus, physical pen/touch/palm input and broader IME behavior remains unverified; detached rendering and managed tests do not establish device acceptance.
 
 On **2026-09-23**, the 1.10.0 source passed **437 automated tests** and **39 detached WPF layout scenes**. Native mouse/keyboard checks covered the floating focus toolbar, tool settings and shortcuts, page context menus, duplicate/delete/undo, text editing menus and save/reopen. A synthetic six-page PDF verified navigation annotation import, unchanged original bytes and preserved appearance after export with internal actions removed. These checks used isolated synthetic libraries.
 
@@ -136,7 +140,7 @@ On **2026-09-21**, the local 1.8.0 Release run passed **292 tests** with no fail
 
 Earlier mouse checks on **2026-09-21** covered the visual color controls, Apply/Cancel, thickness preview, saved ink/text/preset values after reopening a synthetic library, and a scroll/draw/thumbnail regression. They did not exercise physical finger or stylus input.
 
-The Penroam 1.0.0 release workflow checks document validation/converter routing, PDF import/export, library search recovery, visual color selection, stroke-width gestures, touch movement/inertia, section navigation and undo, SQLite schema migration and rollback, save/reopen, editable backup formats 1, 2 and 3, viewport stability, selected-section PDF ordering and export snapshot isolation. It also runs detached WPF layouts and executes the actual packaged app before accepting the installer. Installation and reinstallation checks verify automatic shortcuts and storage access; uninstallation checks retain synthetic notebook data. See [release notes](docs/RELEASE_NOTES_1.0.0.md) and [GitHub Actions](https://github.com/yikeugene/moye/actions) for results for the published commit.
+The Penroam 1.1.0 release workflow checks document validation/converter routing, PDF import/export, library search recovery, visual color selection, stroke-width gestures, touch movement/inertia, section navigation and undo, SQLite schema migration and rollback, save/reopen, editable backup formats 1, 2, 3 and 4, viewport stability, selected-section PDF ordering and export snapshot isolation. It also runs detached WPF layouts and executes the actual packaged app before accepting the installer. Installation and reinstallation checks verify automatic shortcuts and storage access; uninstallation checks retain synthetic notebook data. See [release notes](docs/RELEASE_NOTES_1.1.0.md) and [GitHub Actions](https://github.com/yikeugene/moye/actions) for results for the published commit.
 
 SQLitePCLRaw 3.0.5 replaces the older dependency that Windows application control blocked on the affected machine. Local storage checks passed with the updated package without changing security settings. The app reports the underlying error and writes an error log beside the selected library when writable; compatibility with every device policy is not established.
 

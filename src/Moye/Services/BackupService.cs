@@ -19,7 +19,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
     private sealed class Manifest
     {
         [JsonRequired] public string Format { get; set; } = "moye";
-        [JsonRequired] public int Version { get; set; } = 3;
+        [JsonRequired] public int Version { get; set; } = 4;
         public DateTimeOffset CreatedUtc { get; set; } = DateTimeOffset.UtcNow;
         [JsonRequired] public List<DocumentEntry> Notebooks { get; set; } = [];
         [JsonRequired] public List<AssetEntry> Assets { get; set; } = [];
@@ -142,7 +142,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
                 AddBytes(ref total, entry.Length);
             }
             var manifest = Deserialize<Manifest>(await ReadAsync(Get(entries, "manifest.json"), MaxDocumentBytes, cancellationToken).ConfigureAwait(false));
-            if (manifest.Format != "moye" || manifest.Version is not (1 or 2 or 3)) throw Invalid("This backup format or version is not supported.");
+            if (manifest.Format != "moye" || manifest.Version is not (1 or 2 or 3 or 4)) throw Invalid("This backup format or version is not supported.");
             if (manifest.Notebooks is null || manifest.Assets is null || manifest.Notebooks.Count > 10_000) throw Invalid("Invalid backup index.");
             var referencedPaths = new HashSet<string>(StringComparer.Ordinal) { "manifest.json" };
             var assets = new Dictionary<string, AssetEntry>(StringComparer.Ordinal);
@@ -278,7 +278,8 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
         {
             if (page is null || !ValidId(page.Id) || !pageIds.Add(page.Id) || !Dimension(page.Width) || !Dimension(page.Height)
                 || !Enum.IsDefined(page.Template) || page.InkData is null || page.Texts is null || page.Images is null
-                || page.Title is null || page.Title.Length > 10_000 || page.Texts.Count > 50_000 || page.Images.Count > 50_000) throw Invalid("Invalid page structure.");
+                || page.Title is null || page.Title.Length > 10_000 || page.Texts.Count > 50_000 || page.Images.Count > 50_000
+                || !PaperPagePlacement.IsValid(page)) throw Invalid("Invalid page structure.");
             if (requireSections)
             {
                 if (!ValidId(page.SectionId) || !sectionOrder.TryGetValue(page.SectionId, out var currentSection) || currentSection < previousSection)
@@ -302,7 +303,8 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
             if (page.Pdf is { } pdf && (!IsHash(pdf.AssetId) || pdf.PageIndex < 0 || pdf.PageIndex > 1_000_000
                 || pdf.Rotation is not (0 or 90 or 180 or 270) || !Position(pdf.CropX) || !Position(pdf.CropY)
                 || !double.IsFinite(pdf.CropWidth) || pdf.CropWidth < 0 || pdf.CropWidth > 100_000
-                || !double.IsFinite(pdf.CropHeight) || pdf.CropHeight < 0 || pdf.CropHeight > 100_000)) throw Invalid("Invalid PDF page structure.");
+                || !double.IsFinite(pdf.CropHeight) || pdf.CropHeight < 0 || pdf.CropHeight > 100_000
+                || !PdfPagePlacement.IsValid(page))) throw Invalid("Invalid PDF page structure.");
         }
     }
 
@@ -348,12 +350,18 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
             RequireFields(page, "id", "width", "height", "template", "inkData", "texts", "images");
             if (version >= 2) RequireFields(page, "sectionId");
             if (version >= 3) RequireFields(page, "title", "isBookmarked");
+            if (version >= 4) RequireFields(page, "paperLayout");
+            if (page.TryGetProperty("paperLayout", out var paperLayout) && paperLayout.ValueKind != JsonValueKind.Null)
+                RequireFields(paperLayout, "x", "y", "width", "height");
             foreach (var text in RequireArray(page, "texts"))
                 RequireFields(text, "id", "x", "y", "width", "height", "text", "fontFamily", "fontSize", "color");
             foreach (var image in RequireArray(page, "images"))
                 RequireFields(image, "id", "assetId", "x", "y", "width", "height");
             if (page.TryGetProperty("pdf", out var pdf) && pdf.ValueKind != JsonValueKind.Null)
+            {
                 RequireFields(pdf, "assetId", "pageIndex", "rotation", "cropX", "cropY", "cropWidth", "cropHeight");
+                if (version >= 4) RequireFields(pdf, "offsetX", "offsetY", "displayWidth", "displayHeight");
+            }
         }
         return Deserialize<NotebookDocument>(bytes);
     }

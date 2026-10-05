@@ -34,7 +34,8 @@ public sealed class PagePreviewRenderer(IPdfService pdf, Func<string, Task<Asset
         {
             dc.PushTransform(new ScaleTransform(scale, scale));
             dc.PushClip(new RectangleGeometry(new Rect(0, 0, page.Width, page.Height)));
-            dc.DrawImage(background, new Rect(0, 0, page.Width, page.Height));
+            dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, page.Width, page.Height));
+            dc.DrawImage(background, PageExtensionService.GetPdfBounds(page));
             foreach (var image in images) dc.DrawImage(image.Image, new Rect(image.Placement.X, image.Placement.Y, image.Placement.Width, image.Placement.Height));
             foreach (var text in page.Texts)
             {

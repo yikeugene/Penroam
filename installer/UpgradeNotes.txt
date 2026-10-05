@@ -1,26 +1,22 @@
-Upgrading to Penroam 1.0.0
+Upgrading to Penroam 1.1.0
 
-Penroam is the new name for Moye. Version numbering restarts at 1.0.0
-with all current features. This supersedes Moye 2.0.0 without downgrading
-notebook data formats. Setup updates an existing installation
-in its current folder and replaces its Moye shortcuts with Penroam shortcuts.
-Your library stays in %LOCALAPPDATA%\Moye and backups keep the .moye extension.
+This release adds page extension and live movement of lasso selections.
+Setup updates the existing installation and automatically creates desktop
+and Start menu shortcuts. The .NET runtime is included.
 
-Before continuing, use your current app version to back up your notebooks
-(More > Back Up All Notebooks). Keep that backup separately if you need
-to return to an older release.
+Before continuing, use your current app to back up your notebooks
+(More > Back Up All Notebooks). Keep that backup separately if you may
+need to return to an older release.
 
-Penroam 1.0.0 upgrades existing libraries to database schema 3 when opened.
-New .moye backups use format 3. Moye 1.12.0 and earlier cannot open the
-upgraded library or new backups. Keep a backup made by the older app
-before opening your library in Penroam 1.0.0 if you need to return to that version.
+Penroam 1.1.0 upgrades libraries to database schema 4 when opened.
+New .moye backups use format 4. Penroam 1.0.0 and all former Moye
+releases cannot open the upgraded library or new backups. Uninstalling
+does not reverse this migration.
 
-Penroam 1.0.0 reads backup formats 1, 2 and 3. Restoring creates new notebook
-copies and does not overwrite existing notebooks. Writing preferences
-remain format 1; workspace settings and recovery files stay device-local.
+Penroam 1.1 reads backup formats 1, 2, 3 and 4. Restoring creates new
+notebook copies without overwriting existing notebooks. Preferences
+and recovery files stay in their existing locations and formats.
 
-Your notebooks stay outside the installed program folder. Uninstalling Penroam
-keeps your notes, but does not reverse the library upgrade. Draft recovery
-is best effort and is not a replacement for a separate notebook backup.
-
-Setup creates desktop and Start menu shortcuts automatically.
+Your library remains in %LOCALAPPDATA%\Moye, outside the installed
+program folder. Uninstalling keeps your notes. Draft recovery is best
+effort and is not a replacement for a separate notebook backup.

@@ -91,6 +91,15 @@ public static class PaperPattern
         }
         drawing.Pop();
     }
+
+    public static void Draw(DrawingContext drawing, PaperTemplate template, double width, double height, PaperPageLayout? layout)
+    {
+        if (layout is null) { Draw(drawing, template, width, height); return; }
+        drawing.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height));
+        drawing.PushTransform(new TranslateTransform(layout.X, layout.Y));
+        Draw(drawing, template, layout.Width, layout.Height);
+        drawing.Pop();
+    }
 }
 
 /// <summary>Paper is drawn in document DIP coordinates; it never owns input.</summary>
@@ -98,8 +107,12 @@ public sealed class PaperVisual : FrameworkElement
 {
     private PaperTemplate _template;
     private BitmapSource? _pdf;
+    private Rect? _pdfBounds;
+    private PaperPageLayout? _paperLayout;
     public PaperTemplate Template { get => _template; set { _template = value; InvalidateVisual(); } }
     public BitmapSource? PdfBackground { get => _pdf; set { _pdf = value; InvalidateVisual(); } }
+    public Rect? PdfBounds { get => _pdfBounds; set { _pdfBounds = value; InvalidateVisual(); } }
+    public PaperPageLayout? PaperLayout { get => _paperLayout; set { _paperLayout = value; InvalidateVisual(); } }
 
     public PaperVisual() => IsHitTestVisible = false;
 
@@ -109,9 +122,9 @@ public sealed class PaperVisual : FrameworkElement
         if (_pdf is not null)
         {
             dc.DrawRectangle(Brushes.White, null, bounds);
-            dc.DrawImage(_pdf, bounds);
+            dc.DrawImage(_pdf, _pdfBounds ?? bounds);
             return;
         }
-        PaperPattern.Draw(dc, _template, ActualWidth, ActualHeight);
+        PaperPattern.Draw(dc, _template, ActualWidth, ActualHeight, _paperLayout);
     }
 }

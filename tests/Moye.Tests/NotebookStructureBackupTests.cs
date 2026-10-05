@@ -34,7 +34,7 @@ public sealed class NotebookStructureBackupTests
         var path = Path.Combine(sourceDirectory.Root, "hierarchy.moye");
         await new BackupService(source).ExportAsync(path, [document]);
         using (var archive = ZipFile.OpenRead(path))
-            Assert.Equal(3, ReadJson(archive.GetEntry("manifest.json")!)["version"]!.GetValue<int>());
+            Assert.Equal(4, ReadJson(archive.GetEntry("manifest.json")!)["version"]!.GetValue<int>());
         var restored = Assert.Single(await new BackupService(destination).ImportAsync(path));
         Assert.Equal(new[] { first.Title, empty.Title, second.Title }, restored.Sections.Select(section => section.Title));
         Assert.All(restored.Sections, section => Assert.DoesNotContain(section.Id, document.Sections.Select(original => original.Id)));

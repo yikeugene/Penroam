@@ -41,6 +41,7 @@ internal static class Program
             var application = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
             application.Resources = ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml"));
             DocumentWorkflowPreviewScenes.Run(output);
+            PageExtensionPreviewScenes.Run(output);
             OrganizationPreviewScenes.Run(output);
             WorkspacePreviewScenes.Run(output);
             using var repository = new FixtureRepository();

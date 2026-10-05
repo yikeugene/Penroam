@@ -65,6 +65,7 @@ public partial class MainWindow
         menu.Items.Add(sections);
         menu.Items.Add(new Separator());
         Add("Paper Style…", "\uE790", PageSettingsClick);
+        Add("Extend Page…", "\uE740", ExtendPageClick);
         menu.Items.Add(new Separator());
         Add("Delete Page", "\uE74D", DeletePageClick, danger: true);
         return menu;

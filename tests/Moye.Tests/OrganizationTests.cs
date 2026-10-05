@@ -28,7 +28,7 @@ public sealed class OrganizationTests
         var backup = new BackupService(repository); var path = Path.Combine(directory.Root, "organization.moye");
         await backup.ExportAsync(path, [saved]);
         using (var archive = ZipFile.OpenRead(path))
-        using (var stream = archive.GetEntry("manifest.json")!.Open()) Assert.Equal(3, JsonNode.Parse(stream)!["version"]!.GetValue<int>());
+        using (var stream = archive.GetEntry("manifest.json")!.Open()) Assert.Equal(4, JsonNode.Parse(stream)!["version"]!.GetValue<int>());
         var restored = Assert.Single(await backup.ImportAsync(path));
         Assert.True(restored.IsPinned); Assert.False(restored.IsQuickInbox); Assert.Equal(saved.CoverColor, restored.CoverColor);
         Assert.Equal(saved.Pages[0].Title, restored.Pages[0].Title); Assert.True(restored.Pages[0].IsBookmarked);
@@ -71,7 +71,7 @@ public sealed class OrganizationTests
         Assert.Equal(original.Pages[0].Texts[0].Text, loaded.Pages[0].Texts[0].Text);
         Assert.False(loaded.IsPinned); Assert.Equal("", loaded.CoverColor);
         using var check = Open(directory.DatabasePath); using var query = check.CreateCommand(); query.CommandText = "PRAGMA user_version";
-        Assert.Equal(3L, query.ExecuteScalar());
+        Assert.Equal(4L, query.ExecuteScalar());
     }
 
     [Fact]

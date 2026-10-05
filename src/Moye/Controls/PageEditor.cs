@@ -52,7 +52,7 @@ public sealed partial class PageEditor : Grid
     public bool HasTextOverflow => SelectedText is { } text && _overflowingTexts.Contains(text.Id);
     public bool IsTextComposing => _composingTexts.Count > 0;
     public bool IsPenDown => _ink.IsPenDown || _objectPenDown;
-    public bool IsInputActive => IsPenDown || IsTextComposing || _ink.IsMouseCaptureWithin || _ink.IsStylusCaptureWithin || _frames.Any(f => f.IsMouseCaptureWithin || f.IsStylusCaptureWithin);
+    public bool IsInputActive => _selectionDrag is not null || IsPenDown || IsTextComposing || _ink.IsMouseCaptureWithin || _ink.IsStylusCaptureWithin || _frames.Any(f => f.IsMouseCaptureWithin || f.IsStylusCaptureWithin);
     public event EventHandler? ContentChanged;
     public event EventHandler? VisualContentChanged;
     public event EventHandler? PenContactChanged;
@@ -88,6 +88,7 @@ public sealed partial class PageEditor : Grid
         _ink.InputCompleted += (_, _) => FlushChanges();
         _ink.PenContactChanged += (_, _) => PenContactChanged?.Invoke(this, EventArgs.Empty);
         _ink.SelectionChanged += (_, _) => UpdateMixedSelection();
+        InitializeSelectionDragging();
         _items.MouseLeftButtonDown += (_, e) =>
         {
             if (PenInkCanvas.IsTouch(e.StylusDevice)) return;
@@ -131,6 +132,8 @@ public sealed partial class PageEditor : Grid
             Height = Math.Max(1, page.Height);
             _paper.Template = page.Template;
             _paper.PdfBackground = null;
+            _paper.PdfBounds = Moye.Services.PageExtensionService.GetPdfBounds(page);
+            _paper.PaperLayout = page.PaperLayout;
             UnsubscribeStrokes(_ink.Strokes);
             _ink.Strokes = page.InkData.Length == 0 ? new StrokeCollection() : new StrokeCollection(new MemoryStream(page.InkData, false));
             SubscribeStrokes(_ink.Strokes);
@@ -483,13 +486,13 @@ public sealed partial class PageEditor : Grid
     {
         if (_committing || _loading) return;
         _committing = true;
-        try { _ink.FinishInput(); SetObjectPenContact(false); FlushChanges(); }
+        try { FinishSelectionDrag(true); _ink.FinishInput(); SetObjectPenContact(false); FlushChanges(); }
         finally { _committing = false; }
     }
 
     private void FlushChanges()
     {
-        if (_loading || (!_inkDirty && !_contentDirty)) return;
+        if (_loading || _selectionDrag is not null || _updatingSelectionDrag || (!_inkDirty && !_contentDirty)) return;
         _editTimer.Stop();
         if (_inkDirty)
         {
@@ -503,7 +506,7 @@ public sealed partial class PageEditor : Grid
 
     private void MarkInkDirty()
     {
-        if (_loading) return;
+        if (_loading || _updatingSelectionDrag) return;
         _inkDirty = true;
         _editTimer.Start();
     }
@@ -771,6 +774,7 @@ public sealed partial class PageEditor : Grid
 
     private void HandleKeyDown(object sender, KeyEventArgs e)
     {
+        if (e.Key == Key.Escape && CancelSelectionDrag()) { e.Handled = true; return; }
         if (Keyboard.FocusedElement is TextBox) return;
         var step = Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? 10 : 1;
         var delta = e.Key switch { Key.Left => new Vector(-step, 0), Key.Right => new Vector(step, 0), Key.Up => new Vector(0, -step), Key.Down => new Vector(0, step), _ => new Vector() };

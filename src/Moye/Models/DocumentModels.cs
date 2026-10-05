@@ -103,12 +103,35 @@ public sealed class NotePage
     public double Width { get; set; } = 793.700787;
     public double Height { get; set; } = 1122.519685;
     public PaperTemplate Template { get; set; }
+    public PaperPageLayout? PaperLayout { get; set; }
     // Byte arrays are immutable snapshots. Replace rather than mutate them.
     public byte[] InkData { get; set; } = [];
     public List<NoteText> Texts { get; set; } = [];
     public List<NoteImage> Images { get; set; } = [];
     public PdfPageSource? Pdf { get; set; }
-    public NotePage Snapshot() => new() { Id = Id, SectionId = SectionId, Title = Title, IsBookmarked = IsBookmarked, Width = Width, Height = Height, Template = Template, InkData = InkData, Texts = Texts.Select(t => t with {}).ToList(), Images = Images.Select(i => i with {}).ToList(), Pdf = Pdf is null ? null : Pdf with {} };
+    public NotePage Snapshot() => new() { Id = Id, SectionId = SectionId, Title = Title, IsBookmarked = IsBookmarked, Width = Width, Height = Height, Template = Template, PaperLayout = PaperLayout is null ? null : PaperLayout with {}, InkData = InkData, Texts = Texts.Select(t => t with {}).ToList(), Images = Images.Select(i => i with {}).ToList(), Pdf = Pdf is null ? null : Pdf with {} };
+}
+
+/// <summary>Original paper-guide region on an extended canvas. A null layout fills the page.</summary>
+public sealed record PaperPageLayout
+{
+    public double X { get; set; }
+    public double Y { get; set; }
+    public double Width { get; set; }
+    public double Height { get; set; }
+}
+
+public static class PaperPagePlacement
+{
+    public static bool IsValid(NotePage page)
+    {
+        if (page.PaperLayout is not { } paper) return true;
+        return double.IsFinite(page.Width) && double.IsFinite(page.Height) && page.Width > 0 && page.Height > 0
+            && double.IsFinite(paper.X) && double.IsFinite(paper.Y) && paper.X >= 0 && paper.Y >= 0
+            && double.IsFinite(paper.Width) && double.IsFinite(paper.Height) && paper.Width > 0 && paper.Height > 0
+            && paper.X + paper.Width <= page.Width + 0.000001
+            && paper.Y + paper.Height <= page.Height + 0.000001;
+    }
 }
 
 public static class NotebookAppearance
@@ -160,6 +183,27 @@ public sealed record PdfPageSource
     public double CropY { get; set; }
     public double CropWidth { get; set; }
     public double CropHeight { get; set; }
+    // Placement on the note canvas, in DIP. All zero keeps legacy PDFs filling their page.
+    // Extending a page materializes the original display size before changing the canvas.
+    public double OffsetX { get; set; }
+    public double OffsetY { get; set; }
+    public double DisplayWidth { get; set; }
+    public double DisplayHeight { get; set; }
+}
+
+public static class PdfPagePlacement
+{
+    public static bool IsValid(NotePage page)
+    {
+        if (page.Pdf is not { } pdf) return true;
+        if (!double.IsFinite(page.Width) || !double.IsFinite(page.Height) || page.Width <= 0 || page.Height <= 0
+            || !double.IsFinite(pdf.OffsetX) || !double.IsFinite(pdf.OffsetY) || pdf.OffsetX < 0 || pdf.OffsetY < 0
+            || !double.IsFinite(pdf.DisplayWidth) || !double.IsFinite(pdf.DisplayHeight)) return false;
+        if (pdf.DisplayWidth == 0 && pdf.DisplayHeight == 0) return pdf.OffsetX == 0 && pdf.OffsetY == 0;
+        return pdf.DisplayWidth > 0 && pdf.DisplayHeight > 0
+            && pdf.OffsetX + pdf.DisplayWidth <= page.Width + 0.000001
+            && pdf.OffsetY + pdf.DisplayHeight <= page.Height + 0.000001;
+    }
 }
 
 public sealed record AssetData(string Id, string FileName, string ContentType, byte[] Bytes);

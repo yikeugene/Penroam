@@ -1,16 +1,16 @@
 # Penroam user guide
 
-This guide describes the English interface in **Penroam 1.0.0** for Windows 11 x64. Historical release and device-check notes below keep their original scope.
+This guide describes the English interface in **Penroam 1.1.0** for Windows 11 x64, including page extension and live lasso movement. Historical release and device-check notes keep their original scope.
 
-Penroam is the new name for Moye. Penroam 1.0.0 restarts version numbering with all current features and the new name/icon; it supersedes the previous Moye releases. Existing notebook data, preferences, recovery files and `.moye` backups keep their current names and locations. Moye 2.0 libraries and backups already use the same formats; changing the name to Penroam adds no migration.
+Penroam is the new name for Moye. Penroam 1.0.0 restarted version numbering with the new name/icon and the then-current features. Existing notebook data, preferences, recovery files and `.moye` backups keep their current names and locations. The 1.0.0 branding update retained Moye 2.0 data formats; the 1.1.0 page-extension update introduces the schema/format 4 migration described below.
 
 Version 1.6.0 adds the **Type** button and text-formatting workflow described below.
 
-**Before upgrading to Penroam 1.0.0:** create a `.moye` backup using your current app and keep it separately. Penroam 1.0 migrates libraries to schema 3 and writes format 3 backups, while reading backups in formats 1, 2 and 3. Published Moye 1.12.0 and earlier cannot reopen schema 3 or format 3. Uninstalling does not reverse this migration.
+**Before opening an existing library in Penroam 1.1.0:** create a `.moye` backup using your current app and keep it separately. Penroam 1.1 migrates libraries to schema 4 and writes format 4 backups, while reading backups in formats 1–4. Published Penroam 1.0.0 and earlier Moye releases cannot reopen schema 4 or format 4. Uninstalling does not reverse this migration.
 
 ## Install, update and uninstall
 
-Download and run [Penroam-1.0.0-Setup-win-x64.exe](https://github.com/yikeugene/moye/releases/download/v1.0.0/Penroam-1.0.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/moye/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
+Download and run [Penroam-1.1.0-Setup-win-x64.exe](https://github.com/yikeugene/moye/releases/download/v1.1.0/Penroam-1.1.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/moye/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
 
 Open the **Penroam** desktop shortcut after installation. When updating, close the app and run the newer installer. Setup recognizes an existing Moye installation as the same application. Existing notes stay in `%LOCALAPPDATA%\Moye`; the installer does not move or replace them. If you previously used a portable ZIP with the default library, the installed app uses that same library. A custom `--data-dir` library still needs its custom launch argument.
 
@@ -18,7 +18,7 @@ Remove Penroam through **Windows Settings → Apps → Installed apps → Penroa
 
 ## Notebooks, sections and pages
 
-The **1.9.0 interface** uses a warm neutral workspace with forest green controls, clearer notebook covers and visible keyboard focus. Version 1.11.0 refines buttons, pen badges and focus indicators. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. The navigation names below describe Penroam 1.0.0; version 1.8.0 uses **All Notes**, **Presets…** and **Create a Notebook** for the corresponding actions.
+The **1.9.0 interface** uses a warm neutral workspace with forest green controls, clearer notebook covers and visible keyboard focus. Version 1.11.0 refines buttons, pen badges and focus indicators. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. The navigation names below describe Penroam 1.1.0; version 1.8.0 uses **All Notes**, **Presets…** and **Create a Notebook** for the corresponding actions.
 
 Open `Penroam.exe` to see **Your notebooks**. Penroam starts on this home screen and waits for you to choose a notebook. An empty library shows **Create your first notebook**; it does not create a notebook automatically. Notebook cards show the title, category and page count. **Continue** opens the last notebook at its saved reading position. **Quick note** creates a page in an Inbox notebook and selects Pen, ready to write; use the page organizer to move it into a course later.
 
@@ -35,13 +35,23 @@ Click a notebook cover to open it, or **New Notebook** to choose a name, categor
 | Cornell | A cue column, ruled notes area and summary area. |
 | Graph | Fine squares with stronger major guides. |
 
-New paper pages are A4, and each template uses fixed spacing. The same geometry appears in page backgrounds, thumbnails and exported PDFs. Custom sizes, adjustable spacing and saved custom templates remain future work.
+New paper pages are A4, and each template uses fixed spacing. The same geometry appears in page backgrounds, thumbnails and exported PDFs. Use **Extend Page…** to enlarge a page after creation. Adjustable spacing and saved custom templates remain future work.
 
 Click **My notebooks** to save your changes and return home. You can also switch notebooks using the editor's **Notebooks** sidebar tab. Opening a notebook restores its saved page, position and zoom when available; otherwise it opens its first section. Click the document title, or choose **More → Rename and Category**, to change its title and category. The home/sidebar search filters notebook titles and categories. On the home screen, `Ctrl+F` focuses that search. Click its clear button, press `Esc` while search has focus, or choose **Clear search** in the no-results message to clear text and category filtering. **Find content** or `Ctrl+Shift+F` opens the separate content search described below. The home screen also offers **Restore backup** and **Library Options → Back Up All Notebooks**.
 
 Select a page thumbnail, then use **Insert → Add Page**, or **Add Page** beneath the thumbnails. Choose a paper preview and click **Add Page** to insert after the current page. The picker starts with the current ordinary page's style, or Ruled when viewing a PDF. Right-click a thumbnail or the paper to open that page's menu: duplicate, move or delete it without first selecting it. The menu identifies the target page. Page deletion can be undone. Deleting the last page in the notebook leaves a new blank page; a section can otherwise be empty.
 
 Right-click the page and choose **Paper Style**, select a visual template, and click **Apply Paper** to change an existing page. Your writing, text and images stay in place. This changes only that ordinary page; PDF pages keep their original background.
+
+## Extending a page for more notes
+
+Choose **Insert → Extend Page…**, or right-click a page/thumbnail and choose **Extend Page…**. This works with imported PDFs, converted Office pages and ordinary paper. Drag an edge or corner of the preview to add space, enter the extra **Left**, **Top**, **Right** and **Bottom** margins in millimeters, or use a **+50 mm** shortcut. The preview and resulting page dimensions update as you adjust them.
+
+Click **Extend page** to apply. The original PDF keeps its size; adding space on the left or top shifts the PDF and all existing handwriting, text and images together. You can write in every added margin. Ordinary paper retains its original guides and their alignment with your notes; added space is blank. **Reset** clears this dialog's additions, and **Cancel** leaves the page unchanged. Each applied extension is one notebook Undo step. Repeat the command whenever you need more space; it only adds space and does not crop existing notes.
+
+Extended sizes and PDF placement are preserved by autosave, reopening, duplication, `.moye` backups, thumbnails and the reference view. PDF export uses the enlarged page, including notes in the margins. The new page can be wider or longer than A4; printing it on A4 requires your PDF viewer's scaling or tiling options. Each dimension can grow up to **5,080 mm**. Existing larger imported pages remain readable but cannot be extended further with this command.
+
+If an original PDF annotation crosses its crop boundary and lacks a valid saved appearance, export asks you to flatten those annotations in the source PDF or undo the extension. It preserves any existing destination file when it cannot safely reproduce the original crop.
 
 To delete a notebook, open its **Notebook options (⋯)** menu below the cover and choose **Delete Notebook…**, or open the notebook and choose **More → Delete Notebook…**. The confirmation names the notebook and defaults to **No**. Before deleting a notebook, section or pages, Penroam preserves a complete notebook copy for up to 30 days in **Backup & Recovery → Recently deleted**. Restoring creates another notebook; it does not put individual pages back automatically. Deleting the open notebook returns you to the home screen. If saving, recovery-copy creation or deletion fails, retry after addressing the error.
 
@@ -107,7 +117,7 @@ The toolbar shows **Eraser**; its tooltip and settings identify the remembered P
 
 The remembered mode also applies to the pen's tail eraser when the device sends inverted-pen events. Actual tail-eraser and side-button behavior still depends on your device and drivers.
 
-Use **Lasso** to circle ink, text boxes and images together. Drag the selection to move it, or drag its boundary handles to resize it. Press `Ctrl+D` to duplicate or `Delete` to remove the selection. With ink selected, you can also change its color or thickness through **Pen Settings**. Arrow keys move a selected object or mixed selection by one page DIP; hold `Shift` for ten. These commands apply outside text editing.
+Use **Lasso** to circle ink, text boxes and images together. Drag the selection to move it: its content follows your pointer, and releasing records one undoable move. Press `Esc` during the drag to cancel it. Drag the boundary handles to resize the selection. Press `Ctrl+D` to duplicate or `Delete` to remove the selection. With ink selected, you can also change its color or thickness through **Pen Settings**. Arrow keys move a selected object or mixed selection by one page DIP; hold `Shift` for ten. These commands apply outside text editing.
 
 Press `Ctrl+C` to copy the selection, or `Ctrl+X` to cut it. Open another page and press `Ctrl+V` to paste editable ink, text and images with their layout and image assets. Ink retains pressure and stroke attributes. Outside a text editor, clipboard text creates a new text box, and clipboard images can be pasted as before. Text boxes keep their normal text clipboard, undo and IME behavior while being edited; notebook selection shortcuts do not replace those native commands.
 
@@ -181,7 +191,7 @@ Use **Cancel** or press `Esc` during import preparation. Conversion has a two-mi
 
 Completed edits are queued for background saving, with a coalescing delay of at most two seconds. Completion time depends on the disk and document size. The saved status appears only after a successful database transaction. Switching notebooks, leaving the window, and closing normally also attempt to save.
 
-The default library is `%LOCALAPPDATA%\Moye\moye.db`. SQLite may create `moye.db-wal` and `moye.db-shm` beside it. Do not move only the database or delete its journal files while the app is open. Penroam 1.0 upgrades libraries to schema 3 and writes format 3 backups. It reads formats 1, 2 and 3, placing legacy pages without sections in **General**. Published Moye 1.12.0 and earlier cannot open schema 3 / format 3. The new fields preserve page names/bookmarks and notebook pins, cover colors and the quick-note destination marker. See [File format](FILE_FORMAT.md).
+The default library is `%LOCALAPPDATA%\Moye\moye.db`. SQLite may create `moye.db-wal` and `moye.db-shm` beside it. Do not move only the database or delete its journal files while the app is open. Penroam 1.1 upgrades libraries to schema 4 and writes format 4 backups. It reads formats 1–4, placing legacy pages without sections in **General**. Published Penroam 1.0.0 and earlier Moye releases cannot open schema 4 / format 4. The new format preserves PDF placement inside extended pages alongside existing notebook and page organization fields. See [File format](FILE_FORMAT.md).
 
 Writing preferences are saved separately in `%LOCALAPPDATA%\Moye\writing-preferences.json`. This file contains presets and writing settings, and is **not included in `.moye` backups**. For a library started with `--data-dir`, both the database and preferences stay in that selected directory. A damaged settings file is preserved before defaults are offered; an unreadable or unsupported-version file is protected from replacement. A writing-settings warning offers details and retry when available. When an existing preferences file cannot be read or belongs to a newer version, tool changes apply to the current session only; notebooks still save and the app can close normally. Restart after resolving that file. A later write failure retains pending settings for retry.
 
