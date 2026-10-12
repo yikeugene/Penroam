@@ -38,7 +38,7 @@ public sealed class PageExtensionStorageTests
         var backupPath = Path.Combine(sourceDirectory.Root, "expanded.moye");
         await new BackupService(reopened).ExportAsync(backupPath, [saved]);
         using (var archive = ZipFile.OpenRead(backupPath))
-            Assert.Equal(4, ReadJson(archive.GetEntry("manifest.json")!)["version"]!.GetValue<int>());
+            Assert.Equal(5, ReadJson(archive.GetEntry("manifest.json")!)["version"]!.GetValue<int>());
         using var destination = new SqliteNotebookRepository(destinationDirectory.DatabasePath);
         var restored = Assert.Single(await new BackupService(destination).ImportAsync(backupPath));
         AssertPlacement(saved.Pages[0], restored.Pages[0]);
@@ -78,7 +78,7 @@ public sealed class PageExtensionStorageTests
         Assert.Null(loaded.Pages[0].PaperLayout);
         Assert.True(PdfPagePlacement.IsValid(loaded.Pages[0]));
         using var check = Open(directory.DatabasePath); using var query = check.CreateCommand();
-        query.CommandText = "PRAGMA user_version"; Assert.Equal(4L, query.ExecuteScalar());
+        query.CommandText = "PRAGMA user_version"; Assert.Equal(5L, query.ExecuteScalar());
         query.CommandText = "SELECT metadata_json FROM pages"; Assert.Equal(legacyJson, query.ExecuteScalar());
         query.CommandText = "SELECT content_hash FROM pages"; Assert.Equal("retain-hash", query.ExecuteScalar());
     }

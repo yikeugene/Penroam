@@ -138,11 +138,15 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
     }
 
     public async Task ExportAsync(string path, NotebookDocument document, CancellationToken cancellationToken = default)
-        => await ExportAsync(path, document, null, cancellationToken);
+        => await ExportAsync(path, document, PdfExportOptions.Original, null, cancellationToken);
 
     public async Task ExportAsync(string path, NotebookDocument document, IProgress<DocumentProgress>? progress, CancellationToken cancellationToken = default)
+        => await ExportAsync(path, document, PdfExportOptions.Original, progress, cancellationToken);
+
+    public async Task ExportAsync(string path, NotebookDocument document, PdfExportOptions options, IProgress<DocumentProgress>? progress = null, CancellationToken cancellationToken = default)
     {
         var snapshot = document.Snapshot();
+        var tiles = PdfExportPagination.Plan(snapshot.Pages, options);
         if (snapshot.Pages.Count == 0) throw new InvalidOperationException("Add a page to the notebook first.");
         var assets = new Dictionary<string, AssetData>();
         progress?.Report(new("Loading export attachments…"));
@@ -167,9 +171,13 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                 result.Info.Title = snapshot.Title;
                 result.Info.Creator = "Penroam";
                 var completed = 0;
-                foreach (var note in snapshot.Pages)
+                for (var sourceIndex = 0; sourceIndex < snapshot.Pages.Count; sourceIndex++)
                 {
-                    progress?.Report(new($"Exporting page {completed + 1} of {snapshot.Pages.Count}…", completed, snapshot.Pages.Count));
+                    var note = snapshot.Pages[sourceIndex];
+                    using var pageDocument = options.Layout == PdfExportLayout.A4Tiles ? new PdfDocument() : null;
+                    var canvasDocument = pageDocument ?? result;
+                    canvasDocument.Options.CompressContentStreams = false;
+                    progress?.Report(new($"Exporting page {sourceIndex + 1} of {snapshot.Pages.Count}…", completed, tiles.Count));
                     cancellationToken.ThrowIfCancellationRequested();
                     PdfPage outputPage;
                     if (note.Pdf is { } source)
@@ -180,14 +188,14 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                         if (source.PageIndex < 0 || source.PageIndex >= original.PageCount)
                             throw new InvalidDataException("The original PDF page could not be found.");
                         var originalPage = original.Pages[source.PageIndex];
-                        outputPage = result.AddPage(originalPage);
+                        outputPage = canvasDocument.AddPage(originalPage);
                         if (AnnotationCount(outputPage) != AnnotationCount(originalPage))
                             throw new InvalidDataException("The existing PDF annotations could not be fully preserved. The export file was not overwritten.");
                         ExtendPdfCanvas(note, outputPage);
                     }
                     else
                     {
-                        outputPage = result.AddPage();
+                        outputPage = canvasDocument.AddPage();
                         outputPage.Width = XUnit.FromPoint(note.Width * .75);
                         outputPage.Height = XUnit.FromPoint(note.Height * .75);
                     }
@@ -195,14 +203,14 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                     graphics.MultiplyTransform(PageTransform(note, outputPage));
                     graphics.IntersectClip(new XRect(0, 0, note.Width, note.Height));
                     if (note.Pdf is null) DrawPaper(graphics, note);
-                    var objectsBeforeImages = result.Internals.GetAllObjects().ToHashSet();
+                    var objectsBeforeImages = canvasDocument.Internals.GetAllObjects().ToHashSet();
                     foreach (var image in note.Images)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         var picture = imageResources.Get(image.AssetId, assets[image.AssetId].Bytes);
                         graphics.DrawImage(picture, image.X, image.Y, image.Width, image.Height);
                     }
-                    NormalizeNewImageStreams(result, objectsBeforeImages);
+                    NormalizeNewImageStreams(canvasDocument, objectsBeforeImages);
                     foreach (var text in note.Texts) DrawText(graphics, text);
                     if (note.InkData.Length > 0)
                     {
@@ -234,7 +242,27 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                     }
                     graphics.Dispose(); // Commit the appended content before encoding it.
                     WriteValidFlate(outputPage.Contents.Elements.GetDictionary(outputPage.Contents.Elements.Count - 1)!);
-                    completed++;
+                    if (pageDocument is not null)
+                    {
+                        var visible = VisibleBox(outputPage);
+                        ClipPageContent(outputPage, visible);
+                        KeepAnnotationsInsideOriginalCrop(outputPage, visible);
+                        using var pageBuffer = new MemoryStream();
+                        pageDocument.Save(pageBuffer, false);
+                        var bytes = pageBuffer.ToArray();
+                        foreach (var tile in tiles.Where(tile => tile.SourcePageIndex == sourceIndex))
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+                            // A separate import mapping keeps cropped copies and annotations independent.
+                            using var stream = new MemoryStream(bytes, false);
+                            using var original = PdfReader.Open(stream, PdfDocumentOpenMode.Import);
+                            var sheet = result.AddPage(original.Pages[0]);
+                            SetTileBounds(sheet, tile.Bounds);
+                            completed++;
+                            progress?.Report(new($"Preparing A4 sheet {completed} of {tiles.Count}…", completed, tiles.Count));
+                        }
+                    }
+                    else completed++;
                 }
                 cancellationToken.ThrowIfCancellationRequested();
                 using var file = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None);
@@ -245,7 +273,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
             cancellationToken.ThrowIfCancellationRequested();
             if (File.Exists(destination)) File.Replace(temporary, destination, null);
             else File.Move(temporary, destination);
-            progress?.Report(new("PDF exported", snapshot.Pages.Count, snapshot.Pages.Count));
+            progress?.Report(new("PDF exported", tiles.Count, tiles.Count));
         }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }
@@ -382,6 +410,18 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
             _ => throw new InvalidDataException("The PDF page rotation is not supported.")
         };
 
+        ClipPageContent(page, crop);
+        KeepAnnotationsInsideOriginalCrop(page, crop);
+        page.MediaBox = expanded;
+        page.CropBox = expanded;
+        // A printer honoring an explicit old TrimBox must also include the new notes.
+        if (page.HasTrimBox) page.TrimBox = expanded;
+        if (page.HasBleedBox) page.BleedBox = expanded;
+        if (page.HasArtBox) page.ArtBox = expanded;
+    }
+
+    private static void ClipPageContent(PdfPage page, PdfRectangle crop)
+    {
         // Preserve the vector content and fonts in their original coordinate system.
         // The former CropBox must remain a clip: merely enlarging it can reveal
         // material that the author cropped off the source PDF.
@@ -393,15 +433,28 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
         Encoding.ASCII.GetBytes("\nQ\n").CopyTo(clipped, prefix.Length + original.Length);
         page.Contents.Elements.Clear();
         page.Contents.AppendContent().CreateStream(clipped);
-        KeepAnnotationsInsideOriginalCrop(page, crop);
-        page.MediaBox = expanded;
-        page.CropBox = expanded;
-        // A printer honoring an explicit old TrimBox must also include the new notes.
-        if (page.HasTrimBox) page.TrimBox = expanded;
-        if (page.HasBleedBox) page.BleedBox = expanded;
-        if (page.HasArtBox) page.ArtBox = expanded;
     }
 
+    private static void SetTileBounds(PdfPage page, Rect bounds)
+    {
+        var crop = VisibleBox(page);
+        var rotation = ((page.Rotate % 360) + 360) % 360;
+        // DIPs map to 72-point PDF units without shrinking. Rotation remains metadata.
+        var left = bounds.Left * .75; var top = bounds.Top * .75;
+        var right = bounds.Right * .75; var bottom = bounds.Bottom * .75;
+        var tile = rotation switch
+        {
+            0 => Rectangle(crop.X1 + left, crop.Y2 - bottom, crop.X1 + right, crop.Y2 - top),
+            90 => Rectangle(crop.X1 + top, crop.Y1 + left, crop.X1 + bottom, crop.Y1 + right),
+            180 => Rectangle(crop.X2 - right, crop.Y1 + top, crop.X2 - left, crop.Y1 + bottom),
+            270 => Rectangle(crop.X2 - bottom, crop.Y2 - right, crop.X2 - top, crop.Y2 - left),
+            _ => throw new InvalidDataException("The PDF page rotation is not supported.")
+        };
+        page.MediaBox = tile; page.CropBox = tile;
+        if (page.HasTrimBox) page.TrimBox = tile;
+        if (page.HasBleedBox) page.BleedBox = tile;
+        if (page.HasArtBox) page.ArtBox = tile;
+    }
     private static PdfRectangle Rectangle(double x1, double y1, double x2, double y2) =>
         new(new XPoint(x1, y1), new XPoint(x2, y2));
 
@@ -550,8 +603,8 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                 text.Bold ? FontWeights.Bold : FontWeights.Normal, FontStretches.Normal), text.FontSize, Brushes.Black, 1)
         {
             // Include the partially visible last line, then apply the same box clip as TextBox.
-            MaxTextWidth = NoteTextLayout.ContentWidth(text.Width), MaxTextHeight = Math.Max(1, text.Height + text.FontSize * 1.4),
-            LineHeight = text.FontSize * 1.4, Trimming = TextTrimming.None,
+            MaxTextWidth = NoteTextLayout.ContentWidth(text.Width), MaxTextHeight = Math.Max(1, text.Height + NoteTextLayout.LineHeight(text)),
+            LineHeight = NoteTextLayout.LineHeight(text), Trimming = TextTrimming.None,
             TextAlignment = text.Alignment switch
             {
                 NoteTextAlignment.Center => TextAlignment.Center,
@@ -596,6 +649,13 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
         var state = graphics.Save();
         graphics.TranslateTransform(layout.X, layout.Y);
         graphics.IntersectClip(new XRect(0, 0, layout.Width, layout.Height));
+        foreach (var label in Controls.PaperPattern.Labels(page.Template, layout.Width, layout.Height))
+        {
+            var formatted = new FormattedText(label.Text, CultureInfo.GetCultureInfo("en-US"), FlowDirection.LeftToRight,
+                new Typeface("Segoe UI"), label.FontSize, Brushes.Black, 1);
+            graphics.DrawPath(new XSolidBrush(XColor.FromArgb(label.Color.R, label.Color.G, label.Color.B)),
+                ToPdfPath(formatted.BuildGeometry(label.Position)));
+        }
         foreach (var line in Controls.PaperPattern.Lines(page.Template, layout.Width, layout.Height))
             graphics.DrawLine(new XPen(XColor.FromArgb(line.Color.R, line.Color.G, line.Color.B), line.Thickness),
                 line.Start.X, line.Start.Y, line.End.X, line.End.Y);

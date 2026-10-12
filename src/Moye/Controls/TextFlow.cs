@@ -35,7 +35,7 @@ public static class TextFlow
                 text.Bold ? FontWeights.Bold : FontWeights.Normal, FontStretches.Normal), text.FontSize, Brushes.Black, 1)
         {
             MaxTextWidth = NoteTextLayout.ContentWidth(text.Width),
-            LineHeight = text.FontSize * 1.4,
+            LineHeight = NoteTextLayout.LineHeight(text),
             TextAlignment = text.Alignment switch { NoteTextAlignment.Center => TextAlignment.Center, NoteTextAlignment.Right => TextAlignment.Right, _ => TextAlignment.Left }
         };
         return Math.Ceiling(formatted.Height);
@@ -68,6 +68,14 @@ public static class TextFlow
             Width = Math.Min(text.Width, page.Width - x),
             Height = Math.Max(1, page.Height - y), Text = text.Text[split..]
         };
+        if (next.IsFreeFlow)
+        {
+            // Continuation creates a fresh paper page; an imported/extended
+            // source's background placement is intentionally not carried over.
+            var destination = new NotePage { Width = page.Width, Height = page.Height, Template = page.Template };
+            FreeTypingLayout.AlignToRules(destination, next, FreeTypingLayout.StartPoint(destination).Y);
+            next.Height = Math.Max(1, destination.Height - next.Y);
+        }
         return new(text.Text[..split], next);
     }
 }

@@ -27,7 +27,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private bool _isBusy, _isLibraryVisible = true;
     public event EventHandler? DocumentReplaced;
     public event EventHandler? HistoryChanged;
-    public NotebookDocument? Document { get => _document; private set { _document = value; Notify(); Notify(nameof(Title)); Notify(nameof(Folder)); Notify(nameof(PageCountText)); } }
+    public NotebookDocument? Document { get => _document; private set { _document = value; Notify(); Notify(nameof(Title)); Notify(nameof(Folder)); Notify(nameof(PageCountText)); Notify(nameof(HasResumeHints)); Notify(nameof(ResumeSummary)); } }
     public string Title => Document?.Title ?? "Penroam";
     public string Folder => Document?.Folder ?? "My Notes";
     public string PageCountText => $"{Document?.Pages.Count ?? 0} {(Document?.Pages.Count == 1 ? "page" : "pages")}";
@@ -62,7 +62,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             if (!Set(ref _selectedPage, value)) return;
             if (value is not null && value.Page.SectionId == SelectedSection?.Id)
                 _sectionPageSelections[value.Page.SectionId] = value.Page.Id;
-            Notify(nameof(CurrentPageText));
+            Notify(nameof(CurrentPageText)); Notify(nameof(ResumeSummary));
         }
     }
     public SectionViewModel? SelectedSection
@@ -249,6 +249,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         if (rebuildPages) NotebookStructure.Normalize(Document);
         Document.ModifiedUtc = DateTimeOffset.UtcNow;
         _history.Record(Document); Autosave.Schedule(Document);
+        Notify(nameof(HasResumeHints)); Notify(nameof(ResumeSummary));
         if (rebuildPages) ReplaceDocumentCore(Document, false, sectionId, pageId);
         Notify(nameof(Title)); Notify(nameof(Folder)); UpdateHistory(); UpdateSaveStatus();
         UpdateLibrarySummary();

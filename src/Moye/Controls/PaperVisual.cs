@@ -10,6 +10,7 @@ public static class PaperPattern
 {
     public readonly record struct Line(Point Start, Point End, Color Color, double Thickness);
     public readonly record struct Dot(Point Center, Color Color, double Radius);
+    public readonly record struct Label(string Text, Point Position, double FontSize, Color Color);
     private static readonly Color RuleColor = Color.FromRgb(221, 231, 242);
     private static readonly Color GuideColor = Color.FromRgb(190, 207, 228);
 
@@ -37,6 +38,14 @@ public static class PaperPattern
                     major ? GuideColor : RuleColor, major ? 1 : template == PaperTemplate.Graph ? .5 : .7);
             }
         }
+        else if (template == PaperTemplate.Meeting)
+        {
+            var scale = MeetingScale(height);
+            var left = Math.Min(40, width * .1);
+            foreach (var band in MeetingBands(height))
+                for (var y = band.Top + 40 * scale; y <= band.Bottom + .01; y += 32 * scale)
+                    yield return new(new Point(left, y), new Point(width - left, y), RuleColor, .7);
+        }
         else if (template == PaperTemplate.Cornell)
         {
             var left = Math.Min(40, width * .1);
@@ -52,6 +61,31 @@ public static class PaperPattern
             for (var y = top + 32; y < summary - 8; y += 32)
                 yield return new(new Point(notesLeft, y), new Point(right, y), RuleColor, .7);
         }
+    }
+
+    public static double MeetingScale(double height) => Math.Min(1, height / 1122.519685);
+
+    private static IEnumerable<(string Name, double Top, double Bottom)> MeetingBands(double height)
+    {
+        var scale = MeetingScale(height);
+        yield return ("TITLE", 64 * scale, 112 * scale);
+        yield return ("DATE / TIME", 120 * scale, 168 * scale);
+        yield return ("ATTENDEES", 176 * scale, 224 * scale);
+        yield return ("AGENDA", 232 * scale, 304 * scale);
+        yield return ("DISCUSSION / NOTES", 320 * scale, height - 352 * scale);
+        yield return ("DECISIONS", height - 336 * scale, height - 224 * scale);
+        yield return ("ACTION ITEMS  /  OWNER  /  DUE DATE", height - 208 * scale, height - 32 * scale);
+    }
+
+    public static IEnumerable<Label> Labels(PaperTemplate template, double width, double height)
+    {
+        if (template != PaperTemplate.Meeting || !double.IsFinite(width) || !double.IsFinite(height) || width <= 0 || height <= 0) yield break;
+        var scale = Math.Min(MeetingScale(height), width / 500);
+        var left = Math.Min(40, width * .1);
+        var color = Color.FromRgb(91, 112, 134);
+        yield return new("MEETING NOTES", new Point(left, 28 * MeetingScale(height)), 20 * scale, color);
+        foreach (var band in MeetingBands(height))
+            yield return new(band.Name, new Point(left, band.Top), 11 * scale, color);
     }
 
     public static IEnumerable<Dot> Dots(PaperTemplate template, double width, double height)
@@ -78,6 +112,12 @@ public static class PaperPattern
                 pens[(line.Color, line.Thickness)] = pen;
             }
             drawing.DrawLine(pen, line.Start, line.End);
+        }
+        foreach (var label in Labels(template, width, height))
+        {
+            var formatted = new FormattedText(label.Text, System.Globalization.CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
+                new Typeface("Segoe UI"), label.FontSize, new SolidColorBrush(label.Color), 1);
+            drawing.DrawText(formatted, label.Position);
         }
         SolidColorBrush? dotBrush = null;
         foreach (var dot in Dots(template, width, height))

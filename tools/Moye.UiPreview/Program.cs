@@ -42,6 +42,11 @@ internal static class Program
             application.Resources = ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml"));
             DocumentWorkflowPreviewScenes.Run(output);
             PageExtensionPreviewScenes.Run(output);
+            FreeTypingPreviewScenes.Run(output);
+            StudyPreviewScenes.Run(output);
+            PdfPaginationPreviewScenes.Run(output);
+            InsightPreviewScenes.Run(output);
+            UpdatePreviewScenarios.Run(output);
             OrganizationPreviewScenes.Run(output);
             WorkspacePreviewScenes.Run(output);
             using var repository = new FixtureRepository();
@@ -226,8 +231,8 @@ internal static class Program
             TextElement.SetForeground(pickerContent, window.Foreground);
             SaveImage(output, "ui-preview-paper-templates.png", RenderElement(pickerContent, 454, 374));
             VerifyDetached(pickerContent, window);
-            if (Descendants<RadioButton>(picker).Count() != 6 || Descendants<RadioButton>(picker).Count(b => b.IsChecked == true) != 1)
-                throw new InvalidOperationException("The paper picker must show six choices and one selected template.");
+            if (Descendants<RadioButton>(picker).Count() != 7 || Descendants<RadioButton>(picker).Count(b => b.IsChecked == true) != 1)
+                throw new InvalidOperationException("The paper picker must show seven choices and one selected template.");
             reports.Add(MeasureButtons(pickerContent, 454, 374, "ui-preview-paper-templates.png", "paper-templates"));
 
             // A native owner is unnecessary for detached content and WPF rejects
@@ -249,7 +254,7 @@ internal static class Program
             SaveImage(output, "ui-preview-new-notebook.png", RenderElement(dialogContent, 544, dialogHeight));
             VerifyDetached(dialogContent, notebookDialog);
             VerifyDetached(content, window);
-            if (Descendants<RadioButton>(dialogContent).Count() != 6 || !Descendants<Button>(dialogContent).Any(b => Equals(b.Content, "Create Notebook")))
+            if (Descendants<RadioButton>(dialogContent).Count() != 7 || !Descendants<Button>(dialogContent).Any(b => Equals(b.Content, "Create Notebook")))
                 throw new InvalidOperationException("The new-notebook dialog must render its paper choices and create action.");
             reports.Add(MeasureButtons(dialogContent, 544, dialogHeight, "ui-preview-new-notebook.png", "new-notebook"));
 
@@ -815,7 +820,7 @@ internal static class Program
             Set("_focusMode", true); Call("ApplyFocusChrome");
             sidebar.Visibility = Visibility.Collapsed; sidebarColumn.Width = new GridLength(0);
             var focusButtons = new[] { "FocusPenButton", "FocusHighlighterButton", "FocusEraserButton", "FocusLassoButton",
-                "FocusPenSettingsButton", "FocusUndoButton", "FocusRedoButton", "ExitFocusButton" };
+                "FocusPenSettingsButton", "FocusAddPageButton", "FocusUndoButton", "FocusRedoButton", "ExitFocusButton" };
             foreach (var (width, height) in new[] { (1400, 960), (1024, 700) })
             {
                 var fileName = $"ui-preview-focus-{width}.png";
@@ -948,10 +953,10 @@ internal static class Program
                 preferences.FocusToolsOnRight = dockRight; Call("ApplyWorkspaceOptions"); Call("ApplyFocusChrome");
                 var name = dockRight ? "focus-guard-right" : "focus-guard-left";
                 fileName = $"ui-preview-{name}-1024.png"; SaveImage(output, fileName, RenderElement(content, 1024, 700));
-                reports.Add(MeasureButtons(content, 1024, 700, fileName, name, "FocusGuardButton", "ExitFocusButton"));
+                reports.Add(MeasureButtons(content, 1024, 700, fileName, name, "FocusGuardButton", "FocusAddPageButton", "FocusUndoButton", "FocusRedoButton", "ExitFocusButton"));
                 var favorites = ((Panel)window.FindName("FocusPresetPanel")).Children.OfType<Button>().ToArray();
                 if (favorites.Length != 3) throw new InvalidOperationException("Focus mode must expose the first three favorite pens.");
-                foreach (var button in favorites.Append((Button)window.FindName("FocusGuardButton")))
+                foreach (var button in favorites.Append((Button)window.FindName("FocusGuardButton")).Append((Button)window.FindName("FocusAddPageButton")))
                 {
                     var area = button.TransformToAncestor(content).TransformBounds(new Rect(button.RenderSize));
                     DependencyObject? hit = null;

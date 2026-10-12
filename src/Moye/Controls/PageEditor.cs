@@ -100,7 +100,7 @@ public sealed partial class PageEditor : Grid
                     // Complete placement here; a ListBox ancestor must not move
                     // keyboard focus back to its current item after this click.
                     e.Handled = true;
-                    AddTextAt(e.GetPosition(_items));
+                    AddFreeTextAt(e.GetPosition(_items));
                 }
             }
         };
@@ -194,6 +194,7 @@ public sealed partial class PageEditor : Grid
         _items.IsHitTestVisible = editObjects;
         foreach (var frame in _frames)
         {
+            frame.SuppressSelectionChrome = _tool == InkTool.Text && frame.Item is NoteText { IsFreeFlow: true };
             if (frame.ItemContent is TextBox text)
             {
                 text.IsReadOnly = !editObjects;
@@ -240,7 +241,7 @@ public sealed partial class PageEditor : Grid
         FlushChanges();
     }
 
-    public NoteText AddTextAt(Point location, string text = "")
+    public NoteText AddTextAt(Point location, string text = "", bool freeFlow = false)
     {
         CommitPendingEdits();
         var item = _textDefaults with
@@ -252,6 +253,7 @@ public sealed partial class PageEditor : Grid
         };
         item.Width = Math.Min(640, Math.Min(Page.Width - item.X, Math.Max(60, Page.Width - item.X - 32)));
         item.Height = Math.Min(item.Height, Page.Height - item.Y);
+        if (freeFlow) FreeTypingLayout.Place(Page, item, location);
         Page.Texts.Add(item);
         var frame = AddTextFrame(item);
         _tool = InkTool.Text;
@@ -271,7 +273,7 @@ public sealed partial class PageEditor : Grid
         CommitPendingEdits();
         if (SelectedText is not null) { FocusSelectedText(); return SelectedText!; }
         var recent = Page.Texts.FirstOrDefault(text => text.Id == _lastTextId) ?? Page.Texts.LastOrDefault();
-        if (recent is null) return AddTextAt(new Point(72, 72));
+        if (recent is null) return AddFreeTextAt(FreeTypingLayout.StartPoint(Page));
         _tool = InkTool.Text;
         ApplyTool();
         SelectItem(_frames.First(frame => ReferenceEquals(frame.Item, recent)));
@@ -325,7 +327,8 @@ public sealed partial class PageEditor : Grid
             box.FontStyle = text.Italic ? FontStyles.Italic : FontStyles.Normal;
             box.TextAlignment = ToTextAlignment(align);
             box.Foreground = BrushFrom(colorText);
-            System.Windows.Documents.Block.SetLineHeight(box, size * 1.4);
+            if (text.IsFreeFlow) { FreeTypingLayout.AlignToRules(Page, text); Canvas.SetTop(_selectedItem, text.Y); _selectedItem.Width = text.Width; UpdateSelectionProxy(_selectedItem); }
+            System.Windows.Documents.Block.SetLineHeight(box, NoteTextLayout.LineHeight(text));
             RefreshTextLayout(_selectedItem, grow: true);
             MarkContentDirty();
             FlushChanges();
@@ -568,7 +571,7 @@ public sealed partial class PageEditor : Grid
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             Language = XmlLanguage.GetLanguage("zh-HK")
         };
-        System.Windows.Documents.Block.SetLineHeight(box, text.FontSize * 1.4);
+        System.Windows.Documents.Block.SetLineHeight(box, NoteTextLayout.LineHeight(text));
         System.Windows.Documents.Block.SetLineStackingStrategy(box, LineStackingStrategy.BlockLineHeight);
         InputMethod.SetIsInputMethodEnabled(box, true);
         box.Resources[typeof(ScrollViewer)] = TextScrollViewerStyle();
@@ -654,13 +657,13 @@ public sealed partial class PageEditor : Grid
         {
             MaxTextWidth = NoteTextLayout.ContentWidth(text.Width),
             TextAlignment = box.TextAlignment,
-            LineHeight = box.FontSize * 1.4
+            LineHeight = NoteTextLayout.LineHeight(text)
         };
         var requiredHeight = Math.Ceiling(formatted.Height);
         var availableHeight = Math.Max(1, Page.Height - text.Y);
         if (grow)
         {
-            var height = Math.Min(availableHeight, Math.Max(text.Height, requiredHeight));
+            var height = Math.Min(availableHeight, text.IsFreeFlow ? Math.Max(NoteTextLayout.LineHeight(text), requiredHeight) : Math.Max(text.Height, requiredHeight));
             if (Math.Abs(text.Height - height) > .01)
             {
                 text.Height = height;

@@ -159,6 +159,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
             {
                 var page = snapshot.Pages[index];
                 if (!PdfPagePlacement.IsValid(page)) throw new InvalidDataException("Invalid PDF placement on the page.");
+                if (!PageFeatureValidation.IsValid(page)) throw new InvalidDataException("Invalid note workflow or text layout metadata.");
                 if (!PaperPagePlacement.IsValid(page)) throw new InvalidDataException("Invalid paper guide placement on the page.");
                 var ink = page.InkData;
                 page.InkData = [];
@@ -273,7 +274,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
         using var command = connection.CreateCommand();
         command.CommandText = "PRAGMA user_version";
         var version = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-        if (version > 4)
+        if (version > 5)
             throw new InvalidDataException("This database was created by a newer version of Penroam. Update the app before opening it.");
         command.CommandText = "PRAGMA journal_mode=WAL";
         command.ExecuteNonQuery();
@@ -318,9 +319,9 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
             command.ExecuteNonQuery();
         }
         command.Parameters.Clear();
-        // Version 4 protects PDF and paper-guide placement stored in page JSON from older writers.
+        // Version 5 protects free typing, meeting paper, questions, resume hints and practice metadata from older writers.
         // Legacy page JSON remains untouched; zero placement fields retain its original layout.
-        command.CommandText = "PRAGMA user_version=4";
+        command.CommandText = "PRAGMA user_version=5";
         command.ExecuteNonQuery();
         transaction.Commit();
     }
@@ -330,7 +331,8 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
         var page = JsonSerializer.Deserialize<NotePage>(json, DocumentJson.Options)
             ?? throw new InvalidDataException("The page metadata is corrupted.");
         if (!PdfPagePlacement.IsValid(page)) throw new InvalidDataException("Invalid PDF placement on the page.");
-        if (!PaperPagePlacement.IsValid(page)) throw new InvalidDataException("Invalid paper guide placement on the page.");
+        if (!PageFeatureValidation.IsValid(page)) throw new InvalidDataException("Invalid note workflow or text layout metadata.");
+                if (!PaperPagePlacement.IsValid(page)) throw new InvalidDataException("Invalid paper guide placement on the page.");
         return page;
     }
 

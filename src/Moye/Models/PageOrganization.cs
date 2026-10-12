@@ -46,13 +46,17 @@ public static class PageOrganization
     {
         var selected = ids.ToHashSet(StringComparer.Ordinal);
         var copies = new List<string>();
+        var copiedPages = new List<NotePage>();
+        var copiedIds = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var page in document.Pages.Where(page => selected.Contains(page.Id)).ToArray())
         {
             var copy = page.Snapshot(); copy.Id = Guid.NewGuid().ToString("N");
+            copiedIds[page.Id] = copy.Id; copiedPages.Add(copy);
             foreach (var text in copy.Texts) text.Id = Guid.NewGuid().ToString("N");
             foreach (var image in copy.Images) image.Id = Guid.NewGuid().ToString("N");
             document.Pages.Insert(document.Pages.IndexOf(page) + 1, copy); copies.Add(copy.Id);
         }
+        PracticePageLinks.RemapCopiedSources(copiedPages, copiedIds);
         return copies;
     }
 

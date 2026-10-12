@@ -17,6 +17,12 @@ internal sealed class NoteItemFrame : Grid
     public event EventHandler? GeometryChanged;
     public event EventHandler? EditCompleted;
     public bool IsSelected { get; private set; }
+    private bool _suppressSelectionChrome;
+    public bool SuppressSelectionChrome
+    {
+        get => _suppressSelectionChrome;
+        set { _suppressSelectionChrome = value; SetSelected(IsSelected); }
+    }
     public FrameworkElement ItemContent { get; }
 
     public NoteItemFrame(object item, FrameworkElement content)
@@ -57,7 +63,7 @@ internal sealed class NoteItemFrame : Grid
     public void SetSelected(bool selected)
     {
         IsSelected = selected;
-        var visibility = selected ? Visibility.Visible : Visibility.Collapsed;
+        var visibility = selected && !_suppressSelectionChrome ? Visibility.Visible : Visibility.Collapsed;
         _outline.Visibility = _move.Visibility = _resize.Visibility = visibility;
     }
 

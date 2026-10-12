@@ -109,16 +109,20 @@ public partial class MainWindow
             if (warning.JumpTo is { } issue) { await JumpToOverflowTextAsync(issue.PageId, issue.TextId); return; }
             if (!warning.ContinueExport) return;
         }
-        var file = new SaveFileDialog { Filter = "PDF documents|*.pdf", FileName = SafeFileName(snapshot.Title) + ".pdf", Title = $"Export {snapshot.Pages.Count} pages as PDF" };
+        var layout = new PdfExportLayoutDialog(this, snapshot.Pages,
+            new PagePreviewRenderer(ViewModel.Pdf, ViewModel.Repository.GetAssetAsync));
+        if (layout.ShowDialog() != true) return;
+        var file = new SaveFileDialog { Filter = "PDF documents|*.pdf", FileName = SafeFileName(snapshot.Title) + ".pdf", Title = $"Export {layout.OutputPageCount} pages as PDF" };
         if (file.ShowDialog(this) != true) return;
         var completed = await RunDocumentOperationAsync("Exporting PDF", async (token, progress) =>
         {
-            if (ViewModel.Pdf is PdfService pdf) await pdf.ExportAsync(file.FileName, snapshot, progress, token);
-            else await ViewModel.Pdf.ExportAsync(file.FileName, snapshot, token);
+            if (ViewModel.Pdf is PdfService pdf) await pdf.ExportAsync(file.FileName, snapshot, layout.Options, progress, token);
+            else if (layout.Options.Layout == PdfExportLayout.OriginalSize) await ViewModel.Pdf.ExportAsync(file.FileName, snapshot, token);
+            else throw new InvalidOperationException("A4 pagination is unavailable for this PDF provider.");
         });
         if (!completed) return;
-        ViewModel.Status = $"PDF exported · {snapshot.Pages.Count} pages · {Path.GetFileName(file.FileName)}";
-        new DocumentCompletionDialog(this, file.FileName, snapshot.Pages.Count).ShowDialog();
+        ViewModel.Status = $"PDF exported · {layout.OutputPageCount} pages · {Path.GetFileName(file.FileName)}";
+        new DocumentCompletionDialog(this, file.FileName, layout.OutputPageCount).ShowDialog();
     }
 
     private async Task JumpToOverflowTextAsync(string pageId, string textId)

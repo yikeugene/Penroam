@@ -80,11 +80,11 @@ public partial class MainWindow
         RefreshContinueButton();
     }
 
-    private async Task SaveWorkspaceAsync()
+    private async Task SaveWorkspaceAsync(bool throwOnError = false)
     {
         if (!_workspaceLoaded || _workspaceStore is null) return;
         try { await _workspaceStore.SaveAsync(_workspace); }
-        catch (Exception ex) { ViewModel.Status = "Workspace settings not saved · " + ex.Message; }
+        catch (Exception ex) { ViewModel.Status = "Workspace settings not saved · " + ex.Message; if (throwOnError) throw; }
     }
 
     private async Task<bool> RestoreReadingPositionAsync()
@@ -177,6 +177,7 @@ public partial class MainWindow
             new("Quick note", "Start writing immediately in your Inbox; organize the page later.", () => QuickNoteClick(this, new())),
             new("Search notebook contents · Ctrl+F", "Find page names, bookmarks, topics and typed notes, then jump straight to the result.", () => SearchContentsClick(this, new())),
             new("Workspace settings", "Two-finger navigation, zoom lock, compact toolbar, focus docking and scheduled local backups.", () => WorkspaceSettingsClick(this, new())),
+            new("Check for updates", "Find and install the latest Penroam release from GitHub.", () => CheckForUpdatesClick(this, new())),
             new("Backup & recovery", "Recover deleted notebooks and pages, restore pending drafts, or choose which notebooks to restore from a backup.", () => SafetyCenterClick(this, new())),
             new("New notebook", "Choose a name, category and paper style.", () => NewNoteClick(this, new())),
             new("Continue last notebook", "Return to the page and zoom you last used.", () => ContinueLastClick(this, new()))
@@ -184,6 +185,14 @@ public partial class MainWindow
         if (ViewModel.IsEditorVisible)
         {
             commands.AddRange([
+                new("Mark a question", "Anchor a question to this page or a chosen region.", () => AddStudyQuestionClick(this, new())),
+                new("Question inbox", "Follow questions from Need help through explanation and retry to Resolved.", () => StudyInboxClick(this, new())),
+                new("Leave a resume hint", "Write your next step so you can recover your train of thought.", () => SetResumeHintClick(this, new())),
+                new("Resume my thinking", "Read saved next steps and jump to their source regions.", () => ResumeStudyClick(this, new())),
+                new("Find by appearance", "Find ink and typed notes by color, location and section in this notebook.", () => VisualSearchClick(this, new())),
+                new("New practice attempt", "Capture the question and keep a separate solution for each attempt.", () => NewPracticeClick(this, new())),
+                new("Practice attempts", "Return to earlier solutions and record mistakes and a next approach.", () => PracticeAttemptsClick(this, new())),
+                new("Restore part of this page", "Restore complete objects in a region from this session's history, retaining other edits.", () => RestoreRegionClick(this, new())),
                 new("Manage pages", "Select multiple thumbnails; reorder, move, duplicate or delete them as one change.", () => ManagePagesClick(this, new())),
                 new("Extend page", "Add writing space on any side of this page, preserving the original PDF size and your notes.", () => ExtendPageClick(this, new())),
                 new("Reference view", "Read another notebook beside your writing area, with independent navigation and zoom.", () => ShowReferenceClick(this, new())),
@@ -196,7 +205,7 @@ public partial class MainWindow
                 new("Highlighter · H", "Mark important material using your selected highlighter.", () => SetTool(InkTool.Highlighter)),
                 new("Eraser · E", "Choose pixel or stroke erasing, size, and highlighter-only mode.", () => SetTool(_eraserTool)),
                 new("Lasso · L", "Circle ink, text and images to move or copy them together.", () => SetTool(InkTool.Lasso)),
-                new("Type · T", "Start or resume typed notes. Ctrl+Enter returns to Pen.", () => TypeClick(this, new())),
+                new("Type · T", "Click anywhere to type without a visible box; ruled paper aligns text. Ctrl+Enter returns to Pen.", () => TypeClick(this, new())),
                 new("Undo · Ctrl+Z", "Undo a completed edit while this notebook stays open.", () => UndoClick(this, new())),
                 new("Fit width", "Fill the writing area. Unlock zoom in Workspace settings if necessary.", () => FitWidth())
             ]);

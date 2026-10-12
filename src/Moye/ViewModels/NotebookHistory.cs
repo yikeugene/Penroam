@@ -18,6 +18,18 @@ public sealed class NotebookHistory
         if (_undo.Count > 100) _undo.RemoveAt(0);
         _current = document.Snapshot(); _redo.Clear();
     }
+    public IReadOnlyList<NotePage> PageVersions(string pageId)
+    {
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var result = new List<NotePage>();
+        if (_current?.Pages.FirstOrDefault(p => p.Id == pageId) is { } current)
+            seen.Add(System.Text.Json.JsonSerializer.Serialize(current, DocumentJson.Options));
+        foreach (var document in _undo.AsEnumerable().Reverse())
+            if (document.Pages.FirstOrDefault(p => p.Id == pageId) is { } page && seen.Add(System.Text.Json.JsonSerializer.Serialize(page, DocumentJson.Options)))
+                result.Add(page.Snapshot());
+        return result;
+    }
+
     public NotebookDocument? Undo()
     {
         if (!CanUndo || _current is null) return null;

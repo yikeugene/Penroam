@@ -279,7 +279,7 @@ public partial class MainWindow
                 if (text.Length > 2_000_000) throw new InvalidDataException("The text is too long to paste into one box.");
                 SetTool(InkTool.Text);
                 editor.SetTextDefaults(_textDefaults);
-                editor.AddTextAt(GetPastePosition(editor.Page), text);
+                editor.AddFreeTextAt(GetPastePosition(editor.Page), text);
                 UpdateTextToolbar();
                 return;
             }

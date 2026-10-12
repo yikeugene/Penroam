@@ -180,13 +180,19 @@ public sealed partial class MainViewModel
         var ids = pageIds.ToHashSet(StringComparer.Ordinal);
         var pages = source.Pages.Where(page => ids.Contains(page.Id)).ToArray();
         if (pages.Length == 0 || pages.Length != ids.Count) throw new IOException("One or more selected pages no longer exist.");
-        var assets = pages.SelectMany(page => page.Images.Select(image => image.AssetId).Concat(page.Pdf is null ? [] : new[] { page.Pdf.AssetId })).Distinct();
+        var assets = pages.SelectMany(page => page.Images.Select(image => image.AssetId)
+            .Concat(page.Pdf is null ? [] : new[] { page.Pdf.AssetId })
+            .Concat(page.Practice is null ? [] : new[] { page.Practice.QuestionAssetId })).Distinct();
         foreach (var asset in assets) await Repository.GetAssetAsync(asset);
+        var transferredPages = new List<NotePage>();
+        var transferredIds = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var page in pages)
         {
             var transferred = copy || target.Pages.Any(existing => existing.Id == page.Id) ? CopyPage(page) : page.Snapshot();
             transferred.SectionId = targetSectionId; target.Pages.Add(transferred);
+            transferredPages.Add(transferred); transferredIds[page.Id] = transferred.Id;
         }
+        PracticePageLinks.RemapCopiedSources(transferredPages, transferredIds);
         if (!copy)
         {
             source.Pages.RemoveAll(page => ids.Contains(page.Id));

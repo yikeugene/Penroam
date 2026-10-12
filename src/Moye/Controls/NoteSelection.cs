@@ -48,7 +48,7 @@ public sealed class NoteSelection
         }
         foreach (var text in Texts)
         {
-            if (text is null || !Geometry(text.X, text.Y, text.Width, text.Height) || !double.IsFinite(text.FontSize) || text.FontSize is < 6 or > 128 || text.Text is null || text.Text.Length > 2_000_000 || string.IsNullOrWhiteSpace(text.FontFamily) || text.FontFamily.Length > 256 || !Enum.IsDefined(text.Alignment))
+            if (text is null || !Geometry(text.X, text.Y, text.Width, text.Height) || !double.IsFinite(text.FontSize) || text.FontSize is < 6 or > 128 || text.Text is null || text.Text.Length > 2_000_000 || string.IsNullOrWhiteSpace(text.FontFamily) || text.FontFamily.Length > 256 || !Enum.IsDefined(text.Alignment) || !double.IsFinite(text.LineSpacing) || text.LineSpacing < 0 || text.LineSpacing > 1024)
                 throw new InvalidDataException("Invalid clipboard text.");
             _ = new System.Windows.Media.FontFamily(text.FontFamily);
             _ = System.Windows.Media.ColorConverter.ConvertFromString(text.Color);

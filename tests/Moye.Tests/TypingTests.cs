@@ -27,7 +27,8 @@ public sealed class TypingTests
             Assert.Equal("#FF25334A", text.Color);
             Assert.Equal("Segoe UI, Microsoft JhengHei", text.FontFamily);
             Assert.Equal(22, text.FontSize);
-            Assert.Equal(640, text.Width);
+            Assert.Equal(editor.Page.Width - text.X - editor.Page.Width * .05, text.Width, 5);
+            Assert.True(text.IsFreeFlow);
             Assert.Equal(72, text.X);
             Assert.Equal(72, text.Y);
             Assert.False(Box(editor).IsReadOnly);
@@ -220,7 +221,7 @@ public sealed class TypingTests
             box.Text = "short note";
             editor.CommitPendingEdits();
             Assert.False(editor.HasTextOverflow);
-            Assert.Equal(228, text.Height);
+            Assert.InRange(text.Height, NoteTextLayout.LineHeight(text), Math.Ceiling(NoteTextLayout.LineHeight(text)));
         });
     }
 

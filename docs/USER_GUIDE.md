@@ -1,30 +1,61 @@
 # Penroam user guide
 
-This guide describes the English interface in **Penroam 1.1.0** for Windows 11 x64, including page extension and live lasso movement. Historical release and device-check notes keep their original scope.
+## Penroam 1.2.0: writing and study workflows
 
-Penroam is the new name for Moye. Penroam 1.0.0 restarted version numbering with the new name/icon and the then-current features. Existing notebook data, preferences, recovery files and `.moye` backups keep their current names and locations. The 1.0.0 branding update retained Moye 2.0 data formats; the 1.1.0 page-extension update introduces the schema/format 4 migration described below.
+Penroam 1.2.0 includes the writing and study workflows below. It writes **SQLite schema 5** and **backup format 5** (reads backup formats 1–5). Keep a backup made by your installed version before opening its library with this build: older apps reject the newer formats.
+
+- **In-app updates:** startup checks for newer stable GitHub releases, with a download-and-install card and a manual **Check for Updates…** action. See [updating from the app](#in-app-updates) for controls and the initial installation requirement.
+- **Free typing:** choose **Type** or press **T**, then click anywhere on the paper. New text has no visible box or handles, wraps to the available width, and grows or shrinks with the content. Chinese input and ordinary text undo still use the native editor. **Select** exposes movement/resize handles; **Text box** remains available for fixed layouts. Pasted plain text also defaults to free typing. Ruled, Cornell and Meeting paper align new text baselines to their horizontal guides; larger fonts use multiples of the guide spacing. Extended blank margins remain free placement. At the page bottom, **Continue text on next page** moves overflow to a new page.
+- **Meeting paper:** choose **Meeting** in New Notebook, Add Page or Paper Style. It has title, date/time, attendees, agenda, discussion, decisions and action/owner/due-date areas. Type directly into an area or write with the pen; both remain editable and export together.
+- **Questions:** **More → Study & Review → Mark a Question…** (also on a page's context menu). Use the lasso selection or mark a rectangular source area, then write the question. **Question Inbox** spans the open notebook's sections; search questions, explanations and retry notes, filter resolved questions, and move between Need help, Understood, Try again and Resolved. Opening a result centers and briefly outlines its source region. Status changes are manual.
+- **Resume your thinking:** **Leave a Resume Hint…** saves a next step on the current page or selected region. A **Continue:** strip appears above the paper when the notebook has saved hints, including after reopening. Choose it, **Resume My Thinking…**, or the matching command to review hints and return to the source. Hints travel with the notebook through backups; this is separate from device-only scroll/zoom restoration.
+- **Find by appearance:** **More → Find by Appearance…** filters ink and typed notes in the open notebook by color family, one of nine page positions, section, and handwriting/highlighter/typed-text type. Results include page previews. Position uses a mark's center, and color is an approximate family. This does not inspect colors inside imported PDFs/images, recognize handwriting, or search by date.
+- **Repeated practice:** **New Practice Attempt…** captures a selected question as a saved image and creates a ruled solution page. Further attempts share that same saved question, keep separate working, and retain the original page link when available. **Practice Attempts…** opens earlier work and records mistakes, a next approach and a reviewed flag. Switching rows keeps staged reflections; Close cancels them, while Save & open, Another attempt, or Original page saves them. The question is a snapshot, not a live crop that changes with its source. Use Reference View to compare pages side by side.
+- **Restore a region:** **Restore Part of This Page…** chooses an earlier version and then an area. It restores only complete ink strokes, text items and images fully inside that area. Objects crossing its boundary and work elsewhere are retained; a text/image moved outside the region is not duplicated. The operation is undoable. History covers up to 100 edits while that notebook remains open, and only versions with the same page size/background are offered. Persistent object history and clipping individual strokes at a region boundary are not implemented.
+- **Readable A4 exports:** after choosing export pages, choose **Original page sizes** or **A4 sheets · actual size**. Select automatic/portrait/landscape orientation and 0–30 mm overlap (default 10 mm). The preview shows the grid, order and total sheet count. Sheets follow source page order, then left-to-right and top-to-bottom. Last sheets have blank unused areas. Original PDF text and vector content remain intact; ink and typed overlays keep their size. Print at Actual size/100%. Exports are limited to 1,000 A4 sheets; reduce the selection or overlap if needed.
+
+Not implemented in this update: automatic comparison/reconciliation of a revised PDF with old annotations (reliable page/region alignment and scan OCR are missing); a separate original-page/side-note cross-referenced export mode; cross-session regional history; automatic mistake diagnosis or spaced review scheduling. No online account or AI service is needed for the implemented workflows.
+
+
+This guide describes the English interface in **Penroam 1.2.0** for Windows 11 x64, including writing and study workflows, page extension and live lasso movement. Historical release and device-check notes keep their original scope.
+
+Penroam is the new name for Moye. Penroam 1.0.0 restarted version numbering with the new name/icon and the then-current features. Existing notebook data, preferences, recovery files and `.moye` backups keep their current names and locations. The 1.0.0 branding update retained Moye 2.0 data formats; the 1.1.0 page-extension update introduced schema/format 4, and 1.2.0 introduces schema/format 5.
 
 Version 1.6.0 adds the **Type** button and text-formatting workflow described below.
 
-**Before opening an existing library in Penroam 1.1.0:** create a `.moye` backup using your current app and keep it separately. Penroam 1.1 migrates libraries to schema 4 and writes format 4 backups, while reading backups in formats 1–4. Published Penroam 1.0.0 and earlier Moye releases cannot reopen schema 4 or format 4. Uninstalling does not reverse this migration.
+**Before opening an existing library in Penroam 1.2.0:** create a `.moye` backup using your current app and keep it separately. Penroam 1.2 migrates libraries to schema 5 and writes format 5 backups, while reading backups in formats 1–5. Penroam 1.1.0 and earlier releases cannot reopen schema 5 or format 5. Uninstalling does not reverse this migration.
 
 ## Install, update and uninstall
 
-Download and run [Penroam-1.1.0-Setup-win-x64.exe](https://github.com/yikeugene/moye/releases/download/v1.1.0/Penroam-1.1.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/moye/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
+Download and run [Penroam-1.2.0-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.2.0/Penroam-1.2.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
 
 Open the **Penroam** desktop shortcut after installation. When updating, close the app and run the newer installer. Setup recognizes an existing Moye installation as the same application. Existing notes stay in `%LOCALAPPDATA%\Moye`; the installer does not move or replace them. If you previously used a portable ZIP with the default library, the installed app uses that same library. A custom `--data-dir` library still needs its custom launch argument.
 
 Remove Penroam through **Windows Settings → Apps → Installed apps → Penroam → Uninstall**. This removes installed program files and shortcuts while retaining notebook data and writing preferences. Use Penroam's backup commands to make a portable copy of your notes.
 
+### In-app updates
+
+Install **1.2.0** manually when upgrading from **1.1.0** or earlier. Version 1.2.0 includes the updater and can install later stable releases from within Penroam.
+
+When opened normally, Penroam checks the public [Penroam GitHub releases](https://github.com/yikeugene/Penroam/releases/latest) in the background. A newer stable version appears in a card with its release notes. Drafts, prereleases and older versions are not offered.
+
+1. Choose **Update now** to download the installer. You can continue writing while it downloads; **Cancel download** stops it and removes the incomplete download.
+2. Penroam verifies the download's SHA-256 checksum and saves your pending notes before closing for installation. If you are in another operation, finish it and choose **Install update** when ready. A save or launch failure keeps the notebook open and shows the problem.
+3. The installer updates the existing application folder and reopens Penroam after a successful update. It does not force the app to close or restart Windows. Notebook files remain in their existing library location.
+
+Choose **Later** to dismiss the card and keep working. To check again, use **More → Check for Updates…**, **Library Options → Check for Updates…**, or search for the command in **Commands & Help**. **Try again** retries a failed check or update. Closing Penroam and running the newer installer from GitHub remains a manual fallback.
+
+Writing and saving work without an internet connection. A failed startup check stays quiet; an explicit check reports connection or release problems. Update requests go to GitHub and its release download servers and include Penroam's current version; notebook contents and local library paths are not uploaded. Launches using `--data-dir` disable both startup and manual update checks so isolated libraries cannot trigger an application update.
+
 ## Notebooks, sections and pages
 
-The **1.9.0 interface** uses a warm neutral workspace with forest green controls, clearer notebook covers and visible keyboard focus. Version 1.11.0 refines buttons, pen badges and focus indicators. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. The navigation names below describe Penroam 1.1.0; version 1.8.0 uses **All Notes**, **Presets…** and **Create a Notebook** for the corresponding actions.
+The **1.9.0 interface** uses a warm neutral workspace with forest green controls, clearer notebook covers and visible keyboard focus. Version 1.11.0 refines buttons, pen badges and focus indicators. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. The navigation names below describe Penroam 1.2.0; version 1.8.0 uses **All Notes**, **Presets…** and **Create a Notebook** for the corresponding actions.
 
 Open `Penroam.exe` to see **Your notebooks**. Penroam starts on this home screen and waits for you to choose a notebook. An empty library shows **Create your first notebook**; it does not create a notebook automatically. Notebook cards show the title, category and page count. **Continue** opens the last notebook at its saved reading position. **Quick note** creates a page in an Inbox notebook and selects Pen, ready to write; use the page organizer to move it into a course later.
 
 Each card's options menu offers **Pin / Unpin** and **Choose Cover Color…**. Pinned notebooks stay above other notebooks. **Library Options → Sort & Filter Library…** filters by the existing single category and chooses name order or recent-modification order. The filter and sort choice apply to the current app session; pin and cover choices are notebook content and survive saving/backups.
 
-Click a notebook cover to open it, or **New Notebook** to choose a name, category, and first-page paper. The visual template cards offer six choices; new notebooks initially select Ruled. Canceling leaves the library unchanged.
+Click a notebook cover to open it, or **New Notebook** to choose a name, category, and first-page paper. The visual template cards offer seven choices; new notebooks initially select Ruled. Canceling leaves the library unchanged.
 
 | Paper | Layout |
 |---|---|
@@ -34,6 +65,7 @@ Click a notebook cover to open it, or **New Notebook** to choose a name, categor
 | Dot Grid | Evenly spaced dots for flexible layouts. |
 | Cornell | A cue column, ruled notes area and summary area. |
 | Graph | Fine squares with stronger major guides. |
+| Meeting | Areas for agenda, discussion, decisions and action items. |
 
 New paper pages are A4, and each template uses fixed spacing. The same geometry appears in page backgrounds, thumbnails and exported PDFs. Use **Extend Page…** to enlarge a page after creation. Adjustable spacing and saved custom templates remain future work.
 
@@ -127,7 +159,7 @@ Notebooks restore their last saved page, position, zoom and Fit Width setting on
 
 The sidebar button or `F9` hides and shows the sidebar. Hold **Space** and drag with the left mouse button to pan temporarily; release Space to return to your writing tool.
 
-The **Focus Mode** icon or `F11` switches to a full-screen writing workspace and hides the notebook header, main writing toolbar, sidebar and footer. A compact floating toolbar keeps **Pen**, **Highlighter**, **Eraser**, **Lasso**, **Type**, **Select**, the first three favorite pens, **Pen Settings**, **Undo**, **Redo** and **Exit Focus** available. **Workspace settings** docks it on the left or right. The selected tool is highlighted; the color button opens the same palette and thickness preview used in the normal editor. The eraser button offers Pixel and Stroke modes. Keyboard tool shortcuts still work, and save errors remain visible. Click **Exit Focus**, press `F11`, or press `Esc` to leave. When typing in a text box, `Esc` first leaves text editing. These controls change the display, not the paper's dimensions.
+The **Focus Mode** icon or `F11` switches to a full-screen writing workspace and hides the notebook header, main writing toolbar, sidebar and footer. A compact floating toolbar keeps **Pen**, **Highlighter**, **Eraser**, **Lasso**, **Type**, **Select**, the first three favorite pens, **Pen Settings**, **Add page**, **Undo**, **Redo** and **Exit Focus** available. Choose **Add page**, select a paper template and click **Add Page** to insert after the current page in the current section. The editor moves to the new page and stays in full screen; **Cancel** leaves the notebook unchanged. **Workspace settings** docks the toolbar on the left or right. The selected tool is highlighted; the color button opens the same palette and thickness preview used in the normal editor. The eraser button offers Pixel and Stroke modes. Keyboard tool shortcuts still work, and save errors remain visible. Click **Exit Focus**, press `F11`, or press `Esc` to leave. When typing in a text box, `Esc` first leaves text editing. These controls change the display, not the paper's dimensions.
 
 Open **Workspace** on the home screen or **More → Workspace Settings…** to require two fingers for page movement, lock zoom while writing, hide the main favorite-pen row, or change focus-tool docking. When two-finger navigation or zoom lock is enabled, **Guard** appears in the editor footer and focus toolbar and opens these settings. These settings are stored on this device and do not change saved page coordinates. Physical pen/palm/touch behavior still needs device testing.
 

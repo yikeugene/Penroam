@@ -123,7 +123,7 @@ public partial class MainWindow
             }
             TypingHint.Text = overflow
                 ? "Text exceeds this page. Continue on a new page to keep all text visible in PDF export."
-                : "Type here, or click the paper to add another box. Ctrl+Enter returns to Pen.";
+                : "Click anywhere to type freely. Ruled paper aligns your text to the lines. Ctrl+Enter returns to Pen.";
             TypingHint.Foreground = overflow ? (Brush)FindResource("Danger") : (Brush)FindResource("MutedInk");
         }
         finally { _syncingTextToolbar = false; }

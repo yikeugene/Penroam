@@ -1,22 +1,36 @@
 # Penroam notebook formats
 
+## Penroam 1.2.0 format 5
+
+Penroam 1.2.0 writes SQLite schema **5** and .moye backup format **5**, and reads formats 1–5. Released 1.1.0 remains schema/format 4 as described below. Upgrading schema 4 changes only user_version; existing metadata, ink and hashes are not rewritten by the migration. Older apps reject schema/format 5 instead of silently discarding new data.
+
+Page JSON adds studyQuestions (default empty), resumeHint (default null) and practice (default null). Questions preserve ID, prompt, explanation, retryNotes, status (NeedHelp 0, Understood 1, TryAgain 2, Resolved 3), created/modified UTC timestamps and an optional rectangular anchor. Resume hints contain nextStep, modifiedUtc and optional anchor. Anchor x/y/width/height use page DIP coordinates and must be finite, positive in size and inside the canvas; page extension translates them with the content. Null anchors mean page-level references. Snapshot/history/draft/save/backup paths retain independent copies of these records.
+
+Practice metadata stores groupId, sourcePageId, questionAssetId, question, questionWidth/questionHeight, attempt number, reflection and reviewed state. Question dimensions are the original crop's DIP dimensions and are preserved for later attempts. The captured question is an ordinary PNG asset; backups include it even if its displayed image has been removed. Full backup restore remaps source page references when the source is present. A missing source page does not discard the saved question or attempts.
+
+NoteText adds isFreeFlow (legacy default false) and lineSpacing (legacy default 0). Zero retains the original fontSize × 1.4 line height; positive finite spacing up to 1024 DIP is retained by editor, preview and PDF. Meeting appends paper template value 6, preserving values 0–5. Native typing still stores ordinary editable text rather than a page raster.
+
+Format 5 validates workflow records and new text fields before writes. Unlike formats 1–4, its JSON requires the new page/text fields and nested record fields, protecting against silently omitted question, hint, practice or line-spacing data. SQLite validates these records on save and read. Draft format remains 1 and contains the complete notebook snapshot; older apps encounter their unsupported library schema first.
+
+Regional restore uses the existing bounded, in-memory notebook history. It does not add persistent revisions to SQLite/backups. A4 export layout is an export-time choice; it does not resize or rewrite stored notebook pages.
+
 **Penroam 1.1.0** writes SQLite schema 4 and `.moye` format 4 to preserve PDF placement and paper guides on extended pages. Released Penroam 1.0.0 and Moye 2.0.0 use schema 3 and backup format 3; published Moye 1.7.0–1.12.0 uses schema 2 and backup format 2. Application versions, SQLite schema versions, preference versions and backup format versions are independent.
 
 Penroam is the new product name for Moye. The released 1.0.0 branding change retained schema 3 and backup format 3. Page extension in Penroam 1.1.0 introduces the later schema/format 4 change. The `.moye` extension and manifest identifier `"moye"` remain unchanged. Existing Moye files can still be opened or imported. The default library remains `%LOCALAPPDATA%\Moye\moye.db`; preferences and recovery files also stay in their existing locations.
 
 ## Compatibility
 
-| File | Penroam 1.1.0 writer | Penroam 1.1.0 reader | Released Penroam 1.0.0 / Moye 2.0.0 |
+| File | Penroam 1.2.0 writer | Penroam 1.2.0 reader | Penroam 1.1.0 |
 |---|---|---|---|
-| SQLite library | Schema 4 | Migrates schema 0/1/2/3; reads 4 | Writes schema 3; rejects 4 |
-| `.moye` backup | Format 4 | Reads 1, 2, 3 and 4 | Writes format 3; reads 1/2/3; rejects 4 |
+| SQLite library | Schema 5 | Migrates schema 0/1/2/3/4; reads 5 | Writes schema 4; rejects 5 |
+| `.moye` backup | Format 5 | Reads 1–5 | Writes format 4; reads 1–4; rejects 5 |
 | Writing preferences | Format 1, unchanged | Existing behavior | Format 1 |
 | Workspace preferences | Format 1 | Format 1; keeps unreadable/newer files | Format 1 |
 | Recovery drafts | Format 1 | Format 1; keeps unreadable/newer files | Format 1; requires its supported library schema |
 
 Opening an older library migrates its schema in one transaction. Libraries without sections receive a **General** section for each notebook; section IDs are derived deterministically from the notebook ID. Existing page IDs, order, content and ISF ink are retained. Schema 3 added notebook pins, cover color and a quick-note destination marker; missing page titles/bookmarks read with empty/false defaults. Schema 4 protects PDF placement and paper layout fields from older writers and leaves existing page JSON and ink unchanged during the schema 3 upgrade.
 
-Back up with the older app first if you need a copy usable by that app. Released Penroam 1.0.0 and Moye 2.0.0 cannot open schema 4 / backup format 4. Moye 1.12.0 and earlier also reject schema 3 / format 3; 1.6.2 and earlier reject schema 2 / format 2. Uninstalling does not roll back a migration. Format 1 backups restore into General; all restores create new IDs and do not overwrite existing notebooks.
+Back up with the older app first if you need a copy usable by that app. Penroam 1.1.0 and earlier cannot open schema 5 / backup format 5. Released Penroam 1.0.0 and Moye 2.0.0 cannot open schema 4 / backup format 4. Moye 1.12.0 and earlier also reject schema 3 / format 3; 1.6.2 and earlier reject schema 2 / format 2. Uninstalling does not roll back a migration. Format 1 backups restore into General; all restores create new IDs and do not overwrite existing notebooks.
 
 ## Notebook structure
 

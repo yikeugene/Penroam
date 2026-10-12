@@ -49,12 +49,14 @@ public static class DocumentWorkflows
     {
         if (!document.Sections.Any(section => section.Id == sectionId)) throw new ArgumentException("Choose an existing section.");
         var copies = source.Select(page => page.Snapshot()).ToArray();
+        var copiedIds = copies.ToDictionary(page => page.Id, _ => Guid.NewGuid().ToString("N"), StringComparer.Ordinal);
         foreach (var page in copies)
         {
-            page.Id = Guid.NewGuid().ToString("N"); page.SectionId = sectionId; page.InkData = page.InkData.ToArray();
+            page.Id = copiedIds[page.Id]; page.SectionId = sectionId; page.InkData = page.InkData.ToArray();
             foreach (var text in page.Texts) text.Id = Guid.NewGuid().ToString("N");
             foreach (var image in page.Images) image.Id = Guid.NewGuid().ToString("N");
         }
+        PracticePageLinks.RemapCopiedSources(copies, copiedIds);
         var index = afterPageId is null ? -1 : document.Pages.FindIndex(page => page.Id == afterPageId && page.SectionId == sectionId);
         if (index < 0) index = document.Pages.FindLastIndex(page => page.SectionId == sectionId);
         if (index < 0)

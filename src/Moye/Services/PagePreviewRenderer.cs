@@ -45,8 +45,8 @@ public sealed class PagePreviewRenderer(IPdfService pdf, Func<string, Task<Asset
                         text.Bold ? FontWeights.Bold : FontWeights.Normal, FontStretches.Normal), text.FontSize,
                     new SolidColorBrush((Color)ColorConverter.ConvertFromString(text.Color)), 1)
                 {
-                    MaxTextWidth = NoteTextLayout.ContentWidth(text.Width), MaxTextHeight = Math.Max(1, text.Height + text.FontSize * 1.4),
-                    LineHeight = text.FontSize * 1.4,
+                    MaxTextWidth = NoteTextLayout.ContentWidth(text.Width), MaxTextHeight = Math.Max(1, text.Height + NoteTextLayout.LineHeight(text)),
+                    LineHeight = NoteTextLayout.LineHeight(text),
                     TextAlignment = text.Alignment switch { NoteTextAlignment.Center => TextAlignment.Center, NoteTextAlignment.Right => TextAlignment.Right, _ => TextAlignment.Left }
                 };
                 dc.PushClip(new RectangleGeometry(new Rect(text.X, text.Y, text.Width, text.Height)));

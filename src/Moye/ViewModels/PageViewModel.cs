@@ -13,6 +13,6 @@ public sealed class PageViewModel(NotePage page, int number, double zoom) : Obse
     public double DisplayWidth => Page.Width * Zoom;
     public double DisplayHeight => Page.Height * Zoom;
     public string Caption => $"{(Page.IsBookmarked ? "★ " : "")}{Number:D2}  ·  {(string.IsNullOrWhiteSpace(Page.Title) ? PaperCaption : Page.Title)}";
-    public string PaperCaption => Page.Pdf is not null ? "PDF" : Page.Template switch { PaperTemplate.Grid => "Grid", PaperTemplate.Ruled => "Ruled", PaperTemplate.DotGrid => "Dot Grid", PaperTemplate.Cornell => "Cornell", PaperTemplate.Graph => "Graph", _ => "Blank" };
+    public string PaperCaption => Page.Pdf is not null ? "PDF" : Page.Template switch { PaperTemplate.Grid => "Grid", PaperTemplate.Ruled => "Ruled", PaperTemplate.DotGrid => "Dot Grid", PaperTemplate.Cornell => "Cornell", PaperTemplate.Graph => "Graph", PaperTemplate.Meeting => "Meeting Notes", _ => "Blank" };
     public BitmapSource? Thumbnail { get => _thumbnail; set => Set(ref _thumbnail, value); }
 }

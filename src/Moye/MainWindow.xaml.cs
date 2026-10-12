@@ -43,7 +43,7 @@ public partial class MainWindow : Window
     private sealed record PageZoomAnchor(PageViewModel Page, Point PagePoint, Point ViewportPoint);
     private bool AnyPenDown => IsViewportPenContactActive || _editors.Values.Any(e => e.IsInputActive);
 
-    public MainWindow(INotebookRepository repository, WritingPreferencesStore? preferencesStore = null, ErrorReporter? errors = null)
+    public MainWindow(INotebookRepository repository, WritingPreferencesStore? preferencesStore = null, ErrorReporter? errors = null, IAppUpdateService? updateService = null, IUpdateInstaller? updateInstaller = null)
     {
         _errors = errors ?? new ErrorReporter(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Moye", "error.log"));
         _preferencesStore = preferencesStore ?? new WritingPreferencesStore();
@@ -54,6 +54,7 @@ public partial class MainWindow : Window
         InitializeTypingUi();
         InitializeWorkspace();
         InitializeDocumentWorkflows(ReferenceHost);
+        InitializeUpdates(updateService, updateInstaller);
         Width = Math.Min(1400, SystemParameters.WorkArea.Width - 24);
         Height = Math.Min(960, SystemParameters.WorkArea.Height - 24);
         SystemEvents.PowerModeChanged += PowerModeChanged;
@@ -70,6 +71,7 @@ public partial class MainWindow : Window
     {
         await RunAsync("Loading your notebooks…", async () => { await LoadPreferencesAsync(); await ViewModel.InitializeAsync(); await LoadWorkspaceAsync(); _ready = true; UpdateTool(); });
         if (_preferencesLoadWarning is not null) MessageBox.Show(this, _preferencesLoadWarning, "Writing Settings", MessageBoxButton.OK, MessageBoxImage.Warning);
+        if (_ready) await CheckForUpdatesAsync(false);
     }
 
     private async Task RunAsync(string message, Func<Task> action)
@@ -102,22 +104,44 @@ public partial class MainWindow : Window
     {
         if (_closing) return;
         e.Cancel = true;
+        var updatePath = _installOnClosePath;
+        _installOnClosePath = null;
         if (ViewModel.IsBusy) { MessageBox.Show(this, "Please wait for the current operation to finish before closing.", "Penroam"); return; }
-        ViewModel.IsBusy = true; ViewModel.Operation = "Saving before closing…";
+        _updateShutdownRequested = true;
+        var canceledUpdateDownload = _updateDownloadCancellation is not null;
+        _updateDownloadCancellation?.Cancel();
+        ViewModel.IsBusy = true;
+        ViewModel.Operation = updatePath is null ? "Saving before closing…" : "Saving your notes before updating…";
         try
         {
-            _automaticBackupCancellation?.Cancel();
-            if (_automaticBackupCompletion is { } backupCompletion) await backupCompletion.Task;
-            EndTemporaryPan(); ClearTouches(); CommitEditors(); CaptureReadingPosition(); await SaveWorkspaceAsync(); await ViewModel.Autosave.FlushAsync(); await SavePreferencesAsync(true);
+            if (updatePath is not null && _availableUpdate is { } update)
+                await new UpdateInstallCoordinator(_updateInstaller).InstallAsync(update, updatePath, SaveBeforeExitAsync);
+            else await SaveBeforeExitAsync();
             _workspaceTimer.Stop(); _backupTimer.Stop();
-            if (_draftRecovery is not null) await _draftRecovery.DrainAsync();
             _closing = true; _thumbnailTimer.Stop(); _pdfZoomTimer.Stop(); SystemEvents.PowerModeChanged -= PowerModeChanged;
             foreach (var cts in _loading.Values) cts.Cancel();
             ViewModel.Dispose(); _ = Dispatcher.BeginInvoke(Close);
         }
-        catch (Exception ex) { ViewModel.IsBusy = false; MessageBox.Show(this, "Some changes could not be saved. This window will stay open.\nUse More → Retry Save, or Back Up This Notebook.\n\n" + ex.Message, "Unsaved Changes", MessageBoxButton.OK, MessageBoxImage.Warning); }
+        catch (Exception ex)
+        {
+            _updateShutdownRequested = false;
+            ViewModel.IsBusy = false;
+            if (updatePath is not null)
+            {
+                if (ex is System.IO.InvalidDataException) _downloadedUpdatePath = null;
+                UpdateNotice.ShowError("The update could not start. Your notebook is still open. " + ex.Message);
+            }
+            else
+            {
+                if (canceledUpdateDownload && _availableUpdate is { } available)
+                {
+                    if (_downloadedUpdatePath is not null) UpdateNotice.ShowReady(available.Version.ToString(3));
+                    else UpdateNotice.ShowAvailable(available.Version.ToString(3), available.Notes);
+                }
+                MessageBox.Show(this, "Some changes could not be saved. This window will stay open.\nUse More → Retry Save, or Back Up This Notebook.\n\n" + ex.Message, "Unsaved Changes", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
     }
-
     private async void WindowDeactivated(object? sender, EventArgs e)
     {
         if (!_ready || _closing) return;
@@ -569,8 +593,10 @@ public partial class MainWindow : Window
         PaperPickerTitle.Text = addingPage ? "Add a Page" : "Choose Paper";
         PaperPickerHint.Text = addingPage ? "A4 paper · Insert after the current page." : TemplatePicker.IsEnabled ? "Change this page's background. Your notes stay in place." : "PDF pages keep their original background. Add a new page to use a template.";
         ApplyPaperButton.Content = addingPage ? "Add Page" : "Apply Paper";
-        PaperSettingsPopup.PlacementTarget = _focusMode ? FocusPenSettingsButton : Sidebar.Visibility == Visibility.Visible ? ThumbnailList : PenSettingsButton;
-        PaperSettingsPopup.Placement = _focusMode || Sidebar.Visibility == Visibility.Visible ? PlacementMode.Right : PlacementMode.Bottom;
+        PaperSettingsPopup.PlacementTarget = _focusMode ? (addingPage ? FocusAddPageButton : FocusPenSettingsButton)
+            : Sidebar.Visibility == Visibility.Visible ? ThumbnailList : PenSettingsButton;
+        PaperSettingsPopup.Placement = _focusMode ? (_workspace.FocusToolsOnRight ? PlacementMode.Left : PlacementMode.Right)
+            : Sidebar.Visibility == Visibility.Visible ? PlacementMode.Right : PlacementMode.Bottom;
         Dispatcher.BeginInvoke(() => PaperSettingsPopup.IsOpen = true, DispatcherPriority.Input);
     }
     private void CancelPaperClick(object sender, RoutedEventArgs e) => CloseSettingsPopups();

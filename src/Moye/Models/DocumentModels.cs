@@ -5,11 +5,11 @@ using System.Text;
 namespace Moye.Models;
 
 // Numeric values are persisted in existing notebooks and .moye backups.
-public enum PaperTemplate { Plain = 0, Ruled = 1, Grid = 2, DotGrid = 3, Cornell = 4, Graph = 5 }
+public enum PaperTemplate { Plain = 0, Ruled = 1, Grid = 2, DotGrid = 3, Cornell = 4, Graph = 5, Meeting = 6 }
 public enum InkTool { Pen, Highlighter, StrokeEraser, PointEraser, Lasso, Text, Select, Hand }
 public enum NoteTextAlignment { Left = 0, Center = 1, Right = 2 }
 
-public static class NoteTextLayout
+public static partial class NoteTextLayout
 {
     // WPF TextBoxView reserves this margin for its bidi caret even when TextBox.Padding is zero.
     public const double HorizontalInset = 2;
@@ -94,7 +94,7 @@ public sealed class NotebookSummary
     public string PageCountText => $"{PageCount} {(PageCount == 1 ? "page" : "pages")}";
 }
 
-public sealed class NotePage
+public sealed partial class NotePage
 {
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public string SectionId { get; set; } = "";
@@ -109,7 +109,7 @@ public sealed class NotePage
     public List<NoteText> Texts { get; set; } = [];
     public List<NoteImage> Images { get; set; } = [];
     public PdfPageSource? Pdf { get; set; }
-    public NotePage Snapshot() => new() { Id = Id, SectionId = SectionId, Title = Title, IsBookmarked = IsBookmarked, Width = Width, Height = Height, Template = Template, PaperLayout = PaperLayout is null ? null : PaperLayout with {}, InkData = InkData, Texts = Texts.Select(t => t with {}).ToList(), Images = Images.Select(i => i with {}).ToList(), Pdf = Pdf is null ? null : Pdf with {} };
+    public NotePage Snapshot() => new() { Id = Id, SectionId = SectionId, Title = Title, IsBookmarked = IsBookmarked, Width = Width, Height = Height, Template = Template, Practice = Practice is null ? null : Practice with {}, StudyQuestions = StudyQuestions.Select(q => q with { Anchor = q.Anchor is null ? null : q.Anchor with {} }).ToList(), ResumeHint = ResumeHint is null ? null : ResumeHint with { Anchor = ResumeHint.Anchor is null ? null : ResumeHint.Anchor with {} }, PaperLayout = PaperLayout is null ? null : PaperLayout with {}, InkData = InkData, Texts = Texts.Select(t => t with {}).ToList(), Images = Images.Select(i => i with {}).ToList(), Pdf = Pdf is null ? null : Pdf with {} };
 }
 
 /// <summary>Original paper-guide region on an extended canvas. A null layout fills the page.</summary>
@@ -147,7 +147,7 @@ public static class NotebookAppearance
     }
 }
 
-public sealed record NoteText
+public sealed partial record NoteText
 {
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
     public double X { get; set; } = 72;

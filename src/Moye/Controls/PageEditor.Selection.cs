@@ -151,7 +151,7 @@ public sealed partial class PageEditor
         var texts = payload.Texts.Select(text => text with
         {
             Id = Guid.NewGuid().ToString("N"), X = x + (text.X - bounds.X) * scale, Y = y + (text.Y - bounds.Y) * scale,
-            Width = text.Width * scale, Height = text.Height * scale, FontSize = Math.Clamp(text.FontSize * scale, 6, 128)
+            Width = text.Width * scale, Height = text.Height * scale, FontSize = Math.Clamp(text.FontSize * scale, 6, 128), LineSpacing = text.LineSpacing * scale
         }).ToArray();
         var images = payload.Images.Select(image => image with
         {

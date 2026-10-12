@@ -50,6 +50,7 @@ public static class PageExtensionService
         page.Height += margins.Top + margins.Bottom;
         if (margins.Left == 0 && margins.Top == 0) return page;
 
+        StudyWorkflowService.TranslateAnchors(page, margins.Left, margins.Top);
         foreach (var text in page.Texts) { text.X += margins.Left; text.Y += margins.Top; }
         foreach (var image in page.Images) { image.X += margins.Left; image.Y += margins.Top; }
         if (page.InkData.Length > 0)

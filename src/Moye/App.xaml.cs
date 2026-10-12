@@ -62,7 +62,8 @@ public partial class App : Application
             MessageBox.Show("The operation could not be completed. Previously saved notes are unaffected.\n\n" + errors.Report(args.Exception), "Penroam", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
         };
-        var window = new MainWindow(new SqliteNotebookRepository(location.DatabasePath), new WritingPreferencesStore(location.PreferencesPath), errors);
+        var window = new MainWindow(new SqliteNotebookRepository(location.DatabasePath), new WritingPreferencesStore(location.PreferencesPath), errors,
+            dataIndex < 0 ? new GitHubUpdateService(GitHubUpdateService.CurrentVersion) : null);
         MainWindow = window; window.Show();
     }
     protected override void OnExit(ExitEventArgs e) { _instanceMutex?.Dispose(); base.OnExit(e); }

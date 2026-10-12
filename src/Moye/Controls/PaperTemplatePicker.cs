@@ -29,7 +29,7 @@ public sealed class PaperTemplatePicker : UserControl
     public PaperTemplatePicker()
     {
         MinWidth = 240;
-        var group = new UniformGrid { Columns = 3, Rows = 2 };
+        var group = new UniformGrid { Columns = 4 };
         var groupName = $"PaperTemplates_{Guid.NewGuid():N}";
         AddChoice(group, groupName, PaperTemplate.Plain, "Blank", "Free-form notes");
         AddChoice(group, groupName, PaperTemplate.Ruled, "Ruled", "Everyday writing");
@@ -37,6 +37,7 @@ public sealed class PaperTemplatePicker : UserControl
         AddChoice(group, groupName, PaperTemplate.DotGrid, "Dot Grid", "Flexible layouts");
         AddChoice(group, groupName, PaperTemplate.Cornell, "Cornell", "Cues & summaries");
         AddChoice(group, groupName, PaperTemplate.Graph, "Graph", "Fine-scale plotting");
+        AddChoice(group, groupName, PaperTemplate.Meeting, "Meeting", "Notes & actions");
         Content = group;
         UpdateSelection();
     }

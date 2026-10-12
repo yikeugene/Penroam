@@ -19,7 +19,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
     private sealed class Manifest
     {
         [JsonRequired] public string Format { get; set; } = "moye";
-        [JsonRequired] public int Version { get; set; } = 4;
+        [JsonRequired] public int Version { get; set; } = 5;
         public DateTimeOffset CreatedUtc { get; set; } = DateTimeOffset.UtcNow;
         [JsonRequired] public List<DocumentEntry> Notebooks { get; set; } = [];
         [JsonRequired] public List<AssetEntry> Assets { get; set; } = [];
@@ -85,6 +85,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
                                 entry.Inks.Add(inkEntry);
                                 page.InkData = [];
                                 foreach (var image in page.Images) assetIds.Add(image.AssetId);
+                                if (page.Practice is { } practice) assetIds.Add(practice.QuestionAssetId);
                                 if (page.Pdf is not null) assetIds.Add(page.Pdf.AssetId);
                             }
                             var json = JsonSerializer.SerializeToUtf8Bytes(document, DocumentJson.Options);
@@ -142,7 +143,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
                 AddBytes(ref total, entry.Length);
             }
             var manifest = Deserialize<Manifest>(await ReadAsync(Get(entries, "manifest.json"), MaxDocumentBytes, cancellationToken).ConfigureAwait(false));
-            if (manifest.Format != "moye" || manifest.Version is not (1 or 2 or 3 or 4)) throw Invalid("This backup format or version is not supported.");
+            if (manifest.Format != "moye" || manifest.Version is not (1 or 2 or 3 or 4 or 5)) throw Invalid("This backup format or version is not supported.");
             if (manifest.Notebooks is null || manifest.Assets is null || manifest.Notebooks.Count > 10_000) throw Invalid("Invalid backup index.");
             var referencedPaths = new HashSet<string>(StringComparer.Ordinal) { "manifest.json" };
             var assets = new Dictionary<string, AssetEntry>(StringComparer.Ordinal);
@@ -175,6 +176,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
                     page.InkData = await ReadVerifiedAsync(entries, ink.Path, ink.Sha256, MaxDocumentBytes, cancellationToken).ConfigureAwait(false);
                     ValidateInk(page.InkData);
                     foreach (var image in page.Images) if (!assets.ContainsKey(image.AssetId)) throw Invalid("An image is missing from the backup.");
+                    if (page.Practice is { } practice && !assets.ContainsKey(practice.QuestionAssetId)) throw Invalid("A saved practice question is missing from the backup.");
                     if (page.Pdf is not null && !assets.ContainsKey(page.Pdf.AssetId)) throw Invalid("An original PDF is missing from the backup.");
                 }
                 documents.Add(document);
@@ -199,10 +201,12 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
                 document.IsQuickInbox = false;
                 document.CreatedUtc = document.ModifiedUtc = DateTimeOffset.UtcNow;
                 var sectionIds = document.Sections.ToDictionary(section => section.Id, _ => Guid.NewGuid().ToString("N"), StringComparer.Ordinal);
+                var pageIds = document.Pages.ToDictionary(page => page.Id, _ => Guid.NewGuid().ToString("N"), StringComparer.Ordinal);
                 foreach (var section in document.Sections) section.Id = sectionIds[section.Id];
                 foreach (var page in document.Pages)
                 {
-                    page.Id = Guid.NewGuid().ToString("N");
+                    page.Id = pageIds[page.Id];
+                    if (page.Practice is { } practice) practice.SourcePageId = pageIds.GetValueOrDefault(practice.SourcePageId, practice.SourcePageId);
                     page.SectionId = sectionIds[page.SectionId];
                     foreach (var text in page.Texts) text.Id = Guid.NewGuid().ToString("N");
                     foreach (var image in page.Images) image.Id = Guid.NewGuid().ToString("N");
@@ -279,7 +283,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
             if (page is null || !ValidId(page.Id) || !pageIds.Add(page.Id) || !Dimension(page.Width) || !Dimension(page.Height)
                 || !Enum.IsDefined(page.Template) || page.InkData is null || page.Texts is null || page.Images is null
                 || page.Title is null || page.Title.Length > 10_000 || page.Texts.Count > 50_000 || page.Images.Count > 50_000
-                || !PaperPagePlacement.IsValid(page)) throw Invalid("Invalid page structure.");
+                || !PaperPagePlacement.IsValid(page) || !PageFeatureValidation.IsValid(page)) throw Invalid("Invalid page structure.");
             if (requireSections)
             {
                 if (!ValidId(page.SectionId) || !sectionOrder.TryGetValue(page.SectionId, out var currentSection) || currentSection < previousSection)
@@ -353,8 +357,25 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
             if (version >= 4) RequireFields(page, "paperLayout");
             if (page.TryGetProperty("paperLayout", out var paperLayout) && paperLayout.ValueKind != JsonValueKind.Null)
                 RequireFields(paperLayout, "x", "y", "width", "height");
+            if (version >= 5) RequireFields(page, "studyQuestions", "resumeHint", "practice");
+            if (page.TryGetProperty("studyQuestions", out _))
+                foreach (var question in RequireArray(page, "studyQuestions"))
+                {
+                    RequireFields(question, "id", "prompt", "explanation", "retryNotes", "status", "anchor", "createdUtc", "modifiedUtc");
+                    RequireStudyAnchor(question.GetProperty("anchor"));
+                }
+            if (page.TryGetProperty("resumeHint", out var resume) && resume.ValueKind != JsonValueKind.Null)
+            {
+                RequireFields(resume, "nextStep", "anchor", "modifiedUtc");
+                RequireStudyAnchor(resume.GetProperty("anchor"));
+            }
+            if (page.TryGetProperty("practice", out var practice) && practice.ValueKind != JsonValueKind.Null)
+                RequireFields(practice, "groupId", "sourcePageId", "questionAssetId", "question", "questionWidth", "questionHeight", "number", "reflection", "reviewed");
             foreach (var text in RequireArray(page, "texts"))
+            {
                 RequireFields(text, "id", "x", "y", "width", "height", "text", "fontFamily", "fontSize", "color");
+                if (version >= 5) RequireFields(text, "isFreeFlow", "lineSpacing");
+            }
             foreach (var image in RequireArray(page, "images"))
                 RequireFields(image, "id", "assetId", "x", "y", "width", "height");
             if (page.TryGetProperty("pdf", out var pdf) && pdf.ValueKind != JsonValueKind.Null)
@@ -364,6 +385,11 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
             }
         }
         return Deserialize<NotebookDocument>(bytes);
+    }
+
+    private static void RequireStudyAnchor(JsonElement anchor)
+    {
+        if (anchor.ValueKind != JsonValueKind.Null) RequireFields(anchor, "x", "y", "width", "height");
     }
 
     private static void RequireFields(JsonElement element, params string[] fields)

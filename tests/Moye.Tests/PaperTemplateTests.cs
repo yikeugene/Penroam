@@ -84,7 +84,7 @@ public sealed class PaperTemplateTests
     }
 
     [Fact]
-    public async Task PickerOffersAllSixTemplatesWithinTwoCompactTouchRows()
+    public async Task PickerOffersAllSevenTemplatesWithinTwoCompactTouchRows()
     {
         await Sta(() =>
         {
@@ -94,10 +94,10 @@ public sealed class PaperTemplateTests
             picker.UpdateLayout();
             Assert.InRange(picker.ActualHeight, 44, 300);
             var grid = Assert.IsType<UniformGrid>(picker.Content);
-            Assert.Equal(3, grid.Columns);
-            Assert.Equal(2, grid.Rows);
+            Assert.Equal(4, grid.Columns);
+            Assert.Equal(0, grid.Rows);
             var choices = grid.Children.Cast<RadioButton>().ToArray();
-            Assert.Equal(6, choices.Length);
+            Assert.Equal(7, choices.Length);
             Assert.Contains(choices, choice => AutomationProperties.GetName(choice) == "Dot Grid paper");
             foreach (var (choice, template) in choices.Zip(Enum.GetValues<PaperTemplate>()))
             {
@@ -114,6 +114,7 @@ public sealed class PaperTemplateTests
     [InlineData(PaperTemplate.DotGrid, 24, 24, 36, 36)]
     [InlineData(PaperTemplate.Cornell, 78, 140, 50, 140)]
     [InlineData(PaperTemplate.Graph, 60, 79, 66, 79)]
+    [InlineData(PaperTemplate.Meeting, 100, 30, 5, 5)]
     public async Task NewTemplatePdfKeepsVectorMarksAlignedAndPreservesImportedBackground(PaperTemplate template, int markX, int markY, int blankX, int blankY)
     {
         var directory = Path.Combine(Path.GetTempPath(), "MoyePaperTests-" + Guid.NewGuid().ToString("N"));

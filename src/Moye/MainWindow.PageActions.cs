@@ -67,6 +67,11 @@ public partial class MainWindow
         Add("Paper Style…", "\uE790", PageSettingsClick);
         Add("Extend Page…", "\uE740", ExtendPageClick);
         menu.Items.Add(new Separator());
+        Add("Mark a Question…", "\uE897", AddStudyQuestionClick);
+        Add("Leave a Resume Hint…", "\uE70B", SetResumeHintClick);
+        Add("New Practice Attempt…", "\uE710", NewPracticeClick);
+        Add("Restore Part of This Page…", "\uE81C", RestoreRegionClick);
+        menu.Items.Add(new Separator());
         Add("Delete Page", "\uE74D", DeletePageClick, danger: true);
         return menu;
 
