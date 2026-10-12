@@ -13,6 +13,9 @@ public sealed partial class PageEditor
 /// <summary>Placement in document coordinates shared by typing and continuation.</summary>
 public static class FreeTypingLayout
 {
+    // Keep the text baseline slightly above its guide instead of touching it.
+    public const double RuleBaselineGap = 4;
+
     public static Point StartPoint(NotePage page)
     {
         var y = page.Template == PaperTemplate.Meeting ? 80d : 72d;
@@ -46,9 +49,9 @@ public static class FreeTypingLayout
         var spacing = page.Template == PaperTemplate.Meeting ? PaperPattern.MeetingScale(paper.Height) * 32 : 32;
         text.LineSpacing = Math.Ceiling(text.FontSize * 1.4 / spacing) * spacing;
         var baseline = Baseline(text);
-        var preferred = targetBaseline ?? text.Y + baseline;
+        var preferred = targetBaseline ?? text.Y + baseline + RuleBaselineGap;
         var rule = rules.MinBy(line => Math.Abs(paper.Y + line.Start.Y - preferred));
-        text.Y = Math.Max(0, paper.Y + rule.Start.Y - baseline);
+        text.Y = Math.Max(0, paper.Y + rule.Start.Y - baseline - RuleBaselineGap);
         text.Width = Math.Min(text.Width, Math.Max(1, paper.X + rule.End.X - text.X));
     }
 

@@ -232,8 +232,8 @@
           <StackPanel><Ellipse Width="18" Height="18" Fill="{Binding Fill, ElementName=CurrentColor}" Stroke="#B8C2D1" StrokeThickness="0.5"/><TextBlock Text="{Binding Text, ElementName=CurrentWidth, StringFormat={}{0} mm}" FontSize="9" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
         </Button>
         <Border Height="1" Background="#DDE3DC" Margin="7,6"/>
-        <Button x:Name="FocusAddPageButton" Style="{StaticResource FocusToolButton}" Click="AddPageClick" ToolTip="Add a page after the current page" AutomationProperties.Name="Focus Add Page">
-          <StackPanel><TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="17" HorizontalAlignment="Center"/><TextBlock Text="Add page" FontSize="9" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
+        <Button x:Name="FocusAddPageButton" Style="{StaticResource FocusToolButton}" Width="100" Padding="8,4" Click="AddPageClick" ToolTip="Add a page after the current page" AutomationProperties.Name="Focus Add Page">
+          <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="17" VerticalAlignment="Center"/><TextBlock Text="Add page" FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0"/></StackPanel>
         </Button>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
           <Button x:Name="FocusUndoButton" Style="{StaticResource FocusToolButton}" Content="&#xE7A7;" Click="UndoClick" FontFamily="Segoe Fluent Icons" FontSize="18" IsEnabled="{Binding CanUndo}" ToolTip="Undo (Ctrl+Z)" AutomationProperties.Name="Focus Undo"/>

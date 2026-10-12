@@ -827,6 +827,7 @@ internal static class Program
                 SaveImage(output, fileName, RenderElement(content, width, height));
                 VerifyDetached(content, window);
                 reports.Add(MeasureButtons(content, width, height, fileName, "focus", focusButtons));
+                VerifyFocusAddPageContent(window);
                 if (viewport.ActualHeight < height - 1)
                     throw new InvalidOperationException("Focus mode must reclaim the header, tools and footer space.");
                 var toolbarBounds = toolbar.TransformToAncestor(content).TransformBounds(new Rect(toolbar.RenderSize));
@@ -932,6 +933,31 @@ internal static class Program
         VerifyDetached(content, window);
     }
 
+    private static void VerifyFocusAddPageContent(MainWindow window)
+    {
+        var button = (Button)window.FindName("FocusAddPageButton");
+        var content = (FrameworkElement)button.Content;
+        var padding = button.Padding;
+        var border = button.BorderThickness;
+        var available = new Rect(border.Left + padding.Left, border.Top + padding.Top,
+            button.ActualWidth - border.Left - border.Right - padding.Left - padding.Right,
+            button.ActualHeight - border.Top - border.Bottom - padding.Top - padding.Bottom);
+        available.Inflate(.5, .5);
+        var contentBounds = content.TransformToAncestor(button).TransformBounds(new Rect(content.RenderSize));
+        if (!available.Contains(contentBounds))
+            throw new InvalidOperationException($"The focus Add page icon and label must fit inside the padded button: content={contentBounds}, available={available}.");
+        foreach (var text in Descendants<TextBlock>(content))
+        {
+            var naturalText = new FormattedText(text.Text, text.Language.GetEquivalentCulture(), text.FlowDirection,
+                new Typeface(text.FontFamily, text.FontStyle, text.FontWeight, text.FontStretch),
+                text.FontSize, text.Foreground, VisualTreeHelper.GetDpi(text).PixelsPerDip);
+            var textBounds = text.TransformToAncestor(button).TransformBounds(new Rect(text.RenderSize));
+            if (!available.Contains(textBounds) || text.ActualWidth + .5 < naturalText.WidthIncludingTrailingWhitespace ||
+                text.ActualHeight + .5 < naturalText.Height)
+                throw new InvalidOperationException($"The focus Add page text '{text.Text}' must be fully visible inside the button.");
+        }
+    }
+
     private static void VerifyWorkspaceGuardTools(MainWindow window, FrameworkElement content, string output, List<PreviewReport> reports)
     {
         const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
@@ -954,6 +980,7 @@ internal static class Program
                 var name = dockRight ? "focus-guard-right" : "focus-guard-left";
                 fileName = $"ui-preview-{name}-1024.png"; SaveImage(output, fileName, RenderElement(content, 1024, 700));
                 reports.Add(MeasureButtons(content, 1024, 700, fileName, name, "FocusGuardButton", "FocusAddPageButton", "FocusUndoButton", "FocusRedoButton", "ExitFocusButton"));
+                VerifyFocusAddPageContent(window);
                 var favorites = ((Panel)window.FindName("FocusPresetPanel")).Children.OfType<Button>().ToArray();
                 if (favorites.Length != 3) throw new InvalidOperationException("Focus mode must expose the first three favorite pens.");
                 foreach (var button in favorites.Append((Button)window.FindName("FocusGuardButton")).Append((Button)window.FindName("FocusAddPageButton")))

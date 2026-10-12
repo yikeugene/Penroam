@@ -1,7 +1,7 @@
-Upgrading to Penroam 1.2.0
+Upgrading to Penroam 1.2.1
 
-This release adds free typing, Meeting paper, study workflows,
-actual-size A4 PDF export and in-app updates.
+This patch improves ruled-text spacing and the focus-mode Add page
+button. It retains the features and data formats of Penroam 1.2.0.
 Setup updates the existing installation and automatically creates desktop
 and Start menu shortcuts. The .NET runtime is included.
 
@@ -9,7 +9,8 @@ Before continuing, use your current app to back up your notebooks
 (More > Back Up All Notebooks). Keep that backup separately if you may
 need to return to an older release.
 
-Penroam 1.2.0 upgrades libraries to database schema 5 when opened.
+Penroam 1.2.1 uses database schema 5, unchanged from 1.2.0.
+Older libraries are upgraded when opened.
 New .moye backups use format 5. Penroam 1.1.0 and all earlier
 releases cannot open the upgraded library or new backups. Uninstalling
 does not reverse this migration.

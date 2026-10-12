@@ -38,7 +38,7 @@ public sealed class FreeTypingTests
     }
 
     [Fact]
-    public void RuledTypingSnapsBaselineAndEveryLineWithLargerFontsUsingMultipleRules()
+    public void RuledTypingLeavesSpaceAboveEveryRuleWithLargerFontsUsingMultipleRules()
     {
         Sta(() =>
         {
@@ -47,7 +47,10 @@ public sealed class FreeTypingTests
             var text = editor.AddFreeTextAt(new Point(72, 82), "First line\nSecond line\n第三行");
             Layout(editor);
             Assert.Equal(32, text.LineSpacing);
-            Assert.Equal(80, text.Y + FreeTypingLayout.Baseline(text), 5);
+            Assert.Equal(76, text.Y + FreeTypingLayout.Baseline(text), 5);
+            var alignedY = text.Y;
+            FreeTypingLayout.AlignToRules(page, text);
+            Assert.Equal(alignedY, text.Y); // Reapplying alignment must not keep moving text upward.
             var box = Assert.Single(Descendants<TextBox>(editor));
             Assert.Equal(32, System.Windows.Documents.Block.GetLineHeight(box));
             var first = box.GetRectFromCharacterIndex(0);
@@ -59,11 +62,11 @@ public sealed class FreeTypingTests
                 .SelectMany(visual => GlyphBaselines(VisualTreeHelper.GetDrawing(visual))
                     .Select(point => visual.TransformToAncestor(editor).Transform(point).Y)).ToArray();
             Assert.NotEmpty(baselines);
-            Assert.All(baselines, y => Assert.InRange(RuleDistance(y), 0, .5));
+            Assert.All(baselines, y => Assert.InRange(RuleDistance(y + 4), 0, .5));
             editor.ApplyTextStyle(fontSize: 36);
             Assert.Equal(64, text.LineSpacing);
             Assert.Equal(64, System.Windows.Documents.Block.GetLineHeight(box));
-            Assert.InRange(RuleDistance(text.Y + FreeTypingLayout.Baseline(text)), 0, .001);
+            Assert.InRange(RuleDistance(text.Y + FreeTypingLayout.Baseline(text) + 4), 0, .001);
             Assert.False(TextFlow.IsOverflowing(page, text));
         });
     }
@@ -84,7 +87,7 @@ public sealed class FreeTypingTests
             Assert.Equal(82, margin.Y);
             var ruled = editor.AddFreeTextAt(new Point(180, 185), "On the original sheet");
             Assert.Equal(32, ruled.LineSpacing);
-            Assert.Equal(180, ruled.Y + FreeTypingLayout.Baseline(ruled), 5);
+            Assert.Equal(176, ruled.Y + FreeTypingLayout.Baseline(ruled), 5);
         });
     }
 
@@ -106,7 +109,7 @@ public sealed class FreeTypingTests
             Assert.Contains("ACTION ITEMS  /  OWNER  /  DUE DATE", labels);
             var editor = Editor(page);
             var text = editor.BeginTyping();
-            Assert.Equal(104, text.Y + FreeTypingLayout.Baseline(text), 5);
+            Assert.Equal(100, text.Y + FreeTypingLayout.Baseline(text), 5);
             Assert.Single(Descendants<TextBox>(editor)).Text = "Weekly planning";
             editor.SetTool(InkTool.Pen, Colors.DarkBlue, 3);
             editor.InkCanvas.Strokes.Add(new Stroke(new StylusPointCollection { new StylusPoint(120, 368), new StylusPoint(240, 370) }));
@@ -135,7 +138,7 @@ public sealed class FreeTypingTests
             Assert.Equal(original, continuation.RetainedText + continuation.Text.Text);
             Assert.True(continuation.Text.IsFreeFlow);
             Assert.Equal(32, continuation.Text.LineSpacing);
-            Assert.InRange(RuleDistance(continuation.Text.Y + FreeTypingLayout.Baseline(continuation.Text)), 0, .001);
+            Assert.InRange(RuleDistance(continuation.Text.Y + FreeTypingLayout.Baseline(continuation.Text) + 4), 0, .001);
             var restored = page.Snapshot();
             Assert.True(restored.Texts[0].IsFreeFlow);
             Assert.Equal(text.LineSpacing, restored.Texts[0].LineSpacing);

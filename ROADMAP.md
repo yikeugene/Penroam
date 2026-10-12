@@ -1,6 +1,8 @@
 # Penroam University Note-Taking Roadmap
 
-## Penroam 1.2.0 — 2026-10-12
+## Penroam 1.2.1 — 2026-10-12
+
+Version 1.2.1 improves ruled-text spacing and the focus-mode Add page button. It retains schema/backup format 5 and the 1.2.0 feature scope. See [patch release notes](docs/RELEASE_NOTES_1.2.1.md).
 
 Included in 1.2.0: borderless free typing and ruled baseline alignment; a mixed typing/ink Meeting template; anchored question inbox with explanation/retry states; saved next-step hints; notebook-local appearance filters; saved-question practice attempts and reflections; selective restore from session history; original-size or actual-size A4 tiled export; in-app stable-release checks and updates.
 
@@ -12,7 +14,7 @@ Penroam should support a complete university workflow: write during a lecture, a
 
 Penroam is the new name for Moye. Version numbering restarts at 1.0.0 with the complete current feature set and new name/icon; the existing library location and `.moye` file compatibility remain unchanged. Dated verification below retains the scope of the original Moye checks.
 
-This status reflects **Penroam 1.2.0**, reviewed on **2026-10-12**. Version 1.1 adds finite page extension and live lasso movement; see [release notes](docs/RELEASE_NOTES_1.1.0.md) for scope and compatibility. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. Version 1.11.0 adds selected-section PDF export, 21 fixed pen thickness levels and button/interface polish. Version 1.10.0 adds floating focus tools, page context menus and PDF navigation annotation import fixes. Version 1.9.0 adds the refreshed workspace, local Office document import and PDF compatibility fixes. Version 1.8.0 adds visual color selection, live stroke-thickness previews and touch-navigation scheduling/inertia, while retaining notebook sections and the SQLite startup repair from 1.7.0. The EXE installer continues to create desktop and Start menu shortcuts automatically. Checked items describe implemented behavior, including the first writing-workflow milestone below; unchecked items remain work to complete. Implementation and automated coverage do not establish successful physical pen or desktop interaction.
+This status reflects **Penroam 1.2.1**, reviewed on **2026-10-12**. Version 1.1 adds finite page extension and live lasso movement; see [release notes](docs/RELEASE_NOTES_1.1.0.md) for scope and compatibility. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. Version 1.11.0 adds selected-section PDF export, 21 fixed pen thickness levels and button/interface polish. Version 1.10.0 adds floating focus tools, page context menus and PDF navigation annotation import fixes. Version 1.9.0 adds the refreshed workspace, local Office document import and PDF compatibility fixes. Version 1.8.0 adds visual color selection, live stroke-thickness previews and touch-navigation scheduling/inertia, while retaining notebook sections and the SQLite startup repair from 1.7.0. The EXE installer continues to create desktop and Start menu shortcuts automatically. Checked items describe implemented behavior, including the first writing-workflow milestone below; unchecked items remain work to complete. Implementation and automated coverage do not establish successful physical pen or desktop interaction.
 
 **Penroam 1.0.0, 2026-09-30:** this release establishes the current workflows below as the new 1.0 baseline. It does not complete all 41 roadmap areas or establish device acceptance.
 

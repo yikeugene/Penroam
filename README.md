@@ -6,11 +6,11 @@ An offline handwriting notebook for Windows 11. Penroam, formerly Moye, combines
 
 [Downloads and releases](https://github.com/yikeugene/Penroam/releases) · [User guide](docs/USER_GUIDE.md) · [Roadmap](ROADMAP.md) · [Contributing](https://github.com/yikeugene/Penroam/blob/master/CONTRIBUTING.md)
 
-**Penroam 1.2.0** brings writing and study workflows together. See the [1.2 release notes](docs/RELEASE_NOTES_1.2.0.md), including the required backup guidance before upgrading.
+**Penroam 1.2.1** improves ruled-text spacing and the focus-mode Add page button. See the [1.2.1 release notes](docs/RELEASE_NOTES_1.2.1.md), including compatibility and upgrade guidance.
 
 ## Get started
 
-1. Download and run [Penroam-1.2.0-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.2.0/Penroam-1.2.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest).
+1. Download and run [Penroam-1.2.1-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.2.1/Penroam-1.2.1-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest).
 2. Complete the installer, then open **Penroam** from the desktop shortcut it creates automatically. A Start menu shortcut is also added. The .NET runtime is included; no separate .NET installation or administrator account is needed.
 3. On **Your Notebooks**, open a notebook cover or choose **New Notebook** and select Blank, Ruled, Grid, Dot Grid, Cornell, Graph or Meeting paper. Choose a favorite pen and start writing. Open **Manage pens** to customize your tools, or **Pen Settings** to change the current color and width. A mouse works too.
 
@@ -22,7 +22,7 @@ New installations use `%LOCALAPPDATA%\Programs\Penroam` by default. An upgrade r
 
 After startup, Penroam checks the public [GitHub repository](https://github.com/yikeugene/Penroam/releases/latest) in the background for a newer stable release. Choose **Update now** on the new-version card to download and verify its SHA-256 checksum, save your notes, close Penroam, install the update, and reopen. **Later** dismisses the card; **Cancel download** stops a download; **Try again** retries a failed check or update. You can also use **More → Check for Updates…** or **Library Options → Check for Updates…**. See [updating from the app](docs/USER_GUIDE.md#in-app-updates).
 
-Writing and saving still work offline. Update requests contact GitHub and include the app version, without uploading notebook content. Launching with `--data-dir` disables the updater. Install **1.2.0** manually when upgrading from **1.1.0** or earlier; subsequent updates can be installed from within the app. Closing Penroam and running the newer installer remains available as a manual fallback.
+Writing and saving still work offline. Update requests contact GitHub and include the app version, without uploading notebook content. Launching with `--data-dir` disables the updater. Install **1.2.1** manually when upgrading from **1.1.0** or earlier; subsequent updates can be installed from within the app. Closing Penroam and running the newer installer remains available as a manual fallback.
 
 ## Features
 
@@ -123,8 +123,8 @@ CLI and NuGet caches are kept in `.tools\cli` and `.tools\nuget`. CLI telemetry 
 |---|---|
 | `build.ps1 -Configuration Release` | Build the Release configuration. |
 | `test.ps1 -Filter 'FullyQualifiedName~StorageTests'` | Run selected tests; TRX output is written to `artifacts\TestResults`. |
-| `publish.ps1` | Read the version from the project and create `artifacts\Penroam-win-x64`, `Penroam-1.2.0-win-x64.zip`, and its SHA-256 file. Close any app running from the output folder first. |
-| `publish-installer.ps1 -InstallCompiler` | Build the self-contained payload and `artifacts\Penroam-1.2.0-Setup-win-x64.exe` with its SHA-256 file. |
+| `publish.ps1` | Read the version from the project and create `artifacts\Penroam-win-x64`, `Penroam-1.2.1-win-x64.zip`, and its SHA-256 file. Close any app running from the output folder first. |
+| `publish-installer.ps1 -InstallCompiler` | Build the self-contained payload and `artifacts\Penroam-1.2.1-Setup-win-x64.exe` with its SHA-256 file. |
 | `test-installer.ps1 -AllowDesktopChanges` | In a disposable Windows account, verify installation, automatic shortcuts, reinstallation, uninstallation and retained notebook data. CI runs this automatically. |
 | `preview-ui.ps1` | Render the real WPF layout with an in-memory sample at two sizes, with a button-size report in `artifacts`. It does not open a desktop window or read your notes database. |
 
@@ -140,7 +140,7 @@ Uploading a release and installing it on a user machine are separate from buildi
 
 ## Verification and limitations
 
-The 1.2.0 Release links automated test, layout, storage and installation results for its exact published commit. Coverage includes free typing, study metadata, practice links, region restore, tiled PDF export, update handling, legacy migration and format-5 backup round trips. Native device and printer acceptance remain limited as described in the [release notes](docs/RELEASE_NOTES_1.2.0.md).
+The 1.2.1 Release links automated test, layout, storage and installation results for its exact published commit, including ruled-text spacing and focus-button content bounds. Coverage includes free typing, study metadata, practice links, region restore, tiled PDF export, update handling, legacy migration and format-5 backup round trips. Native device and printer acceptance remain limited as described in the [release notes](docs/RELEASE_NOTES_1.2.1.md).
 
 **Penroam branding checks, 2026-09-30:** the local Release build completed with **0 warnings and 0 errors**, and all **512 automated tests passed**, with no failures or skipped tests. The detached WPF preview completed **69 layout scenes**: 42 main-window/tool scenes, 9 document-workflow scenes, 10 organization scenes and 8 workspace scenes. The 42 main-layout reports recorded no undersized controls, overlaps or clipping; the other scene groups passed their implemented size and boundary checks. The self-contained app passed its SQLite notebook/asset save-and-reopen check. A native desktop check with an isolated synthetic library confirmed the Penroam title, home logo, window icons and workspace-settings wording. The installer compiled successfully; the 1.0.0 Release records final CI installation, synthetic legacy upgrade, shortcut replacement and uninstall results for its published commit.
 

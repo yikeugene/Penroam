@@ -5,7 +5,7 @@
 Penroam 1.2.0 includes the writing and study workflows below. It writes **SQLite schema 5** and **backup format 5** (reads backup formats 1–5). Keep a backup made by your installed version before opening its library with this build: older apps reject the newer formats.
 
 - **In-app updates:** startup checks for newer stable GitHub releases, with a download-and-install card and a manual **Check for Updates…** action. See [updating from the app](#in-app-updates) for controls and the initial installation requirement.
-- **Free typing:** choose **Type** or press **T**, then click anywhere on the paper. New text has no visible box or handles, wraps to the available width, and grows or shrinks with the content. Chinese input and ordinary text undo still use the native editor. **Select** exposes movement/resize handles; **Text box** remains available for fixed layouts. Pasted plain text also defaults to free typing. Ruled, Cornell and Meeting paper align new text baselines to their horizontal guides; larger fonts use multiples of the guide spacing. Extended blank margins remain free placement. At the page bottom, **Continue text on next page** moves overflow to a new page.
+- **Free typing:** choose **Type** or press **T**, then click anywhere on the paper. New text has no visible box or handles, wraps to the available width, and grows or shrinks with the content. Chinese input and ordinary text undo still use the native editor. **Select** exposes movement/resize handles; **Text box** remains available for fixed layouts. Pasted plain text also defaults to free typing. Ruled, Cornell and Meeting paper align new text baselines four canvas pixels above their horizontal guides; larger fonts use multiples of the guide spacing. Extended blank margins remain free placement. At the page bottom, **Continue text on next page** moves overflow to a new page.
 - **Meeting paper:** choose **Meeting** in New Notebook, Add Page or Paper Style. It has title, date/time, attendees, agenda, discussion, decisions and action/owner/due-date areas. Type directly into an area or write with the pen; both remain editable and export together.
 - **Questions:** **More → Study & Review → Mark a Question…** (also on a page's context menu). Use the lasso selection or mark a rectangular source area, then write the question. **Question Inbox** spans the open notebook's sections; search questions, explanations and retry notes, filter resolved questions, and move between Need help, Understood, Try again and Resolved. Opening a result centers and briefly outlines its source region. Status changes are manual.
 - **Resume your thinking:** **Leave a Resume Hint…** saves a next step on the current page or selected region. A **Continue:** strip appears above the paper when the notebook has saved hints, including after reopening. Choose it, **Resume My Thinking…**, or the matching command to review hints and return to the source. Hints travel with the notebook through backups; this is separate from device-only scroll/zoom restoration.
@@ -17,7 +17,7 @@ Penroam 1.2.0 includes the writing and study workflows below. It writes **SQLite
 Not implemented in this update: automatic comparison/reconciliation of a revised PDF with old annotations (reliable page/region alignment and scan OCR are missing); a separate original-page/side-note cross-referenced export mode; cross-session regional history; automatic mistake diagnosis or spaced review scheduling. No online account or AI service is needed for the implemented workflows.
 
 
-This guide describes the English interface in **Penroam 1.2.0** for Windows 11 x64, including writing and study workflows, page extension and live lasso movement. Historical release and device-check notes keep their original scope.
+This guide describes the English interface in **Penroam 1.2.1** for Windows 11 x64, including writing and study workflows, page extension and live lasso movement. Historical release and device-check notes keep their original scope.
 
 Penroam is the new name for Moye. Penroam 1.0.0 restarted version numbering with the new name/icon and the then-current features. Existing notebook data, preferences, recovery files and `.moye` backups keep their current names and locations. The 1.0.0 branding update retained Moye 2.0 data formats; the 1.1.0 page-extension update introduced schema/format 4, and 1.2.0 introduces schema/format 5.
 
@@ -27,7 +27,7 @@ Version 1.6.0 adds the **Type** button and text-formatting workflow described be
 
 ## Install, update and uninstall
 
-Download and run [Penroam-1.2.0-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.2.0/Penroam-1.2.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
+Download and run [Penroam-1.2.1-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.2.1/Penroam-1.2.1-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
 
 Open the **Penroam** desktop shortcut after installation. When updating, close the app and run the newer installer. Setup recognizes an existing Moye installation as the same application. Existing notes stay in `%LOCALAPPDATA%\Moye`; the installer does not move or replace them. If you previously used a portable ZIP with the default library, the installed app uses that same library. A custom `--data-dir` library still needs its custom launch argument.
 
@@ -35,7 +35,7 @@ Remove Penroam through **Windows Settings → Apps → Installed apps → Penroa
 
 ### In-app updates
 
-Install **1.2.0** manually when upgrading from **1.1.0** or earlier. Version 1.2.0 includes the updater and can install later stable releases from within Penroam.
+Install **1.2.1** manually when upgrading from **1.1.0** or earlier. Version 1.2.0 includes the updater and can install later stable releases from within Penroam.
 
 When opened normally, Penroam checks the public [Penroam GitHub releases](https://github.com/yikeugene/Penroam/releases/latest) in the background. A newer stable version appears in a card with its release notes. Drafts, prereleases and older versions are not offered.
 
@@ -49,7 +49,7 @@ Writing and saving work without an internet connection. A failed startup check s
 
 ## Notebooks, sections and pages
 
-The **1.9.0 interface** uses a warm neutral workspace with forest green controls, clearer notebook covers and visible keyboard focus. Version 1.11.0 refines buttons, pen badges and focus indicators. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. The navigation names below describe Penroam 1.2.0; version 1.8.0 uses **All Notes**, **Presets…** and **Create a Notebook** for the corresponding actions.
+The **1.9.0 interface** uses a warm neutral workspace with forest green controls, clearer notebook covers and visible keyboard focus. Version 1.11.0 refines buttons, pen badges and focus indicators. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. The navigation names below describe Penroam 1.2.1; version 1.8.0 uses **All Notes**, **Presets…** and **Create a Notebook** for the corresponding actions.
 
 Open `Penroam.exe` to see **Your notebooks**. Penroam starts on this home screen and waits for you to choose a notebook. An empty library shows **Create your first notebook**; it does not create a notebook automatically. Notebook cards show the title, category and page count. **Continue** opens the last notebook at its saved reading position. **Quick note** creates a page in an Inbox notebook and selects Pen, ready to write; use the page organizer to move it into a course later.
 
