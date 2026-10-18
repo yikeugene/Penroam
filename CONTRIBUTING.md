@@ -2,7 +2,9 @@
 
 Penroam is a native, offline Windows handwriting notebook. Contributions that improve writing, document editing, reliability, accessibility, or the clarity of the interface are welcome.
 
-Penroam was previously named Moye. Internal project paths (`src/Moye`, `tests/Moye.Tests` and `tools/Moye.UiPreview`) and the GitHub repository address retain that name. The executable is `Penroam.exe`; the existing `%LOCALAPPDATA%\Moye` library and `.moye` formats remain unchanged by the rebrand.
+Penroam was previously named Moye. Internal project paths (`src/Moye`, `tests/Moye.Tests` and `tools/Moye.UiPreview`) retain that name; the GitHub repository is now `yikeugene/Penroam`. The executable is `Penroam.exe`; the existing `%LOCALAPPDATA%\Moye` library and `.moye` formats remain unchanged by the rebrand.
+
+See [AGENTS.md](AGENTS.md) for the code map, compatibility constraints and automation-specific guidance. This guide covers the human contribution and release workflow.
 
 ## Set up a development environment
 
@@ -57,7 +59,7 @@ Use the [verification and limitations](README.md#verification-and-limitations) s
 
 Explain what changed, the user-visible result, and how it was checked. Include concise reproduction steps or before/after screenshots when useful. Remove personal information, machine-specific paths, and real notebook content from attachments and logs.
 
-The release installer is produced by `.\scripts\publish-installer.ps1 -InstallCompiler`. It uses `publish.ps1` for the self-contained Windows x64 payload and compiles `installer/Moye.iss` with the pinned, SHA-256-verified Inno Setup compiler. `Penroam-1.2.1-Setup-win-x64.exe` and its checksum are written to `artifacts`; only those two files belong on a new GitHub Release. The intermediate `Penroam-1.2.1-win-x64.zip` remains available for local development. Package creation does not publish a release.
+The release installer is produced by `.\scripts\publish-installer.ps1 -InstallCompiler`. It uses `publish.ps1` for the self-contained Windows x64 payload and compiles `installer/Moye.iss` with the pinned, SHA-256-verified Inno Setup compiler. `Penroam-1.2.2-Setup-win-x64.exe` and its checksum are written to `artifacts`; only those two files belong on a new GitHub Release. The intermediate `Penroam-1.2.2-win-x64.zip` remains available for local development. Package creation does not publish a release.
 
 The payload includes an explicit list of user documentation and required third-party notices. Keep that list current, preserve the original installer AppId so upgrades recognize Moye installations, and keep notebook data outside the installed application folder. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades may retain the existing folder. Desktop and Start menu shortcuts are created automatically. Run `scripts/test-installer.ps1 -AllowDesktopChanges` only in a disposable Windows account: it installs, reinstalls and uninstalls the real package, checks shortcuts and file hashes, and verifies that synthetic notebook data survives. The script refuses an account with existing Moye or Penroam data, an installation or shortcuts. GitHub CI runs this smoke test before uploading the installer artifact. Release publication is handled by the maintainers.
 

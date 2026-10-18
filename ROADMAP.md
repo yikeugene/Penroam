@@ -1,44 +1,20 @@
 # Penroam University Note-Taking Roadmap
 
-## Penroam 1.2.1 — 2026-10-12
-
-Version 1.2.1 improves ruled-text spacing and the focus-mode Add page button. It retains schema/backup format 5 and the 1.2.0 feature scope. See [patch release notes](docs/RELEASE_NOTES_1.2.1.md).
-
-Included in 1.2.0: borderless free typing and ruled baseline alignment; a mixed typing/ink Meeting template; anchored question inbox with explanation/retry states; saved next-step hints; notebook-local appearance filters; saved-question practice attempts and reflections; selective restore from session history; original-size or actual-size A4 tiled export; in-app stable-release checks and updates.
-
-Still open: reliable revised-PDF comparison with annotation alignment/OCR; persistent regional history; original/side-note cross-reference export; handwriting/image-color/date-based retrieval; automatic diagnosis and spaced review. Physical pen/touch and native IME validation are pending for this update. See [1.2 release notes](docs/RELEASE_NOTES_1.2.0.md) for scope and upgrade guidance.
-
 **Write fast. Organize easily. Review quickly.**
 
 Penroam should support a complete university workflow: write during a lecture, annotate course material, organize knowledge, and revisit it without losing time or notes. This roadmap preserves all 41 requested feature areas. It is a development plan, not a claim that every listed feature is available.
 
-Penroam is the new name for Moye. Version numbering restarts at 1.0.0 with the complete current feature set and new name/icon; the existing library location and `.moye` file compatibility remain unchanged. Dated verification below retains the scope of the original Moye checks.
+## Current baseline
 
-This status reflects **Penroam 1.2.1**, reviewed on **2026-10-12**. Version 1.1 adds finite page extension and live lasso movement; see [release notes](docs/RELEASE_NOTES_1.1.0.md) for scope and compatibility. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. Version 1.11.0 adds selected-section PDF export, 21 fixed pen thickness levels and button/interface polish. Version 1.10.0 adds floating focus tools, page context menus and PDF navigation annotation import fixes. Version 1.9.0 adds the refreshed workspace, local Office document import and PDF compatibility fixes. Version 1.8.0 adds visual color selection, live stroke-thickness previews and touch-navigation scheduling/inertia, while retaining notebook sections and the SQLite startup repair from 1.7.0. The EXE installer continues to create desktop and Start menu shortcuts automatically. Checked items describe implemented behavior, including the first writing-workflow milestone below; unchecked items remain work to complete. Implementation and automated coverage do not establish successful physical pen or desktop interaction.
+This status reflects **Penroam 1.2.2**, reviewed on **2026-10-18**. Checked items describe implemented behavior; unchecked items remain work to complete. Implementation and automated coverage do not establish successful physical pen or desktop interaction.
 
-**Penroam 1.0.0, 2026-09-30:** this release establishes the current workflows below as the new 1.0 baseline. It does not complete all 41 roadmap areas or establish device acceptance.
+The current release includes free typing and ruled alignment, Meeting paper, anchored questions, saved next-step hints, appearance filters, separate practice attempts, session-only regional restore, A4 tiled export and in-app updates. Version 1.2.1 refines ruled-text spacing and the focus-mode Add page button; 1.2.2 aligns visible eraser feedback with the actual erase area. See the [current release notes](docs/RELEASE_NOTES_1.2.2.md) and [user guide](docs/USER_GUIDE.md) for implemented workflows rather than duplicating their instructions here.
 
-- Saved reading position/zoom and Continue; quick capture into an Inbox notebook.
-- Notebook pinning, cover colors and session category/name ordering; page titles/bookmarks, local typed/PDF text search and return navigation.
-- Multi-page organization and atomic cross-notebook move/copy with a checked session-only Undo Transfer.
-- Previewed page/range import and export, destination choices, export overflow preflight, progress/cancel and output actions.
-- A read-only reference pane with independent navigation/zoom; mixed ink/text/image lasso and clipboard; explicit text continuation; keyboard object movement.
-- Two-finger-only navigation and zoom lock, compact toolbar, left/right focus-tool docking with favorite pens/Type/Select, direct page numbers, and searchable Commands & Help.
-- Atomic best-effort pending draft files, complete-notebook recovery copies before deletion retained for 30 days, selected-notebook restoration, and automatic local backups with retention while the app is open.
+Still open: reliable revised-PDF comparison with annotation alignment/OCR; persistent regional history; original/side-note cross-reference export; handwriting/image-color/date-based retrieval; automatic diagnosis and spaced review. Physical pen/touch and broader native IME validation remain pending.
 
-Penroam 1.2 writes **schema 5 / backup format 5** for free typing and study metadata, reads backup formats 1–5 and retains preference formats at 1. Penroam 1.1.0 and earlier releases cannot open schema/format 5. Keep a backup made with the older app before upgrading. See [file compatibility](docs/FILE_FORMAT.md). PDF search has no OCR; recovery does not guarantee the last input events; the reference pane is read-only; full persistent version history and hardware acceptance remain open.
+Penroam is the new name for Moye; its 1.0.0 release restarted application version numbering without renaming existing libraries or `.moye` files. Older Moye 1.3–1.12 release numbers do not represent newer Penroam releases. Historical changes and their original verification scope remain in the versioned release notes and [GitHub Releases](https://github.com/yikeugene/Penroam/releases).
 
-Version 1.6.0 adds an explicit Type action, contextual text controls and whole-box formatting. Basic live desktop typing and Chinese IME candidate selection have been checked. Its scope and remaining acceptance work are recorded in area 24; publication does not mark those outstanding checks complete.
-
-Version 1.8.0 includes visual color palettes for ink, pen presets and text, plus a draggable thickness slider with a live pen/highlighter preview. Mouse checks covered these controls and saved values; physical touch and pen interaction still needs device validation.
-
-Version 1.11.0 changes that slider to 21 fixed thickness levels, with visible ticks, finer pen increments and larger highlighter increments. Pen Settings (including focus mode) and preset editing share the same levels; opening existing custom presets preserves their exact width until the slider is adjusted.
-
-The 1.8.0 finger-navigation implementation combines touch packets once per display update, adds elapsed-time swipe inertia, and defers thumbnail work during movement. Synthetic tests cover retained movement, pinch/contact transitions, boundary reversal and cancellation; these are correctness checks, not measured hardware frame-rate or latency acceptance.
-
-Penroam 1.0 blocks finger input on document scrollbars, keeps rejected contacts blocked until release, and requires deliberate movement before a one-finger margin touch pans. Mouse/pen scrollbar use and ordinary paper pan/pinch remain available. Hardware palm-rejection and touch acceptance remain outstanding.
-
-**Added in 1.9.0:** local Office document import through **Insert → Import Document…**. DOCX uses installed Microsoft Word or LibreOffice, PPTX/PPSX use PowerPoint or LibreOffice, and ODT/ODP require LibreOffice. Pages become fixed PDF backgrounds in the current section, with editable Penroam annotations. The source document remains untouched and only the converted PDF is embedded in the library and backups. No converter is bundled or downloaded.
+Penroam 1.2 writes **schema 5 / backup format 5**, reads backup formats 1–5 and retains preference formats at 1. Penroam 1.1.0 and earlier cannot open schema/format 5. Keep a backup made with the older app before upgrading; see [file compatibility](docs/FILE_FORMAT.md). PDF search has no OCR, recovery cannot guarantee the last input events, and the reference pane is read-only.
 
 ## Status and evidence
 
@@ -66,21 +42,6 @@ Code and tests provide the following evidence:
 | Penroam 1.0 workspace, backup and recovery | [workspace UI](src/Moye/MainWindow.Workspace.cs), [recovery UI](src/Moye/MainWindow.Safety.cs), [draft journal](src/Moye/Services/DraftRecoveryStore.cs), [local safety](src/Moye/Services/LocalSafetyService.cs), [safety tests](tests/Moye.Tests/WorkspaceSafetyTests.cs) |
 
 The linked public test sources describe reproducible automated coverage. Tests and detached layout renders do not prove current hardware latency, palm rejection, high-refresh rendering, sleep recovery, or live IME composition. Benchmark numbers from small synthetic fixtures must not be presented as guarantees for scanned textbooks or long lectures.
-
-## First writing-workflow milestone
-
-Version 1.6.1 adds notebook deletion from home cards and the editor's More menu, with confirmation. Tests cover failed-save/delete recovery, pending-save ordering, and clearing the deleted notebook's history. Earlier isolated desktop checks on 2026-09-14 covered canceling and confirming deletion from both entry points. Penroam 1.0 adds complete-notebook recovery copies before notebook/section/page deletion, with 30-day retention and restore as a new copy; it does not merge individual deleted pages back automatically.
-
-- [x] Persistent named pen/highlighter presets with rename, duplicate, delete, reorder and favorite visibility; favorite preset buttons support drag reordering.
-- [x] Per-preset pen opacity, pressure sensitivity and smoothing, plus exact preset widths. Highlighters retain native 50% compositing.
-- [x] Independent 12–120 DIP eraser size and highlighter-only erasing for pixel/stroke modes.
-- [x] Editable ink copy/cut/paste across pages, preserving pressure and custom metadata; oversized pasted ink fits the destination page. Selected ink width can be changed.
-- [x] Ctrl+Shift+Z redo, Space plus mouse drag to pan, and 1–9/numpad preset access, with existing text editing shortcuts protected.
-- [x] Focus mode hides notebook and writing chrome, provides an exit control, and keeps save failures accessible.
-- [x] Monotonic autosave deadlines and temporary touch suppression; canonical default/explicit library paths share the single-instance identity.
-- [x] Thumbnail generation preserves Pen, Highlighter, Pixel Eraser, Stroke Eraser and Lasso modes without changing saved ink or losing lasso selection.
-
-The in-memory writing workflow suite passed **24 cases** on 2026-09-14. It uses no desktop windows or system clipboard actions; eraser filtering invokes the compiled cancellable event hook. This is method-level regression evidence. Real clipboard interaction, drag reordering, shortcut focus transitions and physical input still need desktop/device acceptance. The wider roadmap remains open.
 
 ## Prioritized milestones
 
@@ -265,7 +226,7 @@ P2 changes that introduce new persistent fields or document modes need a documen
 
 **Status: Partial. Priority: P1.**
 
-- [x] Visual choices for Blank, Ruled, Grid, Dot Grid, Cornell and Graph on new notebooks/pages and existing non-PDF pages.
+- [x] Visual choices for Blank, Ruled, Grid, Dot Grid, Cornell, Graph and Meeting on new notebooks/pages and existing non-PDF pages.
 - [x] Share template geometry across the editor, thumbnails and vector PDF export, with PDF round-trip regression coverage.
 - [ ] Add background color, line/grid spacing, paper size and orientation choices. Keep rendering and PDF export consistent.
 
@@ -325,7 +286,7 @@ P2 changes that introduce new persistent fields or document modes need a documen
 
 **Status: Partial · Hardware validation for IME. Priority: P1.**
 
-Included in 1.2.0: Type creates or resumes a box; the contextual bar formats the whole box; plain list markers support Enter continuation; boxes grow to the page boundary and scroll after reaching it. The local run on **2026-09-14** passed **178 automated tests and 21 detached UI scenes**, including the linked typing and text-persistence regressions. A live Windows desktop check that day confirmed a short Chinese IME candidate selection (`t` then Space committed `他`), English input, Type resume, bold, 24 pt size entry followed by more typing, bullet continuation and native undo, and Ctrl+Enter returning to Pen. The acceptance items below stay open because clipboard, longer/interrupted composition, cross-page transitions and the complete end-to-end desktop workflow still require their respective verification.
+Type supports free-flowing text and fixed text boxes, whole-item formatting, plain list continuation and explicit overflow continuation. Penroam 1.2 adds free typing and ruled baseline alignment; the original text-box workflow predates the Penroam rename. Historical short-session IME checks do not establish acceptance for clipboard behavior, long/interrupted composition or cross-page focus transitions. Keep the native validation items below open until those workflows are checked.
 
 - [x] Editable Unicode text boxes, line wrapping, movement/resizing and selected text-object color changes. The model stores font family and size.
 - [ ] Complete and verify the local Type workflow: start/continue a text box, add another box, and expose font family/size, bold, italic, color and alignment for the whole box. Preserve formatting through save/reopen, editable backup and vector PDF export.
@@ -424,7 +385,8 @@ Included in 1.2.0: Type creates or resumes a box; the contextual bar formats the
 **Status: Partial. Priority: P1 for documentation; P2 for broader interoperability.**
 
 - [x] Versioned ZIP backups contain a JSON manifest and notebook structure, ISF page ink, assets and original PDFs; implementation is open source.
-- [ ] Publish the local [schema/format guide](docs/FILE_FORMAT.md), examples and compatibility rules; add optional previews.
+- [x] Document the current schema, backup formats and compatibility rules in the [format guide](docs/FILE_FORMAT.md).
+- [ ] Add interchange examples and optional backup previews.
 - [ ] Consider portable stroke-point interchange. ISF retains editable Windows ink, but is not already a plain JSON point format that every platform can read directly.
 
 ### 36. Vector Ink

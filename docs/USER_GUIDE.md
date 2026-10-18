@@ -17,17 +17,15 @@ Penroam 1.2.0 includes the writing and study workflows below. It writes **SQLite
 Not implemented in this update: automatic comparison/reconciliation of a revised PDF with old annotations (reliable page/region alignment and scan OCR are missing); a separate original-page/side-note cross-referenced export mode; cross-session regional history; automatic mistake diagnosis or spaced review scheduling. No online account or AI service is needed for the implemented workflows.
 
 
-This guide describes the English interface in **Penroam 1.2.1** for Windows 11 x64, including writing and study workflows, page extension and live lasso movement. Historical release and device-check notes keep their original scope.
+This guide describes the English interface in **Penroam 1.2.2** for Windows 11 x64, including writing and study workflows, page extension and live lasso movement. Historical release and device-check notes keep their original scope.
 
 Penroam is the new name for Moye. Penroam 1.0.0 restarted version numbering with the new name/icon and the then-current features. Existing notebook data, preferences, recovery files and `.moye` backups keep their current names and locations. The 1.0.0 branding update retained Moye 2.0 data formats; the 1.1.0 page-extension update introduced schema/format 4, and 1.2.0 introduces schema/format 5.
-
-Version 1.6.0 adds the **Type** button and text-formatting workflow described below.
 
 **Before opening an existing library in Penroam 1.2.0:** create a `.moye` backup using your current app and keep it separately. Penroam 1.2 migrates libraries to schema 5 and writes format 5 backups, while reading backups in formats 1–5. Penroam 1.1.0 and earlier releases cannot reopen schema 5 or format 5. Uninstalling does not reverse this migration.
 
 ## Install, update and uninstall
 
-Download and run [Penroam-1.2.1-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.2.1/Penroam-1.2.1-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
+Download and run [Penroam-1.2.2-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.2.2/Penroam-1.2.2-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
 
 Open the **Penroam** desktop shortcut after installation. When updating, close the app and run the newer installer. Setup recognizes an existing Moye installation as the same application. Existing notes stay in `%LOCALAPPDATA%\Moye`; the installer does not move or replace them. If you previously used a portable ZIP with the default library, the installed app uses that same library. A custom `--data-dir` library still needs its custom launch argument.
 
@@ -35,7 +33,7 @@ Remove Penroam through **Windows Settings → Apps → Installed apps → Penroa
 
 ### In-app updates
 
-Install **1.2.1** manually when upgrading from **1.1.0** or earlier. Version 1.2.0 includes the updater and can install later stable releases from within Penroam.
+Install **1.2.2** manually when upgrading from **1.1.0** or earlier. Version 1.2.0 includes the updater and can install later stable releases from within Penroam.
 
 When opened normally, Penroam checks the public [Penroam GitHub releases](https://github.com/yikeugene/Penroam/releases/latest) in the background. A newer stable version appears in a card with its release notes. Drafts, prereleases and older versions are not offered.
 
@@ -49,7 +47,7 @@ Writing and saving work without an internet connection. A failed startup check s
 
 ## Notebooks, sections and pages
 
-The **1.9.0 interface** uses a warm neutral workspace with forest green controls, clearer notebook covers and visible keyboard focus. Version 1.11.0 refines buttons, pen badges and focus indicators. Version 1.12.0 adds redesigned context menus and section actions on right-click or Shift+F10. The navigation names below describe Penroam 1.2.1; version 1.8.0 uses **All Notes**, **Presets…** and **Create a Notebook** for the corresponding actions.
+The interface uses a warm neutral workspace with forest green controls, notebook covers and visible keyboard focus. Sections have context menus on right-click or Shift+F10. The navigation names below describe Penroam 1.2.2.
 
 Open `Penroam.exe` to see **Your notebooks**. Penroam starts on this home screen and waits for you to choose a notebook. An empty library shows **Create your first notebook**; it does not create a notebook automatically. Notebook cards show the title, category and page count. **Continue** opens the last notebook at its saved reading position. **Quick note** creates a page in an Inbox notebook and selects Pen, ready to write; use the page organizer to move it into a course later.
 
@@ -81,7 +79,7 @@ Choose **Insert → Extend Page…**, or right-click a page/thumbnail and choose
 
 Click **Extend page** to apply. The original PDF keeps its size; adding space on the left or top shifts the PDF and all existing handwriting, text and images together. You can write in every added margin. Ordinary paper retains its original guides and their alignment with your notes; added space is blank. **Reset** clears this dialog's additions, and **Cancel** leaves the page unchanged. Each applied extension is one notebook Undo step. Repeat the command whenever you need more space; it only adds space and does not crop existing notes.
 
-Extended sizes and PDF placement are preserved by autosave, reopening, duplication, `.moye` backups, thumbnails and the reference view. PDF export uses the enlarged page, including notes in the margins. The new page can be wider or longer than A4; printing it on A4 requires your PDF viewer's scaling or tiling options. Each dimension can grow up to **5,080 mm**. Existing larger imported pages remain readable but cannot be extended further with this command.
+Extended sizes and PDF placement are preserved by autosave, reopening, duplication, `.moye` backups, thumbnails and the reference view. PDF export includes the enlarged page and notes in its margins. Choose **Original page sizes** to retain that canvas, or **A4 sheets · actual size** to tile it for printing without shrinking your notes. Each dimension can grow up to **5,080 mm**. Existing larger imported pages remain readable but cannot be extended further with this command.
 
 If an original PDF annotation crosses its crop boundary and lacks a valid saved appearance, export asks you to flatten those annotations in the source PDF or undo the extension. It preserves any existing destination file when it cannot safely reproduce the original crop.
 
@@ -146,6 +144,8 @@ Click the eraser icon to open **Eraser Settings**:
 - **Stroke Eraser** removes the entire ink stroke when you touch any part of it.
 
 The toolbar shows **Eraser**; its tooltip and settings identify the remembered Pixel or Stroke mode. Click the eraser again to close its picker, or select a mode and continue writing. Press `E` to recall the last eraser mode. **Eraser Size** independently adjusts the erasing area from **12 to 120 DIP**, with a default of 20 DIP. Turn on **Erase highlighter only** to protect ordinary pen strokes while removing highlighting. Both modes remain undoable. Size, mode and the highlighter-only choice are remembered between launches.
+
+In 1.2.2, the visible outline uses the same shape and page coordinates as the actual eraser, so it follows page zoom and size changes. Pixel Eraser removes ink inside that footprint; Stroke Eraser removes an entire stroke when the footprint touches it. The outline is temporary feedback and is not included in thumbnails or saved notes.
 
 The remembered mode also applies to the pen's tail eraser when the device sends inverted-pen events. Actual tail-eraser and side-button behavior still depends on your device and drivers.
 
@@ -215,7 +215,7 @@ Open a notebook and section, choose **Insert → Import Document…**, then sele
 
 Penroam uses the installed desktop application to convert the file locally, then opens the same page preview, range and destination choices as PDF import. It does not bundle or download an Office application or conversion runtime. If none is available, export a PDF in the source application and import that instead. Fonts and layout depend on the installed converter.
 
-Imported pages are fixed PDF backgrounds. Add editable Penroam handwriting, highlights, text boxes and images over them; the original Word text and slide objects cannot be edited in Moye. Slides are static: animations, video playback and internal page or slide jumps are not retained. Ordinary web links remain in the PDF. The source file is untouched. Only the converted PDF, together with your Penroam annotations, is stored in the library and `.moye` backups; keep the original document separately.
+Imported pages are fixed PDF backgrounds. Add editable Penroam handwriting, highlights, text boxes and images over them; the original Word text and slide objects cannot be edited in Penroam. Slides are static: animations, video playback and internal page or slide jumps are not retained. Ordinary web links remain in the PDF. The source file is untouched. Only the converted PDF, together with your Penroam annotations, is stored in the library and `.moye` backups; keep the original document separately.
 
 Use **Cancel** or press `Esc` during import preparation. Conversion has a two-minute timeout. Password-protected files, files containing macros, and documents with linked external resources are rejected with an explanation; embed linked content or export a PDF from the source application. PowerPoint may need to be closed before conversion because it can share one running application instance. If Penroam reports that PowerPoint is in use, save your work and close it before retrying, or export a PDF there.
 
@@ -223,7 +223,7 @@ Use **Cancel** or press `Esc` during import preparation. Conversion has a two-mi
 
 Completed edits are queued for background saving, with a coalescing delay of at most two seconds. Completion time depends on the disk and document size. The saved status appears only after a successful database transaction. Switching notebooks, leaving the window, and closing normally also attempt to save.
 
-The default library is `%LOCALAPPDATA%\Moye\moye.db`. SQLite may create `moye.db-wal` and `moye.db-shm` beside it. Do not move only the database or delete its journal files while the app is open. Penroam 1.1 upgrades libraries to schema 4 and writes format 4 backups. It reads formats 1–4, placing legacy pages without sections in **General**. Published Penroam 1.0.0 and earlier Moye releases cannot open schema 4 / format 4. The new format preserves PDF placement inside extended pages alongside existing notebook and page organization fields. See [File format](FILE_FORMAT.md).
+The default library is `%LOCALAPPDATA%\Moye\moye.db`. SQLite may create `moye.db-wal` and `moye.db-shm` beside it. Do not move only the database or delete its journal files while the app is open. Penroam 1.2 upgrades libraries to **schema 5** and writes **format 5** backups. It reads formats 1–5, placing legacy pages without sections in **General**. Penroam 1.1.0 and earlier cannot open schema 5 / format 5. The current format preserves free-typing and study metadata, PDF placement inside extended pages, and notebook/page organization. Keep a backup made by the older app before upgrading; uninstalling does not reverse the migration. See [File format](FILE_FORMAT.md).
 
 Writing preferences are saved separately in `%LOCALAPPDATA%\Moye\writing-preferences.json`. This file contains presets and writing settings, and is **not included in `.moye` backups**. For a library started with `--data-dir`, both the database and preferences stay in that selected directory. A damaged settings file is preserved before defaults are offered; an unreadable or unsupported-version file is protected from replacement. A writing-settings warning offers details and retry when available. When an existing preferences file cannot be read or belongs to a newer version, tool changes apply to the current session only; notebooks still save and the app can close normally. Restart after resolving that file. A later write failure retains pending settings for retry.
 
