@@ -25,6 +25,7 @@ public sealed partial class PageEditor : Grid
     private readonly Canvas _items = new() { Background = Brushes.Transparent, ClipToBounds = true };
     private readonly PenInkCanvas _ink = new();
     private readonly StrokePreviewVisual _linePreview = new();
+    private readonly EraserPreviewVisual _eraserPreview = new();
     private readonly DispatcherTimer _editTimer;
     private readonly List<NoteItemFrame> _frames = [];
     private readonly HashSet<string> _overflowingTexts = [];
@@ -70,7 +71,9 @@ public sealed partial class PageEditor : Grid
         Children.Add(_items);
         Children.Add(_ink);
         Children.Add(_linePreview);
+        Children.Add(_eraserPreview);
         _ink.StraightLinePreviewChanged += (_, _) => _linePreview.SetStroke(_ink.StraightLinePreview);
+        _ink.EraserFootprintChanged += (_, _) => _eraserPreview.SetFootprint(_ink.EraserFootprint);
         _editTimer = new DispatcherTimer(DispatcherPriority.Background, Dispatcher)
         { Interval = TimeSpan.FromMilliseconds(350) };
         _editTimer.Tick += (_, _) =>
@@ -174,7 +177,7 @@ public sealed partial class PageEditor : Grid
             FitToCurve = _smoothing,
             StylusTip = _tool == InkTool.Highlighter ? StylusTip.Rectangle : StylusTip.Ellipse
         };
-        _ink.EraserShape = new EllipseStylusShape(_eraserSize, _eraserSize);
+        _ink.SetEraserShape(new EllipseStylusShape(_eraserSize, _eraserSize));
         // InkCanvas.Select changes EditingMode even when clearing a selection.
         // Clear first, then apply the requested tool so erasers stay erasers.
         if (_tool != InkTool.Lasso && (_ink.GetSelectedStrokes().Count > 0 || _ink.GetSelectedElements().Count > 0)) _ink.Select(new StrokeCollection());
@@ -826,23 +829,30 @@ public sealed partial class PageEditor : Grid
 
     private byte[] RenderThumbnail(int width)
     {
-        if (ActualWidth <= 0 || ActualHeight <= 0)
+        // Pointer feedback is not page content, including the active-input fallback.
+        var feedbackVisibility = _eraserPreview.Visibility;
+        _eraserPreview.Visibility = Visibility.Hidden;
+        try
         {
-            Measure(new Size(Width, Height));
-            Arrange(new Rect(0, 0, Width, Height));
+            if (ActualWidth <= 0 || ActualHeight <= 0)
+            {
+                Measure(new Size(Width, Height));
+                Arrange(new Rect(0, 0, Width, Height));
+            }
+            UpdateLayout();
+            var scale = Math.Clamp(width, 40, 1000) / Width;
+            var visual = new DrawingVisual();
+            using (var dc = visual.RenderOpen())
+                dc.DrawRectangle(new VisualBrush(this) { Stretch = Stretch.Fill }, null, new Rect(0, 0, Width * scale, Height * scale));
+            var bitmap = new RenderTargetBitmap((int)Math.Ceiling(Width * scale), (int)Math.Ceiling(Height * scale), 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(visual);
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bitmap));
+            using var stream = new MemoryStream();
+            encoder.Save(stream);
+            return stream.ToArray();
         }
-        UpdateLayout();
-        var scale = Math.Clamp(width, 40, 1000) / Width;
-        var visual = new DrawingVisual();
-        using (var dc = visual.RenderOpen())
-            dc.DrawRectangle(new VisualBrush(this) { Stretch = Stretch.Fill }, null, new Rect(0, 0, Width * scale, Height * scale));
-        var bitmap = new RenderTargetBitmap((int)Math.Ceiling(Width * scale), (int)Math.Ceiling(Height * scale), 96, 96, PixelFormats.Pbgra32);
-        bitmap.Render(visual);
-        var encoder = new PngBitmapEncoder();
-        encoder.Frames.Add(BitmapFrame.Create(bitmap));
-        using var stream = new MemoryStream();
-        encoder.Save(stream);
-        return stream.ToArray();
+        finally { _eraserPreview.Visibility = feedbackVisibility; }
     }
 
     private static Brush BrushFrom(string color)

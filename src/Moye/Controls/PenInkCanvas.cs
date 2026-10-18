@@ -11,7 +11,7 @@ namespace Moye.Controls;
 /// Keeps WPF's native pressure-aware DynamicRenderer while separating touch from
 /// pen/mouse. Touch is left unhandled for the owning viewport's pan/zoom handler.
 /// </summary>
-public sealed class PenInkCanvas : InkCanvas
+public sealed partial class PenInkCanvas : InkCanvas
 {
     private InkCanvasEditingMode _requestedMode = InkCanvasEditingMode.Ink;
     private readonly HashSet<int> _touchDevices = [];
@@ -68,6 +68,7 @@ public sealed class PenInkCanvas : InkCanvas
         LostMouseCapture += (_, _) => CompleteLostCapture();
         StylusOutOfRange += (_, e) => { if (!IsTouch(e.StylusDevice)) FinishInput(); };
         Unloaded += (_, _) => FinishInput();
+        InitializeEraserFeedback();
     }
 
     public void SetRequestedMode(InkCanvasEditingMode mode)
@@ -78,6 +79,7 @@ public sealed class PenInkCanvas : InkCanvas
             _requestedMode = mode;
         }
         EditingMode = _touchDevices.Count == 0 ? mode : InkCanvasEditingMode.None;
+        RefreshEraserPointer();
     }
 
     public static bool IsTouch(StylusDevice? device) => device?.TabletDevice.Type == TabletDeviceType.Touch;
@@ -253,6 +255,7 @@ public sealed class PenInkCanvas : InkCanvas
             if (revision != _inputRevision || IsStylusCaptureWithin || IsMouseCaptureWithin) return;
             EndStraightening(); _mouseDown = false;
             SetPenContact(false);
+            RefreshEraserPointer();
             InputCompleted?.Invoke(this, EventArgs.Empty);
         }));
     }
@@ -280,6 +283,7 @@ public sealed class PenInkCanvas : InkCanvas
             _touchDevices.Clear();
             SetPenContact(false);
             EditingMode = _requestedMode;
+            ClearEraserPointer();
             InputCompleted?.Invoke(this, EventArgs.Empty);
         }
         finally { _finishingInput = false; }
