@@ -40,7 +40,7 @@ public partial class MainWindow : Window
     private long _ignoreTouchUntil;
     private bool _zoomNavigationActive;
     private int _zoomNavigationRevision;
-    private sealed record PageZoomAnchor(PageViewModel Page, Point PagePoint, Point ViewportPoint);
+    private sealed record PageZoomAnchor(PageViewModel Page, Point PagePoint, Point ViewportPoint, bool RestoreHorizontal = true);
     private bool AnyPenDown => IsViewportPenContactActive || _editors.Values.Any(e => e.IsInputActive);
 
     public MainWindow(INotebookRepository repository, WritingPreferencesStore? preferencesStore = null, ErrorReporter? errors = null, IAppUpdateService? updateService = null, IUpdateInstaller? updateInstaller = null)
@@ -48,6 +48,7 @@ public partial class MainWindow : Window
         _errors = errors ?? new ErrorReporter(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Moye", "error.log"));
         _preferencesStore = preferencesStore ?? new WritingPreferencesStore();
         ViewModel = new(repository); InitializeComponent(); DataContext = ViewModel;
+        InitializePageLayout();
         InitializeInputStability();
         InitializeTouchNavigation();
         InitializeWritingUi();
@@ -251,7 +252,6 @@ public partial class MainWindow : Window
         UpdateTextToolbar();
         if (_ready && !_suppressPageSelection) ScrollToSelected();
     }
-    private void PageSelectionChanged(object sender, SelectionChangedEventArgs e) { SyncPageTemplate(); UpdateTextToolbar(); }
     private void DocumentScrolled(object sender, ScrollChangedEventArgs e)
     {
         if (!ReferenceEquals(e.OriginalSource, GetScroll())) return;
@@ -260,21 +260,41 @@ public partial class MainWindow : Window
     }
     private void UpdateVisiblePageSelection()
     {
-        if (!_ready || ViewModel.IsLibraryVisible || AnyPenDown || ViewModel.IsBusy || _zoomNavigationActive || _suppressPageSelection) return;
-        PageViewModel? visible = null; double largest = 0;
+        if (!_ready || ViewModel.IsLibraryVisible || AnyPenDown || ViewModel.IsBusy || _zoomNavigationActive || _suppressPageSelection || _pageSpreadsDirty) return;
+        PageViewModel? visible = null; double largest = 0, selectedArea = 0;
+        var viewport = PageViewportBounds();
         foreach (var host in _editors.Keys)
         {
             if (!host.IsLoaded || host.DataContext is not PageViewModel item) continue;
-            double top = host.TranslatePoint(new Point(), Viewport).Y;
-            double overlap = Math.Min(Viewport.ActualHeight, top + host.ActualHeight) - Math.Max(0, top);
-            if (overlap > largest) { largest = overlap; visible = item; }
+            var overlap = Rect.Intersect(viewport, new Rect(host.TranslatePoint(new Point(), Viewport), host.RenderSize));
+            var area = overlap.IsEmpty ? 0 : overlap.Width * overlap.Height;
+            if (ReferenceEquals(item, ViewModel.SelectedPage)) selectedArea = area;
+            if (area > largest) { largest = area; visible = item; }
         }
+        // Keep the active right (or smaller) page while its spread is visible,
+        // but do not select an off-screen page merely because its Y overlaps.
+        if (selectedArea > 0 && visible is not null && _spreadByPage.GetValueOrDefault(visible)?.Contains(ViewModel.SelectedPage) == true) return;
         if (visible is not null && visible != ViewModel.SelectedPage)
         {
-            _suppressPageSelection = true; ViewModel.SelectedPage = visible; SyncPageTemplate(); _suppressPageSelection = false;
+            _suppressPageSelection = true;
+            try { ViewModel.SelectedPage = visible; SyncPageTemplate(); UpdateTextToolbar(); }
+            finally { _suppressPageSelection = false; }
         }
     }
-    private void ScrollToSelected() { ClearTouches(); if (ViewModel.SelectedPage is not null) PageList.ScrollIntoView(ViewModel.SelectedPage); }
+    private void ScrollToSelected()
+    {
+        ClearTouches();
+        if (AnyPenDown || ViewModel.SelectedPage is not { } page) return;
+        var revision = BeginZoomNavigation();
+        try
+        {
+            var revealed = ScrollPageIntoView(page);
+            // Search/back navigation can restore a more precise anchor immediately
+            // after this call. Do not later replace it with the whole row's bounds.
+            CompleteZoomAfterLayout(revision, ViewModel.Document, null, revealed ? null : page);
+        }
+        catch { EndZoomNavigation(revision); throw; }
+    }
 
     private void PageHostLoaded(object sender, RoutedEventArgs e) => AttachPage((Border)sender);
     private void PageHostDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -300,6 +320,7 @@ public partial class MainWindow : Window
         editor.PenContactChanged += EditorPenContactChanged;
         editor.TextSelectionChanged += TextSelectionChanged;
         _editors[host] = editor; host.Child = editor;
+        host.AddHandler(Keyboard.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(PageHostGotKeyboardFocus), true);
         UpdateTextToolbar();
         try
         {
@@ -319,6 +340,7 @@ public partial class MainWindow : Window
         if (_loading.Remove(host, out var cts)) { cts.Cancel(); cts.Dispose(); }
         if (_editors.Remove(host, out var editor))
         {
+            host.RemoveHandler(Keyboard.GotKeyboardFocusEvent, new KeyboardFocusChangedEventHandler(PageHostGotKeyboardFocus));
             editor.CommitPendingEdits();
             editor.ContentChanged -= EditorChanged; editor.VisualContentChanged -= EditorVisualChanged; editor.AssetLoadFailed -= EditorAssetFailed; editor.PenContactChanged -= EditorPenContactChanged;
             editor.TextSelectionChanged -= TextSelectionChanged;
@@ -350,7 +372,9 @@ public partial class MainWindow : Window
     private void ActivatePage(Border host)
     {
         if (host.DataContext is not PageViewModel item) return;
-        _suppressPageSelection = true; ViewModel.SelectedPage = item; SyncPageTemplate(); _suppressPageSelection = false;
+        var previous = _suppressPageSelection; _suppressPageSelection = true;
+        try { ViewModel.SelectedPage = item; SyncPageTemplate(); }
+        finally { _suppressPageSelection = previous; }
         UpdateTextToolbar();
         // InkCanvas takes focus itself. Focusing the ListBox here can bring its
         // selected item into view before the first stylus sample reaches the ink.
@@ -756,19 +780,26 @@ public partial class MainWindow : Window
     private void FitWidth()
     {
         if (_workspace.LockZoom && !_restoringReadingPosition) { ViewModel.Status = "Zoom is locked · Change it in Workspace settings"; return; }
-        if (ViewModel.IsLibraryVisible || AnyPenDown || ViewModel.SelectedPage is not { } target || Viewport.ActualWidth < 100) return;
+        if (ViewModel.IsLibraryVisible || AnyPenDown || ViewModel.SelectedPage is not { } target || Viewport.ActualWidth < 100 || SpreadForPage(target) is not { } spread) return;
         // Reserve the real scrollbar width even before it appears. The paper
         // retains a small gutter on either side and never runs under the sidebar.
         var available = Viewport.ActualWidth - PageList.Padding.Left - PageList.Padding.Right - SystemParameters.VerticalScrollBarWidth - 4;
-        ChangeZoom(available / target.Page.Width, new Point(Viewport.ActualWidth / 2, Viewport.ActualHeight / 2));
+        ChangeZoom(PageSpreadGeometry.FitWidthZoom(spread, available), new Point(Viewport.ActualWidth / 2, Viewport.ActualHeight / 2));
         _fitWidthActive = true;
         FitWidthButton.Foreground = (Brush)FindResource("Accent");
         var revision = _zoomNavigationRevision;
         Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
         {
-            if (!_fitWidthActive || ViewModel.IsLibraryVisible || AnyPenDown || revision != _zoomNavigationRevision) return;
+            if (!_fitWidthActive || ViewModel.IsLibraryVisible || AnyPenDown || revision != _zoomNavigationRevision || !ReferenceEquals(target, ViewModel.SelectedPage)) return;
             var scroll = GetScroll();
-            if (scroll is not null) scroll.ScrollToHorizontalOffset(Math.Max(0, (scroll.ExtentWidth - scroll.ViewportWidth) / 2));
+            if (scroll is not null)
+            {
+                scroll.ScrollToHorizontalOffset(Math.Max(0, (scroll.ExtentWidth - scroll.ViewportWidth) / 2));
+                PageList.UpdateLayout();
+                // At the minimum zoom an oversized spread still scrolls; keep
+                // its active child reachable rather than centering on the gap.
+                if (PageSpreadGeometry.Measure(spread, ViewModel.Zoom).Width > scroll.ViewportWidth) RevealPageHorizontally(target);
+            }
         }));
     }
     private void ScheduleFitWidth()
@@ -788,18 +819,17 @@ public partial class MainWindow : Window
     {
         if (_workspace.LockZoom && !_restoringReadingPosition) { ViewModel.Status = "Zoom is locked · Change it in Workspace settings"; return; }
         ClearTouches();
-        if (AnyPenDown || ViewModel.SelectedPage is not { } target || Viewport.ActualWidth < 100 || Viewport.ActualHeight < 140) return;
+        if (AnyPenDown || ViewModel.SelectedPage is not { } target || Viewport.ActualWidth < 100 || Viewport.ActualHeight < 140 || SpreadForPage(target) is not { } spread) return;
         ClearFitWidth();
         var revision = BeginZoomNavigation();
         var document = ViewModel.Document;
         try
         {
-            var page = target.Page;
-            ViewModel.Zoom = Math.Min((Viewport.ActualWidth - 90) / page.Width, (Viewport.ActualHeight - 106) / page.Height);
+            ViewModel.Zoom = PageSpreadGeometry.FitPageZoom(spread, Viewport.ActualWidth - 90, Viewport.ActualHeight - 106);
             PageList.UpdateLayout();
             // Keep the original target until recycling and BringIntoView finish.
             // ScrollChanged must not replace it with a transient visible neighbour.
-            PageList.ScrollIntoView(target);
+            ScrollPageIntoView(target);
             PageList.UpdateLayout();
             CompleteZoomAfterLayout(revision, document, null, target);
         }
@@ -866,7 +896,7 @@ public partial class MainWindow : Window
         {
             // A large zoom can recycle the anchor's container. Realize that exact
             // page, rather than using SelectedPage or an estimated item height.
-            PageList.ScrollIntoView(anchor.Page);
+            ScrollPageIntoView(anchor.Page, false);
             PageList.UpdateLayout();
             host = FindHost();
         }
@@ -882,7 +912,7 @@ public partial class MainWindow : Window
                                                        anchor.PagePoint.Y * host.ActualHeight / anchor.Page.Page.Height), Viewport);
             // These coordinates include fixed padding, labels and centered-page
             // offsets, which cannot be obtained by scaling the total scroll offset.
-            scroll.ScrollToHorizontalOffset(scroll.HorizontalOffset + actual.X - anchor.ViewportPoint.X);
+            if (anchor.RestoreHorizontal) scroll.ScrollToHorizontalOffset(scroll.HorizontalOffset + actual.X - anchor.ViewportPoint.X);
             scroll.ScrollToVerticalOffset(scroll.VerticalOffset + actual.Y - anchor.ViewportPoint.Y);
             PageList.UpdateLayout();
         }
@@ -903,7 +933,7 @@ public partial class MainWindow : Window
                 // Reconcile once its generated container and extent are available.
                 if (fitTarget is not null)
                 {
-                    PageList.ScrollIntoView(fitTarget);
+                    ScrollPageIntoView(fitTarget);
                     PageList.UpdateLayout();
                 }
                 else if (anchor is not null) RestorePageZoomAnchor(anchor);

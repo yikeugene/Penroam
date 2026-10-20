@@ -85,9 +85,9 @@ internal static class Program
                     reports.Add(MeasureButtons(content, width, height, fileName, state,
                         state switch
                         {
-                            "library" => ["HomeNewNotebookButton", "NotebookOptionsButton"],
-                            "library-search" or "library-empty-search" => ["HomeNewNotebookButton", "ClearHomeSearchButton", "EmptyLibraryClearSearchButton"],
-                            _ => ["HomeNewNotebookButton", "EmptyLibraryCreateButton"]
+                            "library" => ["HomeNewNotebookButton", "HomeImportFolderButton", "NotebookOptionsButton"],
+                            "library-search" or "library-empty-search" => ["HomeNewNotebookButton", "HomeImportFolderButton", "ClearHomeSearchButton", "EmptyLibraryClearSearchButton"],
+                            _ => ["HomeNewNotebookButton", "HomeImportFolderButton", "EmptyLibraryCreateButton"]
                         }));
                     if (state == "library")
                     {
@@ -99,7 +99,7 @@ internal static class Program
                             libraryScroll.ScrollToBottom();
                             var bottomImage = $"ui-preview-library-bottom-{width}.png";
                             SaveImage(output, bottomImage, RenderElement(content, width, height));
-                            reports.Add(MeasureButtons(content, width, height, bottomImage, "library-bottom", "HomeNewNotebookButton", "NotebookOptionsButton"));
+                            reports.Add(MeasureButtons(content, width, height, bottomImage, "library-bottom", "HomeNewNotebookButton", "HomeImportFolderButton", "NotebookOptionsButton"));
                             if (!Descendants<Button>(content).Any(button => button.DataContext is NotebookSummary summary &&
                                     summary.Id == "fixture-personal" && HasVisibleAncestors(button) && InsideScrollViewports(button, content)))
                                 throw new InvalidOperationException("The final notebook must remain reachable by scrolling at the compact window size.");
@@ -127,18 +127,22 @@ internal static class Program
                 page.Thumbnail = RenderElement(editor, page.Page.Width, page.Page.Height, .16);
             }
 
+            foreach (var twoPages in new[] { true, false })
             foreach (var (width, height) in new[] { (1400, 960), (1024, 700) })
             foreach (var fitMode in new[] { "page", "width" })
             {
+                typeof(MainWindow).GetMethod(twoPages ? "TwoPagesClick" : "SinglePageClick",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+                    .Invoke(window, [window, new RoutedEventArgs()]);
                 Arrange(content, width, height);
                 var viewport = (FrameworkElement)window.FindName("Viewport");
                 var pageList = (ListBox)window.FindName("PageList");
-                var page = window.ViewModel.SelectedPage!.Page;
-                // Apply the shell's fit calculations as model values. These
-                // checks exercise the resulting layout, without routed input.
+                var selected = window.ViewModel.SelectedPage!;
+                var spread = window.PageSpreads.Single(row => row.First == selected || row.Second == selected);
+                // Use production geometry; detached hosts have no Loaded lifecycle.
                 window.ViewModel.Zoom = fitMode == "width"
-                    ? (viewport.ActualWidth - pageList.Padding.Left - pageList.Padding.Right - SystemParameters.VerticalScrollBarWidth - 4) / page.Width
-                    : Math.Min((viewport.ActualWidth - 90) / page.Width, (viewport.ActualHeight - 106) / page.Height);
+                    ? PageSpreadGeometry.FitWidthZoom(spread, viewport.ActualWidth - pageList.Padding.Left - pageList.Padding.Right - SystemParameters.VerticalScrollBarWidth - 4)
+                    : PageSpreadGeometry.FitPageZoom(spread, viewport.ActualWidth - 90, viewport.ActualHeight - 106);
                 ((Button)window.FindName("FitWidthButton")).Foreground = fitMode == "width"
                     ? (Brush)application.Resources["Accent"] : new SolidColorBrush(Color.FromRgb(104, 117, 138));
                 Arrange(content, width, height);
@@ -158,9 +162,11 @@ internal static class Program
                 Arrange(content, width, height);
                 VerifyDetached(content, window);
                 var bitmap = RenderElement(content, width, height);
-                var fileName = fitMode == "width" ? $"ui-preview-fit-width-{width}.png" : $"ui-preview-{width}.png";
+                var prefix = twoPages ? "ui-preview-two-pages" : "ui-preview";
+                var scene = twoPages ? "editor-two-pages" : "editor";
+                var fileName = fitMode == "width" ? $"{prefix}-fit-width-{width}.png" : $"{prefix}-{width}.png";
                 SaveImage(output, fileName, bitmap);
-                var report = MeasureButtons(content, width, height, fileName, fitMode == "width" ? "editor-fit-width" : "editor",
+                var report = MeasureButtons(content, width, height, fileName, fitMode == "width" ? scene + "-fit-width" : scene,
                     "PenButton", "Highlighter", "Eraser", "Lasso", "Type", "Select", "PenSettingsButton", "Undo", "Redo",
                     "FitWidthButton", "Focus Mode", "Zoom In", "Zoom Out", "AddSectionButton", "SectionOptionsButton") with
                 {
@@ -169,16 +175,26 @@ internal static class Program
                 };
                 if (fitMode == "width")
                 {
-                    var host = Descendants<Border>(pageList).FirstOrDefault(b => b.DataContext == window.ViewModel.SelectedPage && b.Child is PageEditor);
-                    if (host is null) throw new InvalidOperationException("Fit Width did not realize the selected page editor.");
-                    var bounds = host.TransformToAncestor(viewport).TransformBounds(new Rect(host.RenderSize));
+                    var bounds = Rect.Empty;
+                    var pages = spread.Second is { } second ? new[] { spread.First, second } : new[] { spread.First };
+                    Rect? firstBounds = null;
+                    foreach (var page in pages)
+                    {
+                        var host = Descendants<Border>(pageList).FirstOrDefault(b => b.DataContext == page && b.Child is PageEditor);
+                        if (host is null) throw new InvalidOperationException("Fit Width did not realize every page in the selected spread.");
+                        var hostBounds = host.TransformToAncestor(viewport).TransformBounds(new Rect(host.RenderSize));
+                        var editor = (PageEditor)host.Child;
+                        var editorBounds = editor.TransformToAncestor(viewport).TransformBounds(new Rect(editor.RenderSize));
+                        if (Math.Abs(editorBounds.Left - hostBounds.Left) > 1 || Math.Abs(editorBounds.Right - hostBounds.Right) > 1)
+                            throw new InvalidOperationException("The Fit Width paper host and realized editor do not align.");
+                        if (firstBounds is { } first && (Math.Abs(hostBounds.Left - first.Right - PageSpreadGeometry.Gutter) > 1.5 || Math.Abs(hostBounds.Top - first.Top) > 1))
+                            throw new InvalidOperationException("The spread must use a fixed gutter and top-aligned independent pages.");
+                        firstBounds ??= hostBounds;
+                        bounds.Union(hostBounds);
+                    }
                     var rightGutter = viewport.ActualWidth - bounds.Right;
                     if (bounds.Left < -.5 || rightGutter < -.5 || bounds.Left > 60 || rightGutter > 60 || bounds.Width < viewport.ActualWidth * .85)
-                        throw new InvalidOperationException($"Fit Width should keep both page edges within the viewport with small gutters. Actual left: {bounds.Left:F2}, right: {rightGutter:F2}, page: {bounds.Width:F2}, viewport: {viewport.ActualWidth:F2} DIP.");
-                    var editor = (PageEditor)host.Child;
-                    var editorBounds = editor.TransformToAncestor(viewport).TransformBounds(new Rect(editor.RenderSize));
-                    if (Math.Abs(editorBounds.Left - bounds.Left) > 1 || Math.Abs(editorBounds.Right - bounds.Right) > 1)
-                        throw new InvalidOperationException("The Fit Width paper host and realized editor do not align.");
+                        throw new InvalidOperationException($"Fit Width should keep the spread within the viewport with small gutters. Actual left: {bounds.Left:F2}, right: {rightGutter:F2}, paper: {bounds.Width:F2}, viewport: {viewport.ActualWidth:F2} DIP.");
                     report = report with { PageLeftGutter = Round(bounds.Left), PageRightGutter = Round(rightGutter), PageDisplayWidth = Round(bounds.Width) };
                 }
                 reports.Add(report);
@@ -358,7 +374,7 @@ internal static class Program
         if (!Descendants<TextBlock>(content).Any(text => HasVisibleAncestors(text) && text.Text == viewModel.LibraryCountText))
             throw new InvalidOperationException("The library must display the count for the current search.");
 
-        foreach (var name in new[] { "HomeNewNotebookButton", "HomeSearch", "ClearHomeSearchButton", "EmptyLibraryClearSearchButton", "EmptyLibraryCreateButton" })
+        foreach (var name in new[] { "HomeNewNotebookButton", "HomeImportFolderButton", "HomeSearch", "ClearHomeSearchButton", "EmptyLibraryClearSearchButton", "EmptyLibraryCreateButton" })
         {
             if (window.FindName(name) is not Control control || !Visible(name)) continue;
             if (!control.Focusable || !control.IsTabStop || string.IsNullOrWhiteSpace(ControlName(control)))

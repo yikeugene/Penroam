@@ -55,7 +55,44 @@ internal static class DocumentWorkflowPreviewScenes
         var warning = new TextOverflowDialog(null!, overflowDocument, TextFlow.FindOverflow(overflowDocument.Pages));
         var warningContent = (FrameworkElement)warning.Content; warning.Content = null;
         reports.Add(Capture(output, "document-export-overflow", warningContent, 620, 430)); warning.Close();
+        CaptureFolderImportScenes(output, reports);
         File.WriteAllText(Path.Combine(output, "document-workflow-preview.json"), JsonSerializer.Serialize(reports, new JsonSerializerOptions { WriteIndented = true }));
+    }
+
+    private static void CaptureFolderImportScenes(string output, List<object> reports)
+    {
+        var summaries = new (string Name, FolderImportSummary Summary)[]
+        {
+            ("partial", new("Autumn lectures", [
+                new("Lecture 2.pdf", FolderImportItemStatus.Ready, 14),
+                new("Lecture 10 — Worked examples and revision questions with a deliberately long filename.pptx", FolderImportItemStatus.Ready, 36),
+                new("Lecture 11.pdf", FolderImportItemStatus.Failed, Message: "This PDF is encrypted. Save an unencrypted copy and import it again."),
+                new("Old slides.ppt", FolderImportItemStatus.Skipped, Message: "Save this presentation as PPTX or export a PDF before importing."),
+                new("Previous term", FolderImportItemStatus.Skipped, Message: "Subfolders are not imported.")
+            ])),
+            ("no-files", new("Empty course folder", [])),
+            ("failed", new("Unavailable slides", [
+                new("Lecture 1.pptx", FolderImportItemStatus.Failed, Message: "Install Microsoft PowerPoint or LibreOffice, or export a PDF from the source application.")
+            ])),
+            ("complete", new("Course notes", [new("Lecture 1.pdf", FolderImportItemStatus.Ready, 8)]))
+        };
+        foreach (var (name, summary) in summaries)
+        {
+            var dialog = new FolderImportSummaryDialog(null!, summary);
+            var content = (FrameworkElement)dialog.Content; dialog.Content = null;
+            foreach (var (width, height) in new[] { (760, 600), (620, 480) })
+            {
+                reports.Add(Capture(output, "folder-import-" + name, content, width, height));
+                var buttons = Descendants<Button>(content).Where(Visible).ToArray();
+                if (summary.RequiresConfirmation && !buttons.Any(button => Equals(button.Content, "Import Successful Files") && button.IsEnabled))
+                    throw new InvalidOperationException("A partial folder import must offer explicit acceptance of successful files.");
+                if (dialog.ImportSuccessfulFiles)
+                    throw new InvalidOperationException("Displaying a folder summary must not accept an import.");
+                if (PresentationSource.FromVisual(content) is not null || new System.Windows.Interop.WindowInteropHelper(dialog).Handle != IntPtr.Zero)
+                    throw new InvalidOperationException("Folder import previews must not create native windows.");
+            }
+            dialog.Close();
+        }
     }
 
     private static void VerifySelection(DocumentSelectionDialog dialog, FrameworkElement content, bool importing, NotebookDocument document)

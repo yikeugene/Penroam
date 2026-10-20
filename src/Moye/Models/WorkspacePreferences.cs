@@ -10,6 +10,7 @@ public sealed class WorkspacePreferences
     public Dictionary<string, ReadingPosition> ReadingPositions { get; set; } = [];
     public string LastNotebookId { get; set; } = "";
     public bool TwoFingerNavigationOnly { get; set; }
+    public bool TwoPageView { get; set; }
     public bool LockZoom { get; set; }
     public bool CompactToolbar { get; set; }
     public bool FocusToolsOnRight { get; set; }

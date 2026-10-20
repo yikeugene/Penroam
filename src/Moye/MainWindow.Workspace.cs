@@ -44,7 +44,8 @@ public partial class MainWindow
     private async Task LoadWorkspaceAsync()
     {
         if (_workspaceStore is null) return;
-        _workspace = await _workspaceStore.LoadAsync(); _workspaceLoaded = true;
+        _workspace = await _workspaceStore.LoadAsync();
+        ApplyInitialPageLayout(); _workspaceLoaded = true;
         ViewModel.Autosave.RecoveryJournal = _draftRecovery;
         ApplyWorkspaceOptions();
         await RefreshRecoveryNoticeAsync();
@@ -64,7 +65,9 @@ public partial class MainWindow
         if (!_workspaceLoaded || _restoringReadingPosition || ViewModel.IsLibraryVisible || ViewModel.Document is not { } document ||
             ViewModel.SelectedPage is not { } selected) return;
         var viewportPoint = new Point(Viewport.ActualWidth / 2, Math.Min(80, Viewport.ActualHeight / 4));
-        var anchor = CapturePageZoomAnchor(viewportPoint);
+        // Reading state follows the active visible page, not the equally near
+        // left edge of a spread's gutter. Pointer zoom keeps its physical anchor.
+        var anchor = CaptureSelectedPageAnchor(viewportPoint) ?? CapturePageZoomAnchor(viewportPoint);
         var page = anchor?.Page.Page ?? selected.Page;
         var point = anchor?.PagePoint ?? new Point();
         var view = anchor?.ViewportPoint ?? viewportPoint;
@@ -182,9 +185,14 @@ public partial class MainWindow
             new("New notebook", "Choose a name, category and paper style.", () => NewNoteClick(this, new())),
             new("Continue last notebook", "Return to the page and zoom you last used.", () => ContinueLastClick(this, new()))
         };
+        if (ViewModel.IsLibraryVisible)
+            commands.Add(new("Import Folder", "Create a notebook from first-level PDF and PowerPoint (.pptx) files, with a section for each document.", () => ImportFolderClick(this, new())));
         if (ViewModel.IsEditorVisible)
         {
             commands.AddRange([
+                new(_twoPageView ? "Single Page" : "Single Page · Current", "Show one editable page per row.", () => ChangePageLayout(false)),
+                new(_twoPageView ? "Two Pages · Current" : "Two Pages", "Read and annotate pages 1–2, 3–4 side by side within this section.", () => ChangePageLayout(true)),
+                new(_twoPageView ? "Fit Spread" : "Fit Page", "Show the whole current page or spread. Unlock zoom in Workspace settings if necessary.", () => FitPage()),
                 new("Mark a question", "Anchor a question to this page or a chosen region.", () => AddStudyQuestionClick(this, new())),
                 new("Question inbox", "Follow questions from Need help through explanation and retry to Resolved.", () => StudyInboxClick(this, new())),
                 new("Leave a resume hint", "Write your next step so you can recover your train of thought.", () => SetResumeHintClick(this, new())),

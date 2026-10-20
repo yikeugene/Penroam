@@ -18,13 +18,30 @@ public sealed class WorkspaceSafetyTests
         var preferences = await store.LoadAsync();
         preferences.ReadingPositions["note"] = new("section", "page", .2, .6, .5, .1, 1.3, true, DateTimeOffset.UtcNow);
         preferences.LastNotebookId = "note"; preferences.TwoFingerNavigationOnly = true;
-        preferences.BackupRetention = 7; preferences.FocusToolsOnRight = true;
+        preferences.BackupRetention = 7; preferences.FocusToolsOnRight = true; preferences.TwoPageView = true;
         await store.SaveAsync(preferences);
         var reopened = await new WorkspacePreferencesStore(path).LoadAsync();
         Assert.Equal(preferences.ReadingPositions["note"], reopened.ReadingPositions["note"]);
         Assert.True(reopened.TwoFingerNavigationOnly); Assert.True(reopened.FocusToolsOnRight);
+        Assert.True(reopened.TwoPageView); Assert.Equal(1, reopened.Version);
         Assert.Equal(7, reopened.BackupRetention);
         Assert.False(File.Exists(directory.DatabasePath));
+    }
+
+    [Fact]
+    public async Task ExistingVersionOnePreferencesDefaultToSinglePageWithoutAFormatUpgrade()
+    {
+        using var directory = new StorageTestDirectory();
+        var path = Path.Combine(directory.Root, "workspace.json");
+        await File.WriteAllTextAsync(path, "{\"version\":1,\"lastNotebookId\":\"existing\"}");
+        var store = new WorkspacePreferencesStore(path);
+        var preferences = await store.LoadAsync();
+        Assert.Null(store.Warning); Assert.False(preferences.TwoPageView);
+        preferences.TwoPageView = true;
+        await store.SaveAsync(preferences);
+        var reopened = await new WorkspacePreferencesStore(path).LoadAsync();
+        Assert.Equal(1, reopened.Version); Assert.True(reopened.TwoPageView);
+        Assert.Equal("existing", reopened.LastNotebookId);
     }
 
     [Fact]
@@ -77,6 +94,7 @@ public sealed class WorkspaceSafetyTests
         var path = Path.Combine(directory.Root, "workspace.json"); await File.WriteAllTextAsync(path, content);
         var store = new WorkspacePreferencesStore(path); var preferences = await store.LoadAsync();
         Assert.NotNull(store.Warning);
+        preferences.TwoPageView = true; // Layout changes cannot bypass the unreadable/newer-file guard.
         await Assert.ThrowsAsync<IOException>(() => store.SaveAsync(preferences));
         Assert.Equal(content, await File.ReadAllTextAsync(path));
     }

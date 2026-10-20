@@ -44,7 +44,7 @@ public partial class MainWindow
         CaptureReadingPosition();
         if (ViewModel.IsLibraryVisible || ViewModel.Document is null || ViewModel.SelectedSection is null || ViewModel.SelectedPage is null) return;
         var at = new Point(Viewport.ActualWidth / 2, Math.Min(80, Viewport.ActualHeight / 4));
-        var anchor = CapturePageZoomAnchor(at);
+        var anchor = CaptureSelectedPageAnchor(at) ?? CapturePageZoomAnchor(at);
         var page = anchor?.Page.Page ?? ViewModel.SelectedPage.Page;
         var point = anchor?.PagePoint ?? new Point(); var view = anchor?.ViewportPoint ?? at;
         var visit = new OrganizationVisit(ViewModel.Document.Id, page.SectionId, page.Id, ViewModel.Zoom,

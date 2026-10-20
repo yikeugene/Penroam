@@ -17,7 +17,7 @@ Penroam 1.2.0 includes the writing and study workflows below. It writes **SQLite
 Not implemented in this update: automatic comparison/reconciliation of a revised PDF with old annotations (reliable page/region alignment and scan OCR are missing); a separate original-page/side-note cross-referenced export mode; cross-session regional history; automatic mistake diagnosis or spaced review scheduling. No online account or AI service is needed for the implemented workflows.
 
 
-This guide describes the English interface in **Penroam 1.2.2** for Windows 11 x64, including writing and study workflows, page extension and live lasso movement. Historical release and device-check notes keep their original scope.
+This guide describes the English interface in **Penroam 1.3.0** for Windows 11 x64, including folder import, editable two-page view, writing and study workflows, page extension and live lasso movement. Historical release and device-check notes keep their original scope.
 
 Penroam is the new name for Moye. Penroam 1.0.0 restarted version numbering with the new name/icon and the then-current features. Existing notebook data, preferences, recovery files and `.moye` backups keep their current names and locations. The 1.0.0 branding update retained Moye 2.0 data formats; the 1.1.0 page-extension update introduced schema/format 4, and 1.2.0 introduces schema/format 5.
 
@@ -25,7 +25,7 @@ Penroam is the new name for Moye. Penroam 1.0.0 restarted version numbering with
 
 ## Install, update and uninstall
 
-Download and run [Penroam-1.2.2-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.2.2/Penroam-1.2.2-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
+Download and run [Penroam-1.3.0-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.3.0/Penroam-1.3.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
 
 Open the **Penroam** desktop shortcut after installation. When updating, close the app and run the newer installer. Setup recognizes an existing Moye installation as the same application. Existing notes stay in `%LOCALAPPDATA%\Moye`; the installer does not move or replace them. If you previously used a portable ZIP with the default library, the installed app uses that same library. A custom `--data-dir` library still needs its custom launch argument.
 
@@ -33,7 +33,7 @@ Remove Penroam through **Windows Settings → Apps → Installed apps → Penroa
 
 ### In-app updates
 
-Install **1.2.2** manually when upgrading from **1.1.0** or earlier. Version 1.2.0 includes the updater and can install later stable releases from within Penroam.
+Install **1.3.0** manually when upgrading from **1.1.0** or earlier. Version 1.2.0 includes the updater and can install later stable releases from within Penroam.
 
 When opened normally, Penroam checks the public [Penroam GitHub releases](https://github.com/yikeugene/Penroam/releases/latest) in the background. A newer stable version appears in a card with its release notes. Drafts, prereleases and older versions are not offered.
 
@@ -47,7 +47,7 @@ Writing and saving work without an internet connection. A failed startup check s
 
 ## Notebooks, sections and pages
 
-The interface uses a warm neutral workspace with forest green controls, notebook covers and visible keyboard focus. Sections have context menus on right-click or Shift+F10. The navigation names below describe Penroam 1.2.2.
+The interface uses a warm neutral workspace with forest green controls, notebook covers and visible keyboard focus. Sections have context menus on right-click or Shift+F10. The navigation names below describe Penroam 1.3.0.
 
 Open `Penroam.exe` to see **Your notebooks**. Penroam starts on this home screen and waits for you to choose a notebook. An empty library shows **Create your first notebook**; it does not create a notebook automatically. Notebook cards show the title, category and page count. **Continue** opens the last notebook at its saved reading position. **Quick note** creates a page in an Inbox notebook and selects Pen, ready to write; use the page organizer to move it into a course later.
 
@@ -145,7 +145,7 @@ Click the eraser icon to open **Eraser Settings**:
 
 The toolbar shows **Eraser**; its tooltip and settings identify the remembered Pixel or Stroke mode. Click the eraser again to close its picker, or select a mode and continue writing. Press `E` to recall the last eraser mode. **Eraser Size** independently adjusts the erasing area from **12 to 120 DIP**, with a default of 20 DIP. Turn on **Erase highlighter only** to protect ordinary pen strokes while removing highlighting. Both modes remain undoable. Size, mode and the highlighter-only choice are remembered between launches.
 
-In 1.2.2, the visible outline uses the same shape and page coordinates as the actual eraser, so it follows page zoom and size changes. Pixel Eraser removes ink inside that footprint; Stroke Eraser removes an entire stroke when the footprint touches it. The outline is temporary feedback and is not included in thumbnails or saved notes.
+Since 1.2.2, the visible outline uses the same shape and page coordinates as the actual eraser, so it follows page zoom and size changes. Pixel Eraser removes ink inside that footprint; Stroke Eraser removes an entire stroke when the footprint touches it. The outline is temporary feedback and is not included in thumbnails or saved notes.
 
 The remembered mode also applies to the pen's tail eraser when the device sends inverted-pen events. Actual tail-eraser and side-button behavior still depends on your device and drivers.
 
@@ -156,6 +156,10 @@ Press `Ctrl+C` to copy the selection, or `Ctrl+X` to cut it. Open another page a
 ## Viewing a page
 
 Notebooks restore their last saved page, position, zoom and Fit Width setting on this device; a new or unavailable saved location uses the normal fit-page opening. The footer combines page navigation, save status, and zoom controls. Click the page counter or press `Ctrl+G` to enter a page number within the current section. **Fit Page** shows the whole sheet. **Fit Width**, directly beside it, expands the paper to the available writing area's width with a small margin on both sides; scroll vertically to see the rest of the page. While Fit Width is active, resizing the window or showing/hiding the sidebar refits the paper. **−**, **+**, pinch zoom, `Ctrl+mouse wheel`, or **Fit Page** leave width-fitting mode. Click the percentage for zoom options, including **Actual Size · 100%**. Turn off zoom lock in Workspace settings before changing the scale.
+
+To read adjacent pages together, click the zoom percentage and choose **Two Pages**. Pages in the current section appear as 1–2, 3–4, and so on, in their current notebook order; an odd final page appears on its own. Both pages remain editable: write, highlight or type on either page, and use thumbnails or the page counter to navigate to a specific page. Choose **Single Page** to return to the original layout. This device remembers your layout choice; it does not change the PDF, page sizes, annotations or exported page order.
+
+In two-page view, **Fit Spread** shows the whole pair and **Fit Width** fits the pair's combined width. Width-fitting remains active across layout changes; otherwise your zoom and position are retained. Zoom still ranges from 25% to 400%, so unusually wide pages or a narrow writing area may require horizontal scrolling even after fitting. The layout does not silently switch back to single-page view.
 
 The sidebar button or `F9` hides and shows the sidebar. Hold **Space** and drag with the left mouse button to pan temporarily; release Space to return to your writing tool.
 
@@ -219,6 +223,16 @@ Imported pages are fixed PDF backgrounds. Add editable Penroam handwriting, high
 
 Use **Cancel** or press `Esc` during import preparation. Conversion has a two-minute timeout. Password-protected files, files containing macros, and documents with linked external resources are rejected with an explanation; embed linked content or export a PDF from the source application. PowerPoint may need to be closed before conversion because it can share one running application instance. If Penroam reports that PowerPoint is in use, save your work and close it before retrying, or export a PDF there.
 
+## Create a notebook from a folder
+
+On **Your notebooks**, choose **Import folder**, or drag one folder from File Explorer onto the home screen. Penroam creates a new notebook named after that folder. Each PDF or PPTX directly inside it becomes a separate section, named after the file, with all its pages or slides in order. Filenames use natural ordering, so `Lecture 2` comes before `Lecture 10`; duplicate section names are distinguished with suffixes. The notebook is placed in **My Notes**, not linked to the source folder.
+
+Only the selected folder's first level is imported. Subfolders and other file types are skipped and reported. Old `.ppt` files must first be saved as `.pptx` or exported as PDF. PPTX conversion needs Microsoft PowerPoint or LibreOffice and follows the same restrictions as single-file Office import above; PDF files need neither.
+
+Preparation shows progress and can be canceled. If some files fail, review the reasons and choose **Import Successful Files** to keep the remaining files, or **Cancel** to create nothing. If no files succeed, no empty notebook is created. Once saving begins, cancellation is disabled until the save finishes. A failed save can be retried without converting the files again; if the notebook was saved but could not be opened, retry opening that saved notebook instead of importing another copy.
+
+This is a one-time import: source files are not moved or modified, and later changes in the folder are not synchronized. The imported PDF pages and converted slides remain separate, editable annotation pages; use **Two Pages** to read adjacent pages together.
+
 ## Autosave and backups
 
 Completed edits are queued for background saving, with a coalescing delay of at most two seconds. Completion time depends on the disk and document size. The saved status appears only after a successful database transaction. Switching notebooks, leaving the window, and closing normally also attempt to save.
@@ -227,7 +241,7 @@ The default library is `%LOCALAPPDATA%\Moye\moye.db`. SQLite may create `moye.db
 
 Writing preferences are saved separately in `%LOCALAPPDATA%\Moye\writing-preferences.json`. This file contains presets and writing settings, and is **not included in `.moye` backups**. For a library started with `--data-dir`, both the database and preferences stay in that selected directory. A damaged settings file is preserved before defaults are offered; an unreadable or unsupported-version file is protected from replacement. A writing-settings warning offers details and retry when available. When an existing preferences file cannot be read or belongs to a newer version, tool changes apply to the current session only; notebooks still save and the app can close normally. Restart after resolving that file. A later write failure retains pending settings for retry.
 
-`workspace-preferences.json` in the same directory stores reading positions, last notebook, writing guards, toolbar/docking choices and backup settings. These are device-local preferences, separate from notebook undo and excluded from `.moye` backups. Unsupported or unreadable workspace settings are kept; changes then apply to the current session only.
+`workspace-preferences.json` in the same directory stores reading positions, last notebook, single/two-page layout, writing guards, toolbar/docking choices and backup settings. These are device-local preferences, separate from notebook undo and excluded from `.moye` backups. Unsupported or unreadable workspace settings are kept; changes then apply to the current session only.
 
 Autosave deadlines and temporary touch suppression use elapsed-time measurements, so changing the system clock does not extend those waiting periods. Launching the same library through equivalent default or explicit paths uses a shared single-instance identity.
 

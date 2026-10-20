@@ -17,6 +17,8 @@ Output files in `artifacts/`:
 - `ui-preview-1400.png`: 1400 × 960 DIP.
 - `ui-preview-1024.png`: 1024 × 700 DIP.
 - `ui-preview-fit-width-{1400,1024}.png`: the editor with paper fitted to the workspace width.
+- `ui-preview-two-pages-{1400,1024}.png` and `ui-preview-two-pages-fit-width-{1400,1024}.png`: two editable page hosts with shared production spread-fit geometry, fixed gutters and independent page coordinates.
+- `ui-preview-folder-import-{partial,no-files,failed,complete}-{760,620}.png`: folder-import summaries, including explicit partial acceptance and long file names.
 - `ui-preview-typing-{1400,1024}.png`: Type mode with the contextual font, size, style, alignment and list toolbar.
 - `ui-preview-typing-empty.png` and `ui-preview-typing-overflow.png`: the first text box on an empty page and the warning for text exceeding a page.
 - `ui-preview-library-{1400,1024}.png`: notebook selection home.
@@ -47,7 +49,7 @@ Settings previews detach the real `Popup.Child` while `IsOpen` remains false, in
 
 Typing previews call the real window commands against a registered synthetic page editor. They verify that Type resumes text without duplicates, formatting updates the model, new boxes copy style without note content, and overflow raises a warning. The font, size and alignment pickers must also be at least 44 DIP. These command checks do not exercise native focus, input-method composition or keyboard routing.
 
-Fit Width validation measures the realized page host and editor in viewport coordinates: their horizontal edges must align, each page gutter must be between 0 and 60 DIP, and the page must cover at least 85% of the viewport width. This verifies the rendered result rather than only comparing numeric zoom formulas. The dialog preview checks its real template choices and Create Notebook action using the same button layout rules.
+Fit Width validation measures every realized page host and editor in the selected spread in viewport coordinates: their horizontal edges must align, the combined paper bounds must leave outer gutters between 0 and 60 DIP, and the spread must cover at least 85% of the viewport width. Two-page rows additionally require a fixed 24-DIP inner gutter and top-aligned pages. Fit calculations use the same geometry helper as the application; rendered bounds remain the assertions. The dialog preview checks its real template choices and Create Notebook action using the same button layout rules. Home scenes require Import Folder in populated, empty and search states; folder-summary scenes require explicit acceptance when some files failed. These checks do not open a folder picker, perform Explorer drag/drop or run Office conversion.
 
 For separate live desktop checks, run the built preview executable with the repository root followed by `--interactive`; append `--compact` to start at the application's 1024 × 700 minimum window size. This opens the real application shell with a disposable in-memory notebook repository; it does not access SQLite or the user's notebook library. Writing preferences are kept under `artifacts/interactive-preview/`. Use this mode to check Tab/Shift+Tab, visible focus, search recovery, tool selection, menus, dialogs, and focus mode. Close the synthetic window before rebuilding the preview.
 

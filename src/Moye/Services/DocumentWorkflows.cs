@@ -73,31 +73,51 @@ public static class DocumentWorkflows
 /// <summary>Unaccepted imports stay outside the library, including their original PDF asset.</summary>
 public sealed class PreparedDocumentImport : IDisposable
 {
-    private readonly ImportAssetStore _assets = new();
+    private readonly INotebookRepository _assets;
+    private readonly bool _ownsAssets;
+    private readonly DocumentImportService _service;
+    private bool _disposed;
     public IReadOnlyList<NotePage> Pages { get; private set; } = [];
     public IPdfService Pdf { get; }
     public Func<string, Task<AssetData>> LoadAsset => _assets.GetAssetAsync;
-    public PreparedDocumentImport() => Pdf = new PdfService(_assets);
+    public PreparedDocumentImport() : this(new ImportAssetStore(), true) { }
+    public PreparedDocumentImport(INotebookRepository assets, bool ownsAssets,
+        IOfficePdfConverter? converter = null, Func<INotebookRepository, IPdfService>? pdfFactory = null)
+    {
+        _assets = assets; _ownsAssets = ownsAssets;
+        Pdf = pdfFactory?.Invoke(assets) ?? new PdfService(assets);
+        _service = new DocumentImportService(Pdf, converter ?? new OfficePdfConverter());
+    }
     public async Task PrepareAsync(string path, IProgress<DocumentProgress>? progress, CancellationToken cancellationToken)
     {
-        var service = new DocumentImportService(Pdf, new OfficePdfConverter());
-        Pages = await service.ImportAsync(path, progress, cancellationToken);
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        Pages = [];
+        Pages = await _service.ImportAsync(path, progress, cancellationToken);
     }
     public async Task CommitAssetsAsync(INotebookRepository repository, IEnumerable<NotePage> pages,
         IProgress<DocumentProgress>? progress, CancellationToken cancellationToken)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
         var ids = pages.SelectMany(page => page.Images.Select(image => image.AssetId)
-            .Concat(page.Pdf is null ? [] : new[] { page.Pdf.AssetId })).Distinct().ToArray();
+            .Concat(page.Pdf is null ? [] : new[] { page.Pdf.AssetId })).Distinct(StringComparer.Ordinal).ToArray();
         for (var i = 0; i < ids.Length; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             progress?.Report(new("Saving imported attachments…", i, ids.Length));
             var asset = await _assets.GetAssetAsync(ids[i]);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (asset.Id != ids[i] || Convert.ToHexStringLower(SHA256.HashData(asset.Bytes)) != asset.Id)
+                throw new InvalidDataException("The imported attachment could not be verified.");
             var stored = await repository.PutAssetAsync(asset.FileName, asset.ContentType, asset.Bytes);
             if (stored.Id != asset.Id) throw new InvalidDataException("The imported attachment could not be verified.");
         }
     }
-    public void Dispose() => _assets.Dispose();
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        if (_ownsAssets) _assets.Dispose();
+    }
 
     private sealed class ImportAssetStore : INotebookRepository
     {
