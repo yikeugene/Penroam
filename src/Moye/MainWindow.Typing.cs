@@ -14,6 +14,7 @@ public partial class MainWindow
 {
     private NoteText _textDefaults = new() { FontFamily = "Segoe UI", FontSize = 22, Color = "#FF25334A" };
     private bool _syncingTextToolbar, _applyingTextFormat;
+    private bool? _textPanelOverride;
     private int _typingRequest;
     private PageEditor? _textPickerEditor;
     private NoteText? _textPickerSelection;
@@ -91,13 +92,31 @@ public partial class MainWindow
         if (!ReferenceEquals(sender, CurrentEditor)) return;
         UpdateTextToolbar();
     }
+    private void ShowTextFormatting(Control? focus = null)
+    {
+        if (!CanOrganize || ViewModel.IsLibraryVisible) return;
+        if (_focusMode) ToggleFocus();
+        CloseSettingsPopups(); _textPanelOverride = true; UpdateTextToolbar();
+        FocusSetting(focus ?? TextFormattingBackButton);
+    }
+
+    private void HideTextFormattingClick(object sender, RoutedEventArgs e)
+    {
+        _textPanelOverride = false; UpdateTextToolbar(); PageList.Focus();
+    }
+
     private void UpdateTextToolbar()
     {
         if (TextToolbar is null || _syncingTextToolbar) return;
-        bool typing = _tool == InkTool.Text || _tool == InkTool.Select && CurrentEditor?.SelectedText is not null;
+        bool typing = _textPanelOverride ?? (_tool == InkTool.Text || _tool == InkTool.Select && CurrentEditor?.SelectedText is not null);
         TextToolbar.Visibility = typing ? Visibility.Visible : Visibility.Collapsed;
         FavouriteToolbar.Visibility = typing || _workspace.CompactToolbar ? Visibility.Collapsed : Visibility.Visible;
         if (!typing) return;
+        bool selected = CurrentEditor?.SelectedText is not null;
+        TextSelectionHint.Text = "Select a text item to format it, or choose Type / Text box to start writing.";
+        TextSelectionHint.Visibility = selected ? Visibility.Collapsed : Visibility.Visible;
+        foreach (var control in new Control[] { TextFontPicker, TextSizePicker, TextBoldButton, TextItalicButton,
+            TextColorButton, TextAlignmentPicker, TextBulletsButton, TextNumbersButton }) control.IsEnabled = selected;
         // A delayed autosave/selection notification must not replace a font size
         // the user is still entering in the toolbar.
         if (TextFontPicker.IsKeyboardFocusWithin || TextSizePicker.IsKeyboardFocusWithin || TextAlignmentPicker.IsDropDownOpen) return;
@@ -118,12 +137,16 @@ public partial class MainWindow
             bool overflow = CurrentEditor?.HasTextOverflow == true;
             if (FindName("ContinueTextButton") is Button continuationButton)
             {
-                continuationButton.Visibility = overflow ? Visibility.Visible : Visibility.Collapsed;
-                continuationButton.IsEnabled = CurrentEditor?.IsTextComposing == false;
+                continuationButton.Visibility = Visibility.Visible;
+                continuationButton.IsEnabled = overflow && CurrentEditor?.IsTextComposing == false;
+                continuationButton.ToolTip = !selected ? "Select a text item first." : !overflow
+                    ? "This text already fits on its page." : "Move overflowing text to a new page.";
+                ToolTipService.SetShowOnDisabled(continuationButton, true);
             }
             TypingHint.Text = overflow
                 ? "Text exceeds this page. Continue on a new page to keep all text visible in PDF export."
-                : "Click anywhere to type freely. Ruled paper aligns your text to the lines. Ctrl+Enter returns to Pen.";
+                : _tool == InkTool.Text ? "Click anywhere to type freely. Ruled paper aligns your text to the lines. Ctrl+Enter returns to Pen."
+                : "Choose Type to write, or Select to format existing text. Formatting applies to the whole text item.";
             TypingHint.Foreground = overflow ? (Brush)FindResource("Danger") : (Brush)FindResource("MutedInk");
         }
         finally { _syncingTextToolbar = false; }

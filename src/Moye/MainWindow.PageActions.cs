@@ -87,6 +87,38 @@ public partial class MainWindow
         }
     }
 
+    private PageActionTarget? CapturePageActionTarget(object? sender = null)
+    {
+        if (sender is MenuItem { Tag: PageActionTarget target }) return target;
+        if (ViewModel.IsLibraryVisible || ViewModel.Document is not { } document) return null;
+        var page = (sender as FrameworkElement)?.DataContext as PageViewModel ?? ViewModel.SelectedPage;
+        return page is null ? null : new(document, page.Page.SectionId, page.Page.Id);
+    }
+
+    private void PageActionsClick(object sender, RoutedEventArgs e)
+    {
+        if (!CanOrganize || ViewModel.IsLibraryVisible || sender is not FrameworkElement owner ||
+            ViewModel.SelectedPage is not { } page || CreatePageContextMenu(page) is not { } menu) return;
+        ClearTouches(); CloseSettingsPopups();
+        menu.PlacementTarget = owner; menu.Placement = PlacementMode.Bottom; menu.IsOpen = true;
+    }
+
+    private void ShowMovePageToSection(PageActionTarget target)
+    {
+        if (!CanOrganize || ResolvePageActionTarget(ViewModel, target) is not { } page) return;
+        var menu = new ContextMenu { PlacementTarget = FeatureActionAnchor(PageActionsButton), Placement = FeatureMenuPlacement };
+        menu.Items.Add(CreateMenuHeading($"Move page {page.Number} to section"));
+        foreach (var section in ViewModel.Sections)
+        {
+            var item = new MenuItem { Header = new TextBlock { Text = section.Title, MaxWidth = 280, TextTrimming = TextTrimming.CharacterEllipsis },
+                IsEnabled = section.Id != target.SectionId, ToolTip = section.Title };
+            var sectionId = section.Id;
+            item.Click += (_, _) => RunPageAction(target, () => ChangeSectionView(() => ViewModel.MovePageToSection(sectionId)));
+            menu.Items.Add(item);
+        }
+        ClearTouches(); CloseSettingsPopups(); menu.IsOpen = true;
+    }
+
     private MenuItem CreateMenuHeading(string title) => new()
     {
         Header = new TextBlock { Text = title, MaxWidth = 240, TextTrimming = TextTrimming.CharacterEllipsis },
@@ -115,7 +147,12 @@ public partial class MainWindow
 
     private void RunPageAction(object sender, Action action)
     {
-        if (sender is not MenuItem { Tag: PageActionTarget target } || !ActivatePageAction(target)) return;
+        if (sender is MenuItem { Tag: PageActionTarget target }) RunPageAction(target, action);
+    }
+
+    private void RunPageAction(PageActionTarget target, Action action)
+    {
+        if (_closing || !ActivatePageAction(target)) return;
         action(); ScrollToSelected();
     }
 }

@@ -172,7 +172,7 @@ internal static class DocumentWorkflowPreviewScenes
             foreach (var nested in Descendants<T>(child)) yield return nested;
         }
     }
-    private sealed class PreviewPdf : IPdfService
+    internal sealed class PreviewPdf : IPdfService
     {
         public Task<IReadOnlyList<NotePage>> ImportAsync(string path, CancellationToken cancellationToken = default) => throw new NotSupportedException();
         public Task ExportAsync(string path, NotebookDocument document, CancellationToken cancellationToken = default) => throw new NotSupportedException();

@@ -74,8 +74,12 @@ public partial class MainWindow
 
     private void RunSectionAction(object sender, Action action)
     {
-        if (_closing || AnyPenDown || sender is not MenuItem { Tag: SectionActionTarget target } ||
-            ResolveSectionActionTarget(ViewModel, target) is null) return;
+        if (sender is MenuItem { Tag: SectionActionTarget target }) RunSectionAction(target, action);
+    }
+
+    private void RunSectionAction(SectionActionTarget target, Action action)
+    {
+        if (_closing || AnyPenDown || ResolveSectionActionTarget(ViewModel, target) is null) return;
         ChangeSectionView(() =>
         {
             // Re-resolve after committing editors: never fall back to the selected section.
@@ -126,21 +130,29 @@ public partial class MainWindow
 
     private void RenameSectionClick(object sender, RoutedEventArgs e)
     {
-        if (AnyPenDown || sender is not MenuItem { Tag: SectionActionTarget target } ||
-            ResolveSectionActionTarget(ViewModel, target) is null) return;
+        if (sender is MenuItem { Tag: SectionActionTarget target }) RenameSection(target);
+    }
+
+    private void RenameSection(SectionActionTarget target)
+    {
+        if (!CanOrganize || ResolveSectionActionTarget(ViewModel, target) is null) return;
         CommitEditors();
         if (ResolveSectionActionTarget(ViewModel, target) is not { } section) return;
         var dialog = new InputDialog(this, "Rename Section", ("Topic or section name", section.Title));
-        if (dialog.ShowDialog() == true) RunSectionAction(sender, () => ViewModel.RenameSection(dialog.Values[0]));
+        if (dialog.ShowDialog() == true) RunSectionAction(target, () => ViewModel.RenameSection(dialog.Values[0]));
     }
 
     private void MoveSectionUpClick(object sender, RoutedEventArgs e) => RunSectionAction(sender, () => ViewModel.MoveSection(-1));
     private void MoveSectionDownClick(object sender, RoutedEventArgs e) => RunSectionAction(sender, () => ViewModel.MoveSection(1));
 
-    private async void DeleteSectionClick(object sender, RoutedEventArgs e)
+    private void DeleteSectionClick(object sender, RoutedEventArgs e)
     {
-        if (AnyPenDown || sender is not MenuItem { Tag: SectionActionTarget target } ||
-            ResolveSectionActionTarget(ViewModel, target) is null) return;
+        if (sender is MenuItem { Tag: SectionActionTarget target }) DeleteSection(target);
+    }
+
+    private async void DeleteSection(SectionActionTarget target)
+    {
+        if (!CanOrganize || ResolveSectionActionTarget(ViewModel, target) is null) return;
         if (ViewModel.Sections.Count <= 1)
         {
             MessageBox.Show(this, "Keep at least one section in your notebook. You can rename this section or delete individual pages.", "Delete Section");

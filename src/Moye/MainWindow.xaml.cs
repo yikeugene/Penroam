@@ -56,12 +56,13 @@ public partial class MainWindow : Window
         InitializeWorkspace();
         InitializeDocumentWorkflows(ReferenceHost);
         InitializeUpdates(updateService, updateInstaller);
+        InitializeFeatureNavigation();
         Width = Math.Min(1400, SystemParameters.WorkArea.Width - 24);
         Height = Math.Min(960, SystemParameters.WorkArea.Height - 24);
         SystemEvents.PowerModeChanged += PowerModeChanged;
         PageList.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(DocumentScrolled));
         Viewport.SizeChanged += (_, _) => ScheduleFitWidth();
-        ViewModel.DocumentReplaced += (_, _) => { ClearTouches(); ResetThumbnailWork(); _typingRequest++; _scroll = null; SyncPageTemplate(); SelectLibraryCurrent(); UpdateTextToolbar(); };
+        ViewModel.DocumentReplaced += (_, _) => { ClearTouches(); ResetThumbnailWork(); _typingRequest++; _textPanelOverride = null; _scroll = null; SyncPageTemplate(); SelectLibraryCurrent(); UpdateTextToolbar(); };
         ViewModel.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(MainViewModel.HasSaveError)) ApplyFocusChrome(); };
         ViewModel.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(MainViewModel.Zoom)) { foreach (var editor in _editors.Values) editor.LayoutTransform = new ScaleTransform(ViewModel.Zoom, ViewModel.Zoom); _pdfZoomTimer.Stop(); _pdfZoomTimer.Start(); } };
         _pdfZoomTimer.Tick += async (_, _) => { if (DeferViewportBackgroundWork) return; _pdfZoomTimer.Stop(); await RefreshVisiblePdfsAsync(); };
@@ -139,7 +140,7 @@ public partial class MainWindow : Window
                     if (_downloadedUpdatePath is not null) UpdateNotice.ShowReady(available.Version.ToString(3));
                     else UpdateNotice.ShowAvailable(available.Version.ToString(3), available.Notes);
                 }
-                MessageBox.Show(this, "Some changes could not be saved. This window will stay open.\nUse More → Retry Save, or Back Up This Notebook.\n\n" + ex.Message, "Unsaved Changes", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(this, "Some changes could not be saved. This window will stay open.\nUse Backup → Retry save, or Back up this notebook.\n\n" + ex.Message, "Unsaved Changes", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
     }
@@ -459,17 +460,21 @@ public partial class MainWindow : Window
     private void PlaceWritingPopup(Popup popup, Button trigger)
     {
         popup.PlacementTarget = trigger;
-        popup.Placement = _focusMode ? PlacementMode.Right : PlacementMode.Bottom;
-        popup.HorizontalOffset = _focusMode ? 12 : 0;
+        popup.Placement = _focusMode ? (_workspace.FocusToolsOnRight ? PlacementMode.Left : PlacementMode.Right) : PlacementMode.Bottom;
+        popup.HorizontalOffset = _focusMode ? (_workspace.FocusToolsOnRight ? -12 : 12) : 0;
         popup.VerticalOffset = _focusMode ? 0 : 10;
     }
     private void PageSettingsClick(object sender, RoutedEventArgs e)
     {
-        if (sender is not MenuItem { Tag: PageActionTarget target } || !ActivatePageAction(target)) return;
-        ShowPaperPicker(false);
+        if (CapturePageActionTarget(sender) is { } target) ShowPageSettings(target);
+    }
+    private void ShowPageSettings(PageActionTarget target)
+    {
+        if (ActivatePageAction(target)) ShowPaperPicker(false);
     }
     private void SetTool(InkTool tool)
     {
+        _textPanelOverride = null;
         if (tool != InkTool.Hand) CancelPanForToolChange();
         CommitEditors(); CloseSettingsPopups();
         RememberWorkingPreset();
@@ -589,9 +594,13 @@ public partial class MainWindow : Window
     private void DuplicatePageClick(object sender, RoutedEventArgs e) => RunPageAction(sender, ViewModel.DuplicatePage);
     private void MovePageUpClick(object sender, RoutedEventArgs e) => RunPageAction(sender, () => ViewModel.MovePage(-1));
     private void MovePageDownClick(object sender, RoutedEventArgs e) => RunPageAction(sender, () => ViewModel.MovePage(1));
-    private async void DeletePageClick(object sender, RoutedEventArgs e)
+    private void DeletePageClick(object sender, RoutedEventArgs e)
     {
-        if (sender is not MenuItem { Tag: PageActionTarget target } || !ActivatePageAction(target)) return;
+        if (CapturePageActionTarget(sender) is { } target) DeletePage(target);
+    }
+    private async void DeletePage(PageActionTarget target)
+    {
+        if (!ActivatePageAction(target)) return;
         await RunAsync("Keeping a recovery copy…", async () =>
         {
             await PreserveDeletedAsync(target.Document, "Page deleted");
@@ -617,10 +626,11 @@ public partial class MainWindow : Window
         PaperPickerTitle.Text = addingPage ? "Add a Page" : "Choose Paper";
         PaperPickerHint.Text = addingPage ? "A4 paper · Insert after the current page." : TemplatePicker.IsEnabled ? "Change this page's background. Your notes stay in place." : "PDF pages keep their original background. Add a new page to use a template.";
         ApplyPaperButton.Content = addingPage ? "Add Page" : "Apply Paper";
+        var thumbnailsVisible = Sidebar.Visibility == Visibility.Visible && PagesPanel.Visibility == Visibility.Visible;
         PaperSettingsPopup.PlacementTarget = _focusMode ? (addingPage ? FocusAddPageButton : FocusPenSettingsButton)
-            : Sidebar.Visibility == Visibility.Visible ? ThumbnailList : PenSettingsButton;
+            : thumbnailsVisible ? ThumbnailList : PenSettingsButton;
         PaperSettingsPopup.Placement = _focusMode ? (_workspace.FocusToolsOnRight ? PlacementMode.Left : PlacementMode.Right)
-            : Sidebar.Visibility == Visibility.Visible ? PlacementMode.Right : PlacementMode.Bottom;
+            : thumbnailsVisible ? PlacementMode.Right : PlacementMode.Bottom;
         Dispatcher.BeginInvoke(() => PaperSettingsPopup.IsOpen = true, DispatcherPriority.Input);
     }
     private void CancelPaperClick(object sender, RoutedEventArgs e) => CloseSettingsPopups();
@@ -972,6 +982,7 @@ public partial class MainWindow : Window
         { ShowCommandsClick(this, new()); e.Handled = true; return; }
         if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift) && e.Key == Key.F)
         { SearchContentsClick(this, new()); e.Handled = true; return; }
+        if (FeatureMenu.IsKeyboardFocusWithin || Keyboard.FocusedElement is MenuItem) return;
         ClearTouches();
         // Library search keeps its text shortcuts; editor commands cannot act
         // on the notebook retained in memory while the home screen is visible.
@@ -1027,7 +1038,7 @@ public partial class MainWindow : Window
         else if (Keyboard.Modifiers == ModifierKeys.None)
         {
             if (Keyboard.FocusedElement is ComboBox or Slider ||
-                Keyboard.FocusedElement is ButtonBase && !FocusWritingTools.IsKeyboardFocusWithin) return;
+                Keyboard.FocusedElement is ButtonBase && (!FocusWritingTools.IsKeyboardFocusWithin || e.Key is Key.Space or Key.Enter)) return;
             if (e.Key == Key.Space) { BeginTemporaryPan(); e.Handled = true; return; }
             int index = e.Key >= Key.D1 && e.Key <= Key.D9 ? e.Key - Key.D1 : e.Key >= Key.NumPad1 && e.Key <= Key.NumPad9 ? e.Key - Key.NumPad1 : -1;
             if (index >= 0)

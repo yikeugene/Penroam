@@ -23,7 +23,7 @@ public sealed class PresetManagerDialog : Window
     private Color _selectedColor;
     public WritingPreferences Preferences { get; }
 
-    public PresetManagerDialog(Window owner, WritingPreferences preferences)
+    public PresetManagerDialog(Window owner, WritingPreferences preferences, string? focusSetting = null)
     {
         Preferences = preferences.Snapshot();
         Owner = owner; Title = "Pen Presets"; Width = 760; Height = 760;
@@ -71,6 +71,12 @@ public sealed class PresetManagerDialog : Window
         _pressure.Checked += (_, _) => UpdatePreview(); _pressure.Unchecked += (_, _) => UpdatePreview();
         _smoothing.Checked += (_, _) => UpdatePreview(); _smoothing.Unchecked += (_, _) => UpdatePreview();
         Refresh(Preferences.Presets.FirstOrDefault(p => p.Id == Preferences.LastPresetId) ?? Preferences.Presets[0]);
+        Loaded += (_, _) =>
+        {
+            Control? focus = focusSetting switch { "Opacity" => _opacity.IsEnabled ? _opacity : _tool,
+                "Pressure" => _pressure, "Smoothing" => _smoothing, "Favorite" => _favorite, _ => null };
+            if (focus is not null) { focus.BringIntoView(); focus.Focus(); }
+        };
     }
 
     private static CheckBox Check(string text) => new() { Content = text, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };

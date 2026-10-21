@@ -8,10 +8,14 @@ namespace Moye;
 
 public partial class MainWindow
 {
-    private async void ExtendPageClick(object sender, RoutedEventArgs e)
+    private void ExtendPageClick(object sender, RoutedEventArgs e)
     {
-        if (!CanOrganize || ViewModel.IsLibraryVisible) return;
-        if (sender is MenuItem { Tag: PageActionTarget target } && !ActivatePageAction(target)) return;
+        if (CapturePageActionTarget(sender) is { } target) ExtendPage(target);
+    }
+
+    private async void ExtendPage(PageActionTarget target)
+    {
+        if (!CanOrganize || !ActivatePageAction(target)) return;
         CommitEditors(); ClearTouches(); CloseSettingsPopups();
         if (ViewModel.Document is not { } document || ViewModel.SelectedPage is not { } selected) return;
         var page = selected.Page;
@@ -21,7 +25,7 @@ public partial class MainWindow
         if (preview is null || _closing || !ReferenceEquals(ViewModel.Document, document)
             || !document.Pages.Any(candidate => ReferenceEquals(candidate, page))) return;
         var dialog = new ExtendPageDialog(page, preview) { Owner = this };
-        if (dialog.ShowDialog() != true) return;
+        if (dialog.ShowDialog() != true || ResolvePageActionTarget(ViewModel, target) is null) return;
         try
         {
             if (!ViewModel.ExtendPage(page.Id, dialog.Margins)) return;

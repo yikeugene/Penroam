@@ -10,10 +10,14 @@ namespace Moye;
 
 public partial class MainWindow
 {
-    private async void AddStudyQuestionClick(object sender, RoutedEventArgs e)
+    private void AddStudyQuestionClick(object sender, RoutedEventArgs e)
     {
-        if (!CanOrganize || ViewModel.IsLibraryVisible) return;
-        if (sender is MenuItem { Tag: PageActionTarget target } && !ActivatePageAction(target)) return;
+        if (CapturePageActionTarget(sender) is { } target) AddStudyQuestion(target);
+    }
+
+    private async void AddStudyQuestion(PageActionTarget target)
+    {
+        if (!CanOrganize || !ActivatePageAction(target)) return;
         CommitEditors(); ClearTouches(); CloseSettingsPopups();
         if (ViewModel.Document is not { } document || ViewModel.SelectedPage is not { } selected) return;
         var page = selected.Page;
@@ -29,20 +33,24 @@ public partial class MainWindow
         }
         var anchor = ToStudyAnchor(page, bounds);
         var dialog = new StudyQuestionDialog(this, new StudyQuestion { Anchor = anchor }, true);
-        if (dialog.ShowDialog() == true && ReferenceEquals(ViewModel.Document, document)
+        if (dialog.ShowDialog() == true && ResolvePageActionTarget(ViewModel, target) is not null
             && ViewModel.AddStudyQuestion(page.Id, dialog.Question))
             ViewModel.Status = "Question added. Open Question inbox to keep its explanation and next attempt.";
     }
 
     private void SetResumeHintClick(object sender, RoutedEventArgs e)
     {
-        if (!CanOrganize || ViewModel.IsLibraryVisible) return;
-        if (sender is MenuItem { Tag: PageActionTarget target } && !ActivatePageAction(target)) return;
+        if (CapturePageActionTarget(sender) is { } target) SetResumeHint(target);
+    }
+
+    private void SetResumeHint(PageActionTarget target)
+    {
+        if (!CanOrganize || !ActivatePageAction(target)) return;
         CommitEditors(); ClearTouches(); CloseSettingsPopups();
-        if (ViewModel.SelectedPage is not { } selected) return;
-        var page = selected.Page;
+        if (ResolvePageActionTarget(ViewModel, target)?.Page is not { } page) return;
         var dialog = new StudyResumeDialog(this, page.ResumeHint, ToStudyAnchor(page, CurrentEditor?.SelectedContentBounds));
-        if (dialog.ShowDialog() == true && ViewModel.SetResumeHint(page.Id, dialog.Remove ? null : dialog.Hint))
+        if (dialog.ShowDialog() == true && ResolvePageActionTarget(ViewModel, target) is not null &&
+            ViewModel.SetResumeHint(page.Id, dialog.Remove ? null : dialog.Hint))
             ViewModel.Status = dialog.Remove ? "Resume note cleared." : "Next step saved. Open Resume notes when you return.";
     }
 

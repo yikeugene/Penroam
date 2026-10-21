@@ -23,10 +23,17 @@ public partial class MainWindow
         }
     }
 
-    private async void RestoreRegionClick(object sender, RoutedEventArgs e)
+    private void RestoreRegionClick(object sender, RoutedEventArgs e)
     {
-        if (!CanOrganize || ViewModel.Document is not { } document || OrganizationPageTarget(sender) is not { } page) return;
+        if (CapturePageActionTarget(sender) is { } target) RestoreRegion(target);
+    }
+
+    private async void RestoreRegion(PageActionTarget target)
+    {
+        if (!CanOrganize || ResolvePageActionTarget(ViewModel, target) is null) return;
         CommitEditors(); ClearTouches();
+        if (ResolvePageActionTarget(ViewModel, target)?.Page is not { } page) return;
+        var document = target.Document;
         var versions = ViewModel.RegionHistory(page.Id);
         if (versions.Count == 0) { ViewModel.Status = "No earlier version with the same page size and background. History is kept while this notebook stays open."; return; }
         var picker = new RegionHistoryDialog(this, versions, InsightRenderer());
@@ -35,7 +42,7 @@ public partial class MainWindow
         await RunAsync("Preparing earlier page…", async () => preview = await InsightRenderer().RenderAsync(previous, 900));
         if (preview is null || !ReferenceEquals(document, ViewModel.Document)) return;
         var region = new PageRegionDialog(this, previous, preview, "Choose the area to restore");
-        if (region.ShowDialog() != true || !ReferenceEquals(document, ViewModel.Document)) return;
+        if (region.ShowDialog() != true || ResolvePageActionTarget(ViewModel, target) is null) return;
         try
         {
             ViewModel.Status = ViewModel.RestoreRegion(page.Id, previous, region.Region) ? "Area restored · Other parts of the page kept · Undo is available" : "This area already matches that version.";
@@ -44,10 +51,17 @@ public partial class MainWindow
         catch (Exception ex) { ViewModel.Status = "The area could not be restored: " + ex.Message; }
     }
 
-    private async void NewPracticeClick(object sender, RoutedEventArgs e)
+    private void NewPracticeClick(object sender, RoutedEventArgs e)
     {
-        if (!CanOrganize || ViewModel.Document is not { } document || OrganizationPageTarget(sender) is not { } source) return;
+        if (CapturePageActionTarget(sender) is { } target) NewPracticeAttempt(target);
+    }
+
+    private async void NewPracticeAttempt(PageActionTarget target)
+    {
+        if (!CanOrganize || ResolvePageActionTarget(ViewModel, target) is null) return;
         CommitEditors(); ClearTouches();
+        if (ResolvePageActionTarget(ViewModel, target)?.Page is not { } source) return;
+        var document = target.Document;
         if (source.Practice is { } existing)
         {
             await RepeatPracticeAsync(document, source, existing); return;

@@ -24,7 +24,7 @@ Version **1.3.0** adds folder import into notebook sections and an editable two-
 - **Organization:** notebooks, sections, page titles and bookmarks; pins and cover colors; batch page reordering, duplication and cross-notebook move/copy.
 - **Search and study:** local typed/PDF-text search, visual search by color and position, anchored questions, saved next-step hints, separate practice attempts and regional restore from the current editing session.
 - **Document workflows:** preview and choose PDF or locally converted Office pages before import, or import a folder of PDF/PPTX files as notebook sections. Export a page, section, notebook or selected pages, using original sizes or actual-size A4 tiling.
-- **Workspace:** remembered reading position, editable single/two-page layouts, Fit Page/Fit Spread/Fit Width, focus mode, optional two-finger navigation and zoom lock, and a read-only reference pane.
+- **Workspace:** labeled feature menus and a searchable All tools browser; remembered reading position, editable single/two-page layouts, Fit Page/Fit Spread/Fit Width, focus mode, writing guards, and a read-only reference pane.
 - **Backup and recovery:** editable `.moye` backups, optional local automatic backups while the app is open, best-effort interrupted-draft recovery and recently deleted notebook copies.
 
 See the [user guide](docs/USER_GUIDE.md) for commands, keyboard shortcuts and limits. The [roadmap](ROADMAP.md) contains future ideas, not a list of implemented capabilities. Infinite canvas, cloud sync, recording, handwriting recognition and AI features are not implemented.
@@ -33,7 +33,7 @@ See the [user guide](docs/USER_GUIDE.md) for commands, keyboard shortcuts and li
 
 The default library is `%LOCALAPPDATA%\Moye\moye.db`. The Penroam rename did not move the library, preferences or recovery files, or change the `.moye` extension. Do not copy only the database or remove its SQLite journal files while the app is open.
 
-Use **More → Back Up All Notebooks** to make a portable editable backup. Restoring creates new notebook copies without overwriting existing ones. Backups preserve ink, text, images, original PDFs and notebook organization; **they are not encrypted**.
+Use **Backup → Back up all notebooks…** to make a portable editable backup. Restoring creates new notebook copies without overwriting existing ones. Backups preserve ink, text, images, original PDFs and notebook organization; **they are not encrypted**.
 
 Writing settings live in `writing-preferences.json`; reading positions, workspace options and backup settings live in `workspace-preferences.json`, alongside the database. These device-local preferences are not included in notebook backups. Recovery drafts depend on assets in the local library and are not portable backups. See [autosave and backups](docs/USER_GUIDE.md#autosave-and-backups).
 
@@ -41,7 +41,7 @@ Writing settings live in `writing-preferences.json`; reading positions, workspac
 
 New installations default to `%LOCALAPPDATA%\Programs\Penroam`. Upgrades recognize existing Moye installations and may retain their previous application folder. Removing Penroam through Windows Settings removes program files and shortcuts but retains notebook data.
 
-Normal launches check GitHub for newer stable releases. **Update now** downloads and verifies the installer checksum, saves pending notes and closes the app for installation. Manual checks are available through **More → Check for Updates…** or **Library Options → Check for Updates…**. Update requests include the app version, not notebook content. Launching with `--data-dir` disables both startup and manual update checks.
+Normal launches check GitHub for newer stable releases. **Update now** downloads and verifies the installer checksum, saves pending notes and closes the app for installation. Manual checks are available through **Help → Check for updates…** or **Check for updates** on the notebook home screen. Update requests include the app version, not notebook content. Launching with `--data-dir` disables both startup and manual update checks.
 
 Install 1.3.0 manually when upgrading from 1.1.0 or earlier. Closing the app and running a newer installer remains a manual fallback. See [in-app updates](docs/USER_GUIDE.md#in-app-updates) for cancellation, retry and installation behavior.
 

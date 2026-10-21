@@ -105,6 +105,7 @@ public partial class MainWindow
 
     private void ApplyPreset(WritingPreset preset, bool save = true)
     {
+        _textPanelOverride = null;
         RememberWorkingPreset();
         CancelPanForToolChange();
         CommitEditors(); CloseSettingsPopups();
@@ -190,10 +191,13 @@ public partial class MainWindow
         RefreshFocusPresets();
     }
 
-    private void ManagePresetsClick(object sender, RoutedEventArgs e)
+    private void ManagePresetsClick(object sender, RoutedEventArgs e) => ShowPresetManager();
+
+    private void ShowPresetManager(string? focusSetting = null)
     {
+        if (!CanOrganize || ViewModel.IsLibraryVisible) return;
         CommitEditors(); CloseSettingsPopups();
-        var dialog = new PresetManagerDialog(this, _preferences);
+        var dialog = new PresetManagerDialog(this, _preferences, focusSetting);
         if (dialog.ShowDialog() != true) return;
         _preferences = dialog.Preferences;
         ApplyPreset(_preferences.Presets.FirstOrDefault(p => p.Id == _preferences.LastPresetId) ?? _preferences.Presets[0]);

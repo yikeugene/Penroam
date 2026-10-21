@@ -144,11 +144,13 @@ public partial class MainWindow
         UpdateTextToolbar(); RefreshFocusPresets(); RefreshContinueButton(); ApplyFocusChrome();
     }
 
-    private async void WorkspaceSettingsClick(object sender, RoutedEventArgs e)
+    private void WorkspaceSettingsClick(object sender, RoutedEventArgs e) => ShowWorkspaceSettings();
+
+    private async void ShowWorkspaceSettings(string? focusSetting = null)
     {
-        if (ViewModel.IsBusy) return;
+        if (!CanOrganize) return;
         ClearTouches(true); CommitEditors();
-        if (WorkspaceOptionsDialog.Show(this, _workspace))
+        if (WorkspaceOptionsDialog.Show(this, _workspace, focusSetting))
         {
             ApplyWorkspaceOptions(); await SaveWorkspaceAsync(); await TryScheduledBackupAsync();
         }
@@ -173,52 +175,9 @@ public partial class MainWindow
 
     private void ShowCommandsClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.IsBusy) return;
-        ClearTouches(); CommitEditors();
-        var commands = new List<WorkspaceCommand>
-        {
-            new("Quick note", "Start writing immediately in your Inbox; organize the page later.", () => QuickNoteClick(this, new())),
-            new("Search notebook contents · Ctrl+F", "Find page names, bookmarks, topics and typed notes, then jump straight to the result.", () => SearchContentsClick(this, new())),
-            new("Workspace settings", "Two-finger navigation, zoom lock, compact toolbar, focus docking and scheduled local backups.", () => WorkspaceSettingsClick(this, new())),
-            new("Check for updates", "Find and install the latest Penroam release from GitHub.", () => CheckForUpdatesClick(this, new())),
-            new("Backup & recovery", "Recover deleted notebooks and pages, restore pending drafts, or choose which notebooks to restore from a backup.", () => SafetyCenterClick(this, new())),
-            new("New notebook", "Choose a name, category and paper style.", () => NewNoteClick(this, new())),
-            new("Continue last notebook", "Return to the page and zoom you last used.", () => ContinueLastClick(this, new()))
-        };
-        if (ViewModel.IsLibraryVisible)
-            commands.Add(new("Import Folder", "Create a notebook from first-level PDF and PowerPoint (.pptx) files, with a section for each document.", () => ImportFolderClick(this, new())));
-        if (ViewModel.IsEditorVisible)
-        {
-            commands.AddRange([
-                new(_twoPageView ? "Single Page" : "Single Page · Current", "Show one editable page per row.", () => ChangePageLayout(false)),
-                new(_twoPageView ? "Two Pages · Current" : "Two Pages", "Read and annotate pages 1–2, 3–4 side by side within this section.", () => ChangePageLayout(true)),
-                new(_twoPageView ? "Fit Spread" : "Fit Page", "Show the whole current page or spread. Unlock zoom in Workspace settings if necessary.", () => FitPage()),
-                new("Mark a question", "Anchor a question to this page or a chosen region.", () => AddStudyQuestionClick(this, new())),
-                new("Question inbox", "Follow questions from Need help through explanation and retry to Resolved.", () => StudyInboxClick(this, new())),
-                new("Leave a resume hint", "Write your next step so you can recover your train of thought.", () => SetResumeHintClick(this, new())),
-                new("Resume my thinking", "Read saved next steps and jump to their source regions.", () => ResumeStudyClick(this, new())),
-                new("Find by appearance", "Find ink and typed notes by color, location and section in this notebook.", () => VisualSearchClick(this, new())),
-                new("New practice attempt", "Capture the question and keep a separate solution for each attempt.", () => NewPracticeClick(this, new())),
-                new("Practice attempts", "Return to earlier solutions and record mistakes and a next approach.", () => PracticeAttemptsClick(this, new())),
-                new("Restore part of this page", "Restore complete objects in a region from this session's history, retaining other edits.", () => RestoreRegionClick(this, new())),
-                new("Manage pages", "Select multiple thumbnails; reorder, move, duplicate or delete them as one change.", () => ManagePagesClick(this, new())),
-                new("Extend page", "Add writing space on any side of this page, preserving the original PDF size and your notes.", () => ExtendPageClick(this, new())),
-                new("Reference view", "Read another notebook beside your writing area, with independent navigation and zoom.", () => ShowReferenceClick(this, new())),
-                new("Import document", "Preview a PDF or locally converted Office document and choose its pages and destination.", () => ImportDocumentWorkflowClick(this, new())),
-                new("Export PDF", "Choose pages and check text overflow before sharing.", () => ExportDocumentWorkflowClick(this, new())),
-                new("Continue text on next page", "Move overflowing text into a new page while retaining its formatting.", () => ContinueTextOnNextPageClick(this, new())),
-                new("Go to page · Ctrl+G", "Enter the page number within this section.", () => GoToPageClick(this, new())),
-                new("Focus mode · F11", "More writing space, with dockable tools and favorite pens.", () => ToggleFocus()),
-                new("Pen · B", "Write with pressure-sensitive ink. Hold a line briefly to straighten it.", () => SetTool(InkTool.Pen)),
-                new("Highlighter · H", "Mark important material using your selected highlighter.", () => SetTool(InkTool.Highlighter)),
-                new("Eraser · E", "Choose pixel or stroke erasing, size, and highlighter-only mode.", () => SetTool(_eraserTool)),
-                new("Lasso · L", "Circle ink, text and images to move or copy them together.", () => SetTool(InkTool.Lasso)),
-                new("Type · T", "Click anywhere to type without a visible box; ruled paper aligns text. Ctrl+Enter returns to Pen.", () => TypeClick(this, new())),
-                new("Undo · Ctrl+Z", "Undo a completed edit while this notebook stays open.", () => UndoClick(this, new())),
-                new("Fit width", "Fill the writing area. Unlock zoom in Workspace settings if necessary.", () => FitWidth())
-            ]);
-        }
-        WorkspaceCommandDialog.Show(this, commands);
+        if (!CanOrganize) return;
+        ClearTouches(); CloseSettingsPopups();
+        WorkspaceCommandDialog.Show(this, CreateFeatureCommands());
     }
 
     private void GoToPageClick(object sender, RoutedEventArgs e)

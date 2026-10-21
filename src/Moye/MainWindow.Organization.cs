@@ -91,24 +91,31 @@ public partial class MainWindow
         if (await NavigateOrganizationAsync(visit.NotebookId, visit.SectionId, visit.PageId, visit)) _organizationBack.RemoveAt(_organizationBack.Count - 1);
     }
 
-    private NotePage? OrganizationPageTarget(object sender)
-    {
-        if (sender is MenuItem { Tag: PageActionTarget target }) return ResolvePageActionTarget(ViewModel, target)?.Page;
-        if (sender is FrameworkElement { DataContext: PageViewModel page } && ViewModel.Document?.Pages.Any(candidate => candidate.Id == page.Page.Id) == true) return page.Page;
-        return ViewModel.SelectedPage?.Page;
-    }
-
     private void RenamePageClick(object sender, RoutedEventArgs e)
     {
-        if (!CanOrganize || OrganizationPageTarget(sender) is not { } page) return;
+        if (CapturePageActionTarget(sender) is { } target) RenamePage(target);
+    }
+
+    private void RenamePage(PageActionTarget target)
+    {
+        if (!CanOrganize || ResolvePageActionTarget(ViewModel, target) is null) return;
         CommitEditors();
+        if (ResolvePageActionTarget(ViewModel, target)?.Page is not { } page) return;
         var dialog = new PageOrganizationDetailsDialog(this, page);
-        if (dialog.ShowDialog() == true) { ViewModel.SetPageDetails(page.Id, dialog.PageTitle, dialog.IsBookmarked); ScrollToSelected(); }
+        if (dialog.ShowDialog() == true && ResolvePageActionTarget(ViewModel, target) is not null)
+        { ViewModel.SetPageDetails(page.Id, dialog.PageTitle, dialog.IsBookmarked); ScrollToSelected(); }
     }
     private void TogglePageBookmarkClick(object sender, RoutedEventArgs e)
     {
-        if (!CanOrganize || OrganizationPageTarget(sender) is not { } page) return;
-        CommitEditors(); ViewModel.SetPageDetails(page.Id, page.Title, !page.IsBookmarked);
+        if (CapturePageActionTarget(sender) is { } target) TogglePageBookmark(target);
+    }
+
+    private void TogglePageBookmark(PageActionTarget target)
+    {
+        if (!CanOrganize || ResolvePageActionTarget(ViewModel, target) is null) return;
+        CommitEditors();
+        if (ResolvePageActionTarget(ViewModel, target)?.Page is { } page)
+            ViewModel.SetPageDetails(page.Id, page.Title, !page.IsBookmarked);
     }
 
     private NotebookSummary? OrganizationNotebookTarget(object sender)
@@ -117,16 +124,24 @@ public partial class MainWindow
         return ViewModel.Document is { } document ? new NotebookSummary { Id = document.Id, Title = document.Title, Folder = document.Folder,
             IsPinned = document.IsPinned, CoverColor = document.CoverColor } : null;
     }
-    private async void EditNotebookAppearanceClick(object sender, RoutedEventArgs e)
+    private void EditNotebookAppearanceClick(object sender, RoutedEventArgs e)
     {
-        if (!CanOrganize || OrganizationNotebookTarget(sender) is not { } summary) return;
+        if (OrganizationNotebookTarget(sender) is { } summary) EditNotebookAppearance(summary);
+    }
+    private async void EditNotebookAppearance(NotebookSummary summary)
+    {
+        if (!CanOrganize) return;
         var dialog = new NotebookOrganizationDialog(this, summary);
         if (dialog.ShowDialog() == true)
         { CommitEditors(); await RunAsync("Updating notebook appearance…", () => ViewModel.SetNotebookAppearanceAsync(summary.Id, dialog.IsPinned, dialog.CoverColor)); }
     }
-    private async void TogglePinNotebookClick(object sender, RoutedEventArgs e)
+    private void TogglePinNotebookClick(object sender, RoutedEventArgs e)
     {
-        if (!CanOrganize || OrganizationNotebookTarget(sender) is not { } summary) return;
+        if (OrganizationNotebookTarget(sender) is { } summary) ToggleNotebookPin(summary);
+    }
+    private async void ToggleNotebookPin(NotebookSummary summary)
+    {
+        if (!CanOrganize) return;
         CommitEditors(); await RunAsync("Updating pinned notebooks…", () => ViewModel.SetNotebookAppearanceAsync(summary.Id, !summary.IsPinned, summary.CoverColor));
     }
     private void LibraryOrganizationClick(object sender, RoutedEventArgs e)
@@ -161,7 +176,7 @@ public partial class MainWindow
             if (transfer is not null)
             {
                 _lastPageTransfer = await ViewModel.TransferPagesAsync(dialog.TransferPageIds, transfer.NotebookId, transfer.SectionId, transfer.Copy);
-                ViewModel.Status = "Pages transferred · Undo Last Page Transfer is available in More.";
+                ViewModel.Status = "Pages transferred · Undo last page transfer is available in Pages.";
             }
             else await ViewModel.Autosave.FlushAsync();
             ScrollToSelected();
