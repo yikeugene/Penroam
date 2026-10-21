@@ -272,5 +272,6 @@ public partial class MainWindow
         FitPageButton.ToolTip = _twoPageView ? "Show the whole two-page spread" : "Show the whole page";
         AutomationProperties.SetName(FitPageButton, label);
         FitWidthButton.ToolTip = _twoPageView ? "Fit both pages to the available writing area" : "Fit the paper to the available writing area";
+        UpdateFeatureNavigation();
     }
 }

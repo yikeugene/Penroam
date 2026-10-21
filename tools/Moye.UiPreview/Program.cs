@@ -48,7 +48,6 @@ internal static class Program
             InsightPreviewScenes.Run(output);
             UpdatePreviewScenarios.Run(output);
             OrganizationPreviewScenes.Run(output);
-            WorkspacePreviewScenes.Run(output);
             using var repository = new FixtureRepository();
             var window = new MainWindow(repository);
             VerifyWritingCommands(window);
@@ -58,6 +57,7 @@ internal static class Program
             window.ViewModel.InitializeAsync().GetAwaiter().GetResult();
             if (!window.ViewModel.IsLibraryVisible || window.ViewModel.Document is not null)
                 throw new InvalidOperationException("Startup should display the library without opening a notebook.");
+            var homeCommands = WorkspacePreviewScenes.SnapshotCommands(window);
             // Detach the real compiled MainWindow.Content so its invisible Window
             // parent cannot affect rendering. Keep inherited presentation values.
             var content = (FrameworkElement)window.Content;
@@ -161,6 +161,9 @@ internal static class Program
                     throw new InvalidOperationException("The preview did not initialize a visible page editor.");
                 Arrange(content, width, height);
                 VerifyDetached(content, window);
+                VerifyFeatureNavigation(window, content);
+                if (!Equals(((Button)window.FindName("FitPageButton")).Content, twoPages ? "Fit Spread" : "Fit Page"))
+                    throw new InvalidOperationException("The fit action must describe the current single-page or two-page layout.");
                 var bitmap = RenderElement(content, width, height);
                 var prefix = twoPages ? "ui-preview-two-pages" : "ui-preview";
                 var scene = twoPages ? "editor-two-pages" : "editor";
@@ -168,7 +171,8 @@ internal static class Program
                 SaveImage(output, fileName, bitmap);
                 var report = MeasureButtons(content, width, height, fileName, fitMode == "width" ? scene + "-fit-width" : scene,
                     "PenButton", "Highlighter", "Eraser", "Lasso", "Type", "Select", "PenSettingsButton", "Undo", "Redo",
-                    "FitWidthButton", "Focus Mode", "Zoom In", "Zoom Out", "AddSectionButton", "SectionOptionsButton") with
+                    "FitPageButton", "FitWidthButton", "Focus Mode", "Zoom In", "Zoom Out", "AddSectionButton", "SectionOptionsButton", "PageActionsButton",
+                    "ManagePagesButton", "TwoPagesButton", "ReferenceViewButton", "AllToolsButton", "Export PDF") with
                 {
                     ViewportWidth = Round(viewport.ActualWidth), ViewportHeight = Round(viewport.ActualHeight),
                     Zoom = window.ViewModel.Zoom
@@ -200,6 +204,7 @@ internal static class Program
                 reports.Add(report);
             }
 
+            WorkspacePreviewScenes.Run(output, window, homeCommands);
             VerifyDocumentScrollBarTouchGuard(window, content);
             VerifyTypingCommandsAndLayout(window, content, repository, output, reports);
             VerifySectionNavigationLayout(window, content, repository, output, reports);
@@ -207,7 +212,7 @@ internal static class Program
 
             var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
             VerifyFocusTools(window, content, repository, output, reports);
-            VerifyWorkspaceGuardTools(window, content, output, reports);
+            VerifyWorkspaceGuardTools(window, content, repository, output, reports);
 
             var presetFixture = WritingPreferences.CreateDefault();
             presetFixture.Presets[0].Width = .5; presetFixture.Presets[0].Opacity = .65;
@@ -277,7 +282,7 @@ internal static class Program
             foreach (var (popupName, scene, width, requiredNames) in new[]
             {
                 ("EraserSettingsPopup", "eraser-settings", 330, new[] { "PointEraseOption", "StrokeEraseOption" }),
-                ("PenSettingsPopup", "pen-settings", 350, new[] { "HoldToStraightenToggle", "MoreInkColorsButton" })
+                ("PenSettingsPopup", "pen-settings", 350, new[] { "MoreInkColorsButton" })
             })
             {
                 var popup = (Popup)window.FindName(popupName);
@@ -307,7 +312,19 @@ internal static class Program
                 VerifyDetached(popupContent, window);
                 var report = MeasureButtons(popupContent, width, height, fileName, scene, requiredNames);
                 reports.Add(scene == "pen-settings" ? MeasureSliders(report, popupContent) : report);
-                if (scene == "pen-settings") VerifyWidthPreviews(window, popupContent, width, height, output, reports);
+                if (scene == "pen-settings")
+                {
+                    VerifyWidthPreviews(window, popupContent, width, height, output, reports);
+                    var scroll = Descendants<ScrollViewer>(popupContent).First();
+                    if (scroll.VerticalScrollBarVisibility != ScrollBarVisibility.Auto || scroll.HorizontalScrollBarVisibility != ScrollBarVisibility.Disabled)
+                        throw new InvalidOperationException("Pen settings must scroll vertically without hiding controls to the side.");
+                    scroll.ScrollToBottom(); popupContent.UpdateLayout();
+                    var bottomImage = "ui-preview-pen-settings-bottom.png";
+                    SaveImage(output, bottomImage, RenderElement(popupContent, width, height));
+                    reports.Add(MeasureSliders(MeasureButtons(popupContent, width, height, bottomImage, "pen-settings-bottom",
+                        "HoldToStraightenToggle", "Manage pens: pressure, smoothing, opacity", "Save Current as Preset…"), popupContent));
+                    VerifyDetached(popupContent, window);
+                }
             }
 
             window.ViewModel.Operation = "Converting document into note pages…";
@@ -374,7 +391,8 @@ internal static class Program
         if (!Descendants<TextBlock>(content).Any(text => HasVisibleAncestors(text) && text.Text == viewModel.LibraryCountText))
             throw new InvalidOperationException("The library must display the count for the current search.");
 
-        foreach (var name in new[] { "HomeNewNotebookButton", "HomeImportFolderButton", "HomeSearch", "ClearHomeSearchButton", "EmptyLibraryClearSearchButton", "EmptyLibraryCreateButton" })
+        foreach (var name in new[] { "HomeNewNotebookButton", "HomeImportFolderButton", "HomeSearch", "ClearHomeSearchButton", "EmptyLibraryClearSearchButton", "EmptyLibraryCreateButton",
+            "WorkspaceStateButton", "HomeBackupButton", "HomeUpdatesButton", "HomeAllToolsButton" })
         {
             if (window.FindName(name) is not Control control || !Visible(name)) continue;
             if (!control.Focusable || !control.IsTabStop || string.IsNullOrWhiteSpace(ControlName(control)))
@@ -384,13 +402,55 @@ internal static class Program
         }
     }
 
+    private static void VerifyFeatureNavigation(MainWindow window, FrameworkElement content)
+    {
+        var menu = (Menu)window.FindName("FeatureMenu");
+        var categories = new[] { "Notebook", "Pages", "Insert & export", "Search", "Study", "View", "Tools", "Backup", "Help" };
+        var items = menu.Items.OfType<MenuItem>().ToArray();
+        if (!items.Select(item => item.Header as string).SequenceEqual(categories))
+            throw new InvalidOperationException("The notebook header must expose all nine named feature categories in order.");
+        foreach (var item in items)
+        {
+            if (item.IsSubmenuOpen || !item.Focusable || !HasVisibleAncestors(item) || !InsideScrollViewports(item, content) ||
+                item.ActualWidth < 43.99 || item.ActualHeight < 43.99 || AutomationProperties.GetName(item) != item.Header + " actions")
+                throw new InvalidOperationException($"The {item.Header} category must be a visible, labelled 44 DIP native menu target.");
+            AssertPointerHit(item, content, "Feature category " + item.Header);
+        }
+        foreach (var (name, label) in new[] { ("ManagePagesButton", "Manage pages"), ("TwoPagesButton", "Two pages"),
+            ("ReferenceViewButton", "Reference"), ("AllToolsButton", "All tools"), ("SectionOptionsButton", "Section actions"), ("PageActionsButton", "Page actions") })
+        {
+            var button = (Button)window.FindName(name);
+            if (!Equals(button.Content, label) || !HasVisibleAncestors(button) || !InsideScrollViewports(button, content))
+                throw new InvalidOperationException($"{name} must expose its visible {label} label without scrolling.");
+            AssertPointerHit(button, content, label);
+        }
+        var penSettings = (Button)window.FindName("PenSettingsButton");
+        if (!Descendants<TextBlock>(penSettings).Any(text => text.Text == "Pen settings"))
+            throw new InvalidOperationException("Pen settings must retain its visible text label as well as the color and width sample.");
+    }
+
+    private static void AssertPointerHit(FrameworkElement control, FrameworkElement root, string description)
+    {
+        var area = control.TransformToAncestor(root).TransformBounds(new Rect(control.RenderSize));
+        DependencyObject? hit = null;
+        VisualTreeHelper.HitTest(root,
+            visual => visual is UIElement element && (element.Visibility != Visibility.Visible || !element.IsHitTestVisible)
+                ? HitTestFilterBehavior.ContinueSkipSelfAndChildren : HitTestFilterBehavior.Continue,
+            result => { hit = result.VisualHit; return HitTestResultBehavior.Stop; },
+            new PointHitTestParameters(new Point(area.Left + area.Width / 2, area.Top + area.Height / 2)));
+        while (hit is not null && hit != control) hit = VisualTreeHelper.GetParent(hit);
+        if (hit != control) throw new InvalidOperationException($"{description} does not receive its center pointer hit at {area}.");
+    }
+
     private static void VerifyNotebookCards(FrameworkElement content, int expectedCount)
     {
         var options = Descendants<Button>(content).Where(button => button.Name == "NotebookOptionsButton").ToArray();
         if (options.Length != expectedCount)
-            throw new InvalidOperationException("Every notebook card must have its own options button.");
+            throw new InvalidOperationException("Every notebook card must have its own Notebook actions button.");
         foreach (var button in options)
         {
+            if (!Equals(button.Content, "Notebook actions"))
+                throw new InvalidOperationException("Notebook card actions must have a visible text label, not only an ellipsis.");
             if (button.DataContext is not NotebookSummary summary || button.ContextMenu is not { } menu || menu.IsOpen)
                 throw new InvalidOperationException("Notebook menu checks require an unopened menu associated with a notebook summary.");
             // Match MoreClick's placement assignment without opening a popup or
@@ -401,7 +461,7 @@ internal static class Program
             var actions = menu.Items.OfType<MenuItem>().ToArray();
             if (!ReferenceEquals(menu.DataContext, summary) || actions.Length != 4 ||
                 actions.Any(action => !ReferenceEquals(action.DataContext, summary)))
-                throw new InvalidOperationException($"Options for {summary.Title} must pass that notebook to every menu action.");
+                throw new InvalidOperationException($"Actions for {summary.Title} must pass that notebook to every menu action.");
             if (menu.IsOpen || PresentationSource.FromVisual(menu) is not null)
                 throw new InvalidOperationException("Notebook menu verification must remain detached and unopened.");
         }
@@ -601,7 +661,7 @@ internal static class Program
             var popupBitmap = RenderElement(content, width, height);
             SaveImage(output, image, popupBitmap);
             VerifyDetached(content, window);
-            reports.Add(MeasureSliders(MeasureButtons(content, width, height, image, scene, "HoldToStraightenToggle", "MoreInkColorsButton"), content));
+            reports.Add(MeasureSliders(MeasureButtons(content, width, height, image, scene, "MoreInkColorsButton"), content));
             var sample = Descendants<FrameworkElement>(picker).Single(element => element.GetType().Name == "InkSample");
             // Crop the arranged sample in place: re-arranging a child as a
             // standalone root would change the layout being tested next.
@@ -836,7 +896,7 @@ internal static class Program
             Set("_focusMode", true); Call("ApplyFocusChrome");
             sidebar.Visibility = Visibility.Collapsed; sidebarColumn.Width = new GridLength(0);
             var focusButtons = new[] { "FocusPenButton", "FocusHighlighterButton", "FocusEraserButton", "FocusLassoButton",
-                "FocusPenSettingsButton", "FocusAddPageButton", "FocusUndoButton", "FocusRedoButton", "ExitFocusButton" };
+                "FocusPenSettingsButton", "FocusAddPageButton", "FocusUndoButton", "FocusRedoButton", "FocusAllToolsButton", "ExitFocusButton", "Focus Type", "Focus Select" };
             foreach (var (width, height) in new[] { (1400, 960), (1024, 700) })
             {
                 var fileName = $"ui-preview-focus-{width}.png";
@@ -852,7 +912,7 @@ internal static class Program
                     throw new InvalidOperationException("Focus tools must leave the writing viewport clear, including pages fitted to its width.");
                 foreach (var name in focusButtons)
                 {
-                    var button = (Button)window.FindName(name);
+                    var button = Descendants<Button>(toolbar).Single(button => button.Name == name || ControlName(button) == name);
                     var bounds = button.TransformToAncestor(content).TransformBounds(new Rect(button.RenderSize));
                     var point = new Point(bounds.Left + bounds.Width / 2, bounds.Top + bounds.Height / 2);
                     DependencyObject? hit = null;
@@ -927,7 +987,7 @@ internal static class Program
         }
         Arrange(content, 1024, 700);
         if (toolbar.Visibility != Visibility.Collapsed ||
-            viewport.Margin != new Thickness(0) ||
+            viewport.Margin != new Thickness(0) || ((FrameworkElement)window.FindName("EditingSurface")).Margin != new Thickness(0) ||
             ((FrameworkElement)window.FindName("NotebookHeader")).Visibility != Visibility.Visible ||
             ((FrameworkElement)window.FindName("WritingHeader")).Visibility != Visibility.Visible ||
             ((FrameworkElement)window.FindName("EditorFooter")).Visibility != Visibility.Visible)
@@ -974,7 +1034,8 @@ internal static class Program
         }
     }
 
-    private static void VerifyWorkspaceGuardTools(MainWindow window, FrameworkElement content, string output, List<PreviewReport> reports)
+    private static void VerifyWorkspaceGuardTools(MainWindow window, FrameworkElement content, FixtureRepository repository,
+        string output, List<PreviewReport> reports)
     {
         const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
         void Call(string method) => typeof(MainWindow).GetMethod(method, flags)!.Invoke(window, null);
@@ -982,6 +1043,14 @@ internal static class Program
         var original = (preferences.TwoFingerNavigationOnly, preferences.LockZoom, preferences.FocusToolsOnRight);
         var sidebar = (FrameworkElement)window.FindName("Sidebar"); var column = (ColumnDefinition)window.FindName("SidebarColumn");
         var oldVisibility = sidebar.Visibility; var oldWidth = column.Width;
+        var referenceHost = (ContentControl)window.FindName("ReferenceHost");
+        var referenceContent = referenceHost.Content; var referenceVisibility = referenceHost.Visibility;
+        var viewport = (FrameworkElement)window.FindName("Viewport");
+        var toolbar = (FrameworkElement)window.FindName("FocusToolbar");
+        // Detached rendering has no dispatcher synchronization context. Reuse
+        // the synchronous paper fixture so reference controls stay on this STA.
+        using var reference = new ReferencePane(repository, new DocumentWorkflowPreviewScenes.PreviewPdf(), () => window.ViewModel.Document);
+        reference.InitializeAsync().GetAwaiter().GetResult();
         try
         {
             preferences.TwoFingerNavigationOnly = true; preferences.LockZoom = true; Call("ApplyWorkspaceOptions");
@@ -990,31 +1059,48 @@ internal static class Program
             reports.Add(MeasureButtons(content, 1024, 700, fileName, "editor-writing-guard", "EditorGuardButton"));
             typeof(MainWindow).GetField("_focusMode", flags)!.SetValue(window, true);
             sidebar.Visibility = Visibility.Collapsed; column.Width = new GridLength(0);
+            referenceHost.Content = reference;
+            foreach (var withReference in new[] { false, true })
             foreach (var dockRight in new[] { false, true })
+            foreach (var (width, height) in new[] { (1400, 960), (1024, 700) })
             {
+                referenceHost.Visibility = withReference ? Visibility.Visible : Visibility.Collapsed;
                 preferences.FocusToolsOnRight = dockRight; Call("ApplyWorkspaceOptions"); Call("ApplyFocusChrome");
-                var name = dockRight ? "focus-guard-right" : "focus-guard-left";
-                fileName = $"ui-preview-{name}-1024.png"; SaveImage(output, fileName, RenderElement(content, 1024, 700));
-                reports.Add(MeasureButtons(content, 1024, 700, fileName, name, "FocusGuardButton", "FocusAddPageButton", "FocusUndoButton", "FocusRedoButton", "ExitFocusButton"));
-                VerifyFocusAddPageContent(window);
+                var name = (dockRight ? "focus-guard-right" : "focus-guard-left") + (withReference ? "-reference" : "");
+                fileName = $"ui-preview-{name}-{width}.png"; SaveImage(output, fileName, RenderElement(content, width, height));
+                reports.Add(MeasureButtons(content, width, height, fileName, name, "FocusGuardButton", "FocusAddPageButton",
+                    "FocusUndoButton", "FocusRedoButton", "FocusAllToolsButton", "ExitFocusButton", "Focus Type", "Focus Select"));
+                VerifyFocusAddPageContent(window); VerifyDetached(content, window);
+                if (viewport.ActualHeight < height - 1)
+                    throw new InvalidOperationException($"{name}: focus writing must retain the full-height viewport.");
+                var toolbarBounds = toolbar.TransformToAncestor(content).TransformBounds(new Rect(toolbar.RenderSize));
+                var viewportBounds = viewport.TransformToAncestor(content).TransformBounds(new Rect(viewport.RenderSize));
+                if (toolbarBounds.IntersectsWith(viewportBounds) || withReference && toolbarBounds.IntersectsWith(
+                    referenceHost.TransformToAncestor(content).TransformBounds(new Rect(referenceHost.RenderSize))))
+                    throw new InvalidOperationException($"{name}: floating tools must not cover writing or reference content.");
                 var favorites = ((Panel)window.FindName("FocusPresetPanel")).Children.OfType<Button>().ToArray();
                 if (favorites.Length != 3) throw new InvalidOperationException("Focus mode must expose the first three favorite pens.");
-                foreach (var button in favorites.Append((Button)window.FindName("FocusGuardButton")).Append((Button)window.FindName("FocusAddPageButton")))
+                foreach (var button in Descendants<Button>(toolbar).Where(HasVisibleAncestors))
+                    AssertPointerHit(button, content, name + ": " + ControlName(button));
+                if (withReference)
                 {
-                    var area = button.TransformToAncestor(content).TransformBounds(new Rect(button.RenderSize));
-                    DependencyObject? hit = null;
-                    VisualTreeHelper.HitTest(content,
-                        visual => visual is UIElement element && (element.Visibility != Visibility.Visible || !element.IsHitTestVisible)
-                            ? HitTestFilterBehavior.ContinueSkipSelfAndChildren : HitTestFilterBehavior.Continue,
-                        result => { hit = result.VisualHit; return HitTestResultBehavior.Stop; },
-                        new PointHitTestParameters(new Point(area.Left + area.Width / 2, area.Top + area.Height / 2)));
-                    while (hit is not null && hit != button) hit = VisualTreeHelper.GetParent(hit);
-                    if (hit != button) throw new InvalidOperationException($"{name}: {ControlName(button)} does not receive its pointer hit.");
+                    foreach (var picker in Descendants<ComboBox>(reference))
+                        AssertPointerHit(picker, content, name + ": " + ControlName(picker));
+                    if (!Descendants<TextBlock>(reference).Any(text => text.Text.Contains("Read only", StringComparison.Ordinal)))
+                        throw new InvalidOperationException($"{name}: the synthetic reference page must load without real notebook files.");
+                }
+                foreach (var (popupName, triggerName) in new[] { ("PenSettingsPopup", "FocusPenSettingsButton"), ("EraserSettingsPopup", "FocusEraserButton") })
+                {
+                    var popup = (Popup)window.FindName(popupName); var trigger = (Button)window.FindName(triggerName);
+                    typeof(MainWindow).GetMethod("PlaceWritingPopup", flags)!.Invoke(window, [popup, trigger]);
+                    if (popup.IsOpen || popup.PlacementTarget != trigger || popup.Placement != (dockRight ? PlacementMode.Left : PlacementMode.Right))
+                        throw new InvalidOperationException($"{name}: settings must anchor inward beside their visible focus trigger without opening a popup.");
                 }
             }
         }
         finally
         {
+            referenceHost.Content = referenceContent; referenceHost.Visibility = referenceVisibility;
             (preferences.TwoFingerNavigationOnly, preferences.LockZoom, preferences.FocusToolsOnRight) = original;
             typeof(MainWindow).GetField("_focusMode", flags)!.SetValue(window, false); Call("ApplyWorkspaceOptions"); Call("ApplyFocusChrome");
             sidebar.Visibility = oldVisibility; column.Width = oldWidth; Arrange(content, 1024, 700);
@@ -1054,6 +1140,12 @@ internal static class Program
             ((FrameworkElement)window.FindName("FavouriteToolbar")).Visibility != Visibility.Collapsed ||
             ((ComboBox)window.FindName("TextSizePicker")).Text != "18")
             throw new InvalidOperationException("Type must show contextual formatting with a point-based font size.");
+        var textColor = (Button)window.FindName("TextColorButton");
+        if (textColor.Content is not DependencyObject colorLabel || !Descendants<TextBlock>(colorLabel).Any(text => text.Text == "Text color"))
+            throw new InvalidOperationException("Text color must have a visible label, not an ambiguous underline glyph.");
+        var continueText = (Button)window.FindName("ContinueTextButton");
+        if (continueText.Visibility != Visibility.Visible || continueText.IsEnabled)
+            throw new InvalidOperationException("Text continuation must remain discoverable but disabled while selected text fits on its page.");
 
         foreach (var (width, height) in new[] { (1400, 960), (1024, 700) })
         {
@@ -1064,7 +1156,7 @@ internal static class Program
             var fileName = $"ui-preview-typing-{width}.png";
             SaveImage(output, fileName, RenderElement(content, width, height));
             VerifyDetached(content, window);
-            reports.Add(MeasureButtons(content, width, height, fileName, "typing", "TypeButton", "AddTextBoxButton", "TextBoldButton", "TextItalicButton"));
+            reports.Add(MeasureButtons(content, width, height, fileName, "typing", "TypeButton", "AddTextBoxButton", "TextFormattingBackButton", "TextBoldButton", "TextItalicButton", "TextColorButton", "ContinueTextButton"));
             foreach (var name in new[] { "TextFontPicker", "TextSizePicker", "TextAlignmentPicker" })
             {
                 var picker = (ComboBox)window.FindName(name);
@@ -1079,19 +1171,38 @@ internal static class Program
         page.Texts.Clear();
         editor = new PageEditor(page, repository.GetAssetAsync);
         host.Child = editor; editors[host] = editor;
+        var ready = typeof(MainWindow).GetField("_ready", flags)!;
+        var wasReady = ready.GetValue(window);
+        try { ready.SetValue(window, true); Call("ShowTextFormatting", (object?)null); }
+        finally { ready.SetValue(window, wasReady); }
+        if (page.Texts.Count != 0 || editor.SelectedText is not null ||
+            ((TextBlock)window.FindName("TextSelectionHint")).Visibility != Visibility.Visible ||
+            ((Button)window.FindName("TextColorButton")).IsEnabled || continueText.IsEnabled)
+            throw new InvalidOperationException("Browsing text formatting without a selection must explain its context without creating text.");
+        foreach (var (width, height) in new[] { (1400, 960), (1024, 700) })
+        {
+            var image = $"ui-preview-text-formatting-no-selection-{width}.png";
+            SaveImage(output, image, RenderElement(content, width, height));
+            reports.Add(MeasureButtons(content, width, height, image, "text-formatting-no-selection", "TextFormattingBackButton", "AddTextBoxButton", "TextColorButton", "ContinueTextButton"));
+            VerifyDetached(content, window);
+        }
+        ((Button)window.FindName("TextFormattingBackButton")).RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+        if (((FrameworkElement)window.FindName("TextToolbar")).Visibility != Visibility.Collapsed || page.Texts.Count != 0)
+            throw new InvalidOperationException("Back to pens must leave formatting without creating or deleting text.");
         ((Task)Call("StartTypingAsync", false)!).GetAwaiter().GetResult();
         if (page.Texts.Count != 1 || editor.SelectedText is not { Text.Length: 0, Bold: true, FontSize: 24 })
             throw new InvalidOperationException("Type on an empty page must create a blank box with typography only, never copied note content.");
         editor.LayoutTransform = new ScaleTransform(window.ViewModel.Zoom, window.ViewModel.Zoom);
         SaveImage(output, "ui-preview-typing-empty.png", RenderElement(content, 1024, 700));
-        reports.Add(MeasureButtons(content, 1024, 700, "ui-preview-typing-empty.png", "typing-empty", "TypeButton", "AddTextBoxButton"));
+        reports.Add(MeasureButtons(content, 1024, 700, "ui-preview-typing-empty.png", "typing-empty", "TypeButton", "AddTextBoxButton", "TextFormattingBackButton", "TextColorButton", "ContinueTextButton"));
         var box = Descendants<TextBox>(editor).Single();
         box.Text = string.Join("\n", Enumerable.Repeat("More lecture notes — continue on a new page", 70));
         editor.CommitPendingEdits(); Call("UpdateTextToolbar");
-        if (!editor.HasTextOverflow || !((TextBlock)window.FindName("TypingHint")).Text.StartsWith("Text exceeds"))
+        if (!editor.HasTextOverflow || continueText.Visibility != Visibility.Visible || !continueText.IsEnabled ||
+            !((TextBlock)window.FindName("TypingHint")).Text.StartsWith("Text exceeds"))
             throw new InvalidOperationException("Overflowing text must remain editable and display a page-boundary warning.");
         SaveImage(output, "ui-preview-typing-overflow.png", RenderElement(content, 1024, 700));
-        reports.Add(MeasureButtons(content, 1024, 700, "ui-preview-typing-overflow.png", "typing-overflow", "TypeButton", "AddTextBoxButton"));
+        reports.Add(MeasureButtons(content, 1024, 700, "ui-preview-typing-overflow.png", "typing-overflow", "TypeButton", "AddTextBoxButton", "TextFormattingBackButton", "TextColorButton", "ContinueTextButton"));
         VerifyDetached(content, window);
         Call("FinishTyping"); editors.Clear(); page.Texts = originalTexts; host.Child = original;
     }
@@ -1123,7 +1234,7 @@ internal static class Program
             var fileName = $"ui-preview-sections-{width}.png";
             SaveImage(output, fileName, RenderElement(content, width, height));
             VerifyDetached(content, window);
-            reports.Add(MeasureButtons(content, width, height, fileName, "sections", "AddSectionButton", "SectionOptionsButton"));
+            reports.Add(MeasureButtons(content, width, height, fileName, "sections", "AddSectionButton", "SectionOptionsButton", "PageActionsButton"));
         }
         window.ViewModel.SelectedSection = window.ViewModel.Sections.First(s => s.Id == "empty-topic");
         foreach (var (width, height) in new[] { (1400, 960), (1024, 700) })
@@ -1199,8 +1310,10 @@ internal static class Program
     {
         // IsVisible requires a presentation source and is false for this deliberately
         // detached tree. Check the declared visibility through all local ancestors.
-        var laidOutButtons = Descendants<ButtonBase>(content)
-            .Where(b => b is Button or RadioButton or CheckBox)
+        if (scene.StartsWith("library", StringComparison.Ordinal))
+            requiredNames = [.. requiredNames, "WorkspaceStateButton", "HomeBackupButton", "Restore backup", "HomeUpdatesButton", "HomeAllToolsButton"];
+        var laidOutButtons = Descendants<Control>(content)
+            .Where(b => b is Button or RadioButton or CheckBox or ComboBox or MenuItem)
             .Where(b => HasVisibleAncestors(b) && b.ActualWidth > 0 && b.ActualHeight > 0).ToList();
         var visibleButtons = laidOutButtons.Where(button => InsideScrollViewports(button, content)).ToList();
         var scrollHidden = laidOutButtons.Except(visibleButtons).Select(ControlName).ToList();
@@ -1295,18 +1408,18 @@ internal static class Program
 
     private static string Describe(IEnumerable<PreviewReport> reports)
     {
-        var text = new StringBuilder("# Penroam WPF offscreen layout preview\n\nUses the actual MainWindow.Content, application resources, and PageEditor with an in-memory test fixture. No user database is accessed. No windows are displayed, no input is sent, and no UI Automation client or desktop capture is used.\n\nThis Measure / Arrange / RenderTargetBitmap preview checks layout only. It does not validate live UI interaction, touch, pen input, window DPI, popup menus, or the system title bar. Image dimensions describe the content area in DIP, rendered at 96 DPI. Controls outside an intentional scroll viewport are listed separately; dialog top/bottom scenes check the revealed controls and fixed action buttons. Slider geometry is checked for the new color and thickness controls.\n\n");
+        var text = new StringBuilder("# Penroam WPF offscreen layout preview\n\nUses the actual MainWindow.Content, application resources, and PageEditor with an in-memory test fixture. No user database is accessed. No windows are displayed, no input is sent, and no UI Automation client or desktop capture is used.\n\nThis Measure / Arrange / RenderTargetBitmap preview checks layout only. It does not validate live UI interaction, touch, pen input, window DPI, popup menus, or the system title bar. Image dimensions describe the content area in DIP, rendered at 96 DPI. Controls outside an intentional scroll viewport are listed separately; dialog top/bottom scenes check the revealed controls and fixed action buttons. Touch-target geometry includes visible buttons, checkboxes, radio cards, category menu items and comboboxes. Slider geometry is checked for the color and thickness controls.\n\n");
         foreach (var report in reports)
         {
             text.AppendLine($"## {report.Scene}: {report.Width} × {report.Height}\n\nImage: {report.Image}\n");
             if (report.Scene.StartsWith("editor", StringComparison.Ordinal)) text.AppendLine($"Viewport: {report.ViewportWidth} × {report.ViewportHeight} DIP. Zoom: {report.Zoom:P0}.\n");
             if (report.Scene == "editor-fit-width") text.AppendLine($"Page width: {report.PageDisplayWidth} DIP. Left gutter: {report.PageLeftGutter} DIP; right gutter: {report.PageRightGutter} DIP. Both page edges and the realized editor align within the viewport.\n");
-            text.AppendLine($"Buttons: {report.Buttons.Count}; sliders: {report.Sliders.Count}; below 44 × 44 DIP: {report.Under44Dip.Count}; overlapping: {report.Overlaps.Count}; outside the content area: {report.Clipped.Count}.\n");
+            text.AppendLine($"Controls: {report.Buttons.Count}; sliders: {report.Sliders.Count}; below 44 × 44 DIP: {report.Under44Dip.Count}; overlapping: {report.Overlaps.Count}; outside the content area: {report.Clipped.Count}.\n");
             if (report.ScrollHiddenControls.Count > 0) text.AppendLine($"Outside the current scroll viewport: {string.Join(", ", report.ScrollHiddenControls)}.\n");
             foreach (var issue in report.Overlaps) text.AppendLine($"- Overlap: {issue}");
             foreach (var issue in report.Under44Dip) text.AppendLine($"- Below 44 DIP: {issue}");
             foreach (var issue in report.Clipped) text.AppendLine($"- Outside the content area: {issue}");
-            text.AppendLine("\n| Button | X | Y | Width | Height | Enabled |\n|---|---:|---:|---:|---:|---|");
+            text.AppendLine("\n| Control | X | Y | Width | Height | Enabled |\n|---|---:|---:|---:|---:|---|");
             foreach (var button in report.Buttons)
                 text.AppendLine($"| {button.Name.Replace("|", "/")} | {button.X} | {button.Y} | {button.Width} | {button.Height} | {button.Enabled} |");
             if (report.Sliders.Count > 0)

@@ -338,7 +338,7 @@ public sealed class PageSpreadInteractionTests(PageSpreadTestApplication applica
 
     private static Stroke Stroke(double y) => new(new StylusPointCollection { new StylusPoint(40, y, .3f), new StylusPoint(120, y + 20, .8f) });
 
-    private sealed class ShellFixture : IDisposable
+    internal sealed class ShellFixture : IDisposable
     {
         private readonly StorageTestDirectory _directory = new();
         private readonly HwndSource _source;
@@ -394,6 +394,15 @@ public sealed class PageSpreadInteractionTests(PageSpreadTestApplication applica
             { RoutedEvent = Keyboard.PreviewKeyDownEvent });
             Layout();
         }
+        public KeyEventArgs PreviewWindowKey(Key key, UIElement source)
+        {
+            // The Window is deliberately detached; invoke only its preview handler
+            // so native button activation cannot open a modal dialog in this fixture.
+            var args = new KeyEventArgs(Keyboard.PrimaryDevice, _source, 0, key)
+            { RoutedEvent = Keyboard.PreviewKeyDownEvent, Source = source };
+            Invoke(Window, "WindowKeyDown", Window, args);
+            return args;
+        }
         public void Layout()
         {
             for (var pass = 0; pass < 3; pass++)
@@ -419,7 +428,7 @@ public sealed class PageSpreadInteractionTests(PageSpreadTestApplication applica
         }
     }
 
-    private sealed class ShellRepository(NotebookDocument document) : INotebookRepository
+    internal sealed class ShellRepository(NotebookDocument document) : INotebookRepository
     {
         public NotebookDocument? Saved { get; private set; }
         public Task InitializeAsync() => Task.CompletedTask;
