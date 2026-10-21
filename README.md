@@ -6,18 +6,19 @@ An offline handwriting notebook for Windows 11. Penroam, formerly Moye, combines
 
 ## Get started
 
-1. Download [Penroam-1.3.0-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.3.0/Penroam-1.3.0-Setup-win-x64.exe) from the [Releases page](https://github.com/yikeugene/Penroam/releases).
+1. Download [Penroam-1.4.1-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.4.1/Penroam-1.4.1-Setup-win-x64.exe) from the [Releases page](https://github.com/yikeugene/Penroam/releases).
 2. Run the installer, then open the **Penroam** desktop or Start menu shortcut. The .NET runtime is included; no separate runtime installation or administrator account is needed.
 3. Choose **New Notebook**, select a paper template and start writing. A mouse works too; pressure input requires a Windows Ink-compatible active pen.
 
 Penroam requires **Windows 11 x64**. Writing and saving work without an account or an internet connection. The installer is currently unsigned; release assets include SHA-256 checksums.
 
-**Before upgrading an existing library, keep a backup made by your current app.** Penroam 1.3 retains **SQLite schema 5** and **`.moye` backup format 5** from Penroam 1.2, and reads backup formats 1–5. Penroam 1.1.0 and earlier cannot open the newer formats. Uninstalling does not reverse a migration. See [compatibility](docs/FILE_FORMAT.md#compatibility).
+**Before upgrading an existing library, keep a backup made by your current app.** Penroam 1.4.1 retains **SQLite schema 5** and **`.moye` backup format 5** from Penroam 1.2, and reads backup formats 1–5. Penroam 1.1.0 and earlier cannot open the newer formats. Uninstalling does not reverse a migration. See [compatibility](docs/FILE_FORMAT.md#compatibility).
 
-Version **1.3.0** adds folder import into notebook sections and an editable two-page view. See the [current release notes](docs/RELEASE_NOTES_1.3.0.md); historical releases are listed on [GitHub Releases](https://github.com/yikeugene/Penroam/releases).
+Version **1.4.1** adds English / Traditional Chinese interface switching, labelled feature menus and a searchable All tools browser with shortcuts and availability guidance. See the [current release notes](docs/RELEASE_NOTES_1.4.1.md); historical releases are listed on [GitHub Releases](https://github.com/yikeugene/Penroam/releases).
 
 ## Features
 
+- **Interface languages:** switch between English and Traditional Chinese (繁體中文) in the notebook home header, without restarting. The choice is remembered on this device; notebook contents and names stay unchanged.
 - **Handwriting:** pressure-sensitive pen and highlighter, saved pen presets, draw-and-hold straight lines, pixel/stroke erasers, mixed ink/text/image lasso selections and notebook undo/redo.
 - **Flexible pages:** Blank, Ruled, Grid, Dot Grid, Cornell, Graph and Meeting paper. Extend any paper or PDF page on any side without scaling the original content.
 - **Typed notes and images:** free typing with ruled alignment, fixed text boxes, whole-box formatting, PNG/JPEG images and pasted screenshots. Move overflowing text to a new page explicitly.
@@ -35,7 +36,7 @@ The default library is `%LOCALAPPDATA%\Moye\moye.db`. The Penroam rename did not
 
 Use **Backup → Back up all notebooks…** to make a portable editable backup. Restoring creates new notebook copies without overwriting existing ones. Backups preserve ink, text, images, original PDFs and notebook organization; **they are not encrypted**.
 
-Writing settings live in `writing-preferences.json`; reading positions, workspace options and backup settings live in `workspace-preferences.json`, alongside the database. These device-local preferences are not included in notebook backups. Recovery drafts depend on assets in the local library and are not portable backups. See [autosave and backups](docs/USER_GUIDE.md#autosave-and-backups).
+Writing settings live in `writing-preferences.json`; interface language, reading positions, workspace options and backup settings live in `workspace-preferences.json`, alongside the database. These device-local preferences are not included in notebook backups. Recovery drafts depend on assets in the local library and are not portable backups. See [autosave and backups](docs/USER_GUIDE.md#autosave-and-backups).
 
 ## Install, update and uninstall
 
@@ -43,7 +44,7 @@ New installations default to `%LOCALAPPDATA%\Programs\Penroam`. Upgrades recogni
 
 Normal launches check GitHub for newer stable releases. **Update now** downloads and verifies the installer checksum, saves pending notes and closes the app for installation. Manual checks are available through **Help → Check for updates…** or **Check for updates** on the notebook home screen. Update requests include the app version, not notebook content. Launching with `--data-dir` disables both startup and manual update checks.
 
-Install 1.3.0 manually when upgrading from 1.1.0 or earlier. Closing the app and running a newer installer remains a manual fallback. See [in-app updates](docs/USER_GUIDE.md#in-app-updates) for cancellation, retry and installation behavior.
+Install 1.4.1 manually when upgrading from 1.1.0 or earlier. Closing the app and running a newer installer remains a manual fallback. See [in-app updates](docs/USER_GUIDE.md#in-app-updates) for cancellation, retry and installation behavior.
 
 ## Build from source
 
@@ -72,7 +73,7 @@ See [CONTRIBUTING.md](https://github.com/yikeugene/Penroam/blob/master/CONTRIBUT
 
 ## Verification and limitations
 
-Use the [current release notes](docs/RELEASE_NOTES_1.3.0.md) and [GitHub Actions](https://github.com/yikeugene/Penroam/actions) for verification tied to a published build. Historical test counts do not establish the status of the current source.
+Use the [current release notes](docs/RELEASE_NOTES_1.4.1.md) and [GitHub Actions](https://github.com/yikeugene/Penroam/actions) for verification tied to a published build. Historical test counts do not establish the status of the current source.
 
 - Managed tests, detached WPF renders, packaged storage checks and installer checks cover different things. A detached render does not verify live keyboard focus, popups, IME composition, pen pressure, touch or palm rejection.
 - Physical pen/touch behavior, broader IME sessions, printer output and application-control compatibility require testing on the target device. Do not infer acceptance from a mouse test or successful CI run.

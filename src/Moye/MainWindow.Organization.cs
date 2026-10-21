@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,7 +23,7 @@ public partial class MainWindow
     {
         if (!CanOrganize) return;
         CommitEditors(); ClearTouches(); RememberOrganizationVisit();
-        await RunAsync("Creating a quick note…", async () => { await ViewModel.CreateQuickNoteAsync(); await PrepareNotebookViewAsync(false); SetTool(InkTool.Pen); });
+        await RunAsync(L.M("Shell.CreatingQuickNote"), async () => { await ViewModel.CreateQuickNoteAsync(); await PrepareNotebookViewAsync(false); SetTool(InkTool.Pen); });
     }
 
     private void SearchContentsClick(object sender, RoutedEventArgs e) => ShowOrganizationSearch(false);
@@ -57,13 +58,13 @@ public partial class MainWindow
     private async Task<bool> NavigateOrganizationAsync(string notebookId, string sectionId, string pageId, OrganizationVisit? restore = null)
     {
         var completed = false;
-        await RunAsync("Opening page…", async () =>
+        await RunAsync(L.M("Shell.OpeningPage"), async () =>
         {
             CommitEditors(); ClearTouches();
             if (ViewModel.Document?.Id != notebookId || ViewModel.IsLibraryVisible)
             { await ViewModel.OpenAsync(notebookId); await PrepareNotebookViewAsync(); }
             var page = ViewModel.Document?.Pages.FirstOrDefault(page => page.Id == pageId);
-            if (page is null) throw new IOException("This page is no longer available. Search again to see current results.");
+            if (page is null) throw new IOException(L.Text("Shell.PageUnavailable"));
             var section = ViewModel.Sections.First(section => section.Id == page.SectionId);
             // Navigation inside RunAsync is busy by design; assign the VM directly after committing editors.
             ViewModel.SelectedSection = section;
@@ -86,7 +87,7 @@ public partial class MainWindow
     private async void NavigateBackClick(object sender, RoutedEventArgs e)
     {
         if (!CanOrganize) return;
-        if (_organizationBack.Count == 0) { ViewModel.Status = "No earlier search or quick-note location."; return; }
+        if (_organizationBack.Count == 0) { ViewModel.SetStatus("Shell.NoPreviousLocation"); return; }
         var visit = _organizationBack[^1];
         if (await NavigateOrganizationAsync(visit.NotebookId, visit.SectionId, visit.PageId, visit)) _organizationBack.RemoveAt(_organizationBack.Count - 1);
     }
@@ -133,7 +134,7 @@ public partial class MainWindow
         if (!CanOrganize) return;
         var dialog = new NotebookOrganizationDialog(this, summary);
         if (dialog.ShowDialog() == true)
-        { CommitEditors(); await RunAsync("Updating notebook appearance…", () => ViewModel.SetNotebookAppearanceAsync(summary.Id, dialog.IsPinned, dialog.CoverColor)); }
+        { CommitEditors(); await RunAsync(L.M("Shell.UpdatingAppearance"), () => ViewModel.SetNotebookAppearanceAsync(summary.Id, dialog.IsPinned, dialog.CoverColor)); }
     }
     private void TogglePinNotebookClick(object sender, RoutedEventArgs e)
     {
@@ -142,7 +143,7 @@ public partial class MainWindow
     private async void ToggleNotebookPin(NotebookSummary summary)
     {
         if (!CanOrganize) return;
-        CommitEditors(); await RunAsync("Updating pinned notebooks…", () => ViewModel.SetNotebookAppearanceAsync(summary.Id, !summary.IsPinned, summary.CoverColor));
+        CommitEditors(); await RunAsync(L.M("Shell.UpdatingPinnedNotebooks"), () => ViewModel.SetNotebookAppearanceAsync(summary.Id, !summary.IsPinned, summary.CoverColor));
     }
     private void LibraryOrganizationClick(object sender, RoutedEventArgs e)
     {
@@ -165,7 +166,7 @@ public partial class MainWindow
             transfer = new PageOrganizationTransferDialog(this, ViewModel);
             if (transfer.ShowDialog() != true) return;
         }
-        await RunAsync("Organizing pages…", async () =>
+        await RunAsync(L.M("Shell.OrganizingPages"), async () =>
         {
             var remainingIds = dialog.EditedDocument.Pages.Select(page => page.Id).ToHashSet();
             if (before.Pages.Any(page => !remainingIds.Contains(page.Id)) && PreserveOrganizationDeletionAsync is { } preserve)
@@ -176,7 +177,7 @@ public partial class MainWindow
             if (transfer is not null)
             {
                 _lastPageTransfer = await ViewModel.TransferPagesAsync(dialog.TransferPageIds, transfer.NotebookId, transfer.SectionId, transfer.Copy);
-                ViewModel.Status = "Pages transferred · Undo last page transfer is available in Pages.";
+                ViewModel.SetStatus("Shell.PagesTransferred");
             }
             else await ViewModel.Autosave.FlushAsync();
             ScrollToSelected();
@@ -196,8 +197,8 @@ public partial class MainWindow
     private async void UndoPageTransferClick(object sender, RoutedEventArgs e)
     {
         if (!CanOrganize) return;
-        if (_lastPageTransfer is not { } receipt) { ViewModel.Status = "No page transfer is available to undo in this session."; return; }
+        if (_lastPageTransfer is not { } receipt) { ViewModel.SetStatus("Shell.NoTransferToUndo"); return; }
         CommitEditors();
-        await RunAsync("Undoing page transfer…", async () => { await ViewModel.UndoTransferAsync(receipt); _lastPageTransfer = null; ScrollToSelected(); });
+        await RunAsync(L.M("Shell.UndoingTransfer"), async () => { await ViewModel.UndoTransferAsync(receipt); _lastPageTransfer = null; ScrollToSelected(); });
     }
 }

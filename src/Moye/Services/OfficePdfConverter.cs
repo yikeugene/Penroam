@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 namespace Moye.Services;
 
 /// <summary>Uses a local renderer; no document is sent to a conversion service.</summary>
@@ -11,9 +12,7 @@ public sealed class OfficePdfConverter : IOfficePdfConverter
         else if (LibreOfficePdfConverter.IsAvailableFor(sourcePath))
             await new LibreOfficePdfConverter().ConvertAsync(sourcePath, outputPdfPath, cancellationToken);
         else
-            throw new InvalidOperationException("Office document import needs Microsoft Word/PowerPoint or LibreOffice installed on this computer. " +
-                "ODT and ODP files require LibreOffice. Install a local converter, or save your document as PDF and import that copy. " +
-                "PDF import works without Office.");
+            throw new InvalidOperationException(L.Text("Messages.Office.ConverterRequired"));
         // Office slide jumps and table-of-contents links refer to the old
         // document order. Keep their printed appearance as static annotations.
         await OfficePdfPreparation.PrepareAsync(outputPdfPath, cancellationToken);

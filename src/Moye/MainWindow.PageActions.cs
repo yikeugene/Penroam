@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -50,38 +51,40 @@ public partial class MainWindow
         var target = new PageActionTarget(document, page.Page.SectionId, page.Page.Id);
         if (ResolvePageActionTarget(ViewModel, target) is null) return null;
         var menu = new ContextMenu { Tag = target };
-        menu.Items.Add(CreateMenuHeading($"Page {page.Number}"));
+        menu.Items.Add(CreateLocalizedMenuHeading("Shell.PageHeading", page.Number));
         menu.Items.Add(new Separator());
-        Add("Rename Page…", "\uE8AC", RenamePageClick);
-        Add(page.Page.IsBookmarked ? "Remove Bookmark" : "Bookmark Page", "\uE734", TogglePageBookmarkClick);
+        Add("Shell.RenamePageMenu", "\uE8AC", RenamePageClick);
+        Add(page.Page.IsBookmarked ? "Shell.RemoveBookmark" : "Shell.BookmarkPage", "\uE734", TogglePageBookmarkClick);
         menu.Items.Add(new Separator());
-        Add("Duplicate Page", "\uE8C8", DuplicatePageClick);
-        Add("Move Page Up", "\uE74A", MovePageUpClick, ViewModel.Pages.IndexOf(page) > 0);
-        Add("Move Page Down", "\uE74B", MovePageDownClick, ViewModel.Pages.IndexOf(page) < ViewModel.Pages.Count - 1);
-        var sections = new MenuItem { Header = "Move Page to Section", Icon = CreateMenuIcon("\uE8DE"), Tag = target, IsEnabled = ViewModel.Sections.Count > 1 };
+        Add("Shell.DuplicatePage", "\uE8C8", DuplicatePageClick);
+        Add("Shell.MovePageUp", "\uE74A", MovePageUpClick, ViewModel.Pages.IndexOf(page) > 0);
+        Add("Shell.MovePageDown", "\uE74B", MovePageDownClick, ViewModel.Pages.IndexOf(page) < ViewModel.Pages.Count - 1);
+        var sections = new MenuItem { Icon = CreateMenuIcon("\uE8DE"), Tag = target, IsEnabled = ViewModel.Sections.Count > 1 };
+        L.Bind(sections, HeaderedItemsControl.HeaderProperty, "Shell.MovePageToSection");
         // A placeholder lets WPF show the submenu arrow before it is populated.
         sections.Items.Add(new MenuItem());
         sections.SubmenuOpened += MovePageSectionMenuOpened;
         menu.Items.Add(sections);
         menu.Items.Add(new Separator());
-        Add("Paper Style…", "\uE790", PageSettingsClick);
-        Add("Extend Page…", "\uE740", ExtendPageClick);
+        Add("Shell.PaperStyleMenu", "\uE790", PageSettingsClick);
+        Add("Shell.ExtendPageMenu", "\uE740", ExtendPageClick);
         menu.Items.Add(new Separator());
-        Add("Mark a Question…", "\uE897", AddStudyQuestionClick);
-        Add("Leave a Resume Hint…", "\uE70B", SetResumeHintClick);
-        Add("New Practice Attempt…", "\uE710", NewPracticeClick);
-        Add("Restore Part of This Page…", "\uE81C", RestoreRegionClick);
+        Add("Shell.MarkQuestionMenu", "\uE897", AddStudyQuestionClick);
+        Add("Shell.ResumeHintMenu", "\uE70B", SetResumeHintClick);
+        Add("Shell.NewPracticeMenu", "\uE710", NewPracticeClick);
+        Add("Shell.RestoreRegionMenu", "\uE81C", RestoreRegionClick);
         menu.Items.Add(new Separator());
-        Add("Delete Page", "\uE74D", DeletePageClick, danger: true);
+        Add("Shell.DeletePage", "\uE74D", DeletePageClick, danger: true);
         return menu;
 
-        void Add(string title, string glyph, RoutedEventHandler click, bool enabled = true, bool danger = false)
+        void Add(string key, string glyph, RoutedEventHandler click, bool enabled = true, bool danger = false)
         {
-            var item = new MenuItem { Header = title, Icon = CreateMenuIcon(glyph), Tag = target, IsEnabled = enabled };
+            var item = new MenuItem { Icon = CreateMenuIcon(glyph), Tag = target, IsEnabled = enabled };
+            L.Bind(item, HeaderedItemsControl.HeaderProperty, key);
             if (danger)
             {
                 item.Style = (Style)FindResource("DangerMenuItem");
-                item.ToolTip = "Delete this page · Undo while open, or restore a notebook copy from Recently deleted within 30 days";
+                L.Bind(item, FrameworkElement.ToolTipProperty, "Shell.DeletePageHint");
             }
             item.Click += click; menu.Items.Add(item);
         }
@@ -107,7 +110,7 @@ public partial class MainWindow
     {
         if (!CanOrganize || ResolvePageActionTarget(ViewModel, target) is not { } page) return;
         var menu = new ContextMenu { PlacementTarget = FeatureActionAnchor(PageActionsButton), Placement = FeatureMenuPlacement };
-        menu.Items.Add(CreateMenuHeading($"Move page {page.Number} to section"));
+        menu.Items.Add(CreateLocalizedMenuHeading("Features.MovePageHeading", page.Number));
         foreach (var section in ViewModel.Sections)
         {
             var item = new MenuItem { Header = new TextBlock { Text = section.Title, MaxWidth = 280, TextTrimming = TextTrimming.CharacterEllipsis },
@@ -117,6 +120,14 @@ public partial class MainWindow
             menu.Items.Add(item);
         }
         ClearTouches(); CloseSettingsPopups(); menu.IsOpen = true;
+    }
+
+    private MenuItem CreateLocalizedMenuHeading(string key, params object?[] args)
+    {
+        var heading = CreateMenuHeading("");
+        L.Bind((TextBlock)heading.Header, TextBlock.TextProperty, key, args);
+        L.Bind(heading, FrameworkElement.ToolTipProperty, key, args);
+        return heading;
     }
 
     private MenuItem CreateMenuHeading(string title) => new()

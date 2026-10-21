@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -63,7 +64,9 @@ public sealed class StrokeWidthPicker : UserControl
         var panel = new StackPanel();
         var heading = new DockPanel();
         DockPanel.SetDock(_value, Dock.Right); heading.Children.Add(_value);
-        heading.Children.Add(new TextBlock { Text = "Thickness", Foreground = Brushes.SlateGray, FontSize = 12 });
+        var label = new TextBlock { Foreground = Brushes.SlateGray, FontSize = 12 };
+        L.Bind(label, TextBlock.TextProperty, "Controls.StrokeWidth.Thickness");
+        heading.Children.Add(label);
         panel.Children.Add(heading); panel.Children.Add(_slider);
         panel.Children.Add(new TickBar
         {
@@ -72,9 +75,9 @@ public sealed class StrokeWidthPicker : UserControl
             Fill = Brushes.SlateGray, IsHitTestVisible = false
         });
         panel.Children.Add(_sample); Content = panel;
-        AutomationProperties.SetName(_slider, "Stroke thickness");
+        L.Bind(_slider, AutomationProperties.NameProperty, "Controls.StrokeWidth.Accessible");
         _slider.SetResourceReference(StyleProperty, "TouchSlider");
-        _slider.ToolTip = "Drag between fixed thickness levels. Arrow keys choose the next size.";
+        L.Bind(_slider, ToolTipProperty, "Controls.StrokeWidth.Hint");
         _slider.CommandBindings.Add(new CommandBinding(Slider.IncreaseSmall, (_, e) =>
         { MoveToAdjacentStep(true); e.Handled = true; }));
         _slider.CommandBindings.Add(new CommandBinding(Slider.DecreaseSmall, (_, e) =>
@@ -155,8 +158,7 @@ public sealed class StrokeWidthPicker : UserControl
     private void RefreshPreview()
     {
         _value.Text = (StrokeWidth * 25.4 / 96).ToString("0.##", CultureInfo.CurrentCulture) + " mm";
-        AutomationProperties.SetHelpText(_slider, "Current thickness: " + _value.Text +
-            $". {WidthSteps.Length} thickness levels; arrow keys choose the next size.");
+        L.Bind(_slider, AutomationProperties.HelpTextProperty, "Controls.StrokeWidth.CurrentHelp", _value.Text, WidthSteps.Length);
         _sample.StrokeWidth = StrokeWidth; _sample.InvalidateVisual();
     }
 

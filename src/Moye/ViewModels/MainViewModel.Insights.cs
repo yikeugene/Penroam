@@ -2,13 +2,14 @@ using System.Text.Json;
 using System.Windows;
 using Moye.Models;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.ViewModels;
 
 public sealed partial class MainViewModel
 {
     public bool HasResumeHints => Document?.Pages.Any(page => page.ResumeHint is not null) == true;
-    public string ResumeSummary => "Continue: " + (SelectedPage?.Page.ResumeHint?.NextStep ?? Document?.Pages
+    public string ResumeSummary => L.Text("Messages.Resume.Summary", SelectedPage?.Page.ResumeHint?.NextStep ?? Document?.Pages
         .Where(page => page.ResumeHint is not null).MaxBy(page => page.ResumeHint!.ModifiedUtc)?.ResumeHint?.NextStep ?? "");
 
     public IReadOnlyList<NotePage> RegionHistory(string pageId) => _history.PageVersions(pageId)

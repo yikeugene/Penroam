@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -713,13 +714,15 @@ public sealed partial class PageEditor : Grid
         catch (Exception ex)
         {
             if (generation != _generation) return;
-            target.ToolTip = "Unable to load image: " + ex.Message;
+            L.Bind(target, ToolTipProperty, "Controls.PageEditor.ImageError", ex.Message);
             if (target.Parent is NoteItemFrame frame)
             {
                 frame.Background = new SolidColorBrush(Color.FromRgb(255, 237, 237));
-                frame.Children.Add(new TextBlock { Text = "Unable to load image", Foreground = Brushes.Firebrick, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false });
+                var error = new TextBlock { Foreground = Brushes.Firebrick, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, IsHitTestVisible = false };
+                L.Bind(error, TextBlock.TextProperty, "Controls.PageEditor.ImageUnavailable");
+                frame.Children.Add(error);
             }
-            AssetLoadFailed?.Invoke(this, "Unable to load image: " + ex.Message);
+            AssetLoadFailed?.Invoke(this, L.Text("Controls.PageEditor.ImageError", ex.Message));
             VisualContentChanged?.Invoke(this, EventArgs.Empty);
         }
     }

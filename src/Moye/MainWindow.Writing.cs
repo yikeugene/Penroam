@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -21,7 +22,9 @@ public partial class MainWindow
     private Task _preferencesSaveTask = Task.CompletedTask;
     private long _preferencesRevision, _savedPreferencesRevision;
     private bool _syncingPreferences, _canSavePreferences = true;
-    private string? _preferencesLoadWarning;
+    private string? _rawPreferencesLoadWarning;
+    private Moye.Localization.LocalizedMessage? _localizedPreferencesLoadWarning;
+    private string? _preferencesLoadWarning => _localizedPreferencesLoadWarning?.ToString() ?? _rawPreferencesLoadWarning;
     private WritingPreset _workingPreset = WritingPreferences.CreateDefault().Presets[0].Snapshot();
     private readonly Dictionary<InkTool, WritingPreset> _recentWritingPresets = [];
     private Point _presetDragStart, _panPoint;
@@ -37,7 +40,8 @@ public partial class MainWindow
     private async Task LoadPreferencesAsync()
     {
         var result = await _preferencesStore.LoadAsync();
-        _preferences = result.Preferences; _canSavePreferences = result.CanSave; _preferencesLoadWarning = result.Warning;
+        _preferences = result.Preferences; _canSavePreferences = result.CanSave;
+        _rawPreferencesLoadWarning = result.Warning; _localizedPreferencesLoadWarning = result.LocalizedWarning;
         _syncingPreferences = true;
         try
         {
@@ -48,7 +52,8 @@ public partial class MainWindow
             ApplyPreset(_preferences.Presets.FirstOrDefault(p => p.Id == _preferences.LastPresetId) ?? _preferences.Presets[0], false);
         }
         finally { _syncingPreferences = false; }
-        if (result.Warning is not null) ShowPreferencesWarning(result.Warning);
+        if (result.LocalizedWarning is { } warning) ShowPreferencesWarning(warning);
+        else if (result.Warning is not null) ShowPreferencesWarning(result.Warning);
     }
 
     private void QueuePreferencesSave()
@@ -56,7 +61,8 @@ public partial class MainWindow
         if (!_ready || _syncingPreferences) return;
         if (!_canSavePreferences)
         {
-            ShowPreferencesWarning((_preferencesLoadWarning ?? "Writing settings are read-only.") + " Tool changes apply only to this session. Restart after resolving the settings file.");
+            ShowPreferencesWarning(L.M(_preferencesLoadWarning is null ? "Shell.WritingReadOnlySessionWarning" : "Shell.WritingWarningSessionSuffix",
+                (object?)_localizedPreferencesLoadWarning ?? _preferencesLoadWarning));
             return;
         }
         _preferences.EraserTool = _eraserTool;
@@ -79,14 +85,14 @@ public partial class MainWindow
         {
             await previous;
             if (revision <= _savedPreferencesRevision) return;
-            if (!_canSavePreferences) throw new IOException(_preferencesLoadWarning ?? "The writing settings file cannot be overwritten.");
+            if (!_canSavePreferences) throw new IOException(_preferencesLoadWarning ?? L.Text("Shell.WritingSettingsProtected"));
             await _preferencesStore.SaveAsync(snapshot);
             _savedPreferencesRevision = revision;
             PreferencesRetryButton.Visibility = Visibility.Collapsed;
         }
         catch (Exception ex)
         {
-            ShowPreferencesWarning("Writing settings could not be saved. " + ex.Message);
+            ShowPreferencesWarning(L.M("Shell.WritingSettingsSaveFailed", ex.Message));
             if (throwOnError) throw;
         }
         finally { completion.SetResult(); }
@@ -96,10 +102,16 @@ public partial class MainWindow
         PreferencesRetryButton.Visibility = Visibility.Visible; PreferencesRetryButton.ToolTip = message;
         ViewModel.Status = message;
     }
+    private void ShowPreferencesWarning(Moye.Localization.LocalizedMessage message)
+    {
+        PreferencesRetryButton.Visibility = Visibility.Visible;
+        L.Bind(PreferencesRetryButton, FrameworkElement.ToolTipProperty, message.Key, message.Arguments);
+        ViewModel.SetStatus(message.Key, message.Arguments);
+    }
     private async void RetryPreferencesClick(object sender, RoutedEventArgs e)
     {
         if (!_canSavePreferences || _preferencesRevision == _savedPreferencesRevision)
-        { MessageBox.Show(this, _preferencesLoadWarning ?? "Writing settings are saved.", "Writing Settings"); return; }
+        { MessageBox.Show(this, _preferencesLoadWarning ?? L.Text("Shell.WritingSettingsSaved"), L.Text("Shell.WritingSettings")); return; }
         await SavePreferencesAsync();
     }
 
@@ -165,9 +177,9 @@ public partial class MainWindow
             });
             var button = new Button { Content = panel, Tag = preset.Id, Style = (Style)FindResource("SecondaryButton"), MinHeight = 44, Padding = new Thickness(8, 6, 8, 6), Margin = new Thickness(0, 0, 6, 0), AllowDrop = true,
                 Background = active ? (Brush)FindResource("AccentSoft") : Brushes.White,
-                BorderBrush = active ? (Brush)FindResource("Accent") : (Brush)FindResource("Stroke"),
-                ToolTip = $"{preset.Name} · {preset.Width * 25.4 / 96:0.##} mm ({number})\nDrag to reorder. Use Manage pens to edit or hide." };
-            System.Windows.Automation.AutomationProperties.SetName(button, $"Preset {number}: {preset.Name}");
+                BorderBrush = active ? (Brush)FindResource("Accent") : (Brush)FindResource("Stroke") };
+            L.Bind(button, FrameworkElement.ToolTipProperty, "Shell.PresetTooltip", preset.Name, preset.Width * 25.4 / 96, number);
+            L.Bind(button, System.Windows.Automation.AutomationProperties.NameProperty, "Shell.PresetName", number, preset.Name);
             button.Click += (_, _) => { ApplyPreset(preset); PageList.Focus(); };
             button.PreviewMouseLeftButtonDown += (_, e) => { if (!PenInkCanvas.IsTouch(e.StylusDevice)) _presetDragStart = e.GetPosition(button); };
             button.PreviewMouseMove += (_, e) =>
@@ -187,7 +199,12 @@ public partial class MainWindow
             };
             FavouritePresets.Children.Add(button);
         }
-        if (index == 0) FavouritePresets.Children.Add(new TextBlock { Text = "Add favorites in Manage pens", VerticalAlignment = VerticalAlignment.Center, Foreground = (Brush)FindResource("MutedInk"), Margin = new Thickness(8) });
+        if (index == 0)
+        {
+            var hint = new TextBlock { VerticalAlignment = VerticalAlignment.Center, Foreground = (Brush)FindResource("MutedInk"), Margin = new Thickness(8) };
+            L.Bind(hint, TextBlock.TextProperty, "Shell.NoFavoritePens");
+            FavouritePresets.Children.Add(hint);
+        }
         RefreshFocusPresets();
     }
 
@@ -205,9 +222,9 @@ public partial class MainWindow
     private void SavePresetClick(object sender, RoutedEventArgs e)
     {
         CloseSettingsPopups();
-        if (_preferences.Presets.Count >= 40) { MessageBox.Show(this, "You can keep up to 40 presets. Remove one in Presets first.", "Pen Presets"); return; }
+        if (_preferences.Presets.Count >= 40) { MessageBox.Show(this, L.Text("Shell.PresetLimit"), L.Text("Shell.PenPresets")); return; }
         var writingTool = _tool is InkTool.Pen or InkTool.Highlighter ? _tool : _workingPreset.Tool;
-        var dialog = new InputDialog(this, "Save Pen Preset", ("Name", writingTool == InkTool.Highlighter ? "My Highlighter" : "My Pen"));
+        var dialog = new InputDialog(this, L.Text("Shell.SavePenPreset"), (L.Text("Shell.NameLabel"), writingTool == InkTool.Highlighter ? "My Highlighter" : "My Pen"));
         if (dialog.ShowDialog() != true) return;
         var preset = _workingPreset.Snapshot(); preset.Id = Guid.NewGuid().ToString("N"); preset.Name = dialog.Values[0];
         preset.Color = _color.ToString(); preset.Width = _width; preset.IsFavorite = true;
@@ -226,7 +243,7 @@ public partial class MainWindow
     {
         var editor = CurrentEditor;
         if (editor?.HasSelection != true) return;
-        await RunAsync(cut ? "Cutting selection…" : "Copying selection…", async () =>
+        await RunAsync(L.M(cut ? "Shell.CuttingSelection" : "Shell.CopyingSelection"), async () =>
         {
             var selection = await editor.ExportSelectionAsync();
             if (selection is null) return;
@@ -240,7 +257,7 @@ public partial class MainWindow
             if (selection.Texts.Count > 0) data.SetText(string.Join(Environment.NewLine, selection.Texts.Select(text => text.Text)), TextDataFormat.UnicodeText);
             Clipboard.SetDataObject(data, true);
             if (cut) editor.DeleteSelection();
-            ViewModel.Status = cut ? "Selection cut · Paste onto another page with Ctrl+V" : "Selection copied · Paste onto another page with Ctrl+V";
+            ViewModel.SetStatus(cut ? "Shell.SelectionCut" : "Shell.SelectionCopied");
         });
     }
     private async Task PasteContentAsync()
@@ -252,10 +269,10 @@ public partial class MainWindow
             {
                 var value = Clipboard.GetData(SelectionClipboardFormat);
                 var bytes = value switch { byte[] b => b, MemoryStream stream => stream.ToArray(), _ => null };
-                if (bytes is null) throw new InvalidDataException("Unsupported clipboard selection.");
+                if (bytes is null) throw new InvalidDataException(L.Text("Shell.ClipboardSelectionUnsupported"));
                 var payload = NoteSelection.Decode(bytes);
                 var position = GetPastePosition(editor.Page);
-                await RunAsync("Pasting selection…", async () =>
+                await RunAsync(L.M("Shell.PastingSelection"), async () =>
                 {
                     var assets = new Dictionary<string, string>(StringComparer.Ordinal);
                     foreach (var asset in payload.Assets)
@@ -266,7 +283,7 @@ public partial class MainWindow
                     SetTool(InkTool.Lasso);
                     editor.ImportSelection(payload, position, assets);
                     PageList.Focus();
-                    ViewModel.Status = "Selection pasted";
+                    ViewModel.SetStatus("Shell.SelectionPasted");
                 });
                 return;
             }
@@ -274,13 +291,13 @@ public partial class MainWindow
             {
                 var data = Clipboard.GetData(InkClipboardFormat);
                 var bytes = data switch { byte[] b => b, MemoryStream stream => stream.ToArray(), _ => null };
-                if (bytes is null || bytes.Length > 64 * 1024 * 1024) throw new InvalidDataException("Unsupported clipboard ink.");
+                if (bytes is null || bytes.Length > 64 * 1024 * 1024) throw new InvalidDataException(L.Text("Shell.ClipboardInkUnsupported"));
                 SetTool(InkTool.Lasso); editor.ImportInk(bytes, GetPastePosition(editor.Page)); PageList.Focus(); return;
             }
             if (!Clipboard.ContainsImage() && Clipboard.ContainsText(TextDataFormat.UnicodeText))
             {
                 var text = Clipboard.GetText(TextDataFormat.UnicodeText);
-                if (text.Length > 2_000_000) throw new InvalidDataException("The text is too long to paste into one box.");
+                if (text.Length > 2_000_000) throw new InvalidDataException(L.Text("Shell.ClipboardTextTooLong"));
                 SetTool(InkTool.Text);
                 editor.SetTextDefaults(_textDefaults);
                 editor.AddFreeTextAt(GetPastePosition(editor.Page), text);
@@ -289,7 +306,7 @@ public partial class MainWindow
             }
             await PasteImageAsync();
         }
-        catch (Exception ex) { ViewModel.Status = "Unable to paste: " + ex.Message; }
+        catch (Exception ex) { ViewModel.SetStatus("Shell.PasteFailed", ex.Message); }
     }
     private void CopyInkClick(object sender, RoutedEventArgs e) => CopyInk(false);
     private void CutInkClick(object sender, RoutedEventArgs e) => CopyInk(true);

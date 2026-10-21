@@ -1,13 +1,29 @@
 using System.IO;
 using System.Text.Json;
+using Moye.Localization;
 using Moye.Models;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.ViewModels;
 
 public sealed record NotebookSearchResult(string NotebookId, string SectionId, string PageId,
     string NotebookTitle, string SectionTitle, string PageTitle, string Snippet)
 {
+    private readonly string _pageTitle = PageTitle;
+    public LocalizedMessage? LocalizedPageTitle { get; init; }
+    public string PageTitle
+    {
+        get => LocalizedPageTitle?.ToString() ?? _pageTitle;
+        init { _pageTitle = value; LocalizedPageTitle = null; }
+    }
+    private readonly string _snippet = Snippet;
+    public LocalizedMessage? LocalizedSnippet { get; init; }
+    public string Snippet
+    {
+        get => LocalizedSnippet?.ToString() ?? _snippet;
+        init { _snippet = value; LocalizedSnippet = null; }
+    }
     public string Location => $"{NotebookTitle} › {SectionTitle} › {PageTitle}";
 }
 
@@ -19,7 +35,8 @@ public sealed partial class MainViewModel
     private string _categoryFilter = "";
     private bool _sortNotebooksByName;
     private PdfTextExtractionService? _pdfSearch;
-    public string SearchCoverageMessage { get; private set; } = "";
+    private LocalizedMessage? _searchCoverageMessage;
+    public string SearchCoverageMessage => _searchCoverageMessage?.ToString() ?? "";
     public string CategoryFilter { get => _categoryFilter; set { if (Set(ref _categoryFilter, value ?? "")) FilterLibrary(); } }
     public bool SortNotebooksByName { get => _sortNotebooksByName; set { if (Set(ref _sortNotebooksByName, value)) FilterLibrary(); } }
     public IReadOnlyList<string> Categories => _library.Select(note => note.Folder).Distinct().Order(StringComparer.CurrentCultureIgnoreCase).ToArray();
@@ -36,7 +53,7 @@ public sealed partial class MainViewModel
 
     public async Task SetNotebookAppearanceAsync(string notebookId, bool pinned, string color)
     {
-        if (color.Length != 0 && !NotebookAppearance.IsValidColor(color)) throw new ArgumentException("Choose a valid cover color.");
+        if (color.Length != 0 && !NotebookAppearance.IsValidColor(color)) throw new ArgumentException(L.Text("Messages.Notebook.InvalidCoverColor"));
         if (Document?.Id == notebookId)
         {
             Document.IsPinned = pinned; Document.CoverColor = color; Changed();
@@ -44,7 +61,7 @@ public sealed partial class MainViewModel
         }
         else
         {
-            var document = await Repository.LoadAsync(notebookId) ?? throw new IOException("This notebook could not be found.");
+            var document = await Repository.LoadAsync(notebookId) ?? throw new IOException(L.Text("Messages.Notebook.NotFound"));
             document.IsPinned = pinned; document.CoverColor = color;
             // Visual organization is not a new writing session.
             await Repository.SaveAsync(document);
@@ -54,7 +71,7 @@ public sealed partial class MainViewModel
 
     public void ApplyOrganization(NotebookDocument edited)
     {
-        if (Document is null || edited.Id != Document.Id) throw new InvalidOperationException("The notebook changed. Open the organizer again.");
+        if (Document is null || edited.Id != Document.Id) throw new InvalidOperationException(L.Text("Messages.Notebook.ChangedBeforeOrganizing"));
         if (JsonSerializer.Serialize(Document, DocumentJson.Options) == JsonSerializer.Serialize(edited, DocumentJson.Options)) return;
         Document = edited.Snapshot();
         RecordChange(true);
@@ -81,7 +98,7 @@ public sealed partial class MainViewModel
         await Autosave.FlushAsync();
         var inboxSummary = (await Repository.ListAsync()).FirstOrDefault(note => note.IsQuickInbox);
         var inbox = inboxSummary is null ? new NotebookDocument { Title = "Quick Notes", Folder = "Inbox", IsQuickInbox = true, IsPinned = true }
-            : await Repository.LoadAsync(inboxSummary.Id) ?? throw new IOException("The quick notes inbox could not be opened.");
+            : await Repository.LoadAsync(inboxSummary.Id) ?? throw new IOException(L.Text("Messages.Notebook.InboxUnavailable"));
         NotebookStructure.Normalize(inbox);
         var page = new NotePage { Title = DateTime.Now.ToString("yyyy-MM-dd HH:mm"), SectionId = inbox.Sections[0].Id, Template = PaperTemplate.Ruled };
         inbox.Pages.Add(page); inbox.ModifiedUtc = DateTimeOffset.UtcNow;
@@ -111,7 +128,7 @@ public sealed partial class MainViewModel
         }
         var searchable = documents.Where(document => document.Id != current?.Id).ToList();
         if (current is not null) searchable.Insert(0, current);
-        var warnings = new HashSet<string>(); var incompletePages = 0;
+        var warnings = new HashSet<object>(); var incompletePages = 0;
         if (query.Length > 0)
         {
             _pdfSearch ??= new PdfTextExtractionService(Repository);
@@ -121,13 +138,14 @@ public sealed partial class MainViewModel
                 var extracted = await _pdfSearch.ExtractPageTextAsync(page, cancellationToken);
                 // This is an isolated search projection, never an editable page or saved text box.
                 if (extracted.HasText) page.Texts.Add(new NoteText { Text = extracted.Text });
-                if (extracted.Warning is not null) { incompletePages++; warnings.Add(extracted.Warning); }
+                if (extracted.Warning is not null) { incompletePages++; warnings.Add(extracted.LocalizedWarning ?? (object)extracted.Warning); }
             }
         }
         var results = await Task.Run<IReadOnlyList<NotebookSearchResult>>(() => SearchDocuments(searchable, query, bookmarksOnly, cancellationToken), cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
-        SearchCoverageMessage = incompletePages == 0 ? "Handwriting and scanned images are not searched (no OCR)." :
-            $"PDF coverage: {incompletePages} page(s) could not be fully searched. {warnings.First()}";
+        _searchCoverageMessage = incompletePages == 0 ? L.M("Messages.Search.NoOcr") :
+            L.M("Messages.Search.IncompletePdf", incompletePages, warnings.First());
+        Notify(nameof(SearchCoverageMessage));
         return results;
     }
 
@@ -149,9 +167,13 @@ public sealed partial class MainViewModel
                     var metadataMatch = Matches(page.Title) || (index == 0 && Matches(section.Title)) ||
                         (section == document.Sections[0] && index == 0 && (Matches(document.Title) || Matches(document.Folder)));
                     if (!metadataMatch && typed is null && !(bookmarksOnly && query.Length == 0)) continue;
-                    var snippet = typed is null ? (page.IsBookmarked ? "Bookmarked page" : "Page title, section or notebook match") : SearchSnippet(typed, query);
+                    var snippet = typed is null ? "" : SearchSnippet(typed, query);
                     results.Add(new(document.Id, section.Id, page.Id, document.Title, section.Title,
-                        string.IsNullOrWhiteSpace(page.Title) ? $"Page {index + 1}" : $"{index + 1} · {page.Title}", snippet));
+                        string.IsNullOrWhiteSpace(page.Title) ? "" : $"{index + 1} · {page.Title}", snippet)
+                    {
+                        LocalizedPageTitle = string.IsNullOrWhiteSpace(page.Title) ? L.M("Messages.Page.Number", index + 1) : null,
+                        LocalizedSnippet = typed is null ? L.M(page.IsBookmarked ? "Messages.Search.BookmarkedPage" : "Messages.Search.MetadataMatch") : null
+                    });
                     if (results.Count == 250) return results;
                 }
             }
@@ -169,17 +191,17 @@ public sealed partial class MainViewModel
 
     public async Task<NotebookTransferReceipt> TransferPagesAsync(IEnumerable<string> pageIds, string targetNotebookId, string targetSectionId, bool copy)
     {
-        if (Document is null) throw new InvalidOperationException("Open a notebook first.");
-        if (Repository is not IAtomicNotebookRepository atomic) throw new NotSupportedException("This library does not support atomic page transfers.");
-        if (Document.Id == targetNotebookId) throw new InvalidOperationException("Use Move to Section for pages in this notebook.");
+        if (Document is null) throw new InvalidOperationException(L.Text("Messages.Transfer.OpenNotebookFirst"));
+        if (Repository is not IAtomicNotebookRepository atomic) throw new NotSupportedException(L.Text("Messages.Transfer.AtomicUnsupported"));
+        if (Document.Id == targetNotebookId) throw new InvalidOperationException(L.Text("Messages.Transfer.SameNotebook"));
         await Autosave.FlushAsync();
         var sourceBefore = Document.Snapshot();
-        var targetBefore = await Repository.LoadAsync(targetNotebookId) ?? throw new IOException("The destination notebook no longer exists.");
+        var targetBefore = await Repository.LoadAsync(targetNotebookId) ?? throw new IOException(L.Text("Messages.Transfer.NotebookMissing"));
         var source = sourceBefore.Snapshot(); var target = targetBefore.Snapshot();
-        if (!target.Sections.Any(section => section.Id == targetSectionId)) throw new IOException("The destination section no longer exists.");
+        if (!target.Sections.Any(section => section.Id == targetSectionId)) throw new IOException(L.Text("Messages.Transfer.SectionMissing"));
         var ids = pageIds.ToHashSet(StringComparer.Ordinal);
         var pages = source.Pages.Where(page => ids.Contains(page.Id)).ToArray();
-        if (pages.Length == 0 || pages.Length != ids.Count) throw new IOException("One or more selected pages no longer exist.");
+        if (pages.Length == 0 || pages.Length != ids.Count) throw new IOException(L.Text("Messages.Transfer.PageMissing"));
         var assets = pages.SelectMany(page => page.Images.Select(image => image.AssetId)
             .Concat(page.Pdf is null ? [] : new[] { page.Pdf.AssetId })
             .Concat(page.Practice is null ? [] : new[] { page.Practice.QuestionAssetId })).Distinct();
@@ -217,7 +239,7 @@ public sealed partial class MainViewModel
         {
             var actual = await Repository.LoadAsync(expected.Id);
             if (actual is null || JsonSerializer.Serialize(actual, DocumentJson.Options) != JsonSerializer.Serialize(expected, DocumentJson.Options))
-                throw new InvalidOperationException("A transferred notebook has changed. Undo transfer is no longer safe; use the page organizer to move the pages back.");
+                throw new InvalidOperationException(L.Text("Messages.Transfer.UnsafeUndo"));
         }
         await atomic.SaveBatchAsync([receipt.SourceBefore, receipt.TargetBefore]);
         if (Document?.Id == receipt.SourceBefore.Id) ReplaceDocument(receipt.SourceBefore.Snapshot(), true);

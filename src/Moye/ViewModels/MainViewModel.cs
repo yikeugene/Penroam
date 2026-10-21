@@ -1,7 +1,10 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using Moye.Localization;
 using Moye.Models;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.ViewModels;
 
@@ -22,7 +25,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private SectionViewModel? _selectedSection;
     private readonly Dictionary<string, string> _sectionPageSelections = [];
     private bool _rebuildingSections;
-    private string _search = "", _status = "Your notebooks, on this device", _operation = "";
+    private string _search = "", _status = "", _operation = "";
+    private LocalizedMessage? _statusMessage = L.M("Messages.Status.LocalLibrary"), _operationMessage;
     private double _zoom = .85;
     private bool _isBusy, _isLibraryVisible = true;
     public event EventHandler? DocumentReplaced;
@@ -30,12 +34,40 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public NotebookDocument? Document { get => _document; private set { _document = value; Notify(); Notify(nameof(Title)); Notify(nameof(Folder)); Notify(nameof(PageCountText)); Notify(nameof(HasResumeHints)); Notify(nameof(ResumeSummary)); } }
     public string Title => Document?.Title ?? "Penroam";
     public string Folder => Document?.Folder ?? "My Notes";
-    public string PageCountText => $"{Document?.Pages.Count ?? 0} {(Document?.Pages.Count == 1 ? "page" : "pages")}";
-    public string SectionPageCountText => $"{Pages.Count} {(Pages.Count == 1 ? "page" : "pages")}";
+    public string PageCountText => L.Text(Document?.Pages.Count == 1 ? "Messages.Count.Page" : "Messages.Count.Pages", Document?.Pages.Count ?? 0);
+    public string SectionPageCountText => L.Text(Pages.Count == 1 ? "Messages.Count.Page" : "Messages.Count.Pages", Pages.Count);
     public string SelectedSectionTitle => SelectedSection?.Title ?? "";
     public bool CanDeleteSection => Sections.Count > 1;
-    public string Status { get => _status; set => Set(ref _status, value); }
-    public string Operation { get => _operation; set => Set(ref _operation, value); }
+    public string Status
+    {
+        get => _statusMessage?.ToString() ?? _status;
+        set
+        {
+            var wasLocalized = _statusMessage is not null;
+            _statusMessage = null;
+            if (!Set(ref _status, value) && wasLocalized) Notify();
+        }
+    }
+    public string Operation
+    {
+        get => _operationMessage?.ToString() ?? _operation;
+        set
+        {
+            var wasLocalized = _operationMessage is not null;
+            _operationMessage = null;
+            if (!Set(ref _operation, value) && wasLocalized) Notify();
+        }
+    }
+    public void SetStatus(string key, params object?[] args)
+    {
+        _statusMessage = L.M(key, args);
+        Notify(nameof(Status));
+    }
+    public void SetOperation(string key, params object?[] args)
+    {
+        _operationMessage = L.M(key, args);
+        Notify(nameof(Operation));
+    }
     public bool IsBusy { get => _isBusy; set { if (Set(ref _isBusy, value)) Notify(nameof(CanInteract)); } }
     public bool CanInteract => !IsBusy;
     public bool IsLibraryVisible { get => _isLibraryVisible; private set { if (Set(ref _isLibraryVisible, value)) Notify(nameof(IsEditorVisible)); } }
@@ -44,9 +76,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public bool HasVisibleNotebooks => Notebooks.Count > 0;
     public bool HasSearch => !string.IsNullOrEmpty(Search);
     public string LibraryCountText => string.IsNullOrWhiteSpace(Search)
-        ? $"{_library.Count} {(_library.Count == 1 ? "notebook" : "notebooks")}" : $"{Notebooks.Count} of {_library.Count} notebooks";
-    public string EmptyLibraryTitle => HasSearch || HasNotebooks ? "No notebooks found" : "Your next idea starts here";
-    public string EmptyLibraryDescription => HasSearch || HasNotebooks ? "Try another notebook name or category, or clear your search." : "Create a notebook and choose the paper that works for you.";
+        ? L.Text(_library.Count == 1 ? "Messages.Count.Notebook" : "Messages.Count.Notebooks", _library.Count) : L.Text("Messages.Count.FilteredNotebooks", Notebooks.Count, _library.Count);
+    public string EmptyLibraryTitle => L.Text(HasSearch || HasNotebooks ? "Messages.Library.EmptySearchTitle" : "Messages.Library.EmptyTitle");
+    public string EmptyLibraryDescription => L.Text(HasSearch || HasNotebooks ? "Messages.Library.EmptySearchDescription" : "Messages.Library.EmptyDescription");
     public bool HasSaveError => Autosave.LastError is not null;
     public bool CanUndo => _history.CanUndo;
     public bool CanRedo => _history.CanRedo;
@@ -81,7 +113,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             DocumentReplaced?.Invoke(this, EventArgs.Empty);
         }
     }
-    public string CurrentPageText => SelectedPage is null ? "" : $"Page {SelectedPage.Number} of {Pages.Count}";
+    public string CurrentPageText => SelectedPage is null ? "" : L.Text("Messages.Page.Current", SelectedPage.Number, Pages.Count);
 
     public NotebookDocument? CreateSelectedSectionExportSnapshot()
     {
@@ -108,6 +140,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         Repository = repository; Pdf = new PdfService(repository); Backup = new BackupService(repository); Autosave = new(repository);
         Documents = new DocumentImportService(Pdf, new OfficePdfConverter());
+        PropertyChangedEventManager.AddHandler(L.Current, OnLanguageChanged, nameof(L.LanguageCode));
         var dispatcher = Application.Current?.Dispatcher;
         Autosave.StateChanged += (_, _) =>
         {
@@ -141,7 +174,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public async Task OpenAsync(string id)
     {
         await Autosave.FlushAsync();
-        var doc = await Repository.LoadAsync(id) ?? throw new IOException("This notebook could not be found.");
+        var doc = await Repository.LoadAsync(id) ?? throw new IOException(L.Text("Messages.Notebook.NotFound"));
         ReplaceDocument(doc, true); IsLibraryVisible = false; UpdateSaveStatus();
     }
 
@@ -438,8 +471,20 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private void UpdateHistory() { Notify(nameof(CanUndo)); Notify(nameof(CanRedo)); HistoryChanged?.Invoke(this, EventArgs.Empty); }
     private void UpdateSaveStatus()
     {
-        Status = Autosave.LastError is not null ? "Save failed · Retry or create a backup" : Autosave.IsSaving ? "Saving…" : Autosave.IsDirty ? "Waiting to save…" : Document is null ? "Your notebooks, on this device" : "Saved on this device";
+        SetStatus(Autosave.LastError is not null ? "Messages.Status.SaveFailed" : Autosave.IsSaving ? "Messages.Status.Saving" : Autosave.IsDirty ? "Messages.Status.WaitingToSave" : Document is null ? "Messages.Status.LocalLibrary" : "Messages.Status.SavedLocally");
         Notify(nameof(HasSaveError));
     }
-    public void Dispose() { Autosave.Dispose(); (Pdf as IDisposable)?.Dispose(); Repository.Dispose(); }
+    private void OnLanguageChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Refresh presentation only: keep the current warning/completion, document and search state.
+        Notify(nameof(Status)); Notify(nameof(Operation));
+        Notify(nameof(PageCountText)); Notify(nameof(SectionPageCountText)); Notify(nameof(CurrentPageText));
+        Notify(nameof(LibraryCountText)); Notify(nameof(EmptyLibraryTitle)); Notify(nameof(EmptyLibraryDescription));
+        Notify(nameof(ResumeSummary)); Notify(nameof(SearchCoverageMessage));
+    }
+    public void Dispose()
+    {
+        PropertyChangedEventManager.RemoveHandler(L.Current, OnLanguageChanged, nameof(L.LanguageCode));
+        Autosave.Dispose(); (Pdf as IDisposable)?.Dispose(); Repository.Dispose();
+    }
 }

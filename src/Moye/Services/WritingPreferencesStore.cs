@@ -1,12 +1,23 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Moye.Localization;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
 public sealed record WritingPreferencesLoadResult(
-    WritingPreferences Preferences, string? Warning = null, string? PreservedFilePath = null, bool CanSave = true);
+    WritingPreferences Preferences, string? Warning = null, string? PreservedFilePath = null, bool CanSave = true)
+{
+    private readonly string? _warning = Warning;
+    public LocalizedMessage? LocalizedWarning { get; init; }
+    public string? Warning
+    {
+        get => LocalizedWarning?.ToString() ?? _warning;
+        init { _warning = value; LocalizedWarning = null; }
+    }
+}
 
 /// <summary>Serializes local writing preferences using an atomic file replacement.</summary>
 public sealed class WritingPreferencesStore
@@ -20,7 +31,7 @@ public sealed class WritingPreferencesStore
     };
     private readonly SemaphoreSlim _gate = new(1, 1);
     private bool _loadAttempted;
-    private string? _saveBlockedReason;
+    private LocalizedMessage? _saveBlockedReason;
 
     public static string DefaultPath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Moye", "writing-preferences.json");
@@ -39,7 +50,7 @@ public sealed class WritingPreferencesStore
     {
         ArgumentNullException.ThrowIfNull(preferences);
         if (preferences.Version != WritingPreferences.CurrentVersion)
-            throw new InvalidDataException("This writing-preferences version is not supported.");
+            throw new InvalidDataException(L.Text("Messages.Writing.UnsupportedVersion"));
         // Capture before queuing: later UI edits must not change this save.
         var snapshot = preferences.Normalize();
         return Task.Run(async () =>
@@ -53,7 +64,7 @@ public sealed class WritingPreferencesStore
                     var loaded = await LoadCoreAsync(cancellationToken).ConfigureAwait(false);
                     if (loaded.Warning is not null) throw new IOException(loaded.Warning);
                 }
-                if (_saveBlockedReason is not null) throw new IOException(_saveBlockedReason);
+                if (_saveBlockedReason is not null) throw new IOException(_saveBlockedReason.ToString());
                 var directory = Path.GetDirectoryName(FilePath)!;
                 Directory.CreateDirectory(directory);
                 temporaryPath = Path.Combine(directory, $".{Path.GetFileName(FilePath)}.{Guid.NewGuid():N}.tmp");
@@ -91,22 +102,22 @@ public sealed class WritingPreferencesStore
         catch (DirectoryNotFoundException) { return new(WritingPreferences.CreateDefault()); }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            _saveBlockedReason = "Writing preferences could not be read. The existing file was kept. Reload settings before saving. " + exception.Message;
-            return new(WritingPreferences.CreateDefault(), _saveBlockedReason, FilePath, false);
+            _saveBlockedReason = L.M("Messages.Writing.Unreadable", exception.Message);
+            return new(WritingPreferences.CreateDefault(), PreservedFilePath: FilePath, CanSave: false) { LocalizedWarning = _saveBlockedReason };
         }
 
         try
         {
             var loaded = JsonSerializer.Deserialize<WritingPreferences>(json, JsonOptions)
-                ?? throw new JsonException("The settings file contains no preferences.");
+                ?? throw new JsonException(L.Text("Messages.Writing.EmptySettings"));
             if (loaded.Version != WritingPreferences.CurrentVersion)
             {
-                _saveBlockedReason = $"Writing-preferences version {loaded.Version} is not supported. The existing file was kept and will not be overwritten.";
-                return new(WritingPreferences.CreateDefault(), _saveBlockedReason, FilePath, false);
+                _saveBlockedReason = L.M("Messages.Writing.NewerVersion", loaded.Version);
+                return new(WritingPreferences.CreateDefault(), PreservedFilePath: FilePath, CanSave: false) { LocalizedWarning = _saveBlockedReason };
             }
             var normalized = loaded.Normalize();
             var changed = JsonSerializer.Serialize(loaded, JsonOptions) != JsonSerializer.Serialize(normalized, JsonOptions);
-            return new(normalized, changed ? "Some writing settings were invalid and have been reset to supported values." : null);
+            return new(normalized) { LocalizedWarning = changed ? L.M("Messages.Writing.ValuesReset") : null };
         }
         catch (JsonException)
         {
@@ -114,12 +125,11 @@ public sealed class WritingPreferencesStore
             try { File.Move(FilePath, preservedPath); }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
             {
-                _saveBlockedReason = "The writing-preferences file is damaged and could not be preserved separately. The original was kept. Reload settings before saving. " + exception.Message;
-                return new(WritingPreferences.CreateDefault(), _saveBlockedReason, FilePath, false);
+                _saveBlockedReason = L.M("Messages.Writing.DamagedNotPreserved", exception.Message);
+                return new(WritingPreferences.CreateDefault(), PreservedFilePath: FilePath, CanSave: false) { LocalizedWarning = _saveBlockedReason };
             }
-            return new(WritingPreferences.CreateDefault(),
-                "The writing-preferences file was damaged. Default tools are available, and the damaged file was preserved at " + preservedPath + ".",
-                preservedPath);
+            return new(WritingPreferences.CreateDefault(), PreservedFilePath: preservedPath)
+            { LocalizedWarning = L.M("Messages.Writing.DamagedPreserved", preservedPath) };
         }
     }
 }

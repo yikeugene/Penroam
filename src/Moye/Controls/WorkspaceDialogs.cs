@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -34,7 +35,7 @@ public sealed class WorkspaceOptionsDialog
 
     public static Window Build(Window owner, WorkspacePreferences preferences, string? focusSetting = null)
     {
-        var window = WorkspaceDialogUi.Window(owner, "Workspace settings", height: 670);
+        var window = WorkspaceDialogUi.Window(owner, L.Text("Controls.Workspace.Title"), height: 670);
         NameScope.SetNameScope(window, new NameScope());
         void Name(FrameworkElement control, string name) { control.Name = name; window.RegisterName(name, control); }
         window.Loaded += (_, _) =>
@@ -44,41 +45,41 @@ public sealed class WorkspaceOptionsDialog
         };
         var panel = new StackPanel { Margin = new Thickness(24) };
         window.Content = new ScrollViewer { Content = panel, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled };
-        panel.Children.Add(WorkspaceDialogUi.Text("Writing and workspace"));
+        panel.Children.Add(WorkspaceDialogUi.Text(L.Text("Controls.Workspace.Writing")));
         CheckBox Check(string name, string label, bool value)
         {
             var box = new CheckBox { Content = new TextBlock { Text = label, TextWrapping = TextWrapping.Wrap }, IsChecked = value, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
             Name(box, name); AutomationProperties.SetName(box, label);
             panel.Children.Add(box); return box;
         }
-        var touch = Check("TwoFingerNavigation", "Use two fingers to move pages (ignore one-finger drags)", preferences.TwoFingerNavigationOnly);
-        var zoom = Check("LockZoom", "Lock zoom while writing", preferences.LockZoom);
-        var compact = Check("CompactToolbar", "Hide the favorite pen row in the main toolbar", preferences.CompactToolbar);
-        var right = Check("FocusToolsDock", "Dock focus tools on the right", preferences.FocusToolsOnRight);
-        panel.Children.Add(WorkspaceDialogUi.Text("Automatic local backups"));
-        var enabled = Check("BackupEnabled", "Back up while Penroam is open", preferences.BackupEnabled);
+        var touch = Check("TwoFingerNavigation", L.Text("Controls.Workspace.TwoFingers"), preferences.TwoFingerNavigationOnly);
+        var zoom = Check("LockZoom", L.Text("Features.Command.zoom-lock.Name"), preferences.LockZoom);
+        var compact = Check("CompactToolbar", L.Text("Features.HideTheFavoritePenRowInTheMain"), preferences.CompactToolbar);
+        var right = Check("FocusToolsDock", L.Text("Controls.Workspace.FocusRight"), preferences.FocusToolsOnRight);
+        panel.Children.Add(WorkspaceDialogUi.Text(L.Text("Controls.Workspace.Backups")));
+        var enabled = Check("BackupEnabled", L.Text("Controls.Workspace.BackupEnabled"), preferences.BackupEnabled);
         var directory = new TextBox { Text = preferences.BackupDirectory, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
-        Name(directory, "BackupFolder"); AutomationProperties.SetName(directory, "Automatic backup folder");
+        Name(directory, "BackupFolder"); AutomationProperties.SetName(directory, L.Text("Controls.Workspace.BackupFolder"));
         panel.Children.Add(directory);
-        panel.Children.Add(WorkspaceDialogUi.Button("Choose backup folder…", (_, _) =>
+        panel.Children.Add(WorkspaceDialogUi.Button(L.Text("Controls.Workspace.ChooseFolder"), (_, _) =>
         {
-            var picker = new OpenFolderDialog { Title = "Automatic backup folder" };
+            var picker = new OpenFolderDialog { Title = L.Text("Controls.Workspace.BackupFolder") };
             if (picker.ShowDialog(window) == true) directory.Text = picker.FolderName;
         }));
-        panel.Children.Add(WorkspaceDialogUi.Text("Interval in hours (1–168) · keep completed backups (1–100)"));
+        panel.Children.Add(WorkspaceDialogUi.Text(L.Text("Controls.Workspace.BackupIntervals")));
         var values = new StackPanel { Orientation = Orientation.Horizontal };
         var hours = new TextBox { Text = preferences.BackupIntervalHours.ToString(), Width = 100, MinHeight = 44, Margin = new Thickness(0, 0, 12, 0) };
         var retention = new TextBox { Text = preferences.BackupRetention.ToString(), Width = 100, MinHeight = 44 };
-        Name(hours, "BackupInterval"); AutomationProperties.SetName(hours, "Backup interval in hours");
-        Name(retention, "BackupRetention"); AutomationProperties.SetName(retention, "Number of completed backups to keep");
+        Name(hours, "BackupInterval"); AutomationProperties.SetName(hours, L.Text("Features.BackupIntervalInHours"));
+        Name(retention, "BackupRetention"); AutomationProperties.SetName(retention, L.Text("Features.NumberOfCompletedBackupsToKeep"));
         values.Children.Add(hours); values.Children.Add(retention); panel.Children.Add(values);
-        panel.Children.Add(WorkspaceDialogUi.Text("Backups contain editable notebooks. Recently deleted items are kept separately for 30 days. Both remain on this device unless you choose a synchronized folder."));
+        panel.Children.Add(WorkspaceDialogUi.Text(L.Text("Controls.Workspace.BackupHint")));
         var error = WorkspaceDialogUi.Text(""); error.Foreground = Brushes.DarkRed; panel.Children.Add(error);
-        panel.Children.Add(WorkspaceDialogUi.Button("Save settings", (_, _) =>
+        panel.Children.Add(WorkspaceDialogUi.Button(L.Text("Controls.Workspace.Save"), (_, _) =>
         {
             if (!int.TryParse(hours.Text, out var interval) || interval is < 1 or > 168 || !int.TryParse(retention.Text, out var keep) || keep is < 1 or > 100)
-            { error.Text = "Enter an interval from 1 to 168 hours and keep 1 to 100 backups."; return; }
-            if (enabled.IsChecked == true && string.IsNullOrWhiteSpace(directory.Text)) { error.Text = "Choose a backup folder first."; return; }
+            { error.Text = L.Text("Controls.Workspace.InvalidInterval"); return; }
+            if (enabled.IsChecked == true && string.IsNullOrWhiteSpace(directory.Text)) { error.Text = L.Text("Controls.Workspace.FolderRequired"); return; }
             preferences.TwoFingerNavigationOnly = touch.IsChecked == true;
             preferences.LockZoom = zoom.IsChecked == true; preferences.CompactToolbar = compact.IsChecked == true;
             preferences.FocusToolsOnRight = right.IsChecked == true; preferences.BackupEnabled = enabled.IsChecked == true;
@@ -99,10 +100,10 @@ internal sealed class SafetyProgressDialog
         var panel = new StackPanel { Margin = new Thickness(24) };
         var label = WorkspaceDialogUi.Text(title); panel.Children.Add(label);
         panel.Children.Add(new ProgressBar { IsIndeterminate = true, Height = 6, Margin = new Thickness(0, 12, 0, 12) });
-        var cancel = WorkspaceDialogUi.Button("Cancel", (_, _) => cancellation.Cancel()); panel.Children.Add(cancel);
+        var cancel = WorkspaceDialogUi.Button(L.Text("Controls.Common.Cancel"), (_, _) => cancellation.Cancel()); panel.Children.Add(cancel);
         window.Content = panel;
         var done = false;
-        window.Closing += (_, e) => { if (!done) { e.Cancel = true; cancellation.Cancel(); cancel.IsEnabled = false; label.Text = "Canceling after the current safe step…"; } };
+        window.Closing += (_, e) => { if (!done) { e.Cancel = true; cancellation.Cancel(); cancel.IsEnabled = false; label.Text = L.Text("Controls.Workspace.Canceling"); } };
         window.Loaded += async (_, _) =>
         {
             try { await action(new Progress<string>(message => label.Text = message), cancellation.Token); completion.SetResult(); }
@@ -155,7 +156,7 @@ public static class WorkspaceCommandDialog
         var previousFocus = Keyboard.FocusedElement as UIElement;
         if (previousFocus is null || Window.GetWindow(previousFocus) != owner)
             previousFocus = FocusManager.GetFocusedElement(owner) as UIElement;
-        var window = WorkspaceDialogUi.Window(owner, "All tools & help", 690, 640);
+        var window = WorkspaceDialogUi.Window(owner, L.Text("Features.AllToolsHelp"), 690, 640);
         window.MinHeight = 400;
         NameScope.SetNameScope(window, new NameScope());
         var muted = owner.TryFindResource("MutedInk") as Brush ?? new SolidColorBrush(Color.FromRgb(101, 115, 109));
@@ -181,19 +182,19 @@ public static class WorkspaceCommandDialog
         }
 
         var search = new TextBox { MinHeight = 44, MinWidth = 44, VerticalContentAlignment = VerticalAlignment.Center };
-        Name(search, "CommandSearch", "Search tools, help and shortcuts");
-        var searchLabel = new Label { Content = "Search tools & help", Target = search, Padding = new Thickness(0, 0, 0, 4) };
+        Name(search, "CommandSearch", L.Text("Features.SearchToolsHelpAndShortcuts"));
+        var searchLabel = new Label { Content = L.Text("Features.SearchToolsHelp"), Target = search, Padding = new Thickness(0, 0, 0, 4) };
         AutomationProperties.SetLabeledBy(search, searchLabel);
         Add(searchLabel, 0);
         var searchRow = new Grid();
         searchRow.ColumnDefinitions.Add(new ColumnDefinition());
         searchRow.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         searchRow.Children.Add(search);
-        var clear = WorkspaceDialogUi.Button("Reset", (_, _) => { });
+        var clear = WorkspaceDialogUi.Button(L.Text("Controls.Extend.Reset"), (_, _) => { });
         clear.MinWidth = 44; clear.Margin = new Thickness(8, 0, 0, 0);
-        clear.ToolTip = "Clear the search and show all categories";
+        clear.ToolTip = L.Text("Features.ClearTheSearchAndShowAllCategories");
         clear.Style = owner.TryFindResource("SecondaryButton") as Style;
-        Name(clear, "ClearCommandSearchButton", "Clear search and category filter");
+        Name(clear, "ClearCommandSearchButton", L.Text("Features.ClearSearchAndCategoryFilter"));
         Grid.SetColumn(clear, 1); searchRow.Children.Add(clear);
         Add(searchRow, 1);
 
@@ -203,12 +204,12 @@ public static class WorkspaceCommandDialog
         var category = new ComboBox
         {
             MinHeight = 44, MinWidth = 44, VerticalContentAlignment = VerticalAlignment.Center,
-            ItemsSource = new[] { "All categories" }.Concat(commands.Select(command => command.Category)
+            ItemsSource = new[] { L.Text("Features.AllCategories") }.Concat(commands.Select(command => command.Category)
                 .Distinct(StringComparer.CurrentCultureIgnoreCase).OrderBy(value => value, StringComparer.CurrentCultureIgnoreCase)).ToArray(),
             SelectedIndex = 0
         };
-        Name(category, "CommandCategory", "Filter tools by category");
-        var categoryLabel = new Label { Content = "Category", Target = category, VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(0, 0, 10, 0) };
+        Name(category, "CommandCategory", L.Text("Features.FilterToolsByCategory"));
+        var categoryLabel = new Label { Content = L.Text("Controls.Common.Category"), Target = category, VerticalAlignment = VerticalAlignment.Center, Padding = new Thickness(0, 0, 10, 0) };
         AutomationProperties.SetLabeledBy(category, categoryLabel);
         categoryRow.Children.Add(categoryLabel); Grid.SetColumn(category, 1); categoryRow.Children.Add(category);
         var categoryStyle = new Style(typeof(ComboBoxItem));
@@ -219,12 +220,12 @@ public static class WorkspaceCommandDialog
         Add(categoryRow, 2);
 
         var count = new TextBlock { Foreground = muted, Margin = new Thickness(0, 6, 0, 6), TextWrapping = TextWrapping.Wrap };
-        Name(count, "CommandResultCount", "Matching tools and help topics");
+        Name(count, "CommandResultCount", L.Text("Features.MatchingToolsAndHelpTopics"));
         count.SetBinding(AutomationProperties.NameProperty, new Binding(nameof(TextBlock.Text)) { Source = count });
         AutomationProperties.SetLiveSetting(count, AutomationLiveSetting.Polite);
         Add(count, 3);
         var list = new ListBox { MinHeight = 44, MinWidth = 44, HorizontalContentAlignment = HorizontalAlignment.Stretch };
-        Name(list, "CommandList", "Tools and help topics");
+        Name(list, "CommandList", L.Text("Features.ToolsAndHelpTopics"));
         ScrollViewer.SetHorizontalScrollBarVisibility(list, ScrollBarVisibility.Disabled);
         ScrollViewer.SetVerticalScrollBarVisibility(list, ScrollBarVisibility.Auto);
         var style = new Style(typeof(ListBoxItem));
@@ -237,13 +238,13 @@ public static class WorkspaceCommandDialog
         list.ItemContainerStyle = style;
         list.ItemTemplate = RowTemplate();
         var results = new Grid(); results.Children.Add(list);
-        var empty = WorkspaceDialogUi.Text("No tools match. Use Reset to clear the search and category filter.");
+        var empty = WorkspaceDialogUi.Text(L.Text("Features.NoToolsMatchUseResetToClearThe"));
         empty.Margin = new Thickness(12); empty.VerticalAlignment = VerticalAlignment.Center; empty.IsHitTestVisible = false;
-        Name(empty, "CommandEmptyState", "No tools match. Reset the filters to see all tools.");
+        Name(empty, "CommandEmptyState", L.Text("Features.NoToolsMatchResetTheFiltersToSee"));
         results.Children.Add(empty); Add(results, 4);
 
         var details = new TextBlock { TextWrapping = TextWrapping.Wrap };
-        Name(details, "CommandDetails", "Selected tool details and requirements");
+        Name(details, "CommandDetails", L.Text("Features.SelectedToolDetailsAndRequirements"));
         details.SetBinding(AutomationProperties.NameProperty, new Binding(nameof(TextBlock.Text)) { Source = details });
         var detailsScroll = new ScrollViewer
         {
@@ -261,15 +262,15 @@ public static class WorkspaceCommandDialog
         var actions = new Grid { Margin = new Thickness(0, 8, 0, 0) };
         actions.ColumnDefinitions.Add(new ColumnDefinition());
         actions.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        var run = WorkspaceDialogUi.Button("Run selected command", (_, _) => { });
+        var run = WorkspaceDialogUi.Button(L.Text("Features.RunSelectedCommand"), (_, _) => { });
         run.MinWidth = 44; run.Margin = new Thickness(0, 0, 8, 0);
         run.Style = owner.TryFindResource("PrimaryButton") as Style;
-        Name(run, "RunCommandButton", "Run selected command");
+        Name(run, "RunCommandButton", L.Text("Features.RunSelectedCommand"));
         actions.Children.Add(run);
-        var close = WorkspaceDialogUi.Button("Close", (_, _) => window.Close());
+        var close = WorkspaceDialogUi.Button(L.Text("Controls.Common.Close"), (_, _) => window.Close());
         close.MinWidth = 44; close.Margin = new Thickness(0);
         close.Style = owner.TryFindResource("SecondaryButton") as Style;
-        Name(close, "CloseCommandButton", "Close all tools and help");
+        Name(close, "CloseCommandButton", L.Text("Features.CloseAllToolsAndHelp"));
         Grid.SetColumn(close, 1); actions.Children.Add(close); Add(actions, 6);
 
         var closed = false;
@@ -279,7 +280,7 @@ public static class WorkspaceCommandDialog
         {
             if (list.SelectedItem is not CommandRow row)
             {
-                details.Text = "Select a tool to see how to use it, its usual location and any requirements.";
+                details.Text = L.Text("Features.SelectAToolToSeeHowToUse");
                 run.IsEnabled = false; run.Visibility = Visibility.Visible;
                 return;
             }
@@ -300,7 +301,7 @@ public static class WorkspaceCommandDialog
                 .Select(command => new CommandRow(command)).ToArray();
             list.ItemsSource = rows;
             list.SelectedItem = rows.FirstOrDefault(row => ReferenceEquals(row.Command, selected)) ?? rows.FirstOrDefault();
-            count.Text = $"{rows.Length} {(rows.Length == 1 ? "tool or help topic" : "tools and help topics")}";
+            count.Text = L.Text(rows.Length == 1 ? "Features.SingleToolCount" : "Features.ToolCount", rows.Length);
             empty.Visibility = rows.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
             clear.IsEnabled = search.Text.Length != 0 || category.SelectedIndex != 0;
             UpdateSelection();
@@ -404,11 +405,11 @@ public static class WorkspaceCommandDialog
         {
             var reason = Command.UnavailableReason;
             CanExecute = !Command.IsInstruction && reason is null;
-            Availability = reason is null ? "" : $"Unavailable: {reason}";
+            Availability = reason is null ? "" : L.Text("Features.Unavailable", reason);
             Status = string.Join("   ", new[]
             {
-                Command.IsInstruction ? "How to use" : "",
-                string.IsNullOrWhiteSpace(Command.Shortcut) ? "" : $"Shortcut: {Command.Shortcut}",
+                Command.IsInstruction ? L.Text("Features.HowToUse") : "",
+                string.IsNullOrWhiteSpace(Command.Shortcut) ? "" : L.Text("Features.Shortcut", Command.Shortcut),
                 Command.GetChecked is null ? "" : Command.IsChecked ? "On" : "Off"
             }.Where(value => value.Length != 0));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(null));

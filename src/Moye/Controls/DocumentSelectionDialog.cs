@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Moye.Models;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -21,11 +22,11 @@ public sealed class DocumentSelectionDialog : Window
     private readonly ListBox _list = new();
     private readonly TextBlock _count = new() { FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 8, 0, 8) };
     private readonly TextBlock _message = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.Firebrick, MinHeight = 24 };
-    private readonly TextBlock _previewLabel = new() { Text = "Select a page to preview", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 8) };
+    private readonly TextBlock _previewLabel = new() { Text = L.Text("Controls.DocumentSelection.PreviewHint"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 8) };
     private readonly Image _preview = new() { Stretch = Stretch.Uniform, VerticalAlignment = VerticalAlignment.Top };
     private readonly ComboBox _destination = new() { DisplayMemberPath = nameof(ImportDestination.Title), MinHeight = 44 };
     private ComboBox? _scope;
-    private readonly ComboBox _position = new() { ItemsSource = new[] { "At the end of the section", "After the current page" }, SelectedIndex = 0, MinHeight = 44 };
+    private readonly ComboBox _position = new() { ItemsSource = new[] { L.Text("Controls.DocumentSelection.PositionEnd"), L.Text("Controls.DocumentSelection.PositionAfter") }, SelectedIndex = 0, MinHeight = 44 };
     private readonly TextBox _newTitle = new() { Text = "Imported document", MaxLength = 160, MinHeight = 44 };
     private readonly Button _accept;
     private readonly PagePreviewRenderer _renderer;
@@ -49,20 +50,20 @@ public sealed class DocumentSelectionDialog : Window
         _renderer = renderer; _currentSectionId = currentSectionId;
         var sections = notebook?.Sections.ToDictionary(section => section.Id, section => section.Title) ?? [];
         _choices = pages.Select((page, index) => new PageChoice(page.Snapshot(), index + 1,
-            $"Page {index + 1}" + (string.IsNullOrWhiteSpace(page.Title) ? "" : $" · {page.Title}") +
+            L.Text("Controls.Common.PageNumber", index + 1) + (string.IsNullOrWhiteSpace(page.Title) ? "" : $" · {page.Title}") +
             (!importing && sections.TryGetValue(page.SectionId, out var section) ? $" · {section}" : ""))
             { Included = importing || page.SectionId == currentSectionId }).ToList();
         var root = new Grid { Margin = new Thickness(22) };
         root.RowDefinitions.Add(new() { Height = GridLength.Auto }); root.RowDefinitions.Add(new()); root.RowDefinitions.Add(new() { Height = GridLength.Auto });
         var header = new StackPanel();
         header.Children.Add(new TextBlock { Text = title, FontSize = 24, FontWeight = FontWeights.SemiBold });
-        header.Children.Add(new TextBlock { Text = importing ? "Choose pages before adding them. Your document stays unchanged." : "Choose pages in their notebook order. Added text is outlined in the PDF.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 10) });
+        header.Children.Add(new TextBlock { Text = importing ? L.Text("Controls.DocumentSelection.ImportHint") : L.Text("Controls.DocumentSelection.ExportHint"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 10) });
         var selection = new WrapPanel();
         if (!importing)
         {
-            var scope = new ComboBox { ItemsSource = new[] { "Current section", "Current page", "Whole notebook", "Choose pages below" }, SelectedIndex = 0, MinWidth = 175, MinHeight = 44, Margin = new Thickness(0, 0, 8, 0) };
+            var scope = new ComboBox { ItemsSource = new[] { L.Text("Controls.DocumentSelection.ScopeSection"), L.Text("Controls.DocumentSelection.ScopePage"), L.Text("Controls.DocumentSelection.ScopeNotebook"), L.Text("Controls.DocumentSelection.ScopeCustom") }, SelectedIndex = 0, MinWidth = 175, MinHeight = 44, Margin = new Thickness(0, 0, 8, 0) };
             _scope = scope;
-            AutomationProperties.SetName(scope, "Export scope");
+            AutomationProperties.SetName(scope, L.Text("Controls.DocumentSelection.ExportScope"));
             scope.SelectionChanged += (_, _) =>
             {
                 if (scope.SelectedIndex == 3) return;
@@ -70,11 +71,11 @@ public sealed class DocumentSelectionDialog : Window
             };
             selection.Children.Add(scope);
         }
-        AddButton(selection, "Select all", () => ApplySelection(_ => true, true));
-        AddButton(selection, "Clear", () => ApplySelection(_ => false, true));
-        var range = new TextBox { Width = 155, MinHeight = 44, Margin = new Thickness(8, 0, 8, 0), ToolTip = "Page numbers in the list, for example 1–5, 8" };
-        AutomationProperties.SetName(range, "Page range"); selection.Children.Add(range);
-        AddButton(selection, "Apply range", () =>
+        AddButton(selection, L.Text("Controls.Common.SelectAll"), () => ApplySelection(_ => true, true));
+        AddButton(selection, L.Text("Controls.DocumentSelection.Clear"), () => ApplySelection(_ => false, true));
+        var range = new TextBox { Width = 155, MinHeight = 44, Margin = new Thickness(8, 0, 8, 0), ToolTip = L.Text("Controls.DocumentSelection.RangeHelp") };
+        AutomationProperties.SetName(range, L.Text("Controls.DocumentSelection.Range")); selection.Children.Add(range);
+        AddButton(selection, L.Text("Controls.DocumentSelection.ApplyRange"), () =>
         {
             try { var indexes = DocumentWorkflows.ParsePageRange(range.Text, _choices.Count).ToHashSet(); ApplySelection(choice => indexes.Contains(choice.Number - 1), true); }
             catch (FormatException ex) { _message.Text = ex.Message; }
@@ -103,26 +104,26 @@ public sealed class DocumentSelectionDialog : Window
         if (importing)
         {
             var destinations = notebook?.Sections.Select(section => new ImportDestination(ImportDestinationKind.Section, section.Title, section.Id)).ToList() ?? [];
-            if (notebook is not null) destinations.Add(new(ImportDestinationKind.NewSection, "New section…"));
-            destinations.Add(new(ImportDestinationKind.NewNotebook, "New notebook…"));
+            if (notebook is not null) destinations.Add(new(ImportDestinationKind.NewSection, L.Text("Controls.DocumentSelection.NewSection")));
+            destinations.Add(new(ImportDestinationKind.NewNotebook, L.Text("Controls.DocumentSelection.NewNotebook")));
             _destination.ItemsSource = destinations;
             _destination.SelectedItem = destinations.FirstOrDefault(item => item.SectionId == currentSectionId) ?? destinations.Last();
             _newTitle.Text = suggestedTitle ?? "Imported document";
             var placement = new Grid(); placement.ColumnDefinitions.Add(new()); placement.ColumnDefinitions.Add(new());
             _destination.Margin = new Thickness(0, 0, 8, 0); placement.Children.Add(_destination); Grid.SetColumn(_position, 1); placement.Children.Add(_position);
-            footer.Children.Add(new TextBlock { Text = "Destination", Margin = new Thickness(0, 0, 0, 4) }); footer.Children.Add(placement);
+            footer.Children.Add(new TextBlock { Text = L.Text("Controls.DocumentSelection.Destination"), Margin = new Thickness(0, 0, 0, 4) }); footer.Children.Add(placement);
             _newTitle.Margin = new Thickness(0, 8, 0, 0); footer.Children.Add(_newTitle);
-            AutomationProperties.SetName(_destination, "Import destination"); AutomationProperties.SetName(_position, "Page placement"); AutomationProperties.SetName(_newTitle, "New notebook or section name");
+            AutomationProperties.SetName(_destination, L.Text("Controls.DocumentSelection.ImportDestination")); AutomationProperties.SetName(_position, L.Text("Controls.DocumentSelection.Placement")); AutomationProperties.SetName(_newTitle, L.Text("Controls.DocumentSelection.NewName"));
             _destination.SelectionChanged += (_, _) => UpdateDestination(); UpdateDestination();
         }
         footer.Children.Add(_message);
         var actions = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
-        actions.Children.Add(new Button { Content = "Cancel", IsCancel = true, MinHeight = 44, MinWidth = 90, Margin = new Thickness(8, 0, 0, 0), Style = TryFindResource("SecondaryButton") as Style });
-        _accept = new Button { Content = importing ? "Import selected pages" : "Continue to export", MinHeight = 44, IsDefault = true, Margin = new Thickness(8, 0, 0, 0), Style = TryFindResource("PrimaryButton") as Style };
+        actions.Children.Add(new Button { Content = L.Text("Controls.Common.Cancel"), IsCancel = true, MinHeight = 44, MinWidth = 90, Margin = new Thickness(8, 0, 0, 0), Style = TryFindResource("SecondaryButton") as Style });
+        _accept = new Button { Content = importing ? L.Text("Controls.DocumentSelection.Import") : L.Text("Controls.DocumentSelection.Export"), MinHeight = 44, IsDefault = true, Margin = new Thickness(8, 0, 0, 0), Style = TryFindResource("PrimaryButton") as Style };
         _accept.Click += (_, _) =>
         {
-            if (SelectedPages.Count == 0) { _message.Text = "Select at least one page."; return; }
-            if (importing && Destination?.Kind != ImportDestinationKind.Section && string.IsNullOrWhiteSpace(NewTitle)) { _message.Text = "Enter a name for the new notebook or section."; return; }
+            if (SelectedPages.Count == 0) { _message.Text = L.Text("Controls.DocumentSelection.SelectRequired"); return; }
+            if (importing && Destination?.Kind != ImportDestinationKind.Section && string.IsNullOrWhiteSpace(NewTitle)) { _message.Text = L.Text("Controls.DocumentSelection.NameRequired"); return; }
             DialogResult = true;
         };
         actions.Children.Add(_accept); footer.Children.Add(actions); Content = root;
@@ -145,7 +146,7 @@ public sealed class DocumentSelectionDialog : Window
         if (custom && _scope is not null) _scope.SelectedIndex = 3;
         _message.Text = ""; UpdateCount();
     }
-    private void UpdateCount() { var count = _choices.Count(choice => choice.Included); _count.Text = $"{count} of {_choices.Count} pages selected"; if (_accept is not null) _accept.IsEnabled = count > 0; }
+    private void UpdateCount() { var count = _choices.Count(choice => choice.Included); _count.Text = L.Text("Controls.DocumentSelection.SelectedCount", count, _choices.Count); if (_accept is not null) _accept.IsEnabled = count > 0; }
     private void AddButton(Panel panel, string text, Action action)
     {
         var button = new Button { Content = text, MinHeight = 44, Margin = new Thickness(0, 0, 6, 0), Style = TryFindResource("SecondaryButton") as Style };
@@ -174,7 +175,7 @@ public sealed class DocumentSelectionDialog : Window
     {
         _previewCancellation?.Cancel();
         var cancellation = CancellationTokenSource.CreateLinkedTokenSource(_lifetime.Token); _previewCancellation = cancellation;
-        _previewLabel.Text = $"{choice.Label} · Loading preview…";
+        _previewLabel.Text = L.Text("Controls.DocumentSelection.LoadingPreview", choice.Label);
         try
         {
             var image = await _renderer.RenderAsync(choice.Page, 700, cancellation.Token);
@@ -182,7 +183,7 @@ public sealed class DocumentSelectionDialog : Window
             _preview.Source = image; _previewLabel.Text = choice.Label;
         }
         catch (OperationCanceledException) { }
-        catch (Exception ex) { if (!_closed && !cancellation.IsCancellationRequested) { _preview.Source = null; _previewLabel.Text = "Preview unavailable: " + ex.Message; } }
+        catch (Exception ex) { if (!_closed && !cancellation.IsCancellationRequested) { _preview.Source = null; _previewLabel.Text = L.Text("Controls.Common.PreviewUnavailable", ex.Message); } }
         finally { if (ReferenceEquals(_previewCancellation, cancellation)) _previewCancellation = null; cancellation.Dispose(); }
     }
     private sealed class PageChoice(NotePage page, int number, string label) : INotifyPropertyChanged

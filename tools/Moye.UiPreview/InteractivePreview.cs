@@ -15,6 +15,9 @@ public static class InteractivePreview
         ArgumentNullException.ThrowIfNull(resources);
         var preferencesDirectory = Path.GetFullPath(Path.Combine(outputDir, "interactive-preview"));
         Directory.CreateDirectory(preferencesDirectory);
+        var workspaceStore = new WorkspacePreferencesStore(Path.Combine(preferencesDirectory, "workspace-preferences.json"));
+        var workspace = workspaceStore.LoadAsync().GetAwaiter().GetResult();
+        Moye.Localization.LocalizationService.SetLanguage(workspace.UiLanguage);
         var application = new Application
         {
             Resources = resources,
@@ -22,7 +25,9 @@ public static class InteractivePreview
         };
         using var repository = new MemoryRepository(CreateNotebook());
         var preferences = new WritingPreferencesStore(Path.Combine(preferencesDirectory, "writing-preferences.json"));
-        var window = new MainWindow(repository, preferences)
+        var window = new MainWindow(repository, preferences,
+            new ErrorReporter(Path.Combine(preferencesDirectory, "error.log")),
+            workspaceStore: workspaceStore, workspace: workspace)
         {
             Title = "Penroam · Synthetic UI Test (memory only)"
         };

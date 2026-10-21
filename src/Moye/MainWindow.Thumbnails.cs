@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.Windows;
 using Moye.Controls;
 using Moye.ViewModels;
@@ -42,7 +43,7 @@ public partial class MainWindow
         catch (Exception ex)
         {
             // A failed optional thumbnail must not tear down the input loop.
-            if (!_closing) ViewModel.Status = "Unable to refresh page preview: " + ex.Message;
+            if (!_closing) ViewModel.SetStatus("Shell.ThumbnailRefreshFailed", ex.Message);
         }
     }
 

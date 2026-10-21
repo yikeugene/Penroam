@@ -7,6 +7,7 @@ using System.Windows.Threading;
 using Moye.Controls;
 using Moye.Models;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye;
 
@@ -14,6 +15,7 @@ public partial class MainWindow
 {
     private WorkspacePreferences _workspace = new();
     private WorkspacePreferencesStore? _workspaceStore;
+    private bool _workspacePreloaded;
     private DraftRecoveryStore? _draftRecovery;
     private LocalSafetyService? _localSafety;
     private ScheduledBackupService? _scheduledBackups;
@@ -24,10 +26,15 @@ public partial class MainWindow
     private CancellationTokenSource? _automaticBackupCancellation;
     private TaskCompletionSource? _automaticBackupCompletion;
 
-    private void InitializeWorkspace()
+    private void InitializeWorkspace(WorkspacePreferencesStore? workspaceStore = null, WorkspacePreferences? workspace = null)
     {
         var directory = Path.GetDirectoryName(_preferencesStore.FilePath)!;
-        _workspaceStore = new(Path.Combine(directory, "workspace-preferences.json"));
+        _workspaceStore = workspaceStore ?? new(Path.Combine(directory, "workspace-preferences.json"));
+        if (workspace is not null)
+        {
+            if (workspaceStore is null) throw new ArgumentException("Preloaded workspace requires its original store.", nameof(workspaceStore));
+            _workspace = workspace; _workspacePreloaded = true;
+        }
         _draftRecovery = new(Path.Combine(directory, "recovery", "drafts"));
         _localSafety = new(Path.Combine(directory, "recovery", "deleted"), ViewModel.Backup);
         _scheduledBackups = new(directory, ViewModel.Backup);
@@ -44,12 +51,15 @@ public partial class MainWindow
     private async Task LoadWorkspaceAsync()
     {
         if (_workspaceStore is null) return;
-        _workspace = await _workspaceStore.LoadAsync();
+        if (!_workspacePreloaded) _workspace = await _workspaceStore.LoadAsync();
+        _workspacePreloaded = false;
+        L.SetLanguage(_workspace.UiLanguage);
+        SynchronizeLanguageSelection();
         ApplyInitialPageLayout(); _workspaceLoaded = true;
         ViewModel.Autosave.RecoveryJournal = _draftRecovery;
         ApplyWorkspaceOptions();
         await RefreshRecoveryNoticeAsync();
-        if (_workspaceStore.Warning is not null) ViewModel.Status = _workspaceStore.Warning;
+        if (_workspaceStore.WarningMessage is { } warning) ViewModel.SetStatus(warning.Key, warning.Arguments);
         _backupTimer.Start();
         _ = Dispatcher.BeginInvoke(new Action(async () => await TryScheduledBackupAsync()), DispatcherPriority.ContextIdle);
     }
@@ -87,7 +97,7 @@ public partial class MainWindow
     {
         if (!_workspaceLoaded || _workspaceStore is null) return;
         try { await _workspaceStore.SaveAsync(_workspace); }
-        catch (Exception ex) { ViewModel.Status = "Workspace settings not saved · " + ex.Message; if (throwOnError) throw; }
+        catch (Exception ex) { ViewModel.SetStatus("Core.WorkspaceSaveFailed", ex.Message); if (throwOnError) throw; }
     }
 
     private async Task<bool> RestoreReadingPositionAsync()
@@ -118,7 +128,7 @@ public partial class MainWindow
     {
         if (ContinueLastButton is null) return;
         ContinueLastButton.IsEnabled = !string.IsNullOrWhiteSpace(_workspace.LastNotebookId);
-        ContinueLastButton.ToolTip = "Open the last notebook at your saved reading position";
+        L.Bind(ContinueLastButton, ToolTipProperty, "Core.ContinueHint");
     }
 
     private async void ContinueLastClick(object sender, RoutedEventArgs e)
@@ -134,13 +144,7 @@ public partial class MainWindow
         _touchNavigation.ZoomLocked = _workspace.LockZoom;
         FavouriteToolbar.Visibility = _workspace.CompactToolbar ? Visibility.Collapsed : Visibility.Visible;
         FocusToolbar.HorizontalAlignment = _workspace.FocusToolsOnRight ? HorizontalAlignment.Right : HorizontalAlignment.Left;
-        WorkspaceStateButton.Content = _workspace.TwoFingerNavigationOnly || _workspace.LockZoom ? "Writing guard ●" : "Workspace";
-        WorkspaceStateButton.ToolTip = $"{(_workspace.TwoFingerNavigationOnly ? "Two-finger navigation" : "One-finger navigation")} · {(_workspace.LockZoom ? "Zoom locked" : "Zoom unlocked")} · click to change";
-        foreach (var button in new[] { EditorGuardButton, FocusGuardButton })
-        {
-            button.Visibility = _workspace.TwoFingerNavigationOnly || _workspace.LockZoom ? Visibility.Visible : Visibility.Collapsed;
-            button.ToolTip = WorkspaceStateButton.ToolTip;
-        }
+        UpdateWorkspaceLabels();
         UpdateTextToolbar(); RefreshFocusPresets(); RefreshContinueButton(); ApplyFocusChrome();
     }
 
@@ -183,10 +187,10 @@ public partial class MainWindow
     private void GoToPageClick(object sender, RoutedEventArgs e)
     {
         if (!ViewModel.IsEditorVisible || ViewModel.Pages.Count == 0 || ViewModel.IsBusy) return;
-        var dialog = new InputDialog(this, "Go to page", ($"Page number (1–{ViewModel.Pages.Count})", ViewModel.SelectedPage?.Number.ToString() ?? "1"));
+        var dialog = new InputDialog(this, L.Text("Core.GoToPage"), (L.Text("Core.PageNumber", ViewModel.Pages.Count), ViewModel.SelectedPage?.Number.ToString() ?? "1"));
         if (dialog.ShowDialog() != true) return;
         if (!int.TryParse(dialog.Values[0], out var number) || number < 1 || number > ViewModel.Pages.Count)
-        { MessageBox.Show(this, "Enter a page number in this section.", "Go to page"); return; }
+        { MessageBox.Show(this, L.Text("Core.InvalidPage"), L.Text("Core.GoToPage")); return; }
         CommitEditors(); ClearTouches(); ViewModel.SelectedPage = ViewModel.Pages[number - 1]; ScrollToSelected();
     }
 }

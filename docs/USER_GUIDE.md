@@ -17,7 +17,7 @@ Penroam 1.2.0 includes the writing and study workflows below. It writes **SQLite
 Not implemented in this update: automatic comparison/reconciliation of a revised PDF with old annotations (reliable page/region alignment and scan OCR are missing); a separate original-page/side-note cross-referenced export mode; cross-session regional history; automatic mistake diagnosis or spaced review scheduling. No online account or AI service is needed for the implemented workflows.
 
 
-This guide describes the English interface in **Penroam 1.3.0** for Windows 11 x64, including folder import, editable two-page view, writing and study workflows, page extension and live lasso movement. Historical release and device-check notes keep their original scope.
+This guide uses the English control names in **Penroam 1.4.1** for Windows 11 x64, including folder import, editable two-page view, writing and study workflows, page extension and live lasso movement. The application interface also supports Traditional Chinese (繁體中文). Historical release and device-check notes keep their original scope.
 
 Penroam is the new name for Moye. Penroam 1.0.0 restarted version numbering with the new name/icon and the then-current features. Existing notebook data, preferences, recovery files and `.moye` backups keep their current names and locations. The 1.0.0 branding update retained Moye 2.0 data formats; the 1.1.0 page-extension update introduced schema/format 4, and 1.2.0 introduces schema/format 5.
 
@@ -25,7 +25,7 @@ Penroam is the new name for Moye. Penroam 1.0.0 restarted version numbering with
 
 ## Install, update and uninstall
 
-Download and run [Penroam-1.3.0-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.3.0/Penroam-1.3.0-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
+Download and run [Penroam-1.4.1-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.4.1/Penroam-1.4.1-Setup-win-x64.exe) from the [latest Release](https://github.com/yikeugene/Penroam/releases/latest). Setup installs Penroam for your Windows account and automatically creates desktop and Start menu shortcuts. No administrator password or separate .NET runtime installation is required. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades can retain the existing application folder.
 
 Open the **Penroam** desktop shortcut after installation. When updating, close the app and run the newer installer. Setup recognizes an existing Moye installation as the same application. Existing notes stay in `%LOCALAPPDATA%\Moye`; the installer does not move or replace them. If you previously used a portable ZIP with the default library, the installed app uses that same library. A custom `--data-dir` library still needs its custom launch argument.
 
@@ -33,7 +33,7 @@ Remove Penroam through **Windows Settings → Apps → Installed apps → Penroa
 
 ### In-app updates
 
-Install **1.3.0** manually when upgrading from **1.1.0** or earlier. Version 1.2.0 includes the updater and can install later stable releases from within Penroam.
+Install **1.4.1** manually when upgrading from **1.1.0** or earlier. Version 1.2.0 includes the updater and can install later stable releases from within Penroam.
 
 When opened normally, Penroam checks the public [Penroam GitHub releases](https://github.com/yikeugene/Penroam/releases/latest) in the background. A newer stable version appears in a card with its release notes. Drafts, prereleases and older versions are not offered.
 
@@ -45,9 +45,17 @@ Choose **Later** to dismiss the card and keep working. To check again, use **Hel
 
 Writing and saving work without an internet connection. A failed startup check stays quiet; an explicit check reports connection or release problems. Update requests go to GitHub and its release download servers and include Penroam's current version; notebook contents and local library paths are not uploaded. Launches using `--data-dir` disable both startup and manual update checks so isolated libraries cannot trigger an application update.
 
+## Interface language
+
+On the notebook home screen, use **Language / 語言** in the top header to choose **English** or **繁體中文**. Labels, menus, dialogs and application messages update immediately; no restart is needed. In the editor, choose **My notebooks** first to return home. The selector remains available in an empty library and while searching.
+
+Existing and first-run settings default to English. Your selection is saved in this library location's device-local `workspace-preferences.json` and applies from the next launch's first main screen. It is not included in notebook backups. If settings cannot be saved, the selected language still applies for the current session and the app reports the save problem; unreadable or newer settings files are preserved rather than replaced.
+
+Changing interface language does not translate notebook names, categories, page titles, pen preset names, typed notes, study content or imported documents. It also leaves the fixed labels printed on Meeting paper unchanged, so exported pages keep their original appearance. Number/date preferences and document layout are unchanged. Native Windows dialog buttons follow Windows language, while upstream release notes and technical error details may remain in their original language. This guide continues to use English control names.
+
 ## Notebooks, sections and pages
 
-The interface uses a warm neutral workspace with forest green controls, notebook covers and visible keyboard focus. Sections have context menus on right-click or Shift+F10. The navigation names below describe Penroam 1.3.0. The editor groups its features under **Notebook**, **Pages**, **Insert & export**, **Search**, **Study**, **View**, **Tools**, **Backup** and **Help**. Frequently used actions also have labelled buttons; right-click menus remain shortcuts, not the only way to find a feature.
+The interface uses a warm neutral workspace with forest green controls, notebook covers and visible keyboard focus. Sections have context menus on right-click or Shift+F10. The navigation names below describe Penroam 1.4.1. The editor groups its features under **Notebook**, **Pages**, **Insert & export**, **Search**, **Study**, **View**, **Tools**, **Backup** and **Help**. Frequently used actions also have labelled buttons; right-click menus remain shortcuts, not the only way to find a feature.
 
 Open `Penroam.exe` to see **Your notebooks**. Penroam starts on this home screen and waits for you to choose a notebook. An empty library shows **Create your first notebook**; it does not create a notebook automatically. Notebook cards show the title, category and page count. **Continue** opens the last notebook at its saved reading position. **Quick note** creates a page in an Inbox notebook and selects Pen, ready to write; use the page organizer to move it into a course later.
 

@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -32,8 +33,8 @@ internal sealed class NoteItemFrame : Grid
         Background = Brushes.Transparent;
         Children.Add(content);
         _outline = new Border { BorderBrush = new SolidColorBrush(Color.FromRgb(51, 111, 232)), BorderThickness = new Thickness(1.5), IsHitTestVisible = false };
-        _move = Handle("↔", Cursors.SizeAll, "Drag to move", HorizontalAlignment.Right, VerticalAlignment.Top);
-        _resize = Handle("◢", Cursors.SizeNWSE, "Drag to resize", HorizontalAlignment.Right, VerticalAlignment.Bottom);
+        _move = Handle("↔", Cursors.SizeAll, "Controls.NoteItem.Move", HorizontalAlignment.Right, VerticalAlignment.Top);
+        _resize = Handle("◢", Cursors.SizeNWSE, "Controls.NoteItem.Resize", HorizontalAlignment.Right, VerticalAlignment.Bottom);
         Children.Add(_outline);
         Children.Add(_move);
         Children.Add(_resize);
@@ -67,7 +68,7 @@ internal sealed class NoteItemFrame : Grid
         _outline.Visibility = _move.Visibility = _resize.Visibility = visibility;
     }
 
-    private static Thumb Handle(string label, Cursor cursor, string tooltip, HorizontalAlignment horizontal, VerticalAlignment vertical)
+    private static Thumb Handle(string label, Cursor cursor, string tooltipKey, HorizontalAlignment horizontal, VerticalAlignment vertical)
     {
         var background = new FrameworkElementFactory(typeof(Border));
         background.SetValue(Border.BackgroundProperty, new SolidColorBrush(Color.FromArgb(224, 228, 238, 255)));
@@ -81,12 +82,13 @@ internal sealed class NoteItemFrame : Grid
         background.AppendChild(text);
         var handle = new Thumb
         {
-            Width = 44, Height = 44, Cursor = cursor, ToolTip = tooltip, Focusable = true, IsTabStop = true,
+            Width = 44, Height = 44, Cursor = cursor, Focusable = true, IsTabStop = true,
             HorizontalAlignment = horizontal, VerticalAlignment = vertical,
             Template = new ControlTemplate(typeof(Thumb)) { VisualTree = background }
         };
-        System.Windows.Automation.AutomationProperties.SetName(handle, tooltip);
-        System.Windows.Automation.AutomationProperties.SetHelpText(handle, "Arrow keys move the selected object. Hold Shift for larger steps.");
+        L.Bind(handle, ToolTipProperty, tooltipKey);
+        L.Bind(handle, System.Windows.Automation.AutomationProperties.NameProperty, tooltipKey);
+        L.Bind(handle, System.Windows.Automation.AutomationProperties.HelpTextProperty, "Controls.NoteItem.MoveHelp");
         return handle;
     }
 }

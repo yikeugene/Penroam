@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Moye.Models;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -33,7 +34,7 @@ public sealed class ExtendPageDialog : Window
     {
         ArgumentNullException.ThrowIfNull(page);
         _page = page.Snapshot();
-        Title = "Extend page"; Width = 640; Height = 640; MinWidth = 540; MinHeight = 610;
+        Title = L.Text("Controls.Extend.Title"); Width = 640; Height = 640; MinWidth = 540; MinHeight = 610;
         MaxHeight = SystemParameters.WorkArea.Height;
         WindowStartupLocation = WindowStartupLocation.CenterOwner; ShowInTaskbar = false;
         Background = Brushes.White;
@@ -45,10 +46,10 @@ public sealed class ExtendPageDialog : Window
         foreach (var height in new[] { GridLength.Auto, new GridLength(1, GridUnitType.Star), GridLength.Auto, GridLength.Auto, GridLength.Auto, GridLength.Auto })
             root.RowDefinitions.Add(new RowDefinition { Height = height });
         var header = new StackPanel { Margin = new Thickness(0, 0, 0, 10) };
-        header.Children.Add(new TextBlock { Text = "More room for your notes", FontSize = 23, FontWeight = FontWeights.SemiBold });
+        header.Children.Add(new TextBlock { Text = L.Text("Controls.Extend.Heading"), FontSize = 23, FontWeight = FontWeights.SemiBold });
         header.Children.Add(new TextBlock
         {
-            Text = "Drag an edge or corner, or enter extra space below.\nYour PDF and notes keep their original size.",
+            Text = L.Text("Controls.Extend.Intro"),
             FontSize = 13, TextWrapping = TextWrapping.Wrap, Foreground = Brush("#65736D"), Margin = new Thickness(0, 4, 0, 0)
         });
         root.Children.Add(header);
@@ -58,17 +59,17 @@ public sealed class ExtendPageDialog : Window
             CornerRadius = new CornerRadius(10), Margin = new Thickness(0, 0, 0, 8), Child = _canvas
         };
         Grid.SetRow(previewFrame, 1); root.Children.Add(previewFrame);
-        AddHandle(-1, -1, "Top left", Cursors.SizeNWSE); AddHandle(0, -1, "Top", Cursors.SizeNS);
-        AddHandle(1, -1, "Top right", Cursors.SizeNESW); AddHandle(-1, 0, "Left", Cursors.SizeWE);
-        AddHandle(1, 0, "Right", Cursors.SizeWE); AddHandle(-1, 1, "Bottom left", Cursors.SizeNESW);
-        AddHandle(0, 1, "Bottom", Cursors.SizeNS); AddHandle(1, 1, "Bottom right", Cursors.SizeNWSE);
+        AddHandle(-1, -1, L.Text("Controls.Extend.Direction.Topleft"), Cursors.SizeNWSE); AddHandle(0, -1, L.Text("Controls.Extend.Direction.Top"), Cursors.SizeNS);
+        AddHandle(1, -1, L.Text("Controls.Extend.Direction.Topright"), Cursors.SizeNESW); AddHandle(-1, 0, L.Text("Controls.Extend.Direction.Left"), Cursors.SizeWE);
+        AddHandle(1, 0, L.Text("Controls.Extend.Direction.Right"), Cursors.SizeWE); AddHandle(-1, 1, L.Text("Controls.Extend.Direction.Bottomleft"), Cursors.SizeNESW);
+        AddHandle(0, 1, L.Text("Controls.Extend.Direction.Bottom"), Cursors.SizeNS); AddHandle(1, 1, L.Text("Controls.Extend.Direction.Bottomright"), Cursors.SizeNWSE);
 
         var actions = new Grid { Margin = new Thickness(0, 0, 0, 8) };
         foreach (var _ in Enumerable.Range(0, 4)) actions.ColumnDefinitions.Add(new ColumnDefinition());
-        AddAction("Right +50 mm", 0, () => AddSpace(50, 0));
-        AddAction("Bottom +50 mm", 1, () => AddSpace(0, 50));
-        AddAction("Both +50 mm", 2, () => AddSpace(50, 50));
-        AddAction("Reset", 3, () => SetMargins(default));
+        AddAction(L.Text("Controls.Extend.Right50"), 0, () => AddSpace(50, 0));
+        AddAction(L.Text("Controls.Extend.Bottom50"), 1, () => AddSpace(0, 50));
+        AddAction(L.Text("Controls.Extend.Both50"), 2, () => AddSpace(50, 50));
+        AddAction(L.Text("Controls.Extend.Reset"), 3, () => SetMargins(default));
         void AddAction(string title, int column, Action action)
         {
             var button = MakeButton(title, action); button.Padding = new Thickness(6); button.FontSize = 12;
@@ -77,29 +78,35 @@ public sealed class ExtendPageDialog : Window
         Grid.SetRow(actions, 2); root.Children.Add(actions);
 
         var inputs = new Grid { Margin = new Thickness(0, 0, 0, 8) };
-        var sides = new[] { "Left", "Top", "Right", "Bottom" };
+        var sides = new[]
+        {
+            ("Left", L.Text("Controls.Extend.Side.Left")),
+            ("Top", L.Text("Controls.Extend.Side.Top")),
+            ("Right", L.Text("Controls.Extend.Side.Right")),
+            ("Bottom", L.Text("Controls.Extend.Side.Bottom"))
+        };
         for (var index = 0; index < sides.Length; index++)
         {
-            var side = sides[index]; inputs.ColumnDefinitions.Add(new ColumnDefinition());
+            var (side, label) = sides[index]; inputs.ColumnDefinitions.Add(new ColumnDefinition());
             var group = new StackPanel { Margin = new Thickness(index == 0 ? 0 : 4, 0, index == 3 ? 0 : 4, 0) };
             var input = new TextBox
             {
                 Text = "0", MinHeight = 44, MinWidth = 44, Padding = new Thickness(10, 6, 10, 6),
                 VerticalContentAlignment = VerticalAlignment.Center, HorizontalContentAlignment = HorizontalAlignment.Right
             };
-            AutomationProperties.SetName(input, $"{side} extension in millimeters");
-            AutomationProperties.SetHelpText(input, "Extra blank space. Use Up or Down for 1 mm, or Shift with Up or Down for 10 mm.");
+            AutomationProperties.SetName(input, L.Text("Controls.Extend.SideAccessible", label));
+            AutomationProperties.SetHelpText(input, L.Text("Controls.Extend.NumberHelp"));
             input.TextChanged += (_, _) => { if (!_settingFields) ReadFields(); };
             input.PreviewKeyDown += (_, e) => AdjustNumber(input, e);
-            group.Children.Add(new Label { Content = $"{side} (mm)", Target = input, FontSize = 12, Padding = new Thickness(0, 0, 0, 3) });
+            group.Children.Add(new Label { Content = L.Text("Controls.Extend.SideLabel", label), Target = input, FontSize = 12, Padding = new Thickness(0, 0, 0, 3) });
             group.Children.Add(input); _fields.Add(side, input); Grid.SetColumn(group, index); inputs.Children.Add(group);
         }
         Grid.SetRow(inputs, 3); root.Children.Add(inputs);
         var summary = new StackPanel(); summary.Children.Add(_dimensions); summary.Children.Add(_status);
         Grid.SetRow(summary, 4); root.Children.Add(summary);
         var footer = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 10, 0, 0) };
-        var cancel = MakeButton("Cancel", () => DialogResult = false); cancel.IsCancel = true;
-        _apply = MakeButton("Extend page", () => { if (ReadFields()) DialogResult = true; });
+        var cancel = MakeButton(L.Text("Controls.Common.Cancel"), () => DialogResult = false); cancel.IsCancel = true;
+        _apply = MakeButton(L.Text("Controls.Extend.Title"), () => { if (ReadFields()) DialogResult = true; });
         _apply.IsDefault = true; _apply.Style = TryFindResource("PrimaryButton") as Style;
         footer.Children.Add(cancel); footer.Children.Add(_apply); Grid.SetRow(footer, 5); root.Children.Add(footer);
         Content = root;
@@ -156,13 +163,13 @@ public sealed class ExtendPageDialog : Window
         _apply.IsEnabled = withinLimit && PageExtensionService.CanExtend(_page, margins);
         foreach (var (handle, _, _) in _handles) handle.IsEnabled = withinLimit;
         _status.Foreground = Brush(!valid || !withinLimit ? "#AA413C" : "#65736D");
-        _status.Text = !valid ? "Enter a number of 0 or more for each side." : !withinLimit
-            ? $"The page can be at most {PageExtensionService.MaxDimension / DipPerMillimeter:0} mm wide or tall."
-            : _apply.IsEnabled ? "Green shows the extra writing space. Apply once, undo once." : "Add blank space to one or more sides.";
+        _status.Text = !valid ? L.Text("Controls.Extend.InvalidNumber") : !withinLimit
+            ? L.Text("Controls.Extend.Maximum", PageExtensionService.MaxDimension / DipPerMillimeter)
+            : _apply.IsEnabled ? L.Text("Controls.Extend.Ready") : L.Text("Controls.Extend.Empty");
         if (withinLimit)
         {
             _margins = margins;
-            _dimensions.Text = $"Page size: {(_page.Width + margins.Left + margins.Right) / DipPerMillimeter:0.#} × {(_page.Height + margins.Top + margins.Bottom) / DipPerMillimeter:0.#} mm";
+            _dimensions.Text = L.Text("Controls.Extend.Size", (_page.Width + margins.Left + margins.Right) / DipPerMillimeter, (_page.Height + margins.Top + margins.Bottom) / DipPerMillimeter);
             UpdatePreview();
         }
         return _apply.IsEnabled;
@@ -178,13 +185,13 @@ public sealed class ExtendPageDialog : Window
 
     private void AddHandle(int x, int y, string name, Cursor cursor)
     {
-        var handle = new Thumb { Width = 44, Height = 44, Cursor = cursor, Focusable = false, ToolTip = $"Drag to extend {name.ToLowerInvariant()}" };
+        var handle = new Thumb { Width = 44, Height = 44, Cursor = cursor, Focusable = false, ToolTip = L.Text("Controls.Extend.Drag", name) };
         var hitArea = new FrameworkElementFactory(typeof(Grid)); hitArea.SetValue(Panel.BackgroundProperty, Brushes.Transparent);
         var grip = new FrameworkElementFactory(typeof(Border)); grip.SetValue(WidthProperty, x == 0 ? 28d : 10d); grip.SetValue(HeightProperty, y == 0 ? 28d : 10d);
         grip.SetValue(Border.CornerRadiusProperty, new CornerRadius(5)); grip.SetValue(Border.BackgroundProperty, Brush("#236451"));
         grip.SetValue(Border.BorderBrushProperty, Brushes.White); grip.SetValue(Border.BorderThicknessProperty, new Thickness(1)); hitArea.AppendChild(grip);
         handle.Template = new ControlTemplate(typeof(Thumb)) { VisualTree = hitArea };
-        AutomationProperties.SetName(handle, $"Extend {name.ToLowerInvariant()} edge");
+        AutomationProperties.SetName(handle, L.Text("Controls.Extend.Edge", name));
         handle.DragStarted += (_, _) =>
         {
             if (!TryReadMargins(out var margins)) { handle.CancelDrag(); return; }
@@ -255,7 +262,7 @@ public sealed class ExtendPageDialog : Window
             if (image is not null) drawing.DrawImage(image, _original);
             else if (_original.Width > 70 && _original.Height > 45)
             {
-                var label = new FormattedText("Current page", CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
+                var label = new FormattedText(L.Text("Controls.Extend.CurrentPage"), CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                     new Typeface("Segoe UI"), 11, Brush("#65736D"), VisualTreeHelper.GetDpi(this).PixelsPerDip);
                 drawing.DrawText(label, new Point(_original.Left + (_original.Width - label.Width) / 2, _original.Top + (_original.Height - label.Height) / 2));
             }

@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -28,14 +29,14 @@ public sealed class ColorPickerSurface : StackPanel
         InitialColor = SelectedColor = initialColor;
         _hsv = HsvColor.FromColor(initialColor);
         MinWidth = 320;
-        Children.Add(Label("Palette"));
+        Children.Add(Label(L.Text("Controls.ColorPicker.Palette")));
         var palette = new WrapPanel { Margin = new Thickness(-2, 3, -2, 0) };
         var colors = new (string Name, Color Color)[]
         {
-            ("Ink", Color.FromRgb(37, 51, 74)), ("Gray", Color.FromRgb(107, 114, 128)), ("Black", Colors.Black), ("White", Colors.White),
-            ("Blue", Color.FromRgb(50, 106, 232)), ("Sky blue", Color.FromRgb(14, 165, 233)), ("Teal", Color.FromRgb(15, 118, 110)), ("Green", Color.FromRgb(34, 197, 94)),
-            ("Red", Color.FromRgb(229, 72, 77)), ("Orange", Color.FromRgb(249, 115, 22)), ("Amber", Color.FromRgb(234, 179, 8)), ("Yellow", Color.FromRgb(255, 241, 118)),
-            ("Purple", Color.FromRgb(139, 92, 246)), ("Magenta", Color.FromRgb(217, 70, 239)), ("Pink", Color.FromRgb(236, 72, 153)), ("Brown", Color.FromRgb(139, 94, 60))
+            (L.Text("Controls.ColorPicker.Color.Ink"), Color.FromRgb(37, 51, 74)), (L.Text("Controls.ColorPicker.Color.Gray"), Color.FromRgb(107, 114, 128)), (L.Text("Controls.ColorPicker.Color.Black"), Colors.Black), (L.Text("Controls.ColorPicker.Color.White"), Colors.White),
+            (L.Text("Controls.ColorPicker.Color.Blue"), Color.FromRgb(50, 106, 232)), (L.Text("Controls.ColorPicker.Color.Skyblue"), Color.FromRgb(14, 165, 233)), (L.Text("Controls.ColorPicker.Color.Teal"), Color.FromRgb(15, 118, 110)), (L.Text("Controls.ColorPicker.Color.Green"), Color.FromRgb(34, 197, 94)),
+            (L.Text("Controls.ColorPicker.Color.Red"), Color.FromRgb(229, 72, 77)), (L.Text("Controls.ColorPicker.Color.Orange"), Color.FromRgb(249, 115, 22)), (L.Text("Controls.ColorPicker.Color.Amber"), Color.FromRgb(234, 179, 8)), (L.Text("Controls.ColorPicker.Color.Yellow"), Color.FromRgb(255, 241, 118)),
+            (L.Text("Controls.ColorPicker.Color.Purple"), Color.FromRgb(139, 92, 246)), (L.Text("Controls.ColorPicker.Color.Magenta"), Color.FromRgb(217, 70, 239)), (L.Text("Controls.ColorPicker.Color.Pink"), Color.FromRgb(236, 72, 153)), (L.Text("Controls.ColorPicker.Color.Brown"), Color.FromRgb(139, 94, 60))
         };
         foreach (var (name, color) in colors)
         {
@@ -54,10 +55,10 @@ public sealed class ColorPickerSurface : StackPanel
         Children.Add(palette);
         Children.Add(ColorField);
         ColorField.SelectionChanged += (_, _) => SetSaturationValue(ColorField.Saturation, ColorField.Value);
-        Children.Add(new TextBlock { Text = "Hue", FontSize = 12, Foreground = Brushes.SlateGray, Margin = new Thickness(0, 6, 0, 0) });
+        Children.Add(new TextBlock { Text = L.Text("Controls.ColorPicker.Hue"), FontSize = 12, Foreground = Brushes.SlateGray, Margin = new Thickness(0, 6, 0, 0) });
         HueSlider.Template = HueSliderTemplate();
-        AutomationProperties.SetName(HueSlider, "Hue");
-        AutomationProperties.SetHelpText(HueSlider, "Choose a hue. Use left and right arrow keys for fine adjustment.");
+        AutomationProperties.SetName(HueSlider, L.Text("Controls.ColorPicker.Hue"));
+        AutomationProperties.SetHelpText(HueSlider, L.Text("Controls.ColorPicker.HueHelp"));
         HueSlider.ValueChanged += (_, _) =>
         {
             if (_updating) return;
@@ -69,7 +70,7 @@ public sealed class ColorPickerSurface : StackPanel
         var comparison = new Grid { Margin = new Thickness(0, 8, 0, 0) };
         comparison.ColumnDefinitions.Add(new()); comparison.ColumnDefinitions.Add(new());
         var current = new StackPanel { Margin = new Thickness(0, 0, 6, 0) };
-        current.Children.Add(Label("Current"));
+        current.Children.Add(Label(L.Text("Controls.ColorPicker.Current")));
         var reset = new Button
         {
             Margin = new Thickness(0, 5, 0, 0), MinHeight = 44, Height = 44, Padding = new Thickness(0),
@@ -78,12 +79,12 @@ public sealed class ColorPickerSurface : StackPanel
             Content = new Border { Background = new SolidColorBrush(initialColor), Height = 42 },
             Template = ComparisonButtonTemplate()
         };
-        AutomationProperties.SetName(reset, "Restore current color");
-        reset.ToolTip = "Restore current color";
+        AutomationProperties.SetName(reset, L.Text("Controls.ColorPicker.Restore"));
+        reset.ToolTip = L.Text("Controls.ColorPicker.Restore");
         reset.Click += (_, _) => SelectColor(InitialColor);
         current.Children.Add(reset); comparison.Children.Add(current);
         var preview = new StackPanel { Margin = new Thickness(6, 0, 0, 0) };
-        preview.Children.Add(Label("New"));
+        preview.Children.Add(Label(L.Text("Controls.ColorPicker.New")));
         var checker = new Border { Background = CreateCheckerboardBrush(), Height = 44, Margin = new Thickness(0, 5, 0, 0), BorderBrush = new SolidColorBrush(Color.FromRgb(211, 219, 231)), BorderThickness = new Thickness(1), Child = _newColor };
         preview.Children.Add(checker); Grid.SetColumn(preview, 1); comparison.Children.Add(preview); Children.Add(comparison);
         _description.FontSize = 12; _description.Foreground = Brushes.SlateGray; _description.TextWrapping = TextWrapping.Wrap;
@@ -135,12 +136,12 @@ public sealed class ColorPickerSurface : StackPanel
             {
                 bool selected = color.R == SelectedColor.R && color.G == SelectedColor.G && color.B == SelectedColor.B;
                 button.BorderBrush = selected ? new SolidColorBrush(Color.FromRgb(35, 100, 81)) : Brushes.Transparent;
-                AutomationProperties.SetItemStatus(button, selected ? "Selected" : "");
+                AutomationProperties.SetItemStatus(button, selected ? L.Text("Controls.ColorPicker.Selected") : "");
             }
             _description.Text = InitialColor.A == 255
-                ? "Arrow keys adjust the color field. Hold Shift for larger steps."
-                : $"Opacity stays at {InitialColor.A / 255d:P0}. Arrow keys adjust the color field.";
-            AutomationProperties.SetName(_newColor, $"New color: red {SelectedColor.R}, green {SelectedColor.G}, blue {SelectedColor.B}, opacity {SelectedColor.A / 255d:P0}");
+                ? L.Text("Controls.ColorPicker.FieldHelp")
+                : L.Text("Controls.ColorPicker.OpacityHelp", InitialColor.A / 255d);
+            AutomationProperties.SetName(_newColor, L.Text("Controls.ColorPicker.NewColorDescription", SelectedColor.R, SelectedColor.G, SelectedColor.B, SelectedColor.A / 255d));
         }
         finally { _updating = false; }
     }
@@ -218,8 +219,8 @@ public sealed class SaturationValuePlane : FrameworkElement
     {
         Focusable = true; Cursor = Cursors.Cross; MinHeight = 44; MinWidth = 44;
         KeyboardNavigation.SetIsTabStop(this, true);
-        AutomationProperties.SetName(this, "Saturation and brightness");
-        AutomationProperties.SetHelpText(this, "Left and right adjust saturation. Up and down adjust brightness. Hold Shift for larger steps.");
+        AutomationProperties.SetName(this, L.Text("Controls.ColorPicker.SaturationBrightness"));
+        AutomationProperties.SetHelpText(this, L.Text("Controls.ColorPicker.SaturationBrightnessHelp"));
         GotKeyboardFocus += (_, _) => InvalidateVisual(); LostKeyboardFocus += (_, _) => InvalidateVisual();
         MouseLeftButtonDown += (_, e) =>
         {
@@ -288,7 +289,7 @@ public sealed class SaturationValuePlane : FrameworkElement
     public void SetColor(HsvColor color)
     {
         _color = new(HsvColor.NormalizeHue(color.Hue), HsvColor.Unit(color.Saturation), HsvColor.Unit(color.Value));
-        AutomationProperties.SetItemStatus(this, $"Saturation {Saturation:P0}, brightness {Value:P0}");
+        AutomationProperties.SetItemStatus(this, L.Text("Controls.ColorPicker.FieldStatus", Saturation, Value));
         InvalidateVisual();
     }
     public void SelectPoint(Point point)

@@ -1,5 +1,6 @@
 using System.IO;
 using System.Security.Cryptography;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
@@ -10,14 +11,14 @@ public sealed class UpdateInstallCoordinator(IUpdateInstaller installer)
     {
         ArgumentNullException.ThrowIfNull(saveAsync);
         if (update.Sha256 is not { Length: 64 } expected || !expected.All(Uri.IsHexDigit))
-            throw new InvalidDataException("The update has no valid verification checksum.");
+            throw new InvalidDataException(L.Text("Messages.Update.NoVerificationChecksum"));
         await using var payload = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read,
             81920, FileOptions.Asynchronous | FileOptions.SequentialScan);
         if (payload.Length != update.Size)
-            throw new InvalidDataException("The downloaded update is incomplete. Please download it again.");
+            throw new InvalidDataException(L.Text("Messages.Update.PayloadIncomplete"));
         var actual = Convert.ToHexString(await SHA256.HashDataAsync(payload, cancellationToken));
         if (!actual.Equals(expected, StringComparison.OrdinalIgnoreCase))
-            throw new InvalidDataException("The downloaded update could not be verified. Please download it again.");
+            throw new InvalidDataException(L.Text("Messages.Update.PayloadUnverified"));
         await saveAsync();
         cancellationToken.ThrowIfCancellationRequested();
         installer.Launch(path);

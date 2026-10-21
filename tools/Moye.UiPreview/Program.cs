@@ -20,7 +20,7 @@ using Moye.ViewModels;
 
 namespace Moye.UiPreview;
 
-internal static class Program
+internal static partial class Program
 {
     // No Application.Run, Window.Show, input injection, UI Automation client,
     // desktop capture, or user database is involved in this renderer.
@@ -40,6 +40,8 @@ internal static class Program
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
             var application = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
             application.Resources = ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml"));
+            RunBilingualPreview(output);
+            if (args.Contains("--bilingual-only", StringComparer.Ordinal)) return 0;
             DocumentWorkflowPreviewScenes.Run(output);
             PageExtensionPreviewScenes.Run(output);
             FreeTypingPreviewScenes.Run(output);
@@ -449,7 +451,7 @@ internal static class Program
             throw new InvalidOperationException("Every notebook card must have its own Notebook actions button.");
         foreach (var button in options)
         {
-            if (!Equals(button.Content, "Notebook actions"))
+            if (!Equals(button.Content, Moye.Localization.LocalizationService.Text("Features.NotebookActions")))
                 throw new InvalidOperationException("Notebook card actions must have a visible text label, not only an ellipsis.");
             if (button.DataContext is not NotebookSummary summary || button.ContextMenu is not { } menu || menu.IsOpen)
                 throw new InvalidOperationException("Notebook menu checks require an unopened menu associated with a notebook summary.");
@@ -1311,7 +1313,7 @@ internal static class Program
         // IsVisible requires a presentation source and is false for this deliberately
         // detached tree. Check the declared visibility through all local ancestors.
         if (scene.StartsWith("library", StringComparison.Ordinal))
-            requiredNames = [.. requiredNames, "WorkspaceStateButton", "HomeBackupButton", "Restore backup", "HomeUpdatesButton", "HomeAllToolsButton"];
+            requiredNames = [.. requiredNames, "WorkspaceStateButton", "HomeBackupButton", "HomeRestoreBackupButton", "HomeUpdatesButton", "HomeAllToolsButton"];
         var laidOutButtons = Descendants<Control>(content)
             .Where(b => b is Button or RadioButton or CheckBox or ComboBox or MenuItem)
             .Where(b => HasVisibleAncestors(b) && b.ActualWidth > 0 && b.ActualHeight > 0).ToList();

@@ -7,6 +7,7 @@ public sealed record ReadingPosition(string SectionId, string PageId, double X, 
 public sealed class WorkspacePreferences
 {
     public int Version { get; set; } = 1;
+    public string UiLanguage { get; set; } = "en";
     public Dictionary<string, ReadingPosition> ReadingPositions { get; set; } = [];
     public string LastNotebookId { get; set; } = "";
     public bool TwoFingerNavigationOnly { get; set; }

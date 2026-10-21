@@ -1,5 +1,6 @@
 using System.Windows;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
@@ -26,15 +27,15 @@ public static class PdfExportPagination
     public static IReadOnlyList<PdfExportTile> Plan(IReadOnlyList<NotePage> pages, PdfExportOptions options)
     {
         if (!Enum.IsDefined(options.Layout) || !Enum.IsDefined(options.Orientation))
-            throw new ArgumentException("Choose a supported PDF layout and orientation.");
+            throw new ArgumentException(L.Text("Messages.Export.UnsupportedLayout"));
         if (!double.IsFinite(options.OverlapMillimeters) || options.OverlapMillimeters < 0 || options.OverlapMillimeters > 30)
-            throw new ArgumentException("Overlap must be between 0 and 30 mm.");
+            throw new ArgumentException(L.Text("Messages.Export.OverlapRange"));
         var result = new List<PdfExportTile>();
         for (var index = 0; index < pages.Count; index++)
         {
             var page = pages[index];
             if (!double.IsFinite(page.Width) || !double.IsFinite(page.Height) || page.Width <= 0 || page.Height <= 0)
-                throw new ArgumentException("A page has invalid dimensions.");
+                throw new ArgumentException(L.Text("Messages.Export.InvalidPageSize"));
             if (options.Layout == PdfExportLayout.OriginalSize)
             {
                 result.Add(new(index, 0, 0, new Rect(0, 0, page.Width, page.Height), page.Width, page.Height));
@@ -50,7 +51,7 @@ public static class PdfExportPagination
                 _ => landscape.Columns * (long)landscape.Rows < portrait.Columns * (long)portrait.Rows ? landscape : portrait
             };
             if (selected.Columns * (long)selected.Rows > MaximumSheets - result.Count)
-                throw new ArgumentException($"This export needs more than {MaximumSheets} sheets. Select fewer pages or reduce the overlap.");
+                throw new ArgumentException(L.Text("Messages.Export.TooManySheets", MaximumSheets));
             // Reading order is left to right, then top to bottom, within each source page.
             for (var row = 0; row < selected.Rows; row++)
             for (var column = 0; column < selected.Columns; column++)

@@ -30,7 +30,7 @@ Keep sample libraries, generated packages, logs, build output, credentials, edit
 - Describe the problem and the behavior you intend to change in an issue or pull request. For larger changes, discuss the approach before restructuring existing features.
 - Keep document models, persistence, PDF services, and input controls separate. Ink arrays are immutable snapshots: replace them rather than editing their bytes in place.
 - Preserve existing notebooks and `.moye` backups. Changes to either format need an explicit versioning and compatibility approach.
-- Keep visible interface text and user documentation in natural English. Do not translate or alter text that belongs to a user's notebook.
+- Keep interface strings in the shared English and Traditional Chinese localization resources, and user documentation in natural English. Do not translate or alter text that belongs to a user's notebook.
 - Preserve third-party copyright notices and license files when updating dependencies.
 
 ## Verify the change
@@ -59,7 +59,7 @@ Use the [verification and limitations](README.md#verification-and-limitations) s
 
 Explain what changed, the user-visible result, and how it was checked. Include concise reproduction steps or before/after screenshots when useful. Remove personal information, machine-specific paths, and real notebook content from attachments and logs.
 
-The release installer is produced by `.\scripts\publish-installer.ps1 -InstallCompiler`. It uses `publish.ps1` for the self-contained Windows x64 payload and compiles `installer/Moye.iss` with the pinned, SHA-256-verified Inno Setup compiler. `Penroam-1.3.0-Setup-win-x64.exe` and its checksum are written to `artifacts`; only those two files belong on a new GitHub Release. The intermediate `Penroam-1.3.0-win-x64.zip` remains available for local development. Package creation does not publish a release.
+The release installer is produced by `.\scripts\publish-installer.ps1 -InstallCompiler`. It uses `publish.ps1` for the self-contained Windows x64 payload and compiles `installer/Moye.iss` with the pinned, SHA-256-verified Inno Setup compiler. `Penroam-1.4.1-Setup-win-x64.exe` and its checksum are written to `artifacts`; only those two files belong on a new GitHub Release. The intermediate `Penroam-1.4.1-win-x64.zip` remains available for local development. Package creation does not publish a release.
 
 The payload includes an explicit list of user documentation and required third-party notices. Keep that list current, preserve the original installer AppId so upgrades recognize Moye installations, and keep notebook data outside the installed application folder. New installations default to `%LOCALAPPDATA%\Programs\Penroam`; upgrades may retain the existing folder. Desktop and Start menu shortcuts are created automatically. Run `scripts/test-installer.ps1 -AllowDesktopChanges` only in a disposable Windows account: it installs, reinstalls and uninstalls the real package, checks shortcuts and file hashes, and verifies that synthetic notebook data survives. The script refuses an account with existing Moye or Penroam data, an installation or shortcuts. GitHub CI runs this smoke test before uploading the installer artifact. Release publication is handled by the maintainers.
 

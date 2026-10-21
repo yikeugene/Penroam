@@ -2,7 +2,9 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Moye.Localization;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
@@ -19,7 +21,13 @@ public sealed class DraftRecoveryStore(string directory)
     private readonly object _sync = new();
     private readonly string _session = Guid.NewGuid().ToString("N");
     public string DirectoryPath { get; } = Path.GetFullPath(directory);
-    public string? LastError { get; private set; }
+    private string? _lastError;
+    private LocalizedMessage? _lastErrorMessage;
+    public string? LastError
+    {
+        get => _lastErrorMessage?.ToString() ?? _lastError;
+        private set { _lastErrorMessage = null; _lastError = value; }
+    }
     public DateTimeOffset? LastCapturedUtc { get; private set; }
 
     private string DraftPath(string id) => Path.Combine(DirectoryPath,
@@ -91,17 +99,17 @@ public sealed class DraftRecoveryStore(string directory)
         if (!Directory.Exists(DirectoryPath)) return results;
         string[] paths;
         try { paths = Directory.GetFiles(DirectoryPath, "*.draft.json"); }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { LastError = "Recovery files could not be listed. " + ex.Message; return results; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _lastErrorMessage = L.M("Messages.Recovery.ListFailed", ex.Message); return results; }
         foreach (var path in paths)
         {
             try
             {
                 var draft = JsonSerializer.Deserialize<RecoveryDraft>(await File.ReadAllTextAsync(path), DocumentJson.Options);
                 if (draft is { Version: 1, Document: not null }) results.Add(new(path, draft));
-                else LastError = "An unsupported recovery file was kept: " + Path.GetFileName(path);
+                else _lastErrorMessage = L.M("Messages.Recovery.UnsupportedKept", Path.GetFileName(path));
             }
             catch (Exception ex) when (ex is IOException or JsonException or UnauthorizedAccessException)
-            { LastError = "A recovery file could not be read and was kept. " + ex.Message; }
+            { _lastErrorMessage = L.M("Messages.Recovery.UnreadableKept", ex.Message); }
         }
         return results.OrderByDescending(item => item.Draft.CapturedUtc).ToArray();
     }

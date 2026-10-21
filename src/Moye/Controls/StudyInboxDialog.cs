@@ -5,6 +5,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using Moye.Services;
 using Moye.ViewModels;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -14,24 +15,24 @@ public sealed class StudyInboxDialog : Window
     private readonly bool _resumeOnly;
     private readonly ListBox _items = new() { BorderThickness = new Thickness(0), Margin = new Thickness(0, 12, 0, 8) };
     private readonly TextBox _query = new() { MinHeight = 44, Margin = new Thickness(0, 8, 0, 6) };
-    private readonly CheckBox _resolved = new() { Content = "Include resolved questions", MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
+    private readonly CheckBox _resolved = new() { Content = L.Text("Controls.StudyInbox.IncludeResolved"), MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap };
     public StudyInboxItem? Result => _items.SelectedItem as StudyInboxItem;
 
     public StudyInboxDialog(Window owner, MainViewModel model, bool resumeOnly = false)
     {
         _model = model; _resumeOnly = resumeOnly;
-        var root = StudyDialogUi.Initialize(this, owner, resumeOnly ? "Resume notes" : "Question inbox", 760, 640);
+        var root = StudyDialogUi.Initialize(this, owner, resumeOnly ? L.Text("Controls.StudyInbox.ResumeTitle") : L.Text("Controls.StudyInbox.QuestionTitle"), 760, 640);
         var heading = new StackPanel(); DockPanel.SetDock(heading, Dock.Top);
-        heading.Children.Add(new TextBlock { Text = resumeOnly ? "Your next steps across this notebook. Open a source page to continue where you left off." : "Questions across this notebook. Keep the explanation and your next attempt with the original page.", TextWrapping = TextWrapping.Wrap });
-        AutomationProperties.SetName(_query, resumeOnly ? "Filter resume notes" : "Filter questions"); heading.Children.Add(_query);
+        heading.Children.Add(new TextBlock { Text = resumeOnly ? L.Text("Controls.StudyInbox.ResumeIntro") : L.Text("Controls.StudyInbox.QuestionIntro"), TextWrapping = TextWrapping.Wrap });
+        AutomationProperties.SetName(_query, resumeOnly ? L.Text("Controls.StudyInbox.FilterResume") : L.Text("Controls.StudyInbox.FilterQuestions")); heading.Children.Add(_query);
         if (!resumeOnly) heading.Children.Add(_resolved);
         heading.Children.Add(_status); root.Children.Add(heading);
         var actions = StudyDialogUi.Actions(root);
-        var close = OrganizationDialogUi.Button(this, "Close", () => DialogResult = false); close.IsCancel = true;
-        var edit = OrganizationDialogUi.Button(this, "Edit", EditSelected);
-        var remove = OrganizationDialogUi.Button(this, "Remove", RemoveSelected);
-        var open = OrganizationDialogUi.Button(this, "Open source", () => { if (Result is not null) DialogResult = true; });
+        var close = OrganizationDialogUi.Button(this, L.Text("Controls.Common.Close"), () => DialogResult = false); close.IsCancel = true;
+        var edit = OrganizationDialogUi.Button(this, L.Text("Controls.StudyInbox.Edit"), EditSelected);
+        var remove = OrganizationDialogUi.Button(this, L.Text("Controls.StudyInbox.Remove"), RemoveSelected);
+        var open = OrganizationDialogUi.Button(this, L.Text("Controls.StudyInbox.Open"), () => { if (Result is not null) DialogResult = true; });
         actions.Children.Add(close); actions.Children.Add(remove); actions.Children.Add(edit); actions.Children.Add(open);
         void Selected() { edit.IsEnabled = remove.IsEnabled = open.IsEnabled = Result is not null; }
         _items.SelectionChanged += (_, _) => Selected(); Selected();
@@ -50,7 +51,7 @@ public sealed class StudyInboxDialog : Window
         Label(nameof(StudyInboxItem.Location), false); Label(nameof(StudyInboxItem.Heading), true); Label(nameof(StudyInboxItem.Detail), false);
         _items.ItemTemplate = new DataTemplate { VisualTree = panel };
         ScrollViewer.SetHorizontalScrollBarVisibility(_items, ScrollBarVisibility.Disabled); ScrollViewer.SetVerticalScrollBarVisibility(_items, ScrollBarVisibility.Auto);
-        AutomationProperties.SetName(_items, resumeOnly ? "Resume notes" : "Question inbox items"); root.Children.Add(_items);
+        AutomationProperties.SetName(_items, resumeOnly ? L.Text("Controls.StudyInbox.ResumeTitle") : L.Text("Controls.StudyInbox.Items")); root.Children.Add(_items);
         _query.TextChanged += (_, _) => Refresh(); _resolved.Checked += (_, _) => Refresh(); _resolved.Unchecked += (_, _) => Refresh();
         Loaded += (_, _) => { Refresh(); _query.Focus(); };
     }
@@ -61,9 +62,9 @@ public sealed class StudyInboxDialog : Window
         var items = _model.Document is { } document ? StudyWorkflowService.Items(document, _resumeOnly, _resolved.IsChecked == true, _query.Text) : [];
         _items.ItemsSource = items;
         _items.SelectedItem = items.FirstOrDefault(item => item.Identity == identity);
-        _status.Text = items.Count > 0 ? $"{items.Count} {(_resumeOnly ? "resume note(s)" : "question(s)")}" :
-            _query.Text.Trim().Length > 0 ? "No matches. Try a shorter phrase." :
-            _resumeOnly ? "No resume notes yet. Use Next time, continue here on a page." : "No open questions. Add a question from a page, or include resolved questions.";
+        _status.Text = items.Count > 0 ? L.Text("Controls.StudyInbox.Count", items.Count, L.Text(_resumeOnly ? "Controls.StudyInbox.ResumeCountLabel" : "Controls.StudyInbox.QuestionCountLabel")) :
+            _query.Text.Trim().Length > 0 ? L.Text("Controls.StudyInbox.NoMatches") :
+            _resumeOnly ? L.Text("Controls.StudyInbox.NoResume") : L.Text("Controls.StudyInbox.NoQuestions");
     }
 
     private void EditSelected()
@@ -85,8 +86,10 @@ public sealed class StudyInboxDialog : Window
     private void RemoveSelected()
     {
         if (Result is not { } item) return;
-        var subject = _resumeOnly ? "this resume note" : "this question and its explanation";
-        if (MessageBox.Show(this, $"Remove {subject}? You can undo this after closing the inbox.", "Remove note", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+        var message = _resumeOnly ?
+            L.Text("Controls.StudyInbox.RemoveResume") :
+            L.Text("Controls.StudyInbox.RemoveQuestion");
+        if (MessageBox.Show(this, message, L.Text("Controls.StudyInbox.RemoveTitle"), MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
         if (item.Question is { } question) _model.RemoveStudyQuestion(item.PageId, question.Id);
         else _model.SetResumeHint(item.PageId, null);
         Refresh();

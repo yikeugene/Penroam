@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Ink;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -21,7 +22,7 @@ public sealed class NoteSelection
     {
         Validate();
         var bytes = JsonSerializer.SerializeToUtf8Bytes(this, DocumentJson.Options);
-        if (bytes.Length > MaximumBytes) throw new InvalidDataException("This selection is too large for the clipboard. Copy fewer objects.");
+        if (bytes.Length > MaximumBytes) throw new InvalidDataException(L.Text("Controls.Clipboard.SelectionTooLargeHint"));
         return bytes;
     }
 
@@ -38,7 +39,7 @@ public sealed class NoteSelection
         if (Version != 1 || InkData is null || Texts is null || Images is null || Assets is null || Texts.Count + Images.Count > 10000)
             throw new InvalidDataException("Unsupported clipboard selection.");
         if (InkData.LongLength + Assets.Sum(a => (long)(a?.Bytes?.Length ?? 0)) > MaximumBytes)
-            throw new InvalidDataException("This selection is too large for the clipboard.");
+            throw new InvalidDataException(L.Text("Controls.Clipboard.SelectionTooLarge"));
         if (InkData.Length > 0)
         {
             var strokes = new StrokeCollection(new MemoryStream(InkData, false));
@@ -63,7 +64,7 @@ public sealed class NoteSelection
                 System.Windows.Media.Imaging.BitmapCreateOptions.DelayCreation, System.Windows.Media.Imaging.BitmapCacheOption.OnDemand);
             var frame = decoder.Frames[0];
             if (frame.PixelWidth > 20000 || frame.PixelHeight > 20000 || (long)frame.PixelWidth * frame.PixelHeight > 80_000_000)
-                throw new InvalidDataException("Clipboard image exceeds the supported dimensions.");
+                throw new InvalidDataException(L.Text("Controls.Clipboard.ImageTooLarge"));
         }
         foreach (var image in Images)
             if (image is null || !Geometry(image.X, image.Y, image.Width, image.Height) || !assetIds.Contains(image.AssetId))

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
@@ -26,12 +27,12 @@ public sealed class OfficeConversionProcess : IOfficePdfConverter
         cancellationToken.ThrowIfCancellationRequested();
         sourcePath = Path.GetFullPath(sourcePath); outputPdfPath = Path.GetFullPath(outputPdfPath);
         await Task.Run(() => OfficeDocumentValidation.Validate(sourcePath, cancellationToken), cancellationToken).ConfigureAwait(false);
-        if (!Path.GetExtension(outputPdfPath).Equals(".pdf", StringComparison.OrdinalIgnoreCase)) throw new ArgumentException("The conversion output must be a PDF file.");
-        if (File.Exists(outputPdfPath)) throw new IOException("The conversion output already exists.");
+        if (!Path.GetExtension(outputPdfPath).Equals(".pdf", StringComparison.OrdinalIgnoreCase)) throw new ArgumentException(L.Text("Messages.Office.PdfOutputRequired"));
+        if (File.Exists(outputPdfPath)) throw new IOException(L.Text("Messages.Office.OutputExists"));
         if (!IsAvailableFor(Path.GetExtension(sourcePath)))
-            throw new InvalidOperationException("The required Microsoft Office desktop application is not installed. Export this document to PDF in its source application, then import the PDF.");
+            throw new InvalidOperationException(L.Text("Messages.Office.DesktopAppMissing"));
         using var process = new Process { StartInfo = CreateStartInfo(ResolveWorkerExecutable(), sourcePath, outputPdfPath) };
-        if (!process.Start()) throw new IOException("Unable to start the Office conversion worker.");
+        if (!process.Start()) throw new IOException(L.Text("Messages.Office.WorkerStartFailed"));
         var errorTask = process.StandardError.ReadToEndAsync();
         var outputTask = process.StandardOutput.ReadToEndAsync();
         using var timeout = new CancellationTokenSource(_timeout);
@@ -43,22 +44,21 @@ public sealed class OfficeConversionProcess : IOfficePdfConverter
             try { await Task.WhenAll(errorTask, outputTask).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false); }
             catch (Exception exception) when (exception is IOException or ObjectDisposedException or TimeoutException) { }
             if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException(cancellationToken);
-            throw new TimeoutException("Office conversion took too long. Penroam stopped its conversion worker without closing your Office sessions. " +
-                "If Office is waiting for a password, repair, activation or another dialog, resolve it there, then export a PDF and import that copy.");
+            throw new TimeoutException(L.Text("Messages.Office.Timeout"));
         }
         var error = (await errorTask.ConfigureAwait(false)).Trim();
         await outputTask.ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
         if (process.ExitCode != 0)
             throw new InvalidDataException(string.IsNullOrWhiteSpace(error)
-                ? "Office could not convert this document. Open it in Word or PowerPoint and export a PDF copy."
+                ? L.Text("Messages.Office.ConversionFailed")
                 : error.Length <= 4096 ? error : error[..4096]);
         if (!File.Exists(outputPdfPath) || new FileInfo(outputPdfPath).Length < 5)
-            throw new InvalidDataException("Office did not produce a readable PDF. Export a PDF from the source application and try again.");
+            throw new InvalidDataException(L.Text("Messages.Office.NoReadablePdf"));
         var signature = new byte[5];
         using var pdf = File.OpenRead(outputPdfPath);
         await pdf.ReadExactlyAsync(signature, cancellationToken).ConfigureAwait(false);
-        if (!signature.AsSpan().SequenceEqual("%PDF-"u8)) throw new InvalidDataException("The document converter returned an invalid PDF.");
+        if (!signature.AsSpan().SequenceEqual("%PDF-"u8)) throw new InvalidDataException(L.Text("Messages.Office.InvalidPdf"));
     }
 
     private static ProcessStartInfo CreateStartInfo(string workerExecutable, string sourcePath, string outputPdfPath)
@@ -82,7 +82,7 @@ public sealed class OfficeConversionProcess : IOfficePdfConverter
         var assembly = typeof(OfficeConversionProcess).Assembly.Location;
         var executable = string.IsNullOrEmpty(assembly) ? null : Path.ChangeExtension(assembly, ".exe");
         if (executable is not null && File.Exists(executable)) return executable;
-        throw new FileNotFoundException("Penroam's document conversion worker is missing. Extract the complete Penroam ZIP and try again.");
+        throw new FileNotFoundException(L.Text("Messages.Office.WorkerMissing"));
     }
 
     private static async Task StopWorkerAsync(Process process)

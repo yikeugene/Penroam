@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -49,22 +50,23 @@ public partial class MainWindow
         var menu = new ContextMenu { Tag = target, PlacementTarget = owner, Placement = placement };
         menu.Items.Add(CreateMenuHeading(current.Title));
         menu.Items.Add(new Separator());
-        Add("Rename Section…", "\uE8AC", RenameSectionClick);
+        Add("Shell.RenameSectionMenu", "\uE8AC", RenameSectionClick);
         var index = ViewModel.Sections.IndexOf(current);
-        Add("Move Section Up", "\uE74A", MoveSectionUpClick, index > 0);
-        Add("Move Section Down", "\uE74B", MoveSectionDownClick, index < ViewModel.Sections.Count - 1);
+        Add("Shell.MoveSectionUp", "\uE74A", MoveSectionUpClick, index > 0);
+        Add("Shell.MoveSectionDown", "\uE74B", MoveSectionDownClick, index < ViewModel.Sections.Count - 1);
         menu.Items.Add(new Separator());
-        Add("Delete Section…", "\uE74D", DeleteSectionClick, ViewModel.CanDeleteSection, danger: true);
+        Add("Shell.DeleteSectionMenu", "\uE74D", DeleteSectionClick, ViewModel.CanDeleteSection, danger: true);
         ClearTouches(); CloseSettingsPopups();
         menu.IsOpen = true;
 
-        void Add(string title, string glyph, RoutedEventHandler click, bool enabled = true, bool danger = false)
+        void Add(string key, string glyph, RoutedEventHandler click, bool enabled = true, bool danger = false)
         {
-            var item = new MenuItem { Header = title, Icon = CreateMenuIcon(glyph), Tag = target, IsEnabled = enabled };
+            var item = new MenuItem { Icon = CreateMenuIcon(glyph), Tag = target, IsEnabled = enabled };
+            L.Bind(item, HeaderedItemsControl.HeaderProperty, key);
             if (danger)
             {
                 item.Style = (Style)FindResource("DangerMenuItem");
-                item.ToolTip = enabled ? "Delete this section and its pages · Undo available" : "Keep at least one section in your notebook";
+                L.Bind(item, FrameworkElement.ToolTipProperty, enabled ? "Shell.DeleteSectionHint" : "Shell.KeepOneSectionHint");
                 ToolTipService.SetShowOnDisabled(item, true);
             }
             item.Click += click;
@@ -124,7 +126,7 @@ public partial class MainWindow
     {
         if (ViewModel.Document is null || ViewModel.IsBusy) return;
         CommitEditors();
-        var dialog = new InputDialog(this, "Add Section", ("Topic or section name", "New Section"));
+        var dialog = new InputDialog(this, L.Text("Shell.AddSection"), (L.Text("Shell.SectionNameLabel"), "New Section"));
         if (dialog.ShowDialog() == true) ChangeSectionView(() => ViewModel.AddSection(dialog.Values[0]));
     }
 
@@ -138,7 +140,7 @@ public partial class MainWindow
         if (!CanOrganize || ResolveSectionActionTarget(ViewModel, target) is null) return;
         CommitEditors();
         if (ResolveSectionActionTarget(ViewModel, target) is not { } section) return;
-        var dialog = new InputDialog(this, "Rename Section", ("Topic or section name", section.Title));
+        var dialog = new InputDialog(this, L.Text("Shell.RenameSection"), (L.Text("Shell.SectionNameLabel"), section.Title));
         if (dialog.ShowDialog() == true) RunSectionAction(target, () => ViewModel.RenameSection(dialog.Values[0]));
     }
 
@@ -155,15 +157,15 @@ public partial class MainWindow
         if (!CanOrganize || ResolveSectionActionTarget(ViewModel, target) is null) return;
         if (ViewModel.Sections.Count <= 1)
         {
-            MessageBox.Show(this, "Keep at least one section in your notebook. You can rename this section or delete individual pages.", "Delete Section");
+            MessageBox.Show(this, L.Text("Shell.KeepOneSectionDescription"), L.Text("Shell.DeleteSection"));
             return;
         }
         CommitEditors();
         if (ResolveSectionActionTarget(ViewModel, target) is not { } section) return;
-        if (MessageBox.Show(this, $"Delete \"{section.Title}\" and its {section.PageCountText}?\n\nUndo is available while open. A notebook recovery copy is also kept for 30 days in Backup & recovery.",
-            "Delete Section", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
+        if (MessageBox.Show(this, L.Text(section.PageCount == 1 ? "Shell.DeleteSectionConfirmOne" : "Shell.DeleteSectionConfirm", section.Title, section.PageCount),
+            L.Text("Shell.DeleteSection"), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
         {
-            await RunAsync("Keeping a recovery copy…", async () =>
+            await RunAsync(L.M("Shell.KeepingRecoveryCopy"), async () =>
             {
                 await PreserveDeletedAsync(target.Document, "Section deleted");
                 if (!ReferenceEquals(ViewModel.Document, target.Document) || ViewModel.Sections.All(candidate => candidate.Id != target.SectionId)) return;

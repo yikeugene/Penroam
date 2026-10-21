@@ -1,11 +1,22 @@
 using System.IO;
+using Moye.Localization;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
 public enum FolderImportItemStatus { Ready, Failed, Skipped }
 
-public sealed record FolderImportItem(string Name, FolderImportItemStatus Status, int PageCount = 0, string Message = "");
+public sealed record FolderImportItem(string Name, FolderImportItemStatus Status, int PageCount = 0, string Message = "")
+{
+    private readonly string _message = Message;
+    public LocalizedMessage? LocalizedMessage { get; init; }
+    public string Message
+    {
+        get => LocalizedMessage?.ToString() ?? _message;
+        init { _message = value; LocalizedMessage = null; }
+    }
+}
 
 public sealed record FolderImportSummary(string NotebookTitle, IReadOnlyList<FolderImportItem> Items)
 {
@@ -42,7 +53,7 @@ public sealed class FolderImportService
     {
         cancellationToken.ThrowIfCancellationRequested();
         var folder = Path.GetFullPath(folderPath);
-        progress?.Report(new("Finding PDF and PowerPoint files…"));
+        progress?.Report(new(L.M("Messages.Progress.FindFolderDocuments")));
         var entries = await Task.Run(() => Discover(folder, cancellationToken), cancellationToken);
         var title = Path.GetFileName(Path.TrimEndingDirectorySeparator(folder));
         var notebook = new NotebookDocument { Title = string.IsNullOrWhiteSpace(title) ? "Imported folder" : title, Folder = "My Notes" };
@@ -73,10 +84,10 @@ public sealed class FolderImportService
                 }
                 if (entry.SkipReason is not null)
                 {
-                    items.Add(new(entry.Name, FolderImportItemStatus.Skipped, Message: entry.SkipReason));
+                    items.Add(new(entry.Name, FolderImportItemStatus.Skipped) { LocalizedMessage = entry.SkipReason });
                     continue;
                 }
-                progress?.Report(new($"Preparing file {completed + 1} of {total}: {entry.Name}", completed, total));
+                progress?.Report(new(L.M("Messages.Progress.PrepareFolderFile", completed + 1, total, entry.Name), completed, total));
                 IReadOnlyList<NotePage> pages;
                 try
                 {
@@ -84,7 +95,7 @@ public sealed class FolderImportService
                     await prepared.PrepareAsync(entry.Path, fileProgress, cancellationToken);
                     cancellationToken.ThrowIfCancellationRequested();
                     pages = prepared.Pages;
-                    if (pages.Count == 0) throw new InvalidDataException("This document has no pages to import.");
+                    if (pages.Count == 0) throw new InvalidDataException(L.Text("Messages.Folder.NoPages"));
                 }
                 catch (Exception ex) when (ex is not OperationCanceledException and not FolderImportStagingException and not OutOfMemoryException)
                 {
@@ -96,11 +107,11 @@ public sealed class FolderImportService
                 var section = new NoteSection { Title = entry.SectionTitle! };
                 notebook.Sections.Add(section);
                 DocumentWorkflows.InsertPages(notebook, pages, section.Id);
-                items.Add(new(entry.Name, FolderImportItemStatus.Ready, pages.Count, $"Section: {section.Title}"));
+                items.Add(new(entry.Name, FolderImportItemStatus.Ready, pages.Count) { LocalizedMessage = L.M("Messages.Folder.Section", section.Title) });
                 completed++;
             }
             cancellationToken.ThrowIfCancellationRequested();
-            progress?.Report(new("Folder ready", total, total));
+            progress?.Report(new(L.M("Messages.Progress.FolderReady"), total, total));
             cancellationToken.ThrowIfCancellationRequested();
             return new PreparedFolderImport(notebook, new(notebook.Title, items.ToArray()), prepared, staging, temporary);
         }
@@ -124,10 +135,10 @@ public sealed class FolderImportService
             try
             {
                 var isDirectory = (_readAttributes(path) & FileAttributes.Directory) != 0;
-                var reason = isDirectory ? "Subfolder skipped. Only files directly in the selected folder are imported."
+                var reason = isDirectory ? L.M("Messages.Folder.SubfolderSkipped")
                     : Path.GetExtension(path).Equals(".ppt", StringComparison.OrdinalIgnoreCase)
-                        ? "Legacy .ppt files are not supported. Save this presentation as .pptx, then import it."
-                    : !IsSupported(path) ? "Unsupported file type. Folder import includes only PDF and PPTX files." : null;
+                        ? L.M("Messages.Folder.LegacyPowerPoint")
+                    : !IsSupported(path) ? L.M("Messages.Folder.UnsupportedType") : null;
                 entries.Add(new(path, name, null, reason));
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -162,12 +173,12 @@ public sealed class FolderImportService
         return string.IsNullOrWhiteSpace(stem) ? "Untitled document" : stem;
     }
 
-    private sealed record SourceEntry(string Path, string Name, string? SectionTitle, string? SkipReason, string? FailureReason = null);
+    private sealed record SourceEntry(string Path, string Name, string? SectionTitle, LocalizedMessage? SkipReason, string? FailureReason = null);
 
     private sealed class FileProgress(IProgress<DocumentProgress>? progress, string name, int completed, int total) : IProgress<DocumentProgress>
     {
         public void Report(DocumentProgress value) => progress?.Report(new(
-            $"File {completed + 1} of {total}: {name}\n{value.Message}", completed, total));
+            L.M("Messages.Folder.FileProgress", completed + 1, total, name, value.LocalizedMessage ?? (object)value.Message), completed, total));
     }
 
     // Storage failures are not bad source files. Never offer a silently incomplete batch when staging fails.
@@ -236,7 +247,7 @@ public sealed class FolderImportService
 }
 
 public sealed class FolderImportStagingException(Exception innerException) : IOException(
-    "The temporary import files could not be stored or read. No notebook was created. Check available disk space and folder permissions, then try again.", innerException) { }
+    L.Text("Messages.Folder.StagingFailed"), innerException) { }
 
 /// <summary>A retry keeps the same notebook identity. Saving and opening are separate commit boundaries.</summary>
 public sealed class PreparedFolderImport : IDisposable
@@ -268,18 +279,18 @@ public sealed class PreparedFolderImport : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         if (HasSaved) return;
-        if (Summary.ReadyCount == 0) throw new InvalidOperationException("No documents were prepared. No notebook was created.");
-        if (!_accepted) throw new InvalidOperationException("Choose Import Successful Files before saving this partial import.");
-        if (Interlocked.Exchange(ref _saving, 1) != 0) throw new InvalidOperationException("This folder is already being saved.");
+        if (Summary.ReadyCount == 0) throw new InvalidOperationException(L.Text("Messages.Folder.NothingPrepared"));
+        if (!_accepted) throw new InvalidOperationException(L.Text("Messages.Folder.AcceptPartial"));
+        if (Interlocked.Exchange(ref _saving, 1) != 0) throw new InvalidOperationException(L.Text("Messages.Folder.AlreadySaving"));
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
-            progress?.Report(new("Saving pending notebook changes…"));
+            progress?.Report(new(L.M("Messages.Progress.SavePendingChanges")));
             await savePendingChanges();
             cancellationToken.ThrowIfCancellationRequested();
             await _prepared.CommitAssetsAsync(repository, Notebook.Pages, progress, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            progress?.Report(new("Saving imported notebook…", CanCancel: false));
+            progress?.Report(new(L.M("Messages.Progress.SaveImportedNotebook"), CanCancel: false));
             // Assets are content-addressed writes; only the notebook is one transaction.
             // A late cancellation or failed save can leave unreferenced library assets.
             await repository.SaveAsync(Notebook);
@@ -291,7 +302,7 @@ public sealed class PreparedFolderImport : IDisposable
     public Task OpenSavedAsync(Func<string, Task> openNotebook)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        if (!HasSaved) throw new InvalidOperationException("Save the imported notebook before opening it.");
+        if (!HasSaved) throw new InvalidOperationException(L.Text("Messages.Folder.SaveBeforeOpen"));
         return openNotebook(Notebook.Id);
     }
 

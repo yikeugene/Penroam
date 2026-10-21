@@ -23,7 +23,7 @@ This guide applies to the entire source tree. Use the current code and project f
 | Documents and updates | [PdfService.cs](src/Moye/Services/PdfService.cs), [DocumentImportService.cs](src/Moye/Services/DocumentImportService.cs), [PdfTextExtractionService.cs](src/Moye/Services/PdfTextExtractionService.cs), [GitHubUpdateService.cs](src/Moye/Services/GitHubUpdateService.cs). |
 | Verification and packaging | [Moye.Tests.csproj](tests/Moye.Tests/Moye.Tests.csproj), [preview tool](tools/Moye.UiPreview/README.md), `scripts/`, [Moye.iss](installer/Moye.iss) and [Windows CI](.github/workflows/windows.yml). |
 
-Follow the existing WPF/code-behind and view-model boundaries rather than imposing a new architecture. Place changes in the relevant partial/service, match surrounding C# style and comment density, and keep unrelated refactors out of a focused fix. Keep interface strings and user documentation in natural English; never translate a user's notebook content.
+Follow the existing WPF/code-behind and view-model boundaries rather than imposing a new architecture. Place changes in the relevant partial/service, match surrounding C# style and comment density, and keep unrelated refactors out of a focused fix. Keep interface strings in the shared English and Traditional Chinese localization resources, and user documentation in natural English; never translate a user's notebook content.
 
 ## Build and test
 

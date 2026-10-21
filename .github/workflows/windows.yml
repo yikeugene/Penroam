@@ -32,7 +32,7 @@ jobs:
           dotnet-version: '10.0.x'
       - name: Build and test
         run: ./scripts/test.ps1 -Configuration Release
-      - name: Check English UI layout
+      - name: Check English and Traditional Chinese UI layout
         run: ./scripts/preview-ui.ps1 -Configuration Release
       - name: Build Windows x64 installer
         run: ./scripts/publish-installer.ps1 -InstallCompiler

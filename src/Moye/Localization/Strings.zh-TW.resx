@@ -1,0 +1,4657 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Controls.Clipboard.ImageTooLarge" xml:space="preserve">
+    <value>剪貼簿中的圖片超出支援的尺寸。</value>
+  </data>
+  <data name="Controls.Clipboard.SelectionTooLarge" xml:space="preserve">
+    <value>選取的內容太大，無法複製到剪貼簿。</value>
+  </data>
+  <data name="Controls.Clipboard.SelectionTooLargeHint" xml:space="preserve">
+    <value>選取的內容太大，無法複製到剪貼簿。請減少複製的物件數量。</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Amber" xml:space="preserve">
+    <value>琥珀色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Black" xml:space="preserve">
+    <value>黑色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Blue" xml:space="preserve">
+    <value>藍色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Brown" xml:space="preserve">
+    <value>棕色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Gray" xml:space="preserve">
+    <value>灰色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Green" xml:space="preserve">
+    <value>綠色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Ink" xml:space="preserve">
+    <value>墨色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Magenta" xml:space="preserve">
+    <value>洋紅色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Orange" xml:space="preserve">
+    <value>橙色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Pink" xml:space="preserve">
+    <value>粉紅色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Purple" xml:space="preserve">
+    <value>紫色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Red" xml:space="preserve">
+    <value>紅色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Skyblue" xml:space="preserve">
+    <value>天藍色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Teal" xml:space="preserve">
+    <value>藍綠色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.White" xml:space="preserve">
+    <value>白色</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Yellow" xml:space="preserve">
+    <value>黃色</value>
+  </data>
+  <data name="Controls.ColorPicker.Current" xml:space="preserve">
+    <value>目前顏色</value>
+  </data>
+  <data name="Controls.ColorPicker.FieldHelp" xml:space="preserve">
+    <value>使用方向鍵調整色彩區域。按住 Shift 可加大調整幅度。</value>
+  </data>
+  <data name="Controls.ColorPicker.FieldStatus" xml:space="preserve">
+    <value>飽和度 {0:P0}、亮度 {1:P0}</value>
+  </data>
+  <data name="Controls.ColorPicker.Hue" xml:space="preserve">
+    <value>色相</value>
+  </data>
+  <data name="Controls.ColorPicker.HueHelp" xml:space="preserve">
+    <value>選擇色相。使用左右方向鍵微調。</value>
+  </data>
+  <data name="Controls.ColorPicker.New" xml:space="preserve">
+    <value>新顏色</value>
+  </data>
+  <data name="Controls.ColorPicker.NewColorDescription" xml:space="preserve">
+    <value>新顏色：紅 {0}、綠 {1}、藍 {2}、不透明度 {3:P0}</value>
+  </data>
+  <data name="Controls.ColorPicker.OpacityHelp" xml:space="preserve">
+    <value>不透明度維持在 {0:P0}。使用方向鍵調整色彩區域。</value>
+  </data>
+  <data name="Controls.ColorPicker.Palette" xml:space="preserve">
+    <value>調色盤</value>
+  </data>
+  <data name="Controls.ColorPicker.Restore" xml:space="preserve">
+    <value>還原目前顏色</value>
+  </data>
+  <data name="Controls.ColorPicker.SaturationBrightness" xml:space="preserve">
+    <value>飽和度與亮度</value>
+  </data>
+  <data name="Controls.ColorPicker.SaturationBrightnessHelp" xml:space="preserve">
+    <value>左右方向鍵調整飽和度，上下方向鍵調整亮度。按住 Shift 可加大調整幅度。</value>
+  </data>
+  <data name="Controls.ColorPicker.Selected" xml:space="preserve">
+    <value>已選取</value>
+  </data>
+  <data name="Controls.ColorPicker.Title" xml:space="preserve">
+    <value>選擇顏色</value>
+  </data>
+  <data name="Controls.Common.Apply" xml:space="preserve">
+    <value>套用</value>
+  </data>
+  <data name="Controls.Common.Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Controls.Common.Category" xml:space="preserve">
+    <value>分類</value>
+  </data>
+  <data name="Controls.Common.Close" xml:space="preserve">
+    <value>關閉</value>
+  </data>
+  <data name="Controls.Common.Color" xml:space="preserve">
+    <value>顏色</value>
+  </data>
+  <data name="Controls.Common.Delete" xml:space="preserve">
+    <value>刪除</value>
+  </data>
+  <data name="Controls.Common.DestinationSection" xml:space="preserve">
+    <value>目的地分區</value>
+  </data>
+  <data name="Controls.Common.Done" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="Controls.Common.Duplicate" xml:space="preserve">
+    <value>建立副本</value>
+  </data>
+  <data name="Controls.Common.PageNumber" xml:space="preserve">
+    <value>第 {0} 頁</value>
+  </data>
+  <data name="Controls.Common.PagePlural" xml:space="preserve">
+    <value>頁</value>
+  </data>
+  <data name="Controls.Common.PageSingular" xml:space="preserve">
+    <value>頁</value>
+  </data>
+  <data name="Controls.Common.PreviewUnavailable" xml:space="preserve">
+    <value>無法預覽：{0}</value>
+  </data>
+  <data name="Controls.Common.Save" xml:space="preserve">
+    <value>儲存</value>
+  </data>
+  <data name="Controls.Common.SearchFailed" xml:space="preserve">
+    <value>搜尋無法完成：{0}</value>
+  </data>
+  <data name="Controls.Common.Section" xml:space="preserve">
+    <value>分區</value>
+  </data>
+  <data name="Controls.Common.SelectAll" xml:space="preserve">
+    <value>全選</value>
+  </data>
+  <data name="Controls.DocumentCompletion.Exported" xml:space="preserve">
+    <value>已匯出 {0} {1}</value>
+  </data>
+  <data name="Controls.DocumentCompletion.Open" xml:space="preserve">
+    <value>開啟 PDF</value>
+  </data>
+  <data name="Controls.DocumentCompletion.ShowFolder" xml:space="preserve">
+    <value>在資料夾中顯示</value>
+  </data>
+  <data name="Controls.DocumentCompletion.Title" xml:space="preserve">
+    <value>已匯出 PDF</value>
+  </data>
+  <data name="Controls.DocumentOperation.Canceling" xml:space="preserve">
+    <value>正在取消… 請等候目前步驟停止。</value>
+  </data>
+  <data name="Controls.DocumentSelection.ApplyRange" xml:space="preserve">
+    <value>套用範圍</value>
+  </data>
+  <data name="Controls.DocumentSelection.Clear" xml:space="preserve">
+    <value>清除</value>
+  </data>
+  <data name="Controls.DocumentSelection.Destination" xml:space="preserve">
+    <value>目的地</value>
+  </data>
+  <data name="Controls.DocumentSelection.Export" xml:space="preserve">
+    <value>繼續匯出</value>
+  </data>
+  <data name="Controls.DocumentSelection.ExportHint" xml:space="preserve">
+    <value>依筆記本中的順序選擇頁面。新增的文字會在 PDF 中轉換為輪廓。</value>
+  </data>
+  <data name="Controls.DocumentSelection.ExportScope" xml:space="preserve">
+    <value>匯出範圍</value>
+  </data>
+  <data name="Controls.DocumentSelection.Import" xml:space="preserve">
+    <value>匯入選取的頁面</value>
+  </data>
+  <data name="Controls.DocumentSelection.ImportDestination" xml:space="preserve">
+    <value>匯入目的地</value>
+  </data>
+  <data name="Controls.DocumentSelection.ImportHint" xml:space="preserve">
+    <value>先選擇要加入的頁面。原始文件不會變更。</value>
+  </data>
+  <data name="Controls.DocumentSelection.LoadingPreview" xml:space="preserve">
+    <value>{0} · 正在載入預覽…</value>
+  </data>
+  <data name="Controls.DocumentSelection.NameRequired" xml:space="preserve">
+    <value>請輸入新筆記本或分區的名稱。</value>
+  </data>
+  <data name="Controls.DocumentSelection.NewName" xml:space="preserve">
+    <value>新筆記本或分區名稱</value>
+  </data>
+  <data name="Controls.DocumentSelection.NewNotebook" xml:space="preserve">
+    <value>新增筆記本…</value>
+  </data>
+  <data name="Controls.DocumentSelection.NewSection" xml:space="preserve">
+    <value>新增分區…</value>
+  </data>
+  <data name="Controls.DocumentSelection.Placement" xml:space="preserve">
+    <value>頁面位置</value>
+  </data>
+  <data name="Controls.DocumentSelection.PositionAfter" xml:space="preserve">
+    <value>在目前頁面之後</value>
+  </data>
+  <data name="Controls.DocumentSelection.PositionEnd" xml:space="preserve">
+    <value>在分區末端</value>
+  </data>
+  <data name="Controls.DocumentSelection.PreviewHint" xml:space="preserve">
+    <value>選取頁面以預覽</value>
+  </data>
+  <data name="Controls.DocumentSelection.Range" xml:space="preserve">
+    <value>頁面範圍</value>
+  </data>
+  <data name="Controls.DocumentSelection.RangeHelp" xml:space="preserve">
+    <value>輸入清單中的頁碼，例如 1–5, 8</value>
+  </data>
+  <data name="Controls.DocumentSelection.ScopeCustom" xml:space="preserve">
+    <value>選擇下方頁面</value>
+  </data>
+  <data name="Controls.DocumentSelection.ScopeNotebook" xml:space="preserve">
+    <value>整本筆記本</value>
+  </data>
+  <data name="Controls.DocumentSelection.ScopePage" xml:space="preserve">
+    <value>目前頁面</value>
+  </data>
+  <data name="Controls.DocumentSelection.ScopeSection" xml:space="preserve">
+    <value>目前分區</value>
+  </data>
+  <data name="Controls.DocumentSelection.SelectRequired" xml:space="preserve">
+    <value>請至少選取一頁。</value>
+  </data>
+  <data name="Controls.DocumentSelection.SelectedCount" xml:space="preserve">
+    <value>已選取 {0} 頁，共 {1} 頁</value>
+  </data>
+  <data name="Controls.Extend.Both50" xml:space="preserve">
+    <value>兩側 +50 mm</value>
+  </data>
+  <data name="Controls.Extend.Bottom50" xml:space="preserve">
+    <value>下方 +50 mm</value>
+  </data>
+  <data name="Controls.Extend.CurrentPage" xml:space="preserve">
+    <value>目前頁面</value>
+  </data>
+  <data name="Controls.Extend.Direction.Bottom" xml:space="preserve">
+    <value>下方</value>
+  </data>
+  <data name="Controls.Extend.Direction.Bottomleft" xml:space="preserve">
+    <value>左下</value>
+  </data>
+  <data name="Controls.Extend.Direction.Bottomright" xml:space="preserve">
+    <value>右下</value>
+  </data>
+  <data name="Controls.Extend.Direction.Left" xml:space="preserve">
+    <value>左側</value>
+  </data>
+  <data name="Controls.Extend.Direction.Right" xml:space="preserve">
+    <value>右側</value>
+  </data>
+  <data name="Controls.Extend.Direction.Top" xml:space="preserve">
+    <value>上方</value>
+  </data>
+  <data name="Controls.Extend.Direction.Topleft" xml:space="preserve">
+    <value>左上</value>
+  </data>
+  <data name="Controls.Extend.Direction.Topright" xml:space="preserve">
+    <value>右上</value>
+  </data>
+  <data name="Controls.Extend.Drag" xml:space="preserve">
+    <value>拖曳以延伸{0}</value>
+  </data>
+  <data name="Controls.Extend.Edge" xml:space="preserve">
+    <value>延伸{0}邊緣</value>
+  </data>
+  <data name="Controls.Extend.Empty" xml:space="preserve">
+    <value>在一側或多側加入空白空間。</value>
+  </data>
+  <data name="Controls.Extend.Heading" xml:space="preserve">
+    <value>為筆記增添更多空間</value>
+  </data>
+  <data name="Controls.Extend.Intro" xml:space="preserve">
+    <value>拖曳邊緣或角落，或在下方輸入要增加的空間。
+PDF 與筆記會保持原始大小。</value>
+  </data>
+  <data name="Controls.Extend.InvalidNumber" xml:space="preserve">
+    <value>請為每一側輸入大於或等於 0 的數值。</value>
+  </data>
+  <data name="Controls.Extend.Maximum" xml:space="preserve">
+    <value>頁面寬度或高度最多為 {0:0} mm。</value>
+  </data>
+  <data name="Controls.Extend.NumberHelp" xml:space="preserve">
+    <value>額外空白空間。按上下方向鍵調整 1 mm，或按住 Shift 加上上下方向鍵調整 10 mm。</value>
+  </data>
+  <data name="Controls.Extend.Ready" xml:space="preserve">
+    <value>綠色顯示新增的書寫空間。一次套用，即可一次復原。</value>
+  </data>
+  <data name="Controls.Extend.Reset" xml:space="preserve">
+    <value>重設</value>
+  </data>
+  <data name="Controls.Extend.Right50" xml:space="preserve">
+    <value>右側 +50 mm</value>
+  </data>
+  <data name="Controls.Extend.Side.Bottom" xml:space="preserve">
+    <value>下方</value>
+  </data>
+  <data name="Controls.Extend.Side.Left" xml:space="preserve">
+    <value>左側</value>
+  </data>
+  <data name="Controls.Extend.Side.Right" xml:space="preserve">
+    <value>右側</value>
+  </data>
+  <data name="Controls.Extend.Side.Top" xml:space="preserve">
+    <value>上方</value>
+  </data>
+  <data name="Controls.Extend.SideAccessible" xml:space="preserve">
+    <value>{0}延伸量（毫米）</value>
+  </data>
+  <data name="Controls.Extend.SideLabel" xml:space="preserve">
+    <value>{0}（mm）</value>
+  </data>
+  <data name="Controls.Extend.Size" xml:space="preserve">
+    <value>頁面大小：{0:0.#} × {1:0.#} mm</value>
+  </data>
+  <data name="Controls.Extend.Title" xml:space="preserve">
+    <value>延伸頁面</value>
+  </data>
+  <data name="Controls.FolderImport.Accept" xml:space="preserve">
+    <value>匯入成功的檔案</value>
+  </data>
+  <data name="Controls.FolderImport.Confirmation" xml:space="preserve">
+    <value>部分檔案無法準備完成。您可以匯入成功的檔案，或取消而不建立筆記本。</value>
+  </data>
+  <data name="Controls.FolderImport.Empty" xml:space="preserve">
+    <value>沒有可成功準備的支援文件。未建立筆記本。</value>
+  </data>
+  <data name="Controls.FolderImport.Failed" xml:space="preserve">
+    <value>失敗</value>
+  </data>
+  <data name="Controls.FolderImport.Order" xml:space="preserve">
+    <value>每個成功的檔案會成為一個分區，並依檔名自然排序。</value>
+  </data>
+  <data name="Controls.FolderImport.ReadyCount" xml:space="preserve">
+    <value>就緒 · {0} {1}</value>
+  </data>
+  <data name="Controls.FolderImport.Results" xml:space="preserve">
+    <value>資料夾匯入檔案結果</value>
+  </data>
+  <data name="Controls.FolderImport.Scope" xml:space="preserve">
+    <value>僅包含資料夾最上層的 PDF 和 PPTX 檔案。原始檔案保持不變；這是一次性匯入，不會監看資料夾的後續變更。</value>
+  </data>
+  <data name="Controls.FolderImport.Skipped" xml:space="preserve">
+    <value>已略過</value>
+  </data>
+  <data name="Controls.FolderImport.Summary" xml:space="preserve">
+    <value>{0} 個就緒 · {1} 個失敗 · {2} 個略過 · {3} {4}</value>
+  </data>
+  <data name="Controls.FolderImport.Title" xml:space="preserve">
+    <value>資料夾匯入摘要</value>
+  </data>
+  <data name="Controls.Input.Required" xml:space="preserve">
+    <value>請填寫「{0}」。</value>
+  </data>
+  <data name="Controls.NoteItem.Move" xml:space="preserve">
+    <value>拖曳以移動</value>
+  </data>
+  <data name="Controls.NoteItem.MoveHelp" xml:space="preserve">
+    <value>使用方向鍵移動選取的物件。按住 Shift 可加大移動幅度。</value>
+  </data>
+  <data name="Controls.NoteItem.Resize" xml:space="preserve">
+    <value>拖曳以調整大小</value>
+  </data>
+  <data name="Controls.Notebook.CategoryRequired" xml:space="preserve">
+    <value>請輸入筆記本分類。</value>
+  </data>
+  <data name="Controls.Notebook.Create" xml:space="preserve">
+    <value>建立筆記本</value>
+  </data>
+  <data name="Controls.Notebook.Heading" xml:space="preserve">
+    <value>建立筆記本</value>
+  </data>
+  <data name="Controls.Notebook.Intro" xml:space="preserve">
+    <value>為您的靈感開啟新空間，打造專屬筆記本。</value>
+  </data>
+  <data name="Controls.Notebook.Name" xml:space="preserve">
+    <value>筆記本名稱</value>
+  </data>
+  <data name="Controls.Notebook.NameRequired" xml:space="preserve">
+    <value>請輸入筆記本名稱。</value>
+  </data>
+  <data name="Controls.Notebook.Paper" xml:space="preserve">
+    <value>紙張範本</value>
+  </data>
+  <data name="Controls.Notebook.PaperHint" xml:space="preserve">
+    <value>選擇起始頁面。每一頁都可以使用不同的 A4 範本。</value>
+  </data>
+  <data name="Controls.Notebook.Title" xml:space="preserve">
+    <value>新增筆記本</value>
+  </data>
+  <data name="Controls.NotebookSearch.Bookmarks" xml:space="preserve">
+    <value>書籤</value>
+  </data>
+  <data name="Controls.NotebookSearch.BookmarksOnly" xml:space="preserve">
+    <value>僅顯示已加書籤的頁面</value>
+  </data>
+  <data name="Controls.NotebookSearch.EmptyQuery" xml:space="preserve">
+    <value>請輸入搜尋字詞，或顯示已加書籤的頁面。</value>
+  </data>
+  <data name="Controls.NotebookSearch.Intro" xml:space="preserve">
+    <value>搜尋筆記本、分區和頁面標題、輸入的文字，以及可擷取的 PDF 文字。搜尋僅在本機進行。</value>
+  </data>
+  <data name="Controls.NotebookSearch.Limit" xml:space="preserve">
+    <value>顯示前 250 筆符合結果。請縮小搜尋範圍。</value>
+  </data>
+  <data name="Controls.NotebookSearch.NoResults" xml:space="preserve">
+    <value>沒有符合的頁面。請嘗試較短的詞句，或關閉書籤篩選。</value>
+  </data>
+  <data name="Controls.NotebookSearch.Open" xml:space="preserve">
+    <value>開啟結果</value>
+  </data>
+  <data name="Controls.NotebookSearch.Query" xml:space="preserve">
+    <value>搜尋筆記本內容</value>
+  </data>
+  <data name="Controls.NotebookSearch.QueryHint" xml:space="preserve">
+    <value>搜尋標題、輸入的文字及原始 PDF 文字</value>
+  </data>
+  <data name="Controls.NotebookSearch.ResultCount" xml:space="preserve">
+    <value>{0} 筆結果 · 選擇結果以跳至該頁面。</value>
+  </data>
+  <data name="Controls.NotebookSearch.Results" xml:space="preserve">
+    <value>搜尋結果</value>
+  </data>
+  <data name="Controls.NotebookSearch.Searching" xml:space="preserve">
+    <value>正在搜尋…</value>
+  </data>
+  <data name="Controls.NotebookSearch.Title" xml:space="preserve">
+    <value>搜尋所有筆記</value>
+  </data>
+  <data name="Controls.Organization.AllCategories" xml:space="preserve">
+    <value>所有分類</value>
+  </data>
+  <data name="Controls.Organization.AutomaticColor" xml:space="preserve">
+    <value>自動 · 保持相同顏色</value>
+  </data>
+  <data name="Controls.Organization.Bookmark" xml:space="preserve">
+    <value>為此頁面加上書籤</value>
+  </data>
+  <data name="Controls.Organization.CategoryFilter" xml:space="preserve">
+    <value>分類篩選</value>
+  </data>
+  <data name="Controls.Organization.Cover.Forest" xml:space="preserve">
+    <value>森林綠</value>
+  </data>
+  <data name="Controls.Organization.Cover.Ochre" xml:space="preserve">
+    <value>赭黃色</value>
+  </data>
+  <data name="Controls.Organization.Cover.Plum" xml:space="preserve">
+    <value>梅紫色</value>
+  </data>
+  <data name="Controls.Organization.Cover.Slate" xml:space="preserve">
+    <value>石板灰</value>
+  </data>
+  <data name="Controls.Organization.Cover.Teal" xml:space="preserve">
+    <value>藍綠色</value>
+  </data>
+  <data name="Controls.Organization.Cover.Terracotta" xml:space="preserve">
+    <value>陶土色</value>
+  </data>
+  <data name="Controls.Organization.CoverColor" xml:space="preserve">
+    <value>封面顏色</value>
+  </data>
+  <data name="Controls.Organization.CreateDestination" xml:space="preserve">
+    <value>請先建立另一個筆記本，再轉移頁面。</value>
+  </data>
+  <data name="Controls.Organization.DestinationNotebook" xml:space="preserve">
+    <value>目的地筆記本</value>
+  </data>
+  <data name="Controls.Organization.FilterSort" xml:space="preserve">
+    <value>篩選及排序筆記本</value>
+  </data>
+  <data name="Controls.Organization.KeepCopy" xml:space="preserve">
+    <value>在此筆記本中保留副本</value>
+  </data>
+  <data name="Controls.Organization.Notebook" xml:space="preserve">
+    <value>筆記本</value>
+  </data>
+  <data name="Controls.Organization.NotebookAppearance" xml:space="preserve">
+    <value>筆記本外觀</value>
+  </data>
+  <data name="Controls.Organization.NotebookMissing" xml:space="preserve">
+    <value>此筆記本已不存在。</value>
+  </data>
+  <data name="Controls.Organization.PageDetails" xml:space="preserve">
+    <value>頁面標題與書籤</value>
+  </data>
+  <data name="Controls.Organization.PageTitle" xml:space="preserve">
+    <value>頁面標題（選填）</value>
+  </data>
+  <data name="Controls.Organization.Pin" xml:space="preserve">
+    <value>釘選在其他筆記本上方</value>
+  </data>
+  <data name="Controls.Organization.SortByName" xml:space="preserve">
+    <value>依名稱排序（釘選的筆記本仍在最前面）</value>
+  </data>
+  <data name="Controls.Organization.Transfer" xml:space="preserve">
+    <value>轉移頁面</value>
+  </data>
+  <data name="Controls.Organization.TransferHint" xml:space="preserve">
+    <value>兩本筆記本會一併更新。附件保留在此資料庫中。在兩本筆記本皆未再次變更前，可使用「復原上次頁面轉移」來復原轉移。</value>
+  </data>
+  <data name="Controls.Organization.TransferTitle" xml:space="preserve">
+    <value>將頁面移至筆記本</value>
+  </data>
+  <data name="Controls.PageEditor.ImageError" xml:space="preserve">
+    <value>無法載入圖片：{0}</value>
+  </data>
+  <data name="Controls.PageEditor.ImageUnavailable" xml:space="preserve">
+    <value>無法載入圖片</value>
+  </data>
+  <data name="Controls.PageManager.Apply" xml:space="preserve">
+    <value>套用變更</value>
+  </data>
+  <data name="Controls.PageManager.DeleteSelected" xml:space="preserve">
+    <value>刪除選取項目</value>
+  </data>
+  <data name="Controls.PageManager.Details" xml:space="preserve">
+    <value>標題／書籤</value>
+  </data>
+  <data name="Controls.PageManager.Grid" xml:space="preserve">
+    <value>頁面整理格狀清單</value>
+  </data>
+  <data name="Controls.PageManager.Intro" xml:space="preserve">
+    <value>使用各頁的核取方塊，或按住 Ctrl／Shift 點選。將頁面拖至另一頁之前，或使用「上移／下移」。所有變更會一併套用為單一步驟，方便復原。</value>
+  </data>
+  <data name="Controls.PageManager.MoveDown" xml:space="preserve">
+    <value>下移</value>
+  </data>
+  <data name="Controls.PageManager.MoveSection" xml:space="preserve">
+    <value>移至分區</value>
+  </data>
+  <data name="Controls.PageManager.MoveUp" xml:space="preserve">
+    <value>上移</value>
+  </data>
+  <data name="Controls.PageManager.PendingSummary" xml:space="preserve">
+    <value>已選取 {0} 頁 · 共 {1} 頁 · 選擇「套用」後才會套用變更。</value>
+  </data>
+  <data name="Controls.PageManager.SelectOne" xml:space="preserve">
+    <value>請選取一頁以編輯標題和書籤。</value>
+  </data>
+  <data name="Controls.PageManager.SelectPage" xml:space="preserve">
+    <value>選取頁面</value>
+  </data>
+  <data name="Controls.PageManager.SelectRequired" xml:space="preserve">
+    <value>請先選取一個或多個頁面。</value>
+  </data>
+  <data name="Controls.PageManager.SelectionSummary" xml:space="preserve">
+    <value>已選取 {0} 頁 · 共 {1} 頁 · 取消會捨棄所有整理變更。</value>
+  </data>
+  <data name="Controls.PageManager.Title" xml:space="preserve">
+    <value>整理頁面</value>
+  </data>
+  <data name="Controls.PageManager.Transfer" xml:space="preserve">
+    <value>移動／複製至筆記本…</value>
+  </data>
+  <data name="Controls.PageRegion.CoordinateName" xml:space="preserve">
+    <value>{0}（頁面單位）</value>
+  </data>
+  <data name="Controls.PageRegion.Height" xml:space="preserve">
+    <value>高度</value>
+  </data>
+  <data name="Controls.PageRegion.Intro" xml:space="preserve">
+    <value>在頁面上拖曳，或在下方以頁面單位輸入區域範圍。</value>
+  </data>
+  <data name="Controls.PageRegion.InvalidNumbers" xml:space="preserve">
+    <value>請輸入有效數值。</value>
+  </data>
+  <data name="Controls.PageRegion.InvalidRegion" xml:space="preserve">
+    <value>請選擇頁面內至少 1 × 1 的區域。</value>
+  </data>
+  <data name="Controls.PageRegion.Left" xml:space="preserve">
+    <value>左側</value>
+  </data>
+  <data name="Controls.PageRegion.ScaleHint" xml:space="preserve">
+    <value>預覽已縮放；儲存的區域使用原始頁面座標。</value>
+  </data>
+  <data name="Controls.PageRegion.Top" xml:space="preserve">
+    <value>上方</value>
+  </data>
+  <data name="Controls.PageRegion.Use" xml:space="preserve">
+    <value>使用此區域</value>
+  </data>
+  <data name="Controls.PageRegion.WholePage" xml:space="preserve">
+    <value>整個頁面</value>
+  </data>
+  <data name="Controls.PageRegion.Width" xml:space="preserve">
+    <value>寬度</value>
+  </data>
+  <data name="Controls.Paper.Accessible" xml:space="preserve">
+    <value>{0}紙張</value>
+  </data>
+  <data name="Controls.Paper.Cornell.Caption" xml:space="preserve">
+    <value>康乃爾</value>
+  </data>
+  <data name="Controls.Paper.Cornell.Description" xml:space="preserve">
+    <value>提示與摘要</value>
+  </data>
+  <data name="Controls.Paper.Cornell.Name" xml:space="preserve">
+    <value>康乃爾</value>
+  </data>
+  <data name="Controls.Paper.DotGrid.Caption" xml:space="preserve">
+    <value>點陣</value>
+  </data>
+  <data name="Controls.Paper.DotGrid.Description" xml:space="preserve">
+    <value>靈活排版</value>
+  </data>
+  <data name="Controls.Paper.DotGrid.Name" xml:space="preserve">
+    <value>點陣</value>
+  </data>
+  <data name="Controls.Paper.Graph.Caption" xml:space="preserve">
+    <value>繪圖方格</value>
+  </data>
+  <data name="Controls.Paper.Graph.Description" xml:space="preserve">
+    <value>精細繪圖</value>
+  </data>
+  <data name="Controls.Paper.Graph.Name" xml:space="preserve">
+    <value>繪圖方格</value>
+  </data>
+  <data name="Controls.Paper.Grid.Caption" xml:space="preserve">
+    <value>方格</value>
+  </data>
+  <data name="Controls.Paper.Grid.Description" xml:space="preserve">
+    <value>圖表與數學</value>
+  </data>
+  <data name="Controls.Paper.Grid.Name" xml:space="preserve">
+    <value>方格</value>
+  </data>
+  <data name="Controls.Paper.Meeting.Caption" xml:space="preserve">
+    <value>會議</value>
+  </data>
+  <data name="Controls.Paper.Meeting.Description" xml:space="preserve">
+    <value>筆記與待辦</value>
+  </data>
+  <data name="Controls.Paper.Meeting.Name" xml:space="preserve">
+    <value>會議</value>
+  </data>
+  <data name="Controls.Paper.Plain.Caption" xml:space="preserve">
+    <value>空白</value>
+  </data>
+  <data name="Controls.Paper.Plain.Description" xml:space="preserve">
+    <value>自由筆記</value>
+  </data>
+  <data name="Controls.Paper.Plain.Name" xml:space="preserve">
+    <value>空白</value>
+  </data>
+  <data name="Controls.Paper.Ruled.Caption" xml:space="preserve">
+    <value>橫線</value>
+  </data>
+  <data name="Controls.Paper.Ruled.Description" xml:space="preserve">
+    <value>日常書寫</value>
+  </data>
+  <data name="Controls.Paper.Ruled.Name" xml:space="preserve">
+    <value>橫線</value>
+  </data>
+  <data name="Controls.Paper.ToolTip" xml:space="preserve">
+    <value>{0}紙張 — {1}</value>
+  </data>
+  <data name="Controls.PdfLayout.A4" xml:space="preserve">
+    <value>A4 紙張 · 實際大小</value>
+  </data>
+  <data name="Controls.PdfLayout.A4Summary" xml:space="preserve">
+    <value> · A4，100% 比例</value>
+  </data>
+  <data name="Controls.PdfLayout.AutoOrientation" xml:space="preserve">
+    <value>自動 · 最少張數</value>
+  </data>
+  <data name="Controls.PdfLayout.CheckSettings" xml:space="preserve">
+    <value>請檢查頁面配置設定。</value>
+  </data>
+  <data name="Controls.PdfLayout.Heading" xml:space="preserve">
+    <value>讓延伸的筆記保持清晰易讀</value>
+  </data>
+  <data name="Controls.PdfLayout.ImageUnavailable" xml:space="preserve">
+    <value>無法顯示頁面影像，仍會顯示紙張邊界與張數。</value>
+  </data>
+  <data name="Controls.PdfLayout.Intro" xml:space="preserve">
+    <value>保留各頁畫布的完整大小，或分割至多張 A4 紙張，而不縮小手寫內容或文字。</value>
+  </data>
+  <data name="Controls.PdfLayout.InvalidOverlap" xml:space="preserve">
+    <value>請輸入 0 至 30 mm 的重疊範圍。</value>
+  </data>
+  <data name="Controls.PdfLayout.Landscape" xml:space="preserve">
+    <value>橫向</value>
+  </data>
+  <data name="Controls.PdfLayout.Layout" xml:space="preserve">
+    <value>頁面配置</value>
+  </data>
+  <data name="Controls.PdfLayout.Orientation" xml:space="preserve">
+    <value>A4 方向</value>
+  </data>
+  <data name="Controls.PdfLayout.Original" xml:space="preserve">
+    <value>原始頁面大小</value>
+  </data>
+  <data name="Controls.PdfLayout.OriginalSummary" xml:space="preserve">
+    <value> · 保留原始尺寸</value>
+  </data>
+  <data name="Controls.PdfLayout.Overlap" xml:space="preserve">
+    <value>重疊範圍（0–30 mm）</value>
+  </data>
+  <data name="Controls.PdfLayout.PageCount" xml:space="preserve">
+    <value>來源 {0} {1} → PDF {2} {3}</value>
+  </data>
+  <data name="Controls.PdfLayout.PageSize" xml:space="preserve">
+    <value>第 {0} 頁 · {1:0.#} × {2:0.#} mm</value>
+  </data>
+  <data name="Controls.PdfLayout.Portrait" xml:space="preserve">
+    <value>直向</value>
+  </data>
+  <data name="Controls.PdfLayout.PreviewPage" xml:space="preserve">
+    <value>預覽來源頁面</value>
+  </data>
+  <data name="Controls.PdfLayout.PrintHint" xml:space="preserve">
+    <value>A4 紙張依先左至右、再上至下的順序閱讀。重疊區會重複顯示一小段內容，讓接合處的筆記仍清楚可讀。請以「實際大小／100%」列印，以保留比例。</value>
+  </data>
+  <data name="Controls.PdfLayout.Save" xml:space="preserve">
+    <value>繼續儲存</value>
+  </data>
+  <data name="Controls.PdfLayout.Title" xml:space="preserve">
+    <value>PDF 頁面配置</value>
+  </data>
+  <data name="Controls.Practice.Another" xml:space="preserve">
+    <value>再練習一次</value>
+  </data>
+  <data name="Controls.Practice.AttemptLabel" xml:space="preserve">
+    <value>{0}{1} · 第 {2} 次練習</value>
+  </data>
+  <data name="Controls.Practice.Intro" xml:space="preserve">
+    <value>保留每次練習的解題過程，記錄錯誤之處，以及下次想調整的做法。</value>
+  </data>
+  <data name="Controls.Practice.Original" xml:space="preserve">
+    <value>原始頁面</value>
+  </data>
+  <data name="Controls.Practice.Reflection" xml:space="preserve">
+    <value>錯誤之處／下次的做法</value>
+  </data>
+  <data name="Controls.Practice.Reviewed" xml:space="preserve">
+    <value>已檢查 — 我已核對此解答</value>
+  </data>
+  <data name="Controls.Practice.SaveOpen" xml:space="preserve">
+    <value>儲存並開啟</value>
+  </data>
+  <data name="Controls.Practice.Title" xml:space="preserve">
+    <value>練習紀錄</value>
+  </data>
+  <data name="Controls.Preset.ChooseColor" xml:space="preserve">
+    <value>選擇顏色…</value>
+  </data>
+  <data name="Controls.Preset.ColorAccessible" xml:space="preserve">
+    <value>選擇預設筆款的顏色</value>
+  </data>
+  <data name="Controls.Preset.ColorTitle" xml:space="preserve">
+    <value>選擇預設筆款的顏色</value>
+  </data>
+  <data name="Controls.Preset.Favorite" xml:space="preserve">
+    <value>顯示在常用筆工具列</value>
+  </data>
+  <data name="Controls.Preset.Heading" xml:space="preserve">
+    <value>您的常用筆</value>
+  </data>
+  <data name="Controls.Preset.Highlighter" xml:space="preserve">
+    <value>螢光筆</value>
+  </data>
+  <data name="Controls.Preset.HighlighterHint" xml:space="preserve">
+    <value>螢光筆使用原生 50% 透明度。</value>
+  </data>
+  <data name="Controls.Preset.InvalidOpacity" xml:space="preserve">
+    <value>請使用 10% 至 100% 的不透明度。</value>
+  </data>
+  <data name="Controls.Preset.Maximum" xml:space="preserve">
+    <value>最多可保留 40 個預設筆款。</value>
+  </data>
+  <data name="Controls.Preset.Minimum" xml:space="preserve">
+    <value>請至少保留一個預設筆款。</value>
+  </data>
+  <data name="Controls.Preset.MoveDown" xml:space="preserve">
+    <value>將預設筆款下移</value>
+  </data>
+  <data name="Controls.Preset.MoveUp" xml:space="preserve">
+    <value>將預設筆款上移</value>
+  </data>
+  <data name="Controls.Preset.Name" xml:space="preserve">
+    <value>預設筆款名稱</value>
+  </data>
+  <data name="Controls.Preset.NameRequired" xml:space="preserve">
+    <value>請為此預設筆款命名。</value>
+  </data>
+  <data name="Controls.Preset.Opacity" xml:space="preserve">
+    <value>筆的不透明度（%）</value>
+  </data>
+  <data name="Controls.Preset.Pen" xml:space="preserve">
+    <value>筆</value>
+  </data>
+  <data name="Controls.Preset.Pressure" xml:space="preserve">
+    <value>壓力感應</value>
+  </data>
+  <data name="Controls.Preset.SaveUse" xml:space="preserve">
+    <value>儲存並使用</value>
+  </data>
+  <data name="Controls.Preset.Smoothing" xml:space="preserve">
+    <value>筆畫平滑</value>
+  </data>
+  <data name="Controls.Preset.Title" xml:space="preserve">
+    <value>預設筆款</value>
+  </data>
+  <data name="Controls.Preset.Tool" xml:space="preserve">
+    <value>工具</value>
+  </data>
+  <data name="Controls.Reference.Back" xml:space="preserve">
+    <value>返回書寫</value>
+  </data>
+  <data name="Controls.Reference.CreateNotebook" xml:space="preserve">
+    <value>請先建立筆記本，才能使用參考功能。</value>
+  </data>
+  <data name="Controls.Reference.DisplayError" xml:space="preserve">
+    <value>無法顯示此頁面：{0}</value>
+  </data>
+  <data name="Controls.Reference.Empty" xml:space="preserve">
+    <value>沒有可顯示的頁面。</value>
+  </data>
+  <data name="Controls.Reference.Fit" xml:space="preserve">
+    <value>符合</value>
+  </data>
+  <data name="Controls.Reference.FitName" xml:space="preserve">
+    <value>讓參考頁面符合窗格寬度</value>
+  </data>
+  <data name="Controls.Reference.Hint" xml:space="preserve">
+    <value>唯讀副本 · 保持您的書寫位置不變</value>
+  </data>
+  <data name="Controls.Reference.LoadNotebookError" xml:space="preserve">
+    <value>無法載入此筆記本：{0}</value>
+  </data>
+  <data name="Controls.Reference.LoadReferencesError" xml:space="preserve">
+    <value>無法載入參考資料：{0}</value>
+  </data>
+  <data name="Controls.Reference.Loading" xml:space="preserve">
+    <value>正在載入參考資料…</value>
+  </data>
+  <data name="Controls.Reference.LoadingPage" xml:space="preserve">
+    <value>正在載入頁面…</value>
+  </data>
+  <data name="Controls.Reference.Next" xml:space="preserve">
+    <value>下一頁</value>
+  </data>
+  <data name="Controls.Reference.Notebook" xml:space="preserve">
+    <value>參考筆記本</value>
+  </data>
+  <data name="Controls.Reference.Page" xml:space="preserve">
+    <value>參考頁面</value>
+  </data>
+  <data name="Controls.Reference.PageChoice" xml:space="preserve">
+    <value>第 {0} 頁{1} · {2}</value>
+  </data>
+  <data name="Controls.Reference.PageStatus" xml:space="preserve">
+    <value>第 {0} 頁，共 {1} 頁 · {2:P0} · 唯讀</value>
+  </data>
+  <data name="Controls.Reference.Previous" xml:space="preserve">
+    <value>上一頁</value>
+  </data>
+  <data name="Controls.Reference.Refresh" xml:space="preserve">
+    <value>重新整理</value>
+  </data>
+  <data name="Controls.Reference.Title" xml:space="preserve">
+    <value>參考</value>
+  </data>
+  <data name="Controls.Reference.ZoomIn" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="Controls.Reference.ZoomInName" xml:space="preserve">
+    <value>放大參考頁面</value>
+  </data>
+  <data name="Controls.Reference.ZoomOut" xml:space="preserve">
+    <value>−</value>
+  </data>
+  <data name="Controls.Reference.ZoomOutName" xml:space="preserve">
+    <value>縮小參考頁面</value>
+  </data>
+  <data name="Controls.RegionHistory.ChooseArea" xml:space="preserve">
+    <value>選擇區域…</value>
+  </data>
+  <data name="Controls.RegionHistory.Intro" xml:space="preserve">
+    <value>選擇較早的版本，再標示要還原的區域。完整位於區域內的筆畫、文字及圖片會被還原，跨越邊界的物件保持不變。
+歷程記錄僅在此筆記本開啟期間提供（最多 100 次編輯）。頁面大小或背景不同的版本不會列出。</value>
+  </data>
+  <data name="Controls.RegionHistory.Loading" xml:space="preserve">
+    <value>正在載入預覽…</value>
+  </data>
+  <data name="Controls.RegionHistory.Title" xml:space="preserve">
+    <value>還原此頁面的一部分</value>
+  </data>
+  <data name="Controls.RegionHistory.Version" xml:space="preserve">
+    <value>較早的頁面版本 {0} · {1} 個文字項目，{2} 張圖片</value>
+  </data>
+  <data name="Controls.StrokeWidth.Accessible" xml:space="preserve">
+    <value>筆畫粗細</value>
+  </data>
+  <data name="Controls.StrokeWidth.CurrentHelp" xml:space="preserve">
+    <value>目前粗細：{0}。共有 {1} 個粗細級距；使用方向鍵選擇下一個尺寸。</value>
+  </data>
+  <data name="Controls.StrokeWidth.Hint" xml:space="preserve">
+    <value>在固定粗細級距間拖曳。使用方向鍵選擇下一個尺寸。</value>
+  </data>
+  <data name="Controls.StrokeWidth.Thickness" xml:space="preserve">
+    <value>粗細</value>
+  </data>
+  <data name="Controls.StudyInbox.Count" xml:space="preserve">
+    <value>{0} 則{1}</value>
+  </data>
+  <data name="Controls.StudyInbox.Edit" xml:space="preserve">
+    <value>編輯</value>
+  </data>
+  <data name="Controls.StudyInbox.FilterQuestions" xml:space="preserve">
+    <value>篩選問題</value>
+  </data>
+  <data name="Controls.StudyInbox.FilterResume" xml:space="preserve">
+    <value>篩選續寫提示</value>
+  </data>
+  <data name="Controls.StudyInbox.IncludeResolved" xml:space="preserve">
+    <value>包含已解決的問題</value>
+  </data>
+  <data name="Controls.StudyInbox.Items" xml:space="preserve">
+    <value>問題收件匣項目</value>
+  </data>
+  <data name="Controls.StudyInbox.NoMatches" xml:space="preserve">
+    <value>沒有符合的結果。請嘗試較短的詞句。</value>
+  </data>
+  <data name="Controls.StudyInbox.NoQuestions" xml:space="preserve">
+    <value>沒有未解決的問題。請從頁面新增問題，或包含已解決的問題。</value>
+  </data>
+  <data name="Controls.StudyInbox.NoResume" xml:space="preserve">
+    <value>尚無續寫提示。請在頁面上使用「下次從這裡繼續」。</value>
+  </data>
+  <data name="Controls.StudyInbox.Open" xml:space="preserve">
+    <value>開啟來源</value>
+  </data>
+  <data name="Controls.StudyInbox.QuestionCountLabel" xml:space="preserve">
+    <value>問題</value>
+  </data>
+  <data name="Controls.StudyInbox.QuestionIntro" xml:space="preserve">
+    <value>查看此筆記本各處的問題，將說明與下次嘗試保留在原始頁面中。</value>
+  </data>
+  <data name="Controls.StudyInbox.QuestionTitle" xml:space="preserve">
+    <value>問題收件匣</value>
+  </data>
+  <data name="Controls.StudyInbox.Remove" xml:space="preserve">
+    <value>移除</value>
+  </data>
+  <data name="Controls.StudyInbox.RemoveQuestion" xml:space="preserve">
+    <value>要移除此問題及其說明嗎？關閉收件匣後，您仍可復原。</value>
+  </data>
+  <data name="Controls.StudyInbox.RemoveResume" xml:space="preserve">
+    <value>要移除此續寫提示嗎？關閉收件匣後，您仍可復原。</value>
+  </data>
+  <data name="Controls.StudyInbox.RemoveTitle" xml:space="preserve">
+    <value>移除筆記</value>
+  </data>
+  <data name="Controls.StudyInbox.ResumeCountLabel" xml:space="preserve">
+    <value>續寫提示</value>
+  </data>
+  <data name="Controls.StudyInbox.ResumeIntro" xml:space="preserve">
+    <value>查看此筆記本各處的下一步。開啟來源頁面，即可接續上次的進度。</value>
+  </data>
+  <data name="Controls.StudyInbox.ResumeTitle" xml:space="preserve">
+    <value>續寫提示</value>
+  </data>
+  <data name="Controls.StudyQuestion.Add" xml:space="preserve">
+    <value>新增問題</value>
+  </data>
+  <data name="Controls.StudyQuestion.CreateTitle" xml:space="preserve">
+    <value>新增問題</value>
+  </data>
+  <data name="Controls.StudyQuestion.EditTitle" xml:space="preserve">
+    <value>問題與下次嘗試</value>
+  </data>
+  <data name="Controls.StudyQuestion.Explanation" xml:space="preserve">
+    <value>有幫助的內容／說明</value>
+  </data>
+  <data name="Controls.StudyQuestion.PageLink" xml:space="preserve">
+    <value>已連結至此頁面。可從問題收件匣重新開啟來源。</value>
+  </data>
+  <data name="Controls.StudyQuestion.Progress" xml:space="preserve">
+    <value>進度</value>
+  </data>
+  <data name="Controls.StudyQuestion.ProgressAccessible" xml:space="preserve">
+    <value>問題進度</value>
+  </data>
+  <data name="Controls.StudyQuestion.Prompt" xml:space="preserve">
+    <value>您想釐清什麼？</value>
+  </data>
+  <data name="Controls.StudyQuestion.RegionLink" xml:space="preserve">
+    <value>已連結至此頁面的標示區域。可從問題收件匣重新開啟來源。</value>
+  </data>
+  <data name="Controls.StudyQuestion.Required" xml:space="preserve">
+    <value>請先寫下問題，再儲存。</value>
+  </data>
+  <data name="Controls.StudyQuestion.Retry" xml:space="preserve">
+    <value>下次嘗試／待確認事項</value>
+  </data>
+  <data name="Controls.StudyResume.Clear" xml:space="preserve">
+    <value>清除提示</value>
+  </data>
+  <data name="Controls.StudyResume.Intro" xml:space="preserve">
+    <value>趁思路清晰時，留下下一個小步驟。這則提示會保留在頁面中，並顯示於「續寫提示」。</value>
+  </data>
+  <data name="Controls.StudyResume.Prompt" xml:space="preserve">
+    <value>回來時應該做什麼？</value>
+  </data>
+  <data name="Controls.StudyResume.Required" xml:space="preserve">
+    <value>請先寫下下一步，再儲存。</value>
+  </data>
+  <data name="Controls.StudyResume.Title" xml:space="preserve">
+    <value>下次從這裡繼續</value>
+  </data>
+  <data name="Controls.TextOverflow.Export" xml:space="preserve">
+    <value>匯出可見文字</value>
+  </data>
+  <data name="Controls.TextOverflow.Go" xml:space="preserve">
+    <value>前往選取的文字</value>
+  </data>
+  <data name="Controls.TextOverflow.IntroPlural" xml:space="preserve">
+    <value>{0} 個文字方塊超出可見範圍。PDF 只會包含可見文字。請前往文字方塊使用「接續至下一頁」，或匯出目前外觀。</value>
+  </data>
+  <data name="Controls.TextOverflow.IntroSingular" xml:space="preserve">
+    <value>{0} 個文字方塊超出可見範圍。PDF 只會包含可見文字。請前往文字方塊使用「接續至下一頁」，或匯出目前外觀。</value>
+  </data>
+  <data name="Controls.TextOverflow.Page" xml:space="preserve">
+    <value>匯出第 {0} 頁 · {1}</value>
+  </data>
+  <data name="Controls.TextOverflow.Title" xml:space="preserve">
+    <value>匯出前檢查文字</value>
+  </data>
+  <data name="Controls.Update.AccessibleMessage" xml:space="preserve">
+    <value>{0}。{1}</value>
+  </data>
+  <data name="Controls.Update.AccessibleName" xml:space="preserve">
+    <value>軟體更新</value>
+  </data>
+  <data name="Controls.Update.AvailableHeading" xml:space="preserve">
+    <value>Penroam {0} 已推出</value>
+  </data>
+  <data name="Controls.Update.AvailableMessage" xml:space="preserve">
+    <value>更新至最新版本。在 Penroam 關閉並開始安裝前，您的筆記會先儲存。</value>
+  </data>
+  <data name="Controls.Update.CancelDownload" xml:space="preserve">
+    <value>取消下載</value>
+  </data>
+  <data name="Controls.Update.CheckingHeading" xml:space="preserve">
+    <value>正在檢查更新…</value>
+  </data>
+  <data name="Controls.Update.CheckingMessage" xml:space="preserve">
+    <value>正在 GitHub 上尋找新版 Penroam。</value>
+  </data>
+  <data name="Controls.Update.CurrentHeading" xml:space="preserve">
+    <value>已是最新版本</value>
+  </data>
+  <data name="Controls.Update.CurrentMessage" xml:space="preserve">
+    <value>您目前使用 Penroam {0}，沒有更新的版本。</value>
+  </data>
+  <data name="Controls.Update.Dismiss" xml:space="preserve">
+    <value>關閉</value>
+  </data>
+  <data name="Controls.Update.Downloaded" xml:space="preserve">
+    <value>已下載 {0:P0}</value>
+  </data>
+  <data name="Controls.Update.Downloading" xml:space="preserve">
+    <value>正在下載…</value>
+  </data>
+  <data name="Controls.Update.DownloadingHeading" xml:space="preserve">
+    <value>正在下載更新…</value>
+  </data>
+  <data name="Controls.Update.DownloadingMessage" xml:space="preserve">
+    <value>下載更新期間，您可以繼續工作。Penroam 會在安裝前儲存您的筆記。</value>
+  </data>
+  <data name="Controls.Update.DownloadingName" xml:space="preserve">
+    <value>正在下載 Penroam 更新</value>
+  </data>
+  <data name="Controls.Update.ErrorHeading" xml:space="preserve">
+    <value>更新無法完成</value>
+  </data>
+  <data name="Controls.Update.Install" xml:space="preserve">
+    <value>安裝更新</value>
+  </data>
+  <data name="Controls.Update.Later" xml:space="preserve">
+    <value>稍後</value>
+  </data>
+  <data name="Controls.Update.PreparingHeading" xml:space="preserve">
+    <value>正在準備更新…</value>
+  </data>
+  <data name="Controls.Update.PreparingMessage" xml:space="preserve">
+    <value>正在儲存您的筆記並啟動安裝程式。安裝完成後，Penroam 會重新開啟。</value>
+  </data>
+  <data name="Controls.Update.ProgressName" xml:space="preserve">
+    <value>更新下載進度</value>
+  </data>
+  <data name="Controls.Update.RawError" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="Controls.Update.ReadyHeading" xml:space="preserve">
+    <value>Penroam {0} 已可安裝</value>
+  </data>
+  <data name="Controls.Update.ReadyMessage" xml:space="preserve">
+    <value>完成目前的工作後再安裝。您的筆記會先儲存，Penroam 隨後會重新開啟。</value>
+  </data>
+  <data name="Controls.Update.ReleaseNotes" xml:space="preserve">
+    <value>版本說明</value>
+  </data>
+  <data name="Controls.Update.Retry" xml:space="preserve">
+    <value>再試一次</value>
+  </data>
+  <data name="Controls.Update.UpdateNow" xml:space="preserve">
+    <value>立即更新</value>
+  </data>
+  <data name="Controls.VisualSearch.AllSections" xml:space="preserve">
+    <value>所有分區</value>
+  </data>
+  <data name="Controls.VisualSearch.Intro" xml:space="preserve">
+    <value>依顏色與位置尋找此筆記本中的手寫及輸入筆記。PDF 和圖片的顏色不會建立索引。</value>
+  </data>
+  <data name="Controls.VisualSearch.Mark" xml:space="preserve">
+    <value>標記</value>
+  </data>
+  <data name="Controls.VisualSearch.MarkCount" xml:space="preserve">
+    <value>{0} 個符合的標記</value>
+  </data>
+  <data name="Controls.VisualSearch.MatchCount" xml:space="preserve">
+    <value>{0} 頁符合 · 最多顯示 60 個預覽</value>
+  </data>
+  <data name="Controls.VisualSearch.NoMatches" xml:space="preserve">
+    <value>沒有符合的結果。請嘗試其他顏色或更大的範圍。</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Any" xml:space="preserve">
+    <value>任何顏色</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Black" xml:space="preserve">
+    <value>黑色</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Blue" xml:space="preserve">
+    <value>藍色</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Gray" xml:space="preserve">
+    <value>灰色</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Green" xml:space="preserve">
+    <value>綠色</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Orange" xml:space="preserve">
+    <value>橙色</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Purple" xml:space="preserve">
+    <value>紫色</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Red" xml:space="preserve">
+    <value>紅色</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Yellow" xml:space="preserve">
+    <value>黃色</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteMark.Any" xml:space="preserve">
+    <value>任何標記</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteMark.Handwriting" xml:space="preserve">
+    <value>手寫</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteMark.Highlighter" xml:space="preserve">
+    <value>螢光筆</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteMark.TypedText" xml:space="preserve">
+    <value>輸入文字</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Anywhere" xml:space="preserve">
+    <value>任何位置</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Bottom" xml:space="preserve">
+    <value>下方</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.BottomLeft" xml:space="preserve">
+    <value>左下</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.BottomRight" xml:space="preserve">
+    <value>右下</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Center" xml:space="preserve">
+    <value>中央</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Left" xml:space="preserve">
+    <value>左側</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Right" xml:space="preserve">
+    <value>右側</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Top" xml:space="preserve">
+    <value>上方</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.TopLeft" xml:space="preserve">
+    <value>左上</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.TopRight" xml:space="preserve">
+    <value>右上</value>
+  </data>
+  <data name="Controls.VisualSearch.Open" xml:space="preserve">
+    <value>開啟頁面</value>
+  </data>
+  <data name="Controls.VisualSearch.Position" xml:space="preserve">
+    <value>頁面位置</value>
+  </data>
+  <data name="Controls.VisualSearch.Searching" xml:space="preserve">
+    <value>正在搜尋您的筆記…</value>
+  </data>
+  <data name="Controls.VisualSearch.Title" xml:space="preserve">
+    <value>依外觀尋找</value>
+  </data>
+  <data name="Controls.Workspace.BackupEnabled" xml:space="preserve">
+    <value>在 Penroam 開啟時進行備份</value>
+  </data>
+  <data name="Controls.Workspace.BackupFolder" xml:space="preserve">
+    <value>自動備份資料夾</value>
+  </data>
+  <data name="Controls.Workspace.BackupHint" xml:space="preserve">
+    <value>備份包含可編輯的筆記本。最近刪除的項目會另外保留 30 天。除非您選擇同步資料夾，否則兩者都只會保留在此裝置上。</value>
+  </data>
+  <data name="Controls.Workspace.BackupIntervals" xml:space="preserve">
+    <value>間隔小時數（1–168）· 保留已完成的備份數（1–100）</value>
+  </data>
+  <data name="Controls.Workspace.Backups" xml:space="preserve">
+    <value>自動本機備份</value>
+  </data>
+  <data name="Controls.Workspace.Canceling" xml:space="preserve">
+    <value>將在目前的安全步驟完成後取消…</value>
+  </data>
+  <data name="Controls.Workspace.ChooseFolder" xml:space="preserve">
+    <value>選擇備份資料夾…</value>
+  </data>
+  <data name="Controls.Workspace.CommandSearch" xml:space="preserve">
+    <value>搜尋指令、工具及快捷鍵</value>
+  </data>
+  <data name="Controls.Workspace.CommandsHint" xml:space="preserve">
+    <value>使用筆書寫 · 使用手指移動 · 使用套索一併移動筆記。選取指令可查看快捷鍵與說明。按 Esc 關閉此面板。</value>
+  </data>
+  <data name="Controls.Workspace.CommandsTitle" xml:space="preserve">
+    <value>指令與說明</value>
+  </data>
+  <data name="Controls.Workspace.Compact" xml:space="preserve">
+    <value>隱藏主工具列中的常用筆列</value>
+  </data>
+  <data name="Controls.Workspace.FindCommand" xml:space="preserve">
+    <value>尋找指令</value>
+  </data>
+  <data name="Controls.Workspace.FocusRight" xml:space="preserve">
+    <value>將專注工具停駐於右側</value>
+  </data>
+  <data name="Controls.Workspace.FolderRequired" xml:space="preserve">
+    <value>請先選擇備份資料夾。</value>
+  </data>
+  <data name="Controls.Workspace.InvalidInterval" xml:space="preserve">
+    <value>請輸入 1 至 168 小時的間隔，並保留 1 至 100 份備份。</value>
+  </data>
+  <data name="Controls.Workspace.LockZoom" xml:space="preserve">
+    <value>書寫時鎖定縮放</value>
+  </data>
+  <data name="Controls.Workspace.Run" xml:space="preserve">
+    <value>執行選取的指令</value>
+  </data>
+  <data name="Controls.Workspace.Save" xml:space="preserve">
+    <value>儲存設定</value>
+  </data>
+  <data name="Controls.Workspace.Title" xml:space="preserve">
+    <value>工作區設定</value>
+  </data>
+  <data name="Controls.Workspace.TwoFingers" xml:space="preserve">
+    <value>使用雙指移動頁面（忽略單指拖曳）</value>
+  </data>
+  <data name="Controls.Workspace.Writing" xml:space="preserve">
+    <value>書寫與工作區</value>
+  </data>
+  <data name="Core.AddPage" xml:space="preserve">
+    <value>新增頁面</value>
+  </data>
+  <data name="Core.AddPageTitle" xml:space="preserve">
+    <value>新增頁面</value>
+  </data>
+  <data name="Core.AddPaperHint" xml:space="preserve">
+    <value>A4 紙張 · 插入目前頁面之後。</value>
+  </data>
+  <data name="Core.AlreadyOpen" xml:space="preserve">
+    <value>Penroam 已開啟。請使用現有視窗。</value>
+  </data>
+  <data name="Core.ApplyPaper" xml:space="preserve">
+    <value>套用紙張</value>
+  </data>
+  <data name="Core.BackupFilter" xml:space="preserve">
+    <value>Penroam 備份|*.moye</value>
+  </data>
+  <data name="Core.Canceled" xml:space="preserve">
+    <value>操作已取消</value>
+  </data>
+  <data name="Core.CancelingImport" xml:space="preserve">
+    <value>正在取消文件匯入…</value>
+  </data>
+  <data name="Core.Category" xml:space="preserve">
+    <value>分類</value>
+  </data>
+  <data name="Core.ChangePaperHint" xml:space="preserve">
+    <value>變更此頁面的背景，筆記會保留在原位。</value>
+  </data>
+  <data name="Core.ChoosePaper" xml:space="preserve">
+    <value>選擇紙張</value>
+  </data>
+  <data name="Core.CommandAppearance" xml:space="preserve">
+    <value>依外觀尋找</value>
+  </data>
+  <data name="Core.CommandAppearanceHint" xml:space="preserve">
+    <value>依顏色、位置與分區尋找此筆記本中的筆跡與文字。</value>
+  </data>
+  <data name="Core.CommandCheckUpdates" xml:space="preserve">
+    <value>檢查更新</value>
+  </data>
+  <data name="Core.CommandCheckUpdatesHint" xml:space="preserve">
+    <value>從 GitHub 尋找並安裝最新的 Penroam 版本。</value>
+  </data>
+  <data name="Core.CommandContinue" xml:space="preserve">
+    <value>繼續上次的筆記本</value>
+  </data>
+  <data name="Core.CommandContinueHint" xml:space="preserve">
+    <value>返回上次使用的頁面與縮放比例。</value>
+  </data>
+  <data name="Core.CommandContinueText" xml:space="preserve">
+    <value>在下一頁接續文字</value>
+  </data>
+  <data name="Core.CommandContinueTextHint" xml:space="preserve">
+    <value>將溢出的文字移至新頁面，並保留格式。</value>
+  </data>
+  <data name="Core.CommandEraser" xml:space="preserve">
+    <value>橡皮擦 · E</value>
+  </data>
+  <data name="Core.CommandEraserHint" xml:space="preserve">
+    <value>選擇局部或整筆擦除、大小與僅擦除螢光筆模式。</value>
+  </data>
+  <data name="Core.CommandExportPdf" xml:space="preserve">
+    <value>匯出 PDF</value>
+  </data>
+  <data name="Core.CommandExportPdfHint" xml:space="preserve">
+    <value>選擇頁面並檢查文字溢出，再進行分享。</value>
+  </data>
+  <data name="Core.CommandExtendPage" xml:space="preserve">
+    <value>延伸頁面</value>
+  </data>
+  <data name="Core.CommandExtendPageHint" xml:space="preserve">
+    <value>在頁面任一側增加書寫空間，保留原始 PDF 大小與筆記。</value>
+  </data>
+  <data name="Core.CommandFitWidth" xml:space="preserve">
+    <value>符合寬度</value>
+  </data>
+  <data name="Core.CommandFitWidthHint" xml:space="preserve">
+    <value>填滿書寫區域。必要時可在工作區設定中解除縮放鎖定。</value>
+  </data>
+  <data name="Core.CommandFocusMode" xml:space="preserve">
+    <value>專注模式 · F11</value>
+  </data>
+  <data name="Core.CommandFocusModeHint" xml:space="preserve">
+    <value>提供更多書寫空間，以及可停靠的工具與常用筆。</value>
+  </data>
+  <data name="Core.CommandGoTo" xml:space="preserve">
+    <value>跳至頁面 · Ctrl+G</value>
+  </data>
+  <data name="Core.CommandGoToHint" xml:space="preserve">
+    <value>輸入此分區中的頁碼。</value>
+  </data>
+  <data name="Core.CommandHighlighter" xml:space="preserve">
+    <value>螢光筆 · H</value>
+  </data>
+  <data name="Core.CommandHighlighterHint" xml:space="preserve">
+    <value>使用所選螢光筆標記重要內容。</value>
+  </data>
+  <data name="Core.CommandImportDocument" xml:space="preserve">
+    <value>匯入文件</value>
+  </data>
+  <data name="Core.CommandImportDocumentHint" xml:space="preserve">
+    <value>預覽 PDF 或在本機轉換的 Office 文件，選擇頁面與目的地。</value>
+  </data>
+  <data name="Core.CommandImportFolder" xml:space="preserve">
+    <value>匯入資料夾</value>
+  </data>
+  <data name="Core.CommandImportFolderHint" xml:space="preserve">
+    <value>以資料夾第一層的 PDF 與 PowerPoint (.pptx) 檔案建立筆記本，每份文件各有一個分區。</value>
+  </data>
+  <data name="Core.CommandLasso" xml:space="preserve">
+    <value>套索 · L</value>
+  </data>
+  <data name="Core.CommandLassoHint" xml:space="preserve">
+    <value>圈選筆跡、文字與圖片，一起移動或複製。</value>
+  </data>
+  <data name="Core.CommandLeaveHint" xml:space="preserve">
+    <value>留下續寫提示</value>
+  </data>
+  <data name="Core.CommandLeaveHintHint" xml:space="preserve">
+    <value>記下下一步，方便下次接續思路。</value>
+  </data>
+  <data name="Core.CommandManagePages" xml:space="preserve">
+    <value>管理頁面</value>
+  </data>
+  <data name="Core.CommandManagePagesHint" xml:space="preserve">
+    <value>選取多個縮圖，將排序、移動、複製或刪除合併為一次變更。</value>
+  </data>
+  <data name="Core.CommandMarkQuestion" xml:space="preserve">
+    <value>標記問題</value>
+  </data>
+  <data name="Core.CommandMarkQuestionHint" xml:space="preserve">
+    <value>將問題連結到此頁面或指定區域。</value>
+  </data>
+  <data name="Core.CommandNewNotebook" xml:space="preserve">
+    <value>新增筆記本</value>
+  </data>
+  <data name="Core.CommandNewNotebookHint" xml:space="preserve">
+    <value>選擇名稱、分類與紙張樣式。</value>
+  </data>
+  <data name="Core.CommandPen" xml:space="preserve">
+    <value>筆 · B</value>
+  </data>
+  <data name="Core.CommandPenHint" xml:space="preserve">
+    <value>使用感壓筆跡書寫。在直線末端稍作停留，即可拉直線條。</value>
+  </data>
+  <data name="Core.CommandPractice" xml:space="preserve">
+    <value>新增練習</value>
+  </data>
+  <data name="Core.CommandPracticeAttempts" xml:space="preserve">
+    <value>練習紀錄</value>
+  </data>
+  <data name="Core.CommandPracticeAttemptsHint" xml:space="preserve">
+    <value>回顧之前的解題內容，記錄錯誤與下次的解法。</value>
+  </data>
+  <data name="Core.CommandPracticeHint" xml:space="preserve">
+    <value>擷取題目，並為每次練習保留獨立的解題內容。</value>
+  </data>
+  <data name="Core.CommandQuestionInbox" xml:space="preserve">
+    <value>問題收件匣</value>
+  </data>
+  <data name="Core.CommandQuestionInboxHint" xml:space="preserve">
+    <value>追蹤問題從需要協助、說明、重試直到已解決的進度。</value>
+  </data>
+  <data name="Core.CommandQuickNote" xml:space="preserve">
+    <value>快速筆記</value>
+  </data>
+  <data name="Core.CommandQuickNoteHint" xml:space="preserve">
+    <value>立即在收件匣開始書寫，稍後再整理頁面。</value>
+  </data>
+  <data name="Core.CommandRecovery" xml:space="preserve">
+    <value>備份與復原</value>
+  </data>
+  <data name="Core.CommandRecoveryHint" xml:space="preserve">
+    <value>復原已刪除的筆記本與頁面、還原待處理草稿，或選擇要從備份還原的筆記本。</value>
+  </data>
+  <data name="Core.CommandReference" xml:space="preserve">
+    <value>參考檢視</value>
+  </data>
+  <data name="Core.CommandReferenceHint" xml:space="preserve">
+    <value>在書寫區旁閱讀另一份筆記本，並獨立瀏覽與縮放。</value>
+  </data>
+  <data name="Core.CommandRestoreRegion" xml:space="preserve">
+    <value>還原部分頁面</value>
+  </data>
+  <data name="Core.CommandRestoreRegionHint" xml:space="preserve">
+    <value>從本次工作階段的歷史還原區域內的完整物件，並保留其他編輯。</value>
+  </data>
+  <data name="Core.CommandResume" xml:space="preserve">
+    <value>接續我的思路</value>
+  </data>
+  <data name="Core.CommandResumeHint" xml:space="preserve">
+    <value>閱讀儲存的下一步，並跳至來源區域。</value>
+  </data>
+  <data name="Core.CommandSearch" xml:space="preserve">
+    <value>搜尋筆記本內容 · Ctrl+F</value>
+  </data>
+  <data name="Core.CommandSearchHint" xml:space="preserve">
+    <value>尋找頁面名稱、書籤、主題與文字筆記，並直接跳至結果。</value>
+  </data>
+  <data name="Core.CommandType" xml:space="preserve">
+    <value>打字 · T</value>
+  </data>
+  <data name="Core.CommandTypeHint" xml:space="preserve">
+    <value>按一下任意位置即可輸入，沒有可見方框；橫線紙會對齊文字。Ctrl+Enter 返回筆工具。</value>
+  </data>
+  <data name="Core.CommandUndo" xml:space="preserve">
+    <value>復原 · Ctrl+Z</value>
+  </data>
+  <data name="Core.CommandUndoHint" xml:space="preserve">
+    <value>在筆記本保持開啟時復原已完成的編輯。</value>
+  </data>
+  <data name="Core.CommandWorkspaceSettings" xml:space="preserve">
+    <value>工作區設定</value>
+  </data>
+  <data name="Core.CommandWorkspaceSettingsHint" xml:space="preserve">
+    <value>設定雙指瀏覽、縮放鎖定、精簡工具列、專注工具列位置與排程本機備份。</value>
+  </data>
+  <data name="Core.ContinueHint" xml:space="preserve">
+    <value>在儲存的閱讀位置開啟上次使用的筆記本</value>
+  </data>
+  <data name="Core.ConvertingDocument" xml:space="preserve">
+    <value>正在將文件轉換為筆記頁面…</value>
+  </data>
+  <data name="Core.Creating" xml:space="preserve">
+    <value>正在建立筆記本…</value>
+  </data>
+  <data name="Core.DeleteConfirm" xml:space="preserve">
+    <value>要將「{0}」及其所有頁面移至「最近刪除」嗎？
+
+復原副本會在「備份與復原」中保留 30 天。</value>
+  </data>
+  <data name="Core.DeleteNotebook" xml:space="preserve">
+    <value>刪除筆記本</value>
+  </data>
+  <data name="Core.Deleting" xml:space="preserve">
+    <value>正在刪除筆記本…</value>
+  </data>
+  <data name="Core.EmptySectionExport" xml:space="preserve">
+    <value>此分區沒有頁面。請先新增頁面，再匯出為 PDF。</value>
+  </data>
+  <data name="Core.Eraser" xml:space="preserve">
+    <value>橡皮擦</value>
+  </data>
+  <data name="Core.EraserPixelHelp" xml:space="preserve">
+    <value>目前模式：局部橡皮擦。按一下可選擇局部或整筆橡皮擦。</value>
+  </data>
+  <data name="Core.EraserPixelTooltip" xml:space="preserve">
+    <value>局部橡皮擦 (E)；按一下可選擇擦除模式</value>
+  </data>
+  <data name="Core.EraserStrokeHelp" xml:space="preserve">
+    <value>目前模式：整筆橡皮擦。按一下可選擇局部或整筆橡皮擦。</value>
+  </data>
+  <data name="Core.EraserStrokeTooltip" xml:space="preserve">
+    <value>整筆橡皮擦 (E)；按一下可選擇擦除模式</value>
+  </data>
+  <data name="Core.ExitFocus" xml:space="preserve">
+    <value>離開專注模式 (F11)</value>
+  </data>
+  <data name="Core.ExportSection" xml:space="preserve">
+    <value>匯出分區 PDF</value>
+  </data>
+  <data name="Core.ExportSectionTitle" xml:space="preserve">
+    <value>匯出分區 PDF（文字方塊會轉為向量外框）</value>
+  </data>
+  <data name="Core.ExportingSection" xml:space="preserve">
+    <value>正在匯出分區 PDF…</value>
+  </data>
+  <data name="Core.FitPage" xml:space="preserve">
+    <value>整頁顯示</value>
+  </data>
+  <data name="Core.FitPageHint" xml:space="preserve">
+    <value>顯示完整的目前頁面或跨頁。必要時可在工作區設定中解除縮放鎖定。</value>
+  </data>
+  <data name="Core.FitSpread" xml:space="preserve">
+    <value>整個跨頁顯示</value>
+  </data>
+  <data name="Core.Focus" xml:space="preserve">
+    <value>專注模式 (F11)</value>
+  </data>
+  <data name="Core.GoToPage" xml:space="preserve">
+    <value>跳至頁面</value>
+  </data>
+  <data name="Core.ImageFilter" xml:space="preserve">
+    <value>圖片|*.png;*.jpg;*.jpeg</value>
+  </data>
+  <data name="Core.ImageLoadFailed" xml:space="preserve">
+    <value>無法載入圖片：{0}</value>
+  </data>
+  <data name="Core.ImageTooLarge" xml:space="preserve">
+    <value>此圖片過大。請縮小至最多 8,000 萬像素，且任一邊不得超過 20,000 像素。</value>
+  </data>
+  <data name="Core.ImportPdf" xml:space="preserve">
+    <value>正在匯入 PDF…</value>
+  </data>
+  <data name="Core.ImportTitle" xml:space="preserve">
+    <value>匯入文件至此筆記本</value>
+  </data>
+  <data name="Core.InkColor" xml:space="preserve">
+    <value>墨水顏色</value>
+  </data>
+  <data name="Core.InsertImage" xml:space="preserve">
+    <value>插入圖片</value>
+  </data>
+  <data name="Core.InsertingImage" xml:space="preserve">
+    <value>正在插入圖片…</value>
+  </data>
+  <data name="Core.InvalidPage" xml:space="preserve">
+    <value>請輸入此分區中的頁碼。</value>
+  </data>
+  <data name="Core.Loading" xml:space="preserve">
+    <value>正在載入筆記本…</value>
+  </data>
+  <data name="Core.Locked" xml:space="preserve">
+    <value>縮放已鎖定</value>
+  </data>
+  <data name="Core.Name" xml:space="preserve">
+    <value>名稱</value>
+  </data>
+  <data name="Core.OneFinger" xml:space="preserve">
+    <value>單指瀏覽</value>
+  </data>
+  <data name="Core.Opening" xml:space="preserve">
+    <value>正在開啟筆記本…</value>
+  </data>
+  <data name="Core.PageLoadFailed" xml:space="preserve">
+    <value>無法載入此頁面：{0}</value>
+  </data>
+  <data name="Core.PageNumber" xml:space="preserve">
+    <value>頁碼（1–{0}）</value>
+  </data>
+  <data name="Core.PastingImage" xml:space="preserve">
+    <value>正在貼上圖片…</value>
+  </data>
+  <data name="Core.PdfFilter" xml:space="preserve">
+    <value>PDF 文件|*.pdf</value>
+  </data>
+  <data name="Core.PdfPaperHint" xml:space="preserve">
+    <value>PDF 頁面保留原始背景。請新增頁面以使用紙張範本。</value>
+  </data>
+  <data name="Core.PdfPreviewFailed" xml:space="preserve">
+    <value>無法更新 PDF 預覽：{0}</value>
+  </data>
+  <data name="Core.RecoveryCopy" xml:space="preserve">
+    <value>正在保留復原副本…</value>
+  </data>
+  <data name="Core.RenameCategory" xml:space="preserve">
+    <value>重新命名與分類</value>
+  </data>
+  <data name="Core.RestoreCopies" xml:space="preserve">
+    <value>還原為新的筆記本副本</value>
+  </data>
+  <data name="Core.Restored" xml:space="preserve">
+    <value>已還原 {0} 本筆記本</value>
+  </data>
+  <data name="Core.Restoring" xml:space="preserve">
+    <value>正在驗證並還原備份…</value>
+  </data>
+  <data name="Core.RetryingSave" xml:space="preserve">
+    <value>正在重試儲存…</value>
+  </data>
+  <data name="Core.ReturningHome" xml:space="preserve">
+    <value>正在儲存並返回筆記本首頁…</value>
+  </data>
+  <data name="Core.SavingBeforeClosing" xml:space="preserve">
+    <value>正在儲存，完成後關閉…</value>
+  </data>
+  <data name="Core.SavingBeforeUpdating" xml:space="preserve">
+    <value>正在儲存筆記，完成後更新…</value>
+  </data>
+  <data name="Core.SectionExported" xml:space="preserve">
+    <value>已匯出分區 PDF · {0}</value>
+  </data>
+  <data name="Core.SinglePage" xml:space="preserve">
+    <value>單頁</value>
+  </data>
+  <data name="Core.SinglePageCurrent" xml:space="preserve">
+    <value>單頁 · 目前</value>
+  </data>
+  <data name="Core.SinglePageHint" xml:space="preserve">
+    <value>每列顯示一個可編輯的頁面。</value>
+  </data>
+  <data name="Core.ToolBrowse" xml:space="preserve">
+    <value>瀏覽  ·  單指平移 · 雙指縮放</value>
+  </data>
+  <data name="Core.ToolHighlighter" xml:space="preserve">
+    <value>螢光筆  ·  單指平移 · 雙指縮放</value>
+  </data>
+  <data name="Core.ToolLasso" xml:space="preserve">
+    <value>套索 · 圈選內容／Ctrl+D 複製  ·  單指平移 · 雙指縮放</value>
+  </data>
+  <data name="Core.ToolPen" xml:space="preserve">
+    <value>筆  ·  單指平移 · 雙指縮放</value>
+  </data>
+  <data name="Core.ToolPixel" xml:space="preserve">
+    <value>局部橡皮擦 · 保留其餘筆跡  ·  單指平移 · 雙指縮放</value>
+  </data>
+  <data name="Core.ToolSelect" xml:space="preserve">
+    <value>選取 · 拖曳以移動／從角落調整大小  ·  單指平移 · 雙指縮放</value>
+  </data>
+  <data name="Core.ToolStroke" xml:space="preserve">
+    <value>整筆橡皮擦 · 移除整個筆畫  ·  單指平移 · 雙指縮放</value>
+  </data>
+  <data name="Core.ToolText" xml:space="preserve">
+    <value>文字 · 點選頁面以輸入  ·  單指平移 · 雙指縮放</value>
+  </data>
+  <data name="Core.TwoFinger" xml:space="preserve">
+    <value>雙指瀏覽</value>
+  </data>
+  <data name="Core.TwoPages" xml:space="preserve">
+    <value>雙頁</value>
+  </data>
+  <data name="Core.TwoPagesCurrent" xml:space="preserve">
+    <value>雙頁 · 目前</value>
+  </data>
+  <data name="Core.TwoPagesHint" xml:space="preserve">
+    <value>在此分區中並排閱讀與註記第 1–2、3–4 頁。</value>
+  </data>
+  <data name="Core.UnableToComplete" xml:space="preserve">
+    <value>無法完成操作</value>
+  </data>
+  <data name="Core.UnhandledOperation" xml:space="preserve">
+    <value>無法完成這項操作。先前儲存的筆記不受影響。
+
+{0}</value>
+  </data>
+  <data name="Core.Unlocked" xml:space="preserve">
+    <value>縮放未鎖定</value>
+  </data>
+  <data name="Core.UnsavedDetails" xml:space="preserve">
+    <value>最新變更仍保留在記憶體中。關閉前請使用「備份 → 重試儲存」。
+
+{0}</value>
+  </data>
+  <data name="Core.UnsavedTitle" xml:space="preserve">
+    <value>尚未儲存的變更</value>
+  </data>
+  <data name="Core.UpdateStartFailed" xml:space="preserve">
+    <value>無法開始更新。筆記本仍保持開啟。{0}</value>
+  </data>
+  <data name="Core.WaitBeforeClosing" xml:space="preserve">
+    <value>請等目前的操作完成後再關閉。</value>
+  </data>
+  <data name="Core.Workspace" xml:space="preserve">
+    <value>工作區</value>
+  </data>
+  <data name="Core.WorkspaceHint" xml:space="preserve">
+    <value>{0} · {1} · 按一下可變更</value>
+  </data>
+  <data name="Core.WorkspaceLoadFailed" xml:space="preserve">
+    <value>無法載入工作區設定。原始檔案已保留；變更僅適用於本次工作階段。{0}</value>
+  </data>
+  <data name="Core.WorkspaceMissing" xml:space="preserve">
+    <value>找不到工作區設定。</value>
+  </data>
+  <data name="Core.WorkspaceReadFirst" xml:space="preserve">
+    <value>請先載入工作區設定，再儲存變更。</value>
+  </data>
+  <data name="Core.WorkspaceSaveFailed" xml:space="preserve">
+    <value>工作區設定未儲存 · {0}</value>
+  </data>
+  <data name="Core.WorkspaceVersionUnsupported" xml:space="preserve">
+    <value>不支援工作區設定版本 {0}。</value>
+  </data>
+  <data name="Core.WritingGuard" xml:space="preserve">
+    <value>書寫防護 ●</value>
+  </data>
+  <data name="Core.WritingSettings" xml:space="preserve">
+    <value>書寫設定</value>
+  </data>
+  <data name="Core.ZoomLocked" xml:space="preserve">
+    <value>縮放已鎖定 · 可在工作區設定中變更</value>
+  </data>
+  <data name="Messages.Count.FilteredNotebooks" xml:space="preserve">
+    <value>顯示 {1} 本筆記本中的 {0} 本</value>
+  </data>
+  <data name="Messages.Count.Notebook" xml:space="preserve">
+    <value>{0} 本筆記本</value>
+  </data>
+  <data name="Messages.Count.Notebooks" xml:space="preserve">
+    <value>{0} 本筆記本</value>
+  </data>
+  <data name="Messages.Count.Page" xml:space="preserve">
+    <value>{0} 頁</value>
+  </data>
+  <data name="Messages.Count.Pages" xml:space="preserve">
+    <value>{0} 頁</value>
+  </data>
+  <data name="Messages.Document.AttachmentUnverified" xml:space="preserve">
+    <value>無法驗證匯入的附件。</value>
+  </data>
+  <data name="Messages.Document.ExistingSection" xml:space="preserve">
+    <value>請選擇現有分區。</value>
+  </data>
+  <data name="Messages.Document.NoPages" xml:space="preserve">
+    <value>此文件沒有頁面。</value>
+  </data>
+  <data name="Messages.Document.PreviewAttachmentMissing" xml:space="preserve">
+    <value>匯入預覽的附件已無法使用。</value>
+  </data>
+  <data name="Messages.Error.DetailsSaved" xml:space="preserve">
+    <value>{0}
+
+詳細資料已儲存至：
+{1}</value>
+  </data>
+  <data name="Messages.Error.WindowsBlocked" xml:space="preserve">
+    <value>Windows 應用程式控制封鎖了 Penroam 所需的元件。請安裝最新的 Penroam 更新。若仍遭封鎖，請將錯誤記錄提供給支援人員或系統管理員。
+
+{0}</value>
+  </data>
+  <data name="Messages.Export.AddPageFirst" xml:space="preserve">
+    <value>請先在筆記本中新增頁面。</value>
+  </data>
+  <data name="Messages.Export.AnnotationsNotPreserved" xml:space="preserve">
+    <value>無法完整保留原有的 PDF 註解，因此未覆寫匯出檔案。</value>
+  </data>
+  <data name="Messages.Export.FolderMissing" xml:space="preserve">
+    <value>匯出資料夾不存在。</value>
+  </data>
+  <data name="Messages.Export.InvalidPageSize" xml:space="preserve">
+    <value>其中一頁的尺寸無效。</value>
+  </data>
+  <data name="Messages.Export.OverlapRange" xml:space="preserve">
+    <value>重疊寬度必須介於 0 至 30 公釐。</value>
+  </data>
+  <data name="Messages.Export.TooManySheets" xml:space="preserve">
+    <value>此次匯出需要超過 {0} 張紙。請減少所選頁面或重疊寬度。</value>
+  </data>
+  <data name="Messages.Export.UnsupportedLayout" xml:space="preserve">
+    <value>請選擇支援的 PDF 版面配置及方向。</value>
+  </data>
+  <data name="Messages.Folder.AcceptPartial" xml:space="preserve">
+    <value>請先選擇「匯入成功的檔案」，再儲存此次部分匯入。</value>
+  </data>
+  <data name="Messages.Folder.AlreadySaving" xml:space="preserve">
+    <value>此資料夾正在儲存中。</value>
+  </data>
+  <data name="Messages.Folder.FileProgress" xml:space="preserve">
+    <value>第 {0} 個檔案，共 {1} 個：{2}
+{3}</value>
+  </data>
+  <data name="Messages.Folder.LegacyPowerPoint" xml:space="preserve">
+    <value>不支援舊版 .ppt 檔案。請先將簡報另存為 .pptx，再匯入。</value>
+  </data>
+  <data name="Messages.Folder.NoPages" xml:space="preserve">
+    <value>此文件沒有可匯入的頁面。</value>
+  </data>
+  <data name="Messages.Folder.NothingPrepared" xml:space="preserve">
+    <value>未準備任何文件，因此未建立筆記本。</value>
+  </data>
+  <data name="Messages.Folder.SaveBeforeOpen" xml:space="preserve">
+    <value>請先儲存匯入的筆記本，再開啟。</value>
+  </data>
+  <data name="Messages.Folder.Section" xml:space="preserve">
+    <value>分區：{0}</value>
+  </data>
+  <data name="Messages.Folder.StagingFailed" xml:space="preserve">
+    <value>無法儲存或讀取匯入暫存檔，因此未建立筆記本。請檢查可用磁碟空間及資料夾權限後重試。</value>
+  </data>
+  <data name="Messages.Folder.SubfolderSkipped" xml:space="preserve">
+    <value>已略過子資料夾。只會匯入所選資料夾內的檔案。</value>
+  </data>
+  <data name="Messages.Folder.UnsupportedType" xml:space="preserve">
+    <value>不支援此檔案類型。資料夾匯入僅包含 PDF 和 PPTX 檔案。</value>
+  </data>
+  <data name="Messages.Import.FileFilter" xml:space="preserve">
+    <value>支援的文件|*.pdf;*.docx;*.pptx;*.ppsx;*.odt;*.odp|PDF 文件|*.pdf|Word 文件|*.docx|PowerPoint 簡報|*.pptx;*.ppsx|OpenDocument 檔案|*.odt;*.odp</value>
+  </data>
+  <data name="Messages.Import.NoConvertedPdf" xml:space="preserve">
+    <value>文件轉換工具未產生 PDF，因此未匯入任何頁面。</value>
+  </data>
+  <data name="Messages.Import.UnsupportedDocument" xml:space="preserve">
+    <value>請選擇 PDF、DOCX、PPTX、PPSX、ODT 或 ODP 文件。</value>
+  </data>
+  <data name="Messages.Library.EmptyDescription" xml:space="preserve">
+    <value>建立筆記本，選擇適合你的紙張。</value>
+  </data>
+  <data name="Messages.Library.EmptySearchDescription" xml:space="preserve">
+    <value>請嘗試其他筆記本名稱或分類，或清除搜尋。</value>
+  </data>
+  <data name="Messages.Library.EmptySearchTitle" xml:space="preserve">
+    <value>找不到筆記本</value>
+  </data>
+  <data name="Messages.Library.EmptyTitle" xml:space="preserve">
+    <value>下一個靈感，從這裡開始</value>
+  </data>
+  <data name="Messages.Notebook.ChangedBeforeOrganizing" xml:space="preserve">
+    <value>筆記本已變更，請重新開啟整理工具。</value>
+  </data>
+  <data name="Messages.Notebook.InboxUnavailable" xml:space="preserve">
+    <value>無法開啟快速筆記收件匣。</value>
+  </data>
+  <data name="Messages.Notebook.InvalidCoverColor" xml:space="preserve">
+    <value>請選擇有效的封面顏色。</value>
+  </data>
+  <data name="Messages.Notebook.NotFound" xml:space="preserve">
+    <value>找不到此筆記本。</value>
+  </data>
+  <data name="Messages.Office.ConversionFailed" xml:space="preserve">
+    <value>Office 無法轉換此文件。請在 Word 或 PowerPoint 中開啟，並匯出 PDF 副本。</value>
+  </data>
+  <data name="Messages.Office.ConverterNotStopped" xml:space="preserve">
+    <value>無法確認文件轉換工具是否已停止，其暫存設定檔已保留。</value>
+  </data>
+  <data name="Messages.Office.ConverterRequired" xml:space="preserve">
+    <value>匯入 Office 文件需要在此電腦安裝 Microsoft Word／PowerPoint 或 LibreOffice。ODT 和 ODP 檔案需要 LibreOffice。請安裝本機轉換工具，或將文件另存為 PDF 後匯入該副本。匯入 PDF 不需要安裝 Office。</value>
+  </data>
+  <data name="Messages.Office.DesktopAppMissing" xml:space="preserve">
+    <value>尚未安裝所需的 Microsoft Office 桌面應用程式。請在原應用程式中將此文件匯出為 PDF，再匯入該 PDF。</value>
+  </data>
+  <data name="Messages.Office.InvalidPdf" xml:space="preserve">
+    <value>文件轉換工具傳回無效的 PDF。</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeFailed" xml:space="preserve">
+    <value>LibreOffice 無法轉換此文件。{0}</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeInvalidPdf" xml:space="preserve">
+    <value>LibreOffice 未產生有效的 PDF 檔案。</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeNoPdf" xml:space="preserve">
+    <value>LibreOffice 未產生 PDF。此文件可能已加密、損毀或不受支援。</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeRequired" xml:space="preserve">
+    <value>尚未安裝 LibreOffice。請安裝 LibreOffice 以轉換此文件，或在原應用程式中將其另存為 PDF。</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeStartAdvice" xml:space="preserve">
+    <value>無法啟動 LibreOffice。請確認已安裝 LibreOffice，並獲准在此裝置上執行。</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeStartFailed" xml:space="preserve">
+    <value>無法啟動 LibreOffice。</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeSupported" xml:space="preserve">
+    <value>LibreOffice 轉換支援 DOCX、ODT、PPTX、PPSX 和 ODP 檔案。</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeTimeout" xml:space="preserve">
+    <value>LibreOffice 轉換耗時過久，已停止。請嘗試在原應用程式中將文件另存為 PDF。</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeUnsupported" xml:space="preserve">
+    <value>LibreOffice 轉換工具不支援此文件格式。</value>
+  </data>
+  <data name="Messages.Office.LocalPathsRequired" xml:space="preserve">
+    <value>Office 轉換需要本機檔案路徑。</value>
+  </data>
+  <data name="Messages.Office.NoReadablePdf" xml:space="preserve">
+    <value>Office 未產生可讀取的 PDF。請從原應用程式匯出 PDF 後重試。</value>
+  </data>
+  <data name="Messages.Office.OutputExists" xml:space="preserve">
+    <value>轉換輸出檔案已存在。</value>
+  </data>
+  <data name="Messages.Office.PdfOutputRequired" xml:space="preserve">
+    <value>轉換輸出必須是 PDF 檔案。</value>
+  </data>
+  <data name="Messages.Office.PreserveSource" xml:space="preserve">
+    <value>轉換輸出不可取代原始文件。</value>
+  </data>
+  <data name="Messages.Office.SourceMissing" xml:space="preserve">
+    <value>找不到要轉換的文件。</value>
+  </data>
+  <data name="Messages.Office.Timeout" xml:space="preserve">
+    <value>Office 轉換耗時過久。Penroam 已停止轉換工作程序，但未關閉你的 Office 工作階段。若 Office 正等待輸入密碼、修復、啟用或其他對話方塊，請先在 Office 中處理，再匯出 PDF 並匯入該副本。</value>
+  </data>
+  <data name="Messages.Office.WorkerMissing" xml:space="preserve">
+    <value>找不到 Penroam 的文件轉換工作程序。請解壓縮完整的 Penroam ZIP 檔案後重試。</value>
+  </data>
+  <data name="Messages.Office.WorkerStartFailed" xml:space="preserve">
+    <value>無法啟動 Office 轉換工作程序。</value>
+  </data>
+  <data name="Messages.Page.Current" xml:space="preserve">
+    <value>第 {0} 頁，共 {1} 頁</value>
+  </data>
+  <data name="Messages.Page.Location" xml:space="preserve">
+    <value>{0} · 第 {1} 頁{2}</value>
+  </data>
+  <data name="Messages.Page.Number" xml:space="preserve">
+    <value>第 {0} 頁</value>
+  </data>
+  <data name="Messages.Paper.Blank" xml:space="preserve">
+    <value>空白</value>
+  </data>
+  <data name="Messages.Paper.Cornell" xml:space="preserve">
+    <value>康乃爾</value>
+  </data>
+  <data name="Messages.Paper.DotGrid" xml:space="preserve">
+    <value>點陣</value>
+  </data>
+  <data name="Messages.Paper.Graph" xml:space="preserve">
+    <value>繪圖方格</value>
+  </data>
+  <data name="Messages.Paper.Grid" xml:space="preserve">
+    <value>方格</value>
+  </data>
+  <data name="Messages.Paper.Meeting" xml:space="preserve">
+    <value>會議筆記</value>
+  </data>
+  <data name="Messages.Paper.Pdf" xml:space="preserve">
+    <value>PDF</value>
+  </data>
+  <data name="Messages.Paper.Ruled" xml:space="preserve">
+    <value>橫線</value>
+  </data>
+  <data name="Messages.Pdf.CustomUnits" xml:space="preserve">
+    <value>此 PDF 使用自訂頁面單位。請先另存為標準 PDF。</value>
+  </data>
+  <data name="Messages.Pdf.EmptyFile" xml:space="preserve">
+    <value>PDF 檔案是空的。</value>
+  </data>
+  <data name="Messages.Pdf.Encrypted" xml:space="preserve">
+    <value>不支援加密的 PDF。請另存未加密的副本後重試。</value>
+  </data>
+  <data name="Messages.Pdf.FormsOrSignatures" xml:space="preserve">
+    <value>不支援 PDF 表單和數位簽章。請先匯出為標準 PDF。</value>
+  </data>
+  <data name="Messages.Pdf.ImportFailed" xml:space="preserve">
+    <value>無法匯入此 PDF。請使用標準、未加密的 PDF。</value>
+  </data>
+  <data name="Messages.Pdf.InteractiveAnnotations" xml:space="preserve">
+    <value>此 PDF 包含不支援的互動式註解。請先將註解平面化，再匯入。</value>
+  </data>
+  <data name="Messages.Pdf.NoPages" xml:space="preserve">
+    <value>此 PDF 沒有頁面。</value>
+  </data>
+  <data name="Messages.Pdf.OriginalPageMissing" xml:space="preserve">
+    <value>找不到原始 PDF 頁面。</value>
+  </data>
+  <data name="Messages.Pdf.PageCountMismatch" xml:space="preserve">
+    <value>PDF 讀取工具回報的頁數不一致，因此未匯入此檔案。</value>
+  </data>
+  <data name="Messages.Pdf.PageError" xml:space="preserve">
+    <value>PDF 第 {0} 頁: {1}</value>
+  </data>
+  <data name="Messages.Pdf.PageReadFailed" xml:space="preserve">
+    <value>無法讀取 PDF 第 {0} 頁，因此未匯入此檔案。請嘗試從原應用程式重新另存 PDF 副本。</value>
+  </data>
+  <data name="Messages.Pdf.PageRotationUnsupported" xml:space="preserve">
+    <value>PDF 第 {0} 頁：不支援此頁面的旋轉角度。</value>
+  </data>
+  <data name="Messages.Pdf.Signatures" xml:space="preserve">
+    <value>不支援含有數位簽章的 PDF。</value>
+  </data>
+  <data name="Messages.Pdf.UnsupportedPageSize" xml:space="preserve">
+    <value>此頁面的尺寸不受支援。</value>
+  </data>
+  <data name="Messages.Pdf.WindowsOpenFailed" xml:space="preserve">
+    <value>Windows 無法開啟此 PDF。請將其另存為標準、未加密的 PDF 後重試。</value>
+  </data>
+  <data name="Messages.Progress.ConvertDocument" xml:space="preserve">
+    <value>正在此裝置上轉換文件…</value>
+  </data>
+  <data name="Messages.Progress.ExportPage" xml:space="preserve">
+    <value>正在匯出第 {0} 頁，共 {1} 頁…</value>
+  </data>
+  <data name="Messages.Progress.FindFolderDocuments" xml:space="preserve">
+    <value>正在尋找 PDF 和 PowerPoint 檔案…</value>
+  </data>
+  <data name="Messages.Progress.FolderReady" xml:space="preserve">
+    <value>資料夾已準備就緒</value>
+  </data>
+  <data name="Messages.Progress.LoadExportAttachments" xml:space="preserve">
+    <value>正在載入匯出附件…</value>
+  </data>
+  <data name="Messages.Progress.PdfExported" xml:space="preserve">
+    <value>PDF 已匯出</value>
+  </data>
+  <data name="Messages.Progress.PdfReady" xml:space="preserve">
+    <value>PDF 已準備就緒</value>
+  </data>
+  <data name="Messages.Progress.PrepareA4Sheet" xml:space="preserve">
+    <value>正在準備第 {0} 張 A4 紙，共 {1} 張…</value>
+  </data>
+  <data name="Messages.Progress.PrepareFolderFile" xml:space="preserve">
+    <value>正在準備第 {0} 個檔案，共 {1} 個：{2}</value>
+  </data>
+  <data name="Messages.Progress.ReadPdf" xml:space="preserve">
+    <value>正在讀取 PDF…</value>
+  </data>
+  <data name="Messages.Progress.SaveAttachments" xml:space="preserve">
+    <value>正在儲存匯入的附件…</value>
+  </data>
+  <data name="Messages.Progress.SaveImportedNotebook" xml:space="preserve">
+    <value>正在儲存匯入的筆記本…</value>
+  </data>
+  <data name="Messages.Progress.SavePendingChanges" xml:space="preserve">
+    <value>正在儲存尚未儲存的筆記本變更…</value>
+  </data>
+  <data name="Messages.Progress.ValidatePdfPage" xml:space="preserve">
+    <value>正在驗證第 {0} 頁，共 {1} 頁…</value>
+  </data>
+  <data name="Messages.Range.Ascending" xml:space="preserve">
+    <value>請輸入頁碼及遞增範圍，例如 1–5, 8, 12。</value>
+  </data>
+  <data name="Messages.Range.BothEnds" xml:space="preserve">
+    <value>請在範圍的兩端輸入頁碼。</value>
+  </data>
+  <data name="Messages.Range.Bounds" xml:space="preserve">
+    <value>請選擇第 1 至 {0} 頁，範圍必須依遞增順序排列。</value>
+  </data>
+  <data name="Messages.Range.EnterNumbers" xml:space="preserve">
+    <value>請輸入頁碼，例如 1–5, 8, 12。</value>
+  </data>
+  <data name="Messages.Recovery.ListFailed" xml:space="preserve">
+    <value>無法列出復原檔案。{0}</value>
+  </data>
+  <data name="Messages.Recovery.SomeUnreadable" xml:space="preserve">
+    <value>部分復原項目無法讀取，已予以保留。{0}</value>
+  </data>
+  <data name="Messages.Recovery.UnreadableKept" xml:space="preserve">
+    <value>有復原檔案無法讀取，已予以保留。{0}</value>
+  </data>
+  <data name="Messages.Recovery.UnsupportedKept" xml:space="preserve">
+    <value>已保留不支援的復原檔案：{0}</value>
+  </data>
+  <data name="Messages.Resume.Summary" xml:space="preserve">
+    <value>繼續：{0}</value>
+  </data>
+  <data name="Messages.Search.BookmarkedPage" xml:space="preserve">
+    <value>已加書籤的頁面</value>
+  </data>
+  <data name="Messages.Search.IncompletePdf" xml:space="preserve">
+    <value>PDF 搜尋範圍：有 {0} 頁無法完整搜尋。{1}</value>
+  </data>
+  <data name="Messages.Search.MetadataMatch" xml:space="preserve">
+    <value>頁面標題、分區或筆記本相符</value>
+  </data>
+  <data name="Messages.Search.NoExtractableText" xml:space="preserve">
+    <value>PDF 中沒有可擷取的文字。掃描頁面和手寫內容需要 OCR，目前尚未啟用。</value>
+  </data>
+  <data name="Messages.Search.NoOcr" xml:space="preserve">
+    <value>不會搜尋手寫內容及掃描影像（未啟用 OCR）。</value>
+  </data>
+  <data name="Messages.Search.PdfPageReadFailed" xml:space="preserve">
+    <value>無法讀取 PDF 第 {0} 頁的文字：{1}</value>
+  </data>
+  <data name="Messages.Search.PdfPageUnavailable" xml:space="preserve">
+    <value>原始 PDF 頁面無法使用。</value>
+  </data>
+  <data name="Messages.Search.PdfReadFailed" xml:space="preserve">
+    <value>無法讀取 PDF 文字：{0}</value>
+  </data>
+  <data name="Messages.Search.PdfTextLimit" xml:space="preserve">
+    <value>已達 PDF 文字上限，此頁未建立搜尋索引。</value>
+  </data>
+  <data name="Messages.Search.PdfTextTruncated" xml:space="preserve">
+    <value>此 PDF 頁面文字過長，僅開頭部分已建立搜尋索引。</value>
+  </data>
+  <data name="Messages.Status.LocalLibrary" xml:space="preserve">
+    <value>筆記本儲存在此裝置上</value>
+  </data>
+  <data name="Messages.Status.SaveFailed" xml:space="preserve">
+    <value>儲存失敗 · 請重試或建立備份</value>
+  </data>
+  <data name="Messages.Status.SavedLocally" xml:space="preserve">
+    <value>已儲存至此裝置</value>
+  </data>
+  <data name="Messages.Status.Saving" xml:space="preserve">
+    <value>正在儲存…</value>
+  </data>
+  <data name="Messages.Status.WaitingToSave" xml:space="preserve">
+    <value>等待儲存…</value>
+  </data>
+  <data name="Messages.Study.ResumeDetail" xml:space="preserve">
+    <value>下次從這裡繼續</value>
+  </data>
+  <data name="Messages.Study.Status.NeedHelp" xml:space="preserve">
+    <value>需要協助</value>
+  </data>
+  <data name="Messages.Study.Status.Resolved" xml:space="preserve">
+    <value>已解決</value>
+  </data>
+  <data name="Messages.Study.Status.TryAgain" xml:space="preserve">
+    <value>再試一次</value>
+  </data>
+  <data name="Messages.Study.Status.Understood" xml:space="preserve">
+    <value>已理解</value>
+  </data>
+  <data name="Messages.Study.Status.Unknown" xml:space="preserve">
+    <value>未知</value>
+  </data>
+  <data name="Messages.Transfer.AtomicUnsupported" xml:space="preserve">
+    <value>此資料庫不支援以不可分割的交易移轉頁面。</value>
+  </data>
+  <data name="Messages.Transfer.NotebookMissing" xml:space="preserve">
+    <value>目的地筆記本已不存在。</value>
+  </data>
+  <data name="Messages.Transfer.OpenNotebookFirst" xml:space="preserve">
+    <value>請先開啟筆記本。</value>
+  </data>
+  <data name="Messages.Transfer.PageMissing" xml:space="preserve">
+    <value>部分所選頁面已不存在。</value>
+  </data>
+  <data name="Messages.Transfer.SameNotebook" xml:space="preserve">
+    <value>若要移動此筆記本中的頁面，請使用「移至分區」。</value>
+  </data>
+  <data name="Messages.Transfer.SectionMissing" xml:space="preserve">
+    <value>目的地分區已不存在。</value>
+  </data>
+  <data name="Messages.Transfer.UnsafeUndo" xml:space="preserve">
+    <value>已移轉的筆記本發生變更，無法安全復原移轉。請使用頁面整理工具將頁面移回。</value>
+  </data>
+  <data name="Messages.Update.CannotStartInstaller" xml:space="preserve">
+    <value>Windows 無法啟動更新安裝程式。筆記仍保持開啟，請再次嘗試更新。</value>
+  </data>
+  <data name="Messages.Update.ChecksumMismatch" xml:space="preserve">
+    <value>安裝程式校驗碼不符，已移除下載檔案。請重試。</value>
+  </data>
+  <data name="Messages.Update.ChecksumMissing" xml:space="preserve">
+    <value>新版本缺少 SHA-256 校驗碼。請在版本上傳完成後再試。</value>
+  </data>
+  <data name="Messages.Update.DownloadIncomplete" xml:space="preserve">
+    <value>安裝程式下載不完整，請重試。</value>
+  </data>
+  <data name="Messages.Update.DownloadSizeMismatch" xml:space="preserve">
+    <value>安裝程式的下載大小與發布版本不符，請重試。</value>
+  </data>
+  <data name="Messages.Update.DownloadTooLarge" xml:space="preserve">
+    <value>下載的安裝程式大於發布版本。</value>
+  </data>
+  <data name="Messages.Update.DuplicateInstaller" xml:space="preserve">
+    <value>此版本包含重複的安裝程式檔案。</value>
+  </data>
+  <data name="Messages.Update.IncompleteRelease" xml:space="preserve">
+    <value>GitHub 傳回的版本說明不完整。</value>
+  </data>
+  <data name="Messages.Update.InstallationMissing" xml:space="preserve">
+    <value>找不到目前的 Penroam 安裝目錄。</value>
+  </data>
+  <data name="Messages.Update.InstallerMissing" xml:space="preserve">
+    <value>找不到已下載的更新安裝程式，請重新下載。</value>
+  </data>
+  <data name="Messages.Update.InvalidChecksum" xml:space="preserve">
+    <value>此版本的 SHA-256 校驗碼無效。</value>
+  </data>
+  <data name="Messages.Update.InvalidInformation" xml:space="preserve">
+    <value>更新資訊無效，請在下載前重新檢查更新。</value>
+  </data>
+  <data name="Messages.Update.InvalidRelease" xml:space="preserve">
+    <value>GitHub 傳回的版本說明無效。</value>
+  </data>
+  <data name="Messages.Update.InvalidSize" xml:space="preserve">
+    <value>更新安裝程式的下載大小無效。</value>
+  </data>
+  <data name="Messages.Update.NoCompatibleInstaller" xml:space="preserve">
+    <value>新版本尚未包含相容的 Windows x64 安裝程式。</value>
+  </data>
+  <data name="Messages.Update.NoInstaller" xml:space="preserve">
+    <value>新版本尚未包含 Windows 安裝程式。</value>
+  </data>
+  <data name="Messages.Update.NoVerificationChecksum" xml:space="preserve">
+    <value>此更新沒有有效的驗證校驗碼。</value>
+  </data>
+  <data name="Messages.Update.PayloadIncomplete" xml:space="preserve">
+    <value>下載的更新不完整，請重新下載。</value>
+  </data>
+  <data name="Messages.Update.PayloadUnverified" xml:space="preserve">
+    <value>無法驗證下載的更新，請重新下載。</value>
+  </data>
+  <data name="Messages.Update.RedirectOutsideGitHub" xml:space="preserve">
+    <value>更新下載被重新導向至 GitHub 版本儲存空間以外的位置。</value>
+  </data>
+  <data name="Messages.Update.ResponseTooLarge" xml:space="preserve">
+    <value>GitHub 傳回的版本回應過大。</value>
+  </data>
+  <data name="Messages.Update.TooManyRedirects" xml:space="preserve">
+    <value>GitHub 傳回過多下載重新導向。</value>
+  </data>
+  <data name="Messages.Update.UnexpectedRedirect" xml:space="preserve">
+    <value>GitHub 傳回非預期的下載重新導向。</value>
+  </data>
+  <data name="Messages.Update.WrongChecksumFile" xml:space="preserve">
+    <value>版本校驗碼對應的檔案不是預期的 Penroam 安裝程式。</value>
+  </data>
+  <data name="Messages.Update.WrongRelease" xml:space="preserve">
+    <value>下載的安裝程式不屬於 Penroam 的 GitHub 發布版本。</value>
+  </data>
+  <data name="Messages.Writing.DamagedNotPreserved" xml:space="preserve">
+    <value>書寫偏好設定檔已損毀，且無法另存保留。原始檔案已保留，請在儲存前重新載入設定。{0}</value>
+  </data>
+  <data name="Messages.Writing.DamagedPreserved" xml:space="preserve">
+    <value>書寫偏好設定檔已損毀。目前可使用預設工具，損毀的檔案已保留於 {0}。</value>
+  </data>
+  <data name="Messages.Writing.EmptySettings" xml:space="preserve">
+    <value>設定檔中沒有偏好設定。</value>
+  </data>
+  <data name="Messages.Writing.NewerVersion" xml:space="preserve">
+    <value>不支援書寫偏好設定版本 {0}。已保留現有檔案，且不會將其覆寫。</value>
+  </data>
+  <data name="Messages.Writing.Unreadable" xml:space="preserve">
+    <value>無法讀取書寫偏好設定，已保留現有檔案。請在儲存前重新載入設定。{0}</value>
+  </data>
+  <data name="Messages.Writing.UnsupportedVersion" xml:space="preserve">
+    <value>不支援此書寫偏好設定版本。</value>
+  </data>
+  <data name="Messages.Writing.ValuesReset" xml:space="preserve">
+    <value>部分書寫設定無效，已重設為支援的值。</value>
+  </data>
+  <data name="Shell.ActualSize" xml:space="preserve">
+    <value>實際大小 · 100%</value>
+  </data>
+  <data name="Shell.AddPage" xml:space="preserve">
+    <value>新增頁面</value>
+  </data>
+  <data name="Shell.AddPageShort" xml:space="preserve">
+    <value>新增頁面</value>
+  </data>
+  <data name="Shell.AddSection" xml:space="preserve">
+    <value>新增分區</value>
+  </data>
+  <data name="Shell.AddSectionHint" xml:space="preserve">
+    <value>為主題新增分區</value>
+  </data>
+  <data name="Shell.AddTextBox" xml:space="preserve">
+    <value>新增文字方塊</value>
+  </data>
+  <data name="Shell.AddTextBoxHint" xml:space="preserve">
+    <value>新增另一個文字方塊</value>
+  </data>
+  <data name="Shell.AlignCenter" xml:space="preserve">
+    <value>置中</value>
+  </data>
+  <data name="Shell.AlignLeft" xml:space="preserve">
+    <value>靠左</value>
+  </data>
+  <data name="Shell.AlignRight" xml:space="preserve">
+    <value>靠右</value>
+  </data>
+  <data name="Shell.AllNotebooks" xml:space="preserve">
+    <value>所有筆記本</value>
+  </data>
+  <data name="Shell.ApplyPaper" xml:space="preserve">
+    <value>套用紙張</value>
+  </data>
+  <data name="Shell.AutomaticBackupFailed" xml:space="preserve">
+    <value>自動備份失敗 · 請開啟「備份與復原」</value>
+  </data>
+  <data name="Shell.AutomaticBackupsDisabled" xml:space="preserve">
+    <value>自動備份已關閉。</value>
+  </data>
+  <data name="Shell.AutomaticBackupsEnabled" xml:space="preserve">
+    <value>Penroam 開啟時會執行自動備份。</value>
+  </data>
+  <data name="Shell.BackupAllMenu" xml:space="preserve">
+    <value>備份所有筆記本…</value>
+  </data>
+  <data name="Shell.BackupAllNow" xml:space="preserve">
+    <value>立即備份全部</value>
+  </data>
+  <data name="Shell.BackupError" xml:space="preserve">
+    <value>備份錯誤：{0}</value>
+  </data>
+  <data name="Shell.BackupFileFilter" xml:space="preserve">
+    <value>Penroam 備份|*.moye</value>
+  </data>
+  <data name="Shell.BackupNotebookMenu" xml:space="preserve">
+    <value>備份此筆記本…</value>
+  </data>
+  <data name="Shell.BackupSaved" xml:space="preserve">
+    <value>備份已儲存 · {0}</value>
+  </data>
+  <data name="Shell.BackupSettings" xml:space="preserve">
+    <value>備份設定</value>
+  </data>
+  <data name="Shell.Blue" xml:space="preserve">
+    <value>藍色</value>
+  </data>
+  <data name="Shell.BoldHint" xml:space="preserve">
+    <value>將整個文字方塊設為粗體（Ctrl+B）</value>
+  </data>
+  <data name="Shell.BoldOff" xml:space="preserve">
+    <value>粗體已關閉</value>
+  </data>
+  <data name="Shell.BoldOn" xml:space="preserve">
+    <value>粗體已開啟</value>
+  </data>
+  <data name="Shell.BoldText" xml:space="preserve">
+    <value>粗體文字</value>
+  </data>
+  <data name="Shell.BookmarkPage" xml:space="preserve">
+    <value>將頁面加入書籤</value>
+  </data>
+  <data name="Shell.BookmarksMenu" xml:space="preserve">
+    <value>書籤…</value>
+  </data>
+  <data name="Shell.BulletList" xml:space="preserve">
+    <value>項目符號清單</value>
+  </data>
+  <data name="Shell.BulletListHint" xml:space="preserve">
+    <value>切換所選行的項目符號</value>
+  </data>
+  <data name="Shell.BulletListShort" xml:space="preserve">
+    <value>• 清單</value>
+  </data>
+  <data name="Shell.Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Shell.CancelFolderImport" xml:space="preserve">
+    <value>取消資料夾匯入</value>
+  </data>
+  <data name="Shell.CancelImport" xml:space="preserve">
+    <value>取消匯入</value>
+  </data>
+  <data name="Shell.CancelImportHint" xml:space="preserve">
+    <value>取消文件匯入（Esc）</value>
+  </data>
+  <data name="Shell.CheckUpdatesMenu" xml:space="preserve">
+    <value>檢查更新…</value>
+  </data>
+  <data name="Shell.CheckingBackupIntegrity" xml:space="preserve">
+    <value>正在檢查筆記本資料與附件的完整性…</value>
+  </data>
+  <data name="Shell.ChooseBackupToRestore" xml:space="preserve">
+    <value>選擇要還原為新副本的筆記本</value>
+  </data>
+  <data name="Shell.ChooseCoverColor" xml:space="preserve">
+    <value>選擇封面顏色…</value>
+  </data>
+  <data name="Shell.ChooseImportDocument" xml:space="preserve">
+    <value>選擇要匯入的文件</value>
+  </data>
+  <data name="Shell.ChooseImportFolder" xml:space="preserve">
+    <value>匯入含有 PDF 和 PowerPoint 檔案的資料夾</value>
+  </data>
+  <data name="Shell.ChoosePaper" xml:space="preserve">
+    <value>選擇紙張</value>
+  </data>
+  <data name="Shell.ChoosePaperHint" xml:space="preserve">
+    <value>為此頁選擇紙張範本。</value>
+  </data>
+  <data name="Shell.ChooseRestoreDescription" xml:space="preserve">
+    <value>選擇要還原的筆記本。現有筆記本會保留；每個所選項目都會建立為新副本。</value>
+  </data>
+  <data name="Shell.ChooseRestoreNotebooks" xml:space="preserve">
+    <value>選擇要還原的筆記本</value>
+  </data>
+  <data name="Shell.ChooseRestoreRegion" xml:space="preserve">
+    <value>選擇要還原的區域</value>
+  </data>
+  <data name="Shell.Clear" xml:space="preserve">
+    <value>清除</value>
+  </data>
+  <data name="Shell.ClearSearch" xml:space="preserve">
+    <value>清除搜尋</value>
+  </data>
+  <data name="Shell.ClipboardInkUnsupported" xml:space="preserve">
+    <value>不支援的剪貼簿筆跡。</value>
+  </data>
+  <data name="Shell.ClipboardSelectionUnsupported" xml:space="preserve">
+    <value>不支援的剪貼簿選取內容。</value>
+  </data>
+  <data name="Shell.ClipboardTextTooLong" xml:space="preserve">
+    <value>文字過長，無法貼入單一文字方塊。</value>
+  </data>
+  <data name="Shell.CommandsHelp" xml:space="preserve">
+    <value>指令與說明</value>
+  </data>
+  <data name="Shell.Contents" xml:space="preserve">
+    <value>目錄</value>
+  </data>
+  <data name="Shell.Continue" xml:space="preserve">
+    <value>繼續</value>
+  </data>
+  <data name="Shell.ContinueStudy" xml:space="preserve">
+    <value>繼續：{0}</value>
+  </data>
+  <data name="Shell.ContinueText" xml:space="preserve">
+    <value>在下一頁接續文字</value>
+  </data>
+  <data name="Shell.ContinuousPages" xml:space="preserve">
+    <value>連續筆記本頁面</value>
+  </data>
+  <data name="Shell.CopySelection" xml:space="preserve">
+    <value>複製選取內容</value>
+  </data>
+  <data name="Shell.CopyingSelection" xml:space="preserve">
+    <value>正在複製選取內容…</value>
+  </data>
+  <data name="Shell.Coral" xml:space="preserve">
+    <value>珊瑚色</value>
+  </data>
+  <data name="Shell.CreateBackup" xml:space="preserve">
+    <value>建立備份</value>
+  </data>
+  <data name="Shell.CreateFirstNotebook" xml:space="preserve">
+    <value>建立您的第一本筆記本</value>
+  </data>
+  <data name="Shell.CreatingEditableBackup" xml:space="preserve">
+    <value>正在建立可編輯備份…</value>
+  </data>
+  <data name="Shell.CreatingQuickNote" xml:space="preserve">
+    <value>正在建立快速筆記…</value>
+  </data>
+  <data name="Shell.CutSelection" xml:space="preserve">
+    <value>剪下選取內容</value>
+  </data>
+  <data name="Shell.CuttingSelection" xml:space="preserve">
+    <value>正在剪下選取內容…</value>
+  </data>
+  <data name="Shell.Cyan" xml:space="preserve">
+    <value>青色</value>
+  </data>
+  <data name="Shell.DeleteNotebookMenu" xml:space="preserve">
+    <value>刪除筆記本…</value>
+  </data>
+  <data name="Shell.DeletePage" xml:space="preserve">
+    <value>刪除頁面</value>
+  </data>
+  <data name="Shell.DeletePageHint" xml:space="preserve">
+    <value>刪除此頁 · 保持開啟時可復原，或在 30 天內從「最近刪除」還原筆記本副本</value>
+  </data>
+  <data name="Shell.DeletePermanently" xml:space="preserve">
+    <value>永久刪除…</value>
+  </data>
+  <data name="Shell.DeleteRecoveryCopyConfirm" xml:space="preserve">
+    <value>要永久移除此復原副本嗎？</value>
+  </data>
+  <data name="Shell.DeleteRecoveryCopyTitle" xml:space="preserve">
+    <value>刪除復原副本</value>
+  </data>
+  <data name="Shell.DeleteSection" xml:space="preserve">
+    <value>刪除分區</value>
+  </data>
+  <data name="Shell.DeleteSectionConfirm" xml:space="preserve">
+    <value>要刪除「{0}」及其中的 {1} 頁嗎？
+
+筆記本保持開啟時可復原此操作。「備份與復原」也會保留筆記本復原副本 30 天。</value>
+  </data>
+  <data name="Shell.DeleteSectionConfirmOne" xml:space="preserve">
+    <value>要刪除「{0}」及其中的 {1} 頁嗎？
+
+筆記本保持開啟時可復原此操作。「備份與復原」也會保留筆記本復原副本 30 天。</value>
+  </data>
+  <data name="Shell.DeleteSectionHint" xml:space="preserve">
+    <value>刪除此分區及其頁面 · 可復原此操作</value>
+  </data>
+  <data name="Shell.DeleteSectionMenu" xml:space="preserve">
+    <value>刪除分區…</value>
+  </data>
+  <data name="Shell.DeletedContentRestored" xml:space="preserve">
+    <value>已刪除的內容已還原為新的筆記本</value>
+  </data>
+  <data name="Shell.DeletedRecoveryDescription" xml:space="preserve">
+    <value>刪除筆記本、分區或頁面之前，Penroam 會保留完整筆記本 30 天。您可以將它還原為新副本，再移回需要的頁面。</value>
+  </data>
+  <data name="Shell.DeletedSnapshotItem" xml:space="preserve">
+    <value>{0} · {1} · {2} 頁 · {3:g}</value>
+  </data>
+  <data name="Shell.DeletedSnapshotItemOne" xml:space="preserve">
+    <value>{0} · {1} · {2} 頁 · {3:g}</value>
+  </data>
+  <data name="Shell.DeletionNotebook" xml:space="preserve">
+    <value>筆記本已刪除</value>
+  </data>
+  <data name="Shell.DeletionOrganizer" xml:space="preserve">
+    <value>在頁面管理中刪除的頁面</value>
+  </data>
+  <data name="Shell.DeletionPage" xml:space="preserve">
+    <value>頁面已刪除</value>
+  </data>
+  <data name="Shell.DeletionSection" xml:space="preserve">
+    <value>分區已刪除</value>
+  </data>
+  <data name="Shell.DeletionTransfer" xml:space="preserve">
+    <value>頁面已移至另一個筆記本</value>
+  </data>
+  <data name="Shell.DiscardDraftConfirm" xml:space="preserve">
+    <value>要永久捨棄此復原草稿嗎？</value>
+  </data>
+  <data name="Shell.DiscardDraftTitle" xml:space="preserve">
+    <value>捨棄草稿</value>
+  </data>
+  <data name="Shell.DiscardSelectedDraft" xml:space="preserve">
+    <value>捨棄所選草稿…</value>
+  </data>
+  <data name="Shell.DocumentFileFilter" xml:space="preserve">
+    <value>支援的文件|*.pdf;*.docx;*.pptx;*.ppsx;*.odt;*.odp|PDF 文件|*.pdf|Word 文件|*.docx|PowerPoint 簡報|*.pptx;*.ppsx|OpenDocument 檔案|*.odt;*.odp</value>
+  </data>
+  <data name="Shell.Done" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="Shell.DraftKept" xml:space="preserve">
+    <value>草稿已保留</value>
+  </data>
+  <data name="Shell.DraftRecovered" xml:space="preserve">
+    <value>草稿已復原為新的筆記本</value>
+  </data>
+  <data name="Shell.DraftRecoveryDescription" xml:space="preserve">
+    <value>待儲存的快照可能包含中斷工作階段中的編輯。復原會建立新的筆記本，絕不覆寫已儲存的筆記。</value>
+  </data>
+  <data name="Shell.DraftRecoveryError" xml:space="preserve">
+    <value>
+草稿復原：{0}</value>
+  </data>
+  <data name="Shell.DrawHold" xml:space="preserve">
+    <value>畫完停留</value>
+  </data>
+  <data name="Shell.DrawHoldHint" xml:space="preserve">
+    <value>畫線後停留片刻即可拉直。繼續按住可調整，提筆即可完成。</value>
+  </data>
+  <data name="Shell.DuplicatePage" xml:space="preserve">
+    <value>複製頁面</value>
+  </data>
+  <data name="Shell.EmptySectionHint" xml:space="preserve">
+    <value>新增一頁，開始記錄這個主題。</value>
+  </data>
+  <data name="Shell.EraseHighlighterOnly" xml:space="preserve">
+    <value>只擦除螢光筆</value>
+  </data>
+  <data name="Shell.Eraser" xml:space="preserve">
+    <value>橡皮擦</value>
+  </data>
+  <data name="Shell.EraserChoiceHint" xml:space="preserve">
+    <value>選擇橡皮擦要擦除的範圍。</value>
+  </data>
+  <data name="Shell.EraserRememberHint" xml:space="preserve">
+    <value>按 E 使用上次的橡皮擦模式。設定會儲存在此裝置上。</value>
+  </data>
+  <data name="Shell.EraserSettings" xml:space="preserve">
+    <value>橡皮擦設定</value>
+  </data>
+  <data name="Shell.EraserSize" xml:space="preserve">
+    <value>橡皮擦大小</value>
+  </data>
+  <data name="Shell.EraserSizeLabel" xml:space="preserve">
+    <value>橡皮擦大小</value>
+  </data>
+  <data name="Shell.ExitFocus" xml:space="preserve">
+    <value>離開專注模式</value>
+  </data>
+  <data name="Shell.ExitFocusHint" xml:space="preserve">
+    <value>離開專注模式（F11 或 Esc）</value>
+  </data>
+  <data name="Shell.Export" xml:space="preserve">
+    <value>匯出</value>
+  </data>
+  <data name="Shell.ExportPdf" xml:space="preserve">
+    <value>匯出 PDF</value>
+  </data>
+  <data name="Shell.ExportPdfHint" xml:space="preserve">
+    <value>選擇要匯出為 PDF 的頁面</value>
+  </data>
+  <data name="Shell.ExportPdfPages" xml:space="preserve">
+    <value>匯出 PDF 頁面</value>
+  </data>
+  <data name="Shell.ExportPdfPickerTitle" xml:space="preserve">
+    <value>將 {0} 頁匯出為 PDF</value>
+  </data>
+  <data name="Shell.ExportingPdf" xml:space="preserve">
+    <value>正在匯出 PDF</value>
+  </data>
+  <data name="Shell.ExtendPageFailed" xml:space="preserve">
+    <value>無法延伸頁面。您的原始頁面未變更。
+
+{0}</value>
+  </data>
+  <data name="Shell.ExtendPageHint" xml:space="preserve">
+    <value>在頁面四周增加書寫空間</value>
+  </data>
+  <data name="Shell.ExtendPageMenu" xml:space="preserve">
+    <value>延伸頁面…</value>
+  </data>
+  <data name="Shell.ExtendPageTitle" xml:space="preserve">
+    <value>延伸頁面</value>
+  </data>
+  <data name="Shell.FindContent" xml:space="preserve">
+    <value>尋找內容</value>
+  </data>
+  <data name="Shell.FindNotebook" xml:space="preserve">
+    <value>尋找筆記本</value>
+  </data>
+  <data name="Shell.FitPage" xml:space="preserve">
+    <value>整頁顯示</value>
+  </data>
+  <data name="Shell.FitPageHint" xml:space="preserve">
+    <value>顯示完整頁面</value>
+  </data>
+  <data name="Shell.FitSpread" xml:space="preserve">
+    <value>整個跨頁顯示</value>
+  </data>
+  <data name="Shell.FitSpreadHint" xml:space="preserve">
+    <value>顯示完整雙頁跨頁</value>
+  </data>
+  <data name="Shell.FitSpreadWidthHint" xml:space="preserve">
+    <value>讓雙頁符合可用書寫區域的寬度</value>
+  </data>
+  <data name="Shell.FitWidth" xml:space="preserve">
+    <value>符合寬度</value>
+  </data>
+  <data name="Shell.FitWidthHint" xml:space="preserve">
+    <value>讓紙張符合可用書寫區域的寬度</value>
+  </data>
+  <data name="Shell.FocusAddPage" xml:space="preserve">
+    <value>專注模式：新增頁面</value>
+  </data>
+  <data name="Shell.FocusAddPageHint" xml:space="preserve">
+    <value>在目前頁面後新增一頁</value>
+  </data>
+  <data name="Shell.FocusEraser" xml:space="preserve">
+    <value>專注模式：橡皮擦</value>
+  </data>
+  <data name="Shell.FocusEraserHint" xml:space="preserve">
+    <value>橡皮擦（E）；按一下選擇橡皮擦模式</value>
+  </data>
+  <data name="Shell.FocusHighlighter" xml:space="preserve">
+    <value>專注模式：螢光筆</value>
+  </data>
+  <data name="Shell.FocusLasso" xml:space="preserve">
+    <value>專注模式：套索</value>
+  </data>
+  <data name="Shell.FocusLassoHint" xml:space="preserve">
+    <value>套索（L）</value>
+  </data>
+  <data name="Shell.FocusMode" xml:space="preserve">
+    <value>專注模式</value>
+  </data>
+  <data name="Shell.FocusModeHint" xml:space="preserve">
+    <value>專注模式（F11）</value>
+  </data>
+  <data name="Shell.FocusPen" xml:space="preserve">
+    <value>專注模式：筆</value>
+  </data>
+  <data name="Shell.FocusPenHint" xml:space="preserve">
+    <value>筆（B）</value>
+  </data>
+  <data name="Shell.FocusPenSettings" xml:space="preserve">
+    <value>專注模式：筆設定</value>
+  </data>
+  <data name="Shell.FocusRedo" xml:space="preserve">
+    <value>專注模式：重做</value>
+  </data>
+  <data name="Shell.FocusSelect" xml:space="preserve">
+    <value>專注模式：選取</value>
+  </data>
+  <data name="Shell.FocusSelectHint" xml:space="preserve">
+    <value>選取物件（V）</value>
+  </data>
+  <data name="Shell.FocusType" xml:space="preserve">
+    <value>專注模式：打字</value>
+  </data>
+  <data name="Shell.FocusTypeHint" xml:space="preserve">
+    <value>打字（T）</value>
+  </data>
+  <data name="Shell.FocusUndo" xml:space="preserve">
+    <value>專注模式：復原</value>
+  </data>
+  <data name="Shell.FocusWritingTools" xml:space="preserve">
+    <value>專注模式書寫工具</value>
+  </data>
+  <data name="Shell.FolderImportCanceled" xml:space="preserve">
+    <value>資料夾匯入已取消 · 未建立任何筆記本</value>
+  </data>
+  <data name="Shell.FolderImportComplete" xml:space="preserve">
+    <value>已匯入檔案：{0} · 頁數：{1}</value>
+  </data>
+  <data name="Shell.FolderImportCompleteFailed" xml:space="preserve">
+    <value>已匯入檔案：{0} · 頁數：{1} · 失敗：{2}</value>
+  </data>
+  <data name="Shell.FolderImportCompletePartial" xml:space="preserve">
+    <value>已匯入檔案：{0} · 頁數：{1} · 失敗：{2} · 略過：{3}</value>
+  </data>
+  <data name="Shell.FolderImportCompleteSkipped" xml:space="preserve">
+    <value>已匯入檔案：{0} · 頁數：{1} · 略過：{3}</value>
+  </data>
+  <data name="Shell.FolderImportEmpty" xml:space="preserve">
+    <value>未匯入任何文件 · 未建立任何筆記本</value>
+  </data>
+  <data name="Shell.FolderImportErrorTitle" xml:space="preserve">
+    <value>無法匯入資料夾</value>
+  </data>
+  <data name="Shell.FolderImportFailed" xml:space="preserve">
+    <value>資料夾匯入失敗 · 未建立任何筆記本</value>
+  </data>
+  <data name="Shell.FolderImportNotSaved" xml:space="preserve">
+    <value>資料夾匯入未儲存 · 未建立任何筆記本</value>
+  </data>
+  <data name="Shell.FolderImportSaveErrorTitle" xml:space="preserve">
+    <value>無法儲存匯入的筆記本</value>
+  </data>
+  <data name="Shell.FolderImportSavedError" xml:space="preserve">
+    <value>匯入的筆記本已儲存在您的筆記庫中。若要重試開啟，請勿再次匯入資料夾。
+
+{0}</value>
+  </data>
+  <data name="Shell.FolderImportUnsavedError" xml:space="preserve">
+    <value>未建立任何筆記本。
+
+{0}</value>
+  </data>
+  <data name="Shell.FontFamily" xml:space="preserve">
+    <value>字型</value>
+  </data>
+  <data name="Shell.GoToPageHint" xml:space="preserve">
+    <value>前往頁面（Ctrl+G）</value>
+  </data>
+  <data name="Shell.Green" xml:space="preserve">
+    <value>綠色</value>
+  </data>
+  <data name="Shell.Guard" xml:space="preserve">
+    <value>防誤觸</value>
+  </data>
+  <data name="Shell.GuardSettings" xml:space="preserve">
+    <value>書寫防誤觸設定</value>
+  </data>
+  <data name="Shell.Highlighter" xml:space="preserve">
+    <value>螢光筆</value>
+  </data>
+  <data name="Shell.HighlighterHint" xml:space="preserve">
+    <value>螢光筆（H）</value>
+  </data>
+  <data name="Shell.HomeSearchHint" xml:space="preserve">
+    <value>依標題或分類搜尋（Ctrl+F）</value>
+  </data>
+  <data name="Shell.ImportDestinationChanged" xml:space="preserve">
+    <value>目的地筆記本已變更，請重新匯入。</value>
+  </data>
+  <data name="Shell.ImportDocumentHint" xml:space="preserve">
+    <value>PDF、Word 和 PowerPoint · Office 檔案需要本機轉換工具</value>
+  </data>
+  <data name="Shell.ImportDocumentMenu" xml:space="preserve">
+    <value>匯入文件…</value>
+  </data>
+  <data name="Shell.ImportDocumentPages" xml:space="preserve">
+    <value>匯入文件頁面</value>
+  </data>
+  <data name="Shell.ImportFolder" xml:space="preserve">
+    <value>匯入資料夾</value>
+  </data>
+  <data name="Shell.ImportFolderHint" xml:space="preserve">
+    <value>將資料夾中的 PDF 和 PPTX 檔案建立成筆記本。您也可以將資料夾拖放到這裡。</value>
+  </data>
+  <data name="Shell.ImportFolderShort" xml:space="preserve">
+    <value>匯入資料夾</value>
+  </data>
+  <data name="Shell.ImportedOnePage" xml:space="preserve">
+    <value>已匯入 {0} 頁</value>
+  </data>
+  <data name="Shell.ImportedOpenFailed" xml:space="preserve">
+    <value>匯入的筆記本已儲存 · 無法完成開啟</value>
+  </data>
+  <data name="Shell.ImportedOpenInterrupted" xml:space="preserve">
+    <value>匯入的筆記本已儲存 · 開啟作業遭到中斷</value>
+  </data>
+  <data name="Shell.ImportedPages" xml:space="preserve">
+    <value>已匯入 {0} 頁</value>
+  </data>
+  <data name="Shell.ImportingFolder" xml:space="preserve">
+    <value>正在匯入資料夾…</value>
+  </data>
+  <data name="Shell.ImportingSelectedPages" xml:space="preserve">
+    <value>正在匯入所選頁面</value>
+  </data>
+  <data name="Shell.InkBlack" xml:space="preserve">
+    <value>墨黑</value>
+  </data>
+  <data name="Shell.InkColor" xml:space="preserve">
+    <value>墨水顏色</value>
+  </data>
+  <data name="Shell.Insert" xml:space="preserve">
+    <value>插入</value>
+  </data>
+  <data name="Shell.InsertHint" xml:space="preserve">
+    <value>新增頁面、匯入文件或插入圖片</value>
+  </data>
+  <data name="Shell.InsertImageMenu" xml:space="preserve">
+    <value>插入圖片…</value>
+  </data>
+  <data name="Shell.InspectingBackup" xml:space="preserve">
+    <value>正在檢查備份…</value>
+  </data>
+  <data name="Shell.InterruptedDrafts" xml:space="preserve">
+    <value>中斷的草稿（{0}）</value>
+  </data>
+  <data name="Shell.InvalidTextSize" xml:space="preserve">
+    <value>請輸入 6 至 96 點的文字大小。</value>
+  </data>
+  <data name="Shell.ItalicHint" xml:space="preserve">
+    <value>將整個文字方塊設為斜體（Ctrl+I）</value>
+  </data>
+  <data name="Shell.ItalicOff" xml:space="preserve">
+    <value>斜體已關閉</value>
+  </data>
+  <data name="Shell.ItalicOn" xml:space="preserve">
+    <value>斜體已開啟</value>
+  </data>
+  <data name="Shell.ItalicText" xml:space="preserve">
+    <value>斜體文字</value>
+  </data>
+  <data name="Shell.KeepOneSectionDescription" xml:space="preserve">
+    <value>筆記本中需至少保留一個分區。您可以重新命名此分區，或刪除個別頁面。</value>
+  </data>
+  <data name="Shell.KeepOneSectionHint" xml:space="preserve">
+    <value>筆記本中需至少保留一個分區</value>
+  </data>
+  <data name="Shell.KeepSavedNotebookClose" xml:space="preserve">
+    <value>保留已儲存的筆記本並關閉</value>
+  </data>
+  <data name="Shell.KeepingRecoveryCopy" xml:space="preserve">
+    <value>正在保留復原副本…</value>
+  </data>
+  <data name="Shell.Lasso" xml:space="preserve">
+    <value>套索</value>
+  </data>
+  <data name="Shell.LassoClipboardHint" xml:space="preserve">
+    <value>套索（L）；按滑鼠右鍵即可複製、剪下或貼上</value>
+  </data>
+  <data name="Shell.LastAutomaticBackup" xml:space="preserve">
+    <value>上次自動備份：{0}</value>
+  </data>
+  <data name="Shell.LibraryCreateHint" xml:space="preserve">
+    <value>建立筆記本，或拖放含有 PDF 和 PPTX 檔案的資料夾。</value>
+  </data>
+  <data name="Shell.LibraryFooter" xml:space="preserve">
+    <value>儲存在您的裝置上，隨時可用。</value>
+  </data>
+  <data name="Shell.LibraryOptions" xml:space="preserve">
+    <value>筆記庫選項</value>
+  </data>
+  <data name="Shell.LibraryOptionsHint" xml:space="preserve">
+    <value>筆記庫選項</value>
+  </data>
+  <data name="Shell.Logo" xml:space="preserve">
+    <value>Penroam 標誌</value>
+  </data>
+  <data name="Shell.ManagePagesMenu" xml:space="preserve">
+    <value>管理頁面…</value>
+  </data>
+  <data name="Shell.ManagePens" xml:space="preserve">
+    <value>管理筆款</value>
+  </data>
+  <data name="Shell.ManagePensHint" xml:space="preserve">
+    <value>儲存、重新命名、排序或隱藏常用筆款</value>
+  </data>
+  <data name="Shell.ManagePensMenu" xml:space="preserve">
+    <value>管理筆款…</value>
+  </data>
+  <data name="Shell.ManagePresets" xml:space="preserve">
+    <value>管理筆款預設</value>
+  </data>
+  <data name="Shell.MarkQuestionMenu" xml:space="preserve">
+    <value>標記問題…</value>
+  </data>
+  <data name="Shell.MarkQuestionSource" xml:space="preserve">
+    <value>標記問題來源</value>
+  </data>
+  <data name="Shell.More" xml:space="preserve">
+    <value>更多</value>
+  </data>
+  <data name="Shell.MoreColors" xml:space="preserve">
+    <value>更多顏色…</value>
+  </data>
+  <data name="Shell.MovePageDown" xml:space="preserve">
+    <value>將頁面下移</value>
+  </data>
+  <data name="Shell.MovePageToSection" xml:space="preserve">
+    <value>將頁面移至分區</value>
+  </data>
+  <data name="Shell.MovePageUp" xml:space="preserve">
+    <value>將頁面上移</value>
+  </data>
+  <data name="Shell.MoveSectionDown" xml:space="preserve">
+    <value>將分區下移</value>
+  </data>
+  <data name="Shell.MoveSectionUp" xml:space="preserve">
+    <value>將分區上移</value>
+  </data>
+  <data name="Shell.MyNotebooks" xml:space="preserve">
+    <value>我的筆記本</value>
+  </data>
+  <data name="Shell.NameLabel" xml:space="preserve">
+    <value>名稱</value>
+  </data>
+  <data name="Shell.NamePracticeQuestion" xml:space="preserve">
+    <value>為此題目命名</value>
+  </data>
+  <data name="Shell.NamedImportedNotebookSaved" xml:space="preserve">
+    <value>「{0}」已儲存 · 無法完成開啟</value>
+  </data>
+  <data name="Shell.NeverBackedUp" xml:space="preserve">
+    <value>從未備份</value>
+  </data>
+  <data name="Shell.NewNotebook" xml:space="preserve">
+    <value>新增筆記本</value>
+  </data>
+  <data name="Shell.NewNotebookShort" xml:space="preserve">
+    <value>新增筆記本</value>
+  </data>
+  <data name="Shell.NewPracticeMenu" xml:space="preserve">
+    <value>開始新的練習…</value>
+  </data>
+  <data name="Shell.NoCompatibleRegionHistory" xml:space="preserve">
+    <value>沒有頁面尺寸與背景相同的較早版本。歷程會在此筆記本保持開啟時保留。</value>
+  </data>
+  <data name="Shell.NoFavoritePens" xml:space="preserve">
+    <value>在「管理筆款」中新增常用筆款</value>
+  </data>
+  <data name="Shell.NoMatchingNotebooks" xml:space="preserve">
+    <value>沒有符合條件的筆記本</value>
+  </data>
+  <data name="Shell.NoPreviousLocation" xml:space="preserve">
+    <value>沒有先前的搜尋或快速筆記位置。</value>
+  </data>
+  <data name="Shell.NoTransferToUndo" xml:space="preserve">
+    <value>此工作階段沒有可復原的頁面轉移。</value>
+  </data>
+  <data name="Shell.NotebookOptions" xml:space="preserve">
+    <value>筆記本選項</value>
+  </data>
+  <data name="Shell.NotebookOptionsName" xml:space="preserve">
+    <value>{0} 的選項</value>
+  </data>
+  <data name="Shell.NotebookSaved" xml:space="preserve">
+    <value>筆記本已儲存</value>
+  </data>
+  <data name="Shell.NotebookSections" xml:space="preserve">
+    <value>筆記本分區</value>
+  </data>
+  <data name="Shell.Notebooks" xml:space="preserve">
+    <value>筆記本</value>
+  </data>
+  <data name="Shell.NotebooksRestored" xml:space="preserve">
+    <value>已將 {0} 本筆記本還原為新副本</value>
+  </data>
+  <data name="Shell.NumberedList" xml:space="preserve">
+    <value>編號清單</value>
+  </data>
+  <data name="Shell.NumberedListHint" xml:space="preserve">
+    <value>切換所選行的編號</value>
+  </data>
+  <data name="Shell.NumberedListShort" xml:space="preserve">
+    <value>1. 清單</value>
+  </data>
+  <data name="Shell.OfflineWorkspace" xml:space="preserve">
+    <value>您的離線工作區</value>
+  </data>
+  <data name="Shell.OpenNotebook" xml:space="preserve">
+    <value>開啟筆記本</value>
+  </data>
+  <data name="Shell.OpenNotebooksHint" xml:space="preserve">
+    <value>開啟您的筆記本</value>
+  </data>
+  <data name="Shell.OpeningImportedNotebook" xml:space="preserve">
+    <value>正在開啟匯入的筆記本…</value>
+  </data>
+  <data name="Shell.OpeningPage" xml:space="preserve">
+    <value>正在開啟頁面…</value>
+  </data>
+  <data name="Shell.OpeningPracticeQuestion" xml:space="preserve">
+    <value>正在開啟已儲存的題目…</value>
+  </data>
+  <data name="Shell.OperationCanceled" xml:space="preserve">
+    <value>操作已取消 · 您的筆記本未變更</value>
+  </data>
+  <data name="Shell.OperationFailedTitle" xml:space="preserve">
+    <value>無法完成操作</value>
+  </data>
+  <data name="Shell.Orange" xml:space="preserve">
+    <value>橙色</value>
+  </data>
+  <data name="Shell.OrganizingPages" xml:space="preserve">
+    <value>正在整理頁面…</value>
+  </data>
+  <data name="Shell.PageContextHint" xml:space="preserve">
+    <value>按滑鼠右鍵開啟頁面操作 · 鍵盤快捷鍵 Shift+F10</value>
+  </data>
+  <data name="Shell.PageCount" xml:space="preserve">
+    <value>{0} 頁</value>
+  </data>
+  <data name="Shell.PageHeading" xml:space="preserve">
+    <value>第 {0} 頁</value>
+  </data>
+  <data name="Shell.PageThumbnails" xml:space="preserve">
+    <value>頁面縮圖</value>
+  </data>
+  <data name="Shell.PageUnavailable" xml:space="preserve">
+    <value>此頁面已無法使用。請重新搜尋以查看最新結果。</value>
+  </data>
+  <data name="Shell.PagesTransferred" xml:space="preserve">
+    <value>頁面已轉移。若兩本筆記本均未改動，可使用「頁面 → 復原上次頁面轉移」。</value>
+  </data>
+  <data name="Shell.PaperStyleMenu" xml:space="preserve">
+    <value>紙張樣式…</value>
+  </data>
+  <data name="Shell.Paste" xml:space="preserve">
+    <value>貼上</value>
+  </data>
+  <data name="Shell.PasteFailed" xml:space="preserve">
+    <value>無法貼上：{0}</value>
+  </data>
+  <data name="Shell.PastingSelection" xml:space="preserve">
+    <value>正在貼上選取內容…</value>
+  </data>
+  <data name="Shell.PdfExported" xml:space="preserve">
+    <value>PDF 已匯出 · {0} 頁 · {1}</value>
+  </data>
+  <data name="Shell.PdfFileFilter" xml:space="preserve">
+    <value>PDF 文件|*.pdf</value>
+  </data>
+  <data name="Shell.PdfPaginationUnavailable" xml:space="preserve">
+    <value>此 PDF 提供者不支援 A4 分頁。</value>
+  </data>
+  <data name="Shell.Pen" xml:space="preserve">
+    <value>筆</value>
+  </data>
+  <data name="Shell.PenPresets" xml:space="preserve">
+    <value>預設筆款</value>
+  </data>
+  <data name="Shell.PenPressureHint" xml:space="preserve">
+    <value>感壓筆（B）</value>
+  </data>
+  <data name="Shell.PenSettings" xml:space="preserve">
+    <value>筆設定</value>
+  </data>
+  <data name="Shell.PenSettingsHint" xml:space="preserve">
+    <value>筆設定：顏色與粗細</value>
+  </data>
+  <data name="Shell.Pinned" xml:space="preserve">
+    <value>已釘選</value>
+  </data>
+  <data name="Shell.PixelEraser" xml:space="preserve">
+    <value>局部橡皮擦</value>
+  </data>
+  <data name="Shell.PixelEraserDetail" xml:space="preserve">
+    <value>擦除碰觸到的部分，保留筆畫的其他部分。</value>
+  </data>
+  <data name="Shell.PixelEraserDetailHint" xml:space="preserve">
+    <value>只擦除碰觸到的部分，保留其餘筆畫片段。</value>
+  </data>
+  <data name="Shell.PixelEraserHint" xml:space="preserve">
+    <value>局部橡皮擦（E）；按一下選擇橡皮擦模式</value>
+  </data>
+  <data name="Shell.PracticeAttemptsMenu" xml:space="preserve">
+    <value>練習紀錄…</value>
+  </data>
+  <data name="Shell.PracticeEmptyHint" xml:space="preserve">
+    <value>使用「開始新的練習」擷取題目，即可開始練習。</value>
+  </data>
+  <data name="Shell.PracticeReady" xml:space="preserve">
+    <value>新練習已備妥 · 題目為已儲存的快照 · 先前的作答已保留</value>
+  </data>
+  <data name="Shell.PracticeSourceMissing" xml:space="preserve">
+    <value>原始頁面已不在此筆記本中。已儲存的題目及所有練習紀錄仍可使用。</value>
+  </data>
+  <data name="Shell.PreparingDocumentPreview" xml:space="preserve">
+    <value>正在準備文件預覽</value>
+  </data>
+  <data name="Shell.PreparingEarlierPage" xml:space="preserve">
+    <value>正在準備較早的頁面…</value>
+  </data>
+  <data name="Shell.PreparingFolderImport" xml:space="preserve">
+    <value>正在準備匯入資料夾</value>
+  </data>
+  <data name="Shell.PreparingPagePreview" xml:space="preserve">
+    <value>正在準備頁面預覽…</value>
+  </data>
+  <data name="Shell.PreparingPracticeQuestion" xml:space="preserve">
+    <value>正在準備題目…</value>
+  </data>
+  <data name="Shell.PreparingQuestionSource" xml:space="preserve">
+    <value>正在準備問題來源…</value>
+  </data>
+  <data name="Shell.PresetLimit" xml:space="preserve">
+    <value>最多可保留 40 個預設筆款。請先在預設筆款中移除一個。</value>
+  </data>
+  <data name="Shell.PresetName" xml:space="preserve">
+    <value>預設筆款 {0}：{1}</value>
+  </data>
+  <data name="Shell.PresetTooltip" xml:space="preserve">
+    <value>{0} · {1:0.##} 毫米（{2}）
+拖曳可重新排序。使用「管理筆款」可編輯或隱藏。</value>
+  </data>
+  <data name="Shell.PreviousPage" xml:space="preserve">
+    <value>返回上一頁</value>
+  </data>
+  <data name="Shell.Purple" xml:space="preserve">
+    <value>紫色</value>
+  </data>
+  <data name="Shell.Question" xml:space="preserve">
+    <value>題目</value>
+  </data>
+  <data name="Shell.QuestionAdded" xml:space="preserve">
+    <value>問題已新增。開啟「問題收件匣」即可記錄解說與下次作答。</value>
+  </data>
+  <data name="Shell.QuestionInboxMenu" xml:space="preserve">
+    <value>問題收件匣…</value>
+  </data>
+  <data name="Shell.QuickNote" xml:space="preserve">
+    <value>快速筆記</value>
+  </data>
+  <data name="Shell.QuickNoteMenu" xml:space="preserve">
+    <value>快速筆記</value>
+  </data>
+  <data name="Shell.ReadingBackupNotebook" xml:space="preserve">
+    <value>正在讀取第 {0} 本筆記本，共 {1} 本…</value>
+  </data>
+  <data name="Shell.RecentlyDeleted" xml:space="preserve">
+    <value>最近刪除（{0}）</value>
+  </data>
+  <data name="Shell.RecoverDraftAsCopy" xml:space="preserve">
+    <value>將所選草稿復原為副本</value>
+  </data>
+  <data name="Shell.RecoverDraftCount" xml:space="preserve">
+    <value>復原草稿（{0}）</value>
+  </data>
+  <data name="Shell.RecoverDrafts" xml:space="preserve">
+    <value>復原草稿</value>
+  </data>
+  <data name="Shell.RecoveringDraft" xml:space="preserve">
+    <value>正在復原草稿…</value>
+  </data>
+  <data name="Shell.RecoveryDraftItem" xml:space="preserve">
+    <value>{0} · {1:g}</value>
+  </data>
+  <data name="Shell.Red" xml:space="preserve">
+    <value>紅色</value>
+  </data>
+  <data name="Shell.Redo" xml:space="preserve">
+    <value>重做</value>
+  </data>
+  <data name="Shell.RedoHint" xml:space="preserve">
+    <value>重做（Ctrl+Y）</value>
+  </data>
+  <data name="Shell.ReferenceViewMenu" xml:space="preserve">
+    <value>參考檢視…</value>
+  </data>
+  <data name="Shell.RegionRestoreFailed" xml:space="preserve">
+    <value>無法還原此區域：{0}</value>
+  </data>
+  <data name="Shell.RegionRestored" xml:space="preserve">
+    <value>區域已還原 · 頁面其他部分已保留 · 可復原此操作</value>
+  </data>
+  <data name="Shell.RegionUnchanged" xml:space="preserve">
+    <value>此區域已與該版本相同。</value>
+  </data>
+  <data name="Shell.RemoveBookmark" xml:space="preserve">
+    <value>移除書籤</value>
+  </data>
+  <data name="Shell.RenameCategoryHint" xml:space="preserve">
+    <value>重新命名並變更分類</value>
+  </data>
+  <data name="Shell.RenameCategoryMenu" xml:space="preserve">
+    <value>名稱與分類…</value>
+  </data>
+  <data name="Shell.RenamePageMenu" xml:space="preserve">
+    <value>重新命名頁面…</value>
+  </data>
+  <data name="Shell.RenameSection" xml:space="preserve">
+    <value>重新命名分區</value>
+  </data>
+  <data name="Shell.RenameSectionMenu" xml:space="preserve">
+    <value>重新命名分區…</value>
+  </data>
+  <data name="Shell.RepeatPracticeReady" xml:space="preserve">
+    <value>另一次練習已備妥 · 先前的作答與反思已保留</value>
+  </data>
+  <data name="Shell.RestoreBackup" xml:space="preserve">
+    <value>還原備份</value>
+  </data>
+  <data name="Shell.RestoreBackupAction" xml:space="preserve">
+    <value>還原備份…</value>
+  </data>
+  <data name="Shell.RestoreBackupMenu" xml:space="preserve">
+    <value>還原 .moye 備份…</value>
+  </data>
+  <data name="Shell.RestoreDeletedAsCopy" xml:space="preserve">
+    <value>將所選項目還原為副本</value>
+  </data>
+  <data name="Shell.RestoreNotebookChoice" xml:space="preserve">
+    <value>{0} · {1} 頁</value>
+  </data>
+  <data name="Shell.RestoreNotebookChoiceOne" xml:space="preserve">
+    <value>{0} · {1} 頁</value>
+  </data>
+  <data name="Shell.RestoreRegionMenu" xml:space="preserve">
+    <value>還原此頁的部分區域…</value>
+  </data>
+  <data name="Shell.RestoreSelected" xml:space="preserve">
+    <value>還原所選項目</value>
+  </data>
+  <data name="Shell.RestoringDeletedContent" xml:space="preserve">
+    <value>正在還原已刪除的內容…</value>
+  </data>
+  <data name="Shell.ResumeHintMenu" xml:space="preserve">
+    <value>留下續寫提示…</value>
+  </data>
+  <data name="Shell.ResumeNoteCleared" xml:space="preserve">
+    <value>續寫提示已清除。</value>
+  </data>
+  <data name="Shell.ResumeNoteSaved" xml:space="preserve">
+    <value>接續提示已儲存。可在「學習 → 接續我的思路」再次尋找。</value>
+  </data>
+  <data name="Shell.ResumeThinking" xml:space="preserve">
+    <value>接續我的思路</value>
+  </data>
+  <data name="Shell.ResumeThinkingMenu" xml:space="preserve">
+    <value>接續我的思路…</value>
+  </data>
+  <data name="Shell.RetryFolderOpenDescription" xml:space="preserve">
+    <value>匯入的筆記本已儲存在筆記庫中，但無法開啟。「重試開啟」會開啟同一本筆記本，不會再次匯入副本。
+
+{0}</value>
+  </data>
+  <data name="Shell.RetryFolderSaveDescription" xml:space="preserve">
+    <value>匯入的筆記本尚未儲存。您現有的筆記本及所有待儲存的變更均已保留。「重試儲存」會使用已備妥的檔案；「取消」會捨棄此次匯入。
+
+{0}</value>
+  </data>
+  <data name="Shell.RetryOpen" xml:space="preserve">
+    <value>重試開啟</value>
+  </data>
+  <data name="Shell.RetryOpenSavedNotebook" xml:space="preserve">
+    <value>重試開啟已儲存的筆記本</value>
+  </data>
+  <data name="Shell.RetrySave" xml:space="preserve">
+    <value>重試儲存</value>
+  </data>
+  <data name="Shell.RetrySaveImportedNotebook" xml:space="preserve">
+    <value>重試儲存匯入的筆記本</value>
+  </data>
+  <data name="Shell.SafetyCenter" xml:space="preserve">
+    <value>備份與復原</value>
+  </data>
+  <data name="Shell.SafetyCenterMenu" xml:space="preserve">
+    <value>備份與復原…</value>
+  </data>
+  <data name="Shell.SafetyItemLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="Shell.SafetySummary" xml:space="preserve">
+    <value>{0}
+{1}{2}</value>
+  </data>
+  <data name="Shell.SaveCurrentPreset" xml:space="preserve">
+    <value>將目前設定儲存為預設筆款…</value>
+  </data>
+  <data name="Shell.SavePenPreset" xml:space="preserve">
+    <value>儲存預設筆款</value>
+  </data>
+  <data name="Shell.Saved" xml:space="preserve">
+    <value>已儲存</value>
+  </data>
+  <data name="Shell.SavingImportedNotebook" xml:space="preserve">
+    <value>正在儲存匯入的筆記本</value>
+  </data>
+  <data name="Shell.SavingImportedPages" xml:space="preserve">
+    <value>正在儲存匯入的頁面…</value>
+  </data>
+  <data name="Shell.SavingPracticeQuestion" xml:space="preserve">
+    <value>正在儲存題目…</value>
+  </data>
+  <data name="Shell.SearchContentsMenu" xml:space="preserve">
+    <value>搜尋內容…</value>
+  </data>
+  <data name="Shell.SearchNotebooks" xml:space="preserve">
+    <value>搜尋筆記本</value>
+  </data>
+  <data name="Shell.SearchTitleCategory" xml:space="preserve">
+    <value>依標題或分類搜尋</value>
+  </data>
+  <data name="Shell.SectionContextHint" xml:space="preserve">
+    <value>按滑鼠右鍵開啟分區操作 · 鍵盤快捷鍵 Shift+F10</value>
+  </data>
+  <data name="Shell.SectionNameLabel" xml:space="preserve">
+    <value>主題或分區名稱</value>
+  </data>
+  <data name="Shell.SectionOptions" xml:space="preserve">
+    <value>分區選項</value>
+  </data>
+  <data name="Shell.SectionOptionsHint" xml:space="preserve">
+    <value>分區選項 · 也可在分區上按滑鼠右鍵</value>
+  </data>
+  <data name="Shell.SectionsHeading" xml:space="preserve">
+    <value>分區</value>
+  </data>
+  <data name="Shell.Select" xml:space="preserve">
+    <value>選取</value>
+  </data>
+  <data name="Shell.SelectAll" xml:space="preserve">
+    <value>全選</value>
+  </data>
+  <data name="Shell.SelectHint" xml:space="preserve">
+    <value>移動文字與圖片，或調整大小（V）</value>
+  </data>
+  <data name="Shell.SelectPracticeQuestion" xml:space="preserve">
+    <value>選擇要練習的題目</value>
+  </data>
+  <data name="Shell.SelectionCopied" xml:space="preserve">
+    <value>選取內容已複製 · 按 Ctrl+V 貼到另一頁</value>
+  </data>
+  <data name="Shell.SelectionCut" xml:space="preserve">
+    <value>選取內容已剪下 · 按 Ctrl+V 貼到另一頁</value>
+  </data>
+  <data name="Shell.SelectionPasted" xml:space="preserve">
+    <value>選取內容已貼上</value>
+  </data>
+  <data name="Shell.SettingsWarning" xml:space="preserve">
+    <value>! 設定</value>
+  </data>
+  <data name="Shell.ShowOutputFolderPrompt" xml:space="preserve">
+    <value>檔案已備妥。要在資料夾中顯示嗎？</value>
+  </data>
+  <data name="Shell.SidebarToggle" xml:space="preserve">
+    <value>切換側邊欄</value>
+  </data>
+  <data name="Shell.SidebarToggleHint" xml:space="preserve">
+    <value>顯示或隱藏側邊欄（F9）</value>
+  </data>
+  <data name="Shell.SinglePage" xml:space="preserve">
+    <value>單頁</value>
+  </data>
+  <data name="Shell.SinglePageCount" xml:space="preserve">
+    <value>{0} 頁</value>
+  </data>
+  <data name="Shell.SortFilter" xml:space="preserve">
+    <value>排序與篩選</value>
+  </data>
+  <data name="Shell.SortFilterLibraryMenu" xml:space="preserve">
+    <value>排序與篩選筆記庫…</value>
+  </data>
+  <data name="Shell.StrokeEraser" xml:space="preserve">
+    <value>整筆橡皮擦</value>
+  </data>
+  <data name="Shell.StrokeEraserDetail" xml:space="preserve">
+    <value>碰觸筆畫的任一部分，即可擦除整個筆畫。</value>
+  </data>
+  <data name="Shell.StrokeEraserDetailHint" xml:space="preserve">
+    <value>碰觸筆畫的任一部分，即刪除整個筆畫。</value>
+  </data>
+  <data name="Shell.StudyQuestionStatus" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="Shell.StudyReviewMenu" xml:space="preserve">
+    <value>學習與複習</value>
+  </data>
+  <data name="Shell.Tagline" xml:space="preserve">
+    <value>自在書寫，筆記由您掌握。</value>
+  </data>
+  <data name="Shell.TextAlignment" xml:space="preserve">
+    <value>文字對齊方式</value>
+  </data>
+  <data name="Shell.TextAlignmentHint" xml:space="preserve">
+    <value>文字對齊方式</value>
+  </data>
+  <data name="Shell.TextAlreadyFits" xml:space="preserve">
+    <value>此文字已完整顯示於頁面內。</value>
+  </data>
+  <data name="Shell.TextBox" xml:space="preserve">
+    <value>文字方塊</value>
+  </data>
+  <data name="Shell.TextColor" xml:space="preserve">
+    <value>文字顏色</value>
+  </data>
+  <data name="Shell.TextColorHint" xml:space="preserve">
+    <value>文字顏色</value>
+  </data>
+  <data name="Shell.TextContinued" xml:space="preserve">
+    <value>文字已在新頁面接續 · 復原可還原原始內容</value>
+  </data>
+  <data name="Shell.TextFont" xml:space="preserve">
+    <value>文字字型</value>
+  </data>
+  <data name="Shell.TextSize" xml:space="preserve">
+    <value>文字大小</value>
+  </data>
+  <data name="Shell.TextSizeHint" xml:space="preserve">
+    <value>字型大小（6–96 點）</value>
+  </data>
+  <data name="Shell.ThumbnailRefreshFailed" xml:space="preserve">
+    <value>無法更新頁面預覽：{0}</value>
+  </data>
+  <data name="Shell.TogglePin" xml:space="preserve">
+    <value>釘選／取消釘選</value>
+  </data>
+  <data name="Shell.ToolStatusDefault" xml:space="preserve">
+    <value>用筆書寫 · 單指平移 · 雙指縮放</value>
+  </data>
+  <data name="Shell.TwoPages" xml:space="preserve">
+    <value>雙頁</value>
+  </data>
+  <data name="Shell.Type" xml:space="preserve">
+    <value>打字</value>
+  </data>
+  <data name="Shell.TypeHint" xml:space="preserve">
+    <value>在頁面上自由打字（T）；橫線紙會對齊文字行</value>
+  </data>
+  <data name="Shell.TypingHint" xml:space="preserve">
+    <value>按一下任意位置即可自由打字。橫線紙會將文字對齊格線。按 Ctrl+Enter 返回筆工具。</value>
+  </data>
+  <data name="Shell.TypingHintInitial" xml:space="preserve">
+    <value>按一下任意位置即可自由打字。橫線紙會對齊文字行。按 Ctrl+Enter 返回筆工具。</value>
+  </data>
+  <data name="Shell.TypingOverflowHint" xml:space="preserve">
+    <value>文字超出此頁。在新頁面接續文字，才能讓所有文字在匯出的 PDF 中完整顯示。</value>
+  </data>
+  <data name="Shell.Undo" xml:space="preserve">
+    <value>復原</value>
+  </data>
+  <data name="Shell.UndoHint" xml:space="preserve">
+    <value>復原（Ctrl+Z）</value>
+  </data>
+  <data name="Shell.UndoTransfer" xml:space="preserve">
+    <value>復原上次頁面轉移</value>
+  </data>
+  <data name="Shell.UndoingTransfer" xml:space="preserve">
+    <value>正在復原頁面轉移…</value>
+  </data>
+  <data name="Shell.UpdateCheckFailed" xml:space="preserve">
+    <value>無法向 GitHub 檢查更新。{0}</value>
+  </data>
+  <data name="Shell.UpdateDownloadFailed" xml:space="preserve">
+    <value>無法下載更新。{0}</value>
+  </data>
+  <data name="Shell.UpdateDownloadTimeout" xml:space="preserve">
+    <value>更新下載逾時。請在網路連線穩定時再試一次。</value>
+  </data>
+  <data name="Shell.UpdateWaitForInput" xml:space="preserve">
+    <value>請先完成目前的操作或輸入，再重試更新。</value>
+  </data>
+  <data name="Shell.UpdatesDisabled" xml:space="preserve">
+    <value>請從一般捷徑開啟 Penroam 以檢查更新。隔離的測試筆記庫不會執行更新程式。</value>
+  </data>
+  <data name="Shell.UpdatingAppearance" xml:space="preserve">
+    <value>正在更新筆記本外觀…</value>
+  </data>
+  <data name="Shell.UpdatingPinnedNotebooks" xml:space="preserve">
+    <value>正在更新釘選的筆記本…</value>
+  </data>
+  <data name="Shell.ValidateBackup" xml:space="preserve">
+    <value>驗證備份</value>
+  </data>
+  <data name="Shell.VisualSearchMenu" xml:space="preserve">
+    <value>依外觀尋找…</value>
+  </data>
+  <data name="Shell.White" xml:space="preserve">
+    <value>白色</value>
+  </data>
+  <data name="Shell.WindowTitle" xml:space="preserve">
+    <value>Penroam · 手寫筆記</value>
+  </data>
+  <data name="Shell.Workspace" xml:space="preserve">
+    <value>工作區</value>
+  </data>
+  <data name="Shell.WorkspaceSettingsMenu" xml:space="preserve">
+    <value>工作區設定…</value>
+  </data>
+  <data name="Shell.WritingBackupNotebooks" xml:space="preserve">
+    <value>正在寫入 {0} 本筆記本及其附件…</value>
+  </data>
+  <data name="Shell.WritingReadOnlySessionWarning" xml:space="preserve">
+    <value>書寫設定為唯讀。工具變更只會套用於此工作階段。解決設定檔問題後，請重新啟動。</value>
+  </data>
+  <data name="Shell.WritingSettings" xml:space="preserve">
+    <value>書寫設定</value>
+  </data>
+  <data name="Shell.WritingSettingsProtected" xml:space="preserve">
+    <value>無法覆寫書寫設定檔。</value>
+  </data>
+  <data name="Shell.WritingSettingsSaveFailed" xml:space="preserve">
+    <value>無法儲存書寫設定。{0}</value>
+  </data>
+  <data name="Shell.WritingSettingsSaved" xml:space="preserve">
+    <value>書寫設定已儲存。</value>
+  </data>
+  <data name="Shell.WritingWarningSessionSuffix" xml:space="preserve">
+    <value>{0} 工具變更只會套用於此工作階段。解決設定檔問題後，請重新啟動。</value>
+  </data>
+  <data name="Shell.Yellow" xml:space="preserve">
+    <value>黃色</value>
+  </data>
+  <data name="Shell.YourNotebooks" xml:space="preserve">
+    <value>您的筆記本</value>
+  </data>
+  <data name="Shell.ZoomIn" xml:space="preserve">
+    <value>放大</value>
+  </data>
+  <data name="Shell.ZoomOptions" xml:space="preserve">
+    <value>縮放選項</value>
+  </data>
+  <data name="Shell.ZoomOptionsHint" xml:space="preserve">
+    <value>縮放與頁面配置</value>
+  </data>
+  <data name="Shell.ZoomOut" xml:space="preserve">
+    <value>縮小</value>
+  </data>
+  <data name="Features.Command.new-notebook.Name" xml:space="preserve">
+    <value>新增筆記本…</value>
+  </data>
+  <data name="Features.Command.new-notebook.Detail" xml:space="preserve">
+    <value>選擇筆記本名稱、分類及七種紙張範本之一。</value>
+  </data>
+  <data name="Features.Command.open-notebooks.Name" xml:space="preserve">
+    <value>我的筆記本</value>
+  </data>
+  <data name="Features.Command.open-notebooks.Detail" xml:space="preserve">
+    <value>儲存工作並開啟筆記庫。按封面或在側邊欄選取筆記本。</value>
+  </data>
+  <data name="Features.Command.continue-notebook.Name" xml:space="preserve">
+    <value>繼續上次的筆記本</value>
+  </data>
+  <data name="Features.Command.continue-notebook.Detail" xml:space="preserve">
+    <value>回到此裝置儲存的頁面、閱讀位置及縮放比例。</value>
+  </data>
+  <data name="Features.Command.quick-note.Name" xml:space="preserve">
+    <value>快速筆記</value>
+  </data>
+  <data name="Features.Command.quick-note.Detail" xml:space="preserve">
+    <value>在收件匣分類的快速筆記中建立橫線頁面，立即用筆書寫。</value>
+  </data>
+  <data name="Features.Command.rename-notebook.Name" xml:space="preserve">
+    <value>重新命名與分類…</value>
+  </data>
+  <data name="Features.Command.rename-notebook.Detail" xml:space="preserve">
+    <value>修改目前筆記本的標題及所屬分類。</value>
+  </data>
+  <data name="Features.Command.pin-notebook.Name" xml:space="preserve">
+    <value>釘選／取消釘選筆記本</value>
+  </data>
+  <data name="Features.Command.pin-notebook.Detail" xml:space="preserve">
+    <value>將筆記本置於清單頂部。首頁也可使用「筆記本操作」。</value>
+  </data>
+  <data name="Features.Command.cover-color.Name" xml:space="preserve">
+    <value>選擇封面顏色…</value>
+  </data>
+  <data name="Features.Command.cover-color.Detail" xml:space="preserve">
+    <value>在筆記本外觀中選擇封面顏色及釘選狀態，也可從各卡片的「筆記本操作」開啟。</value>
+  </data>
+  <data name="Features.Command.delete-notebook.Name" xml:space="preserve">
+    <value>刪除筆記本…</value>
+  </data>
+  <data name="Features.Command.delete-notebook.Detail" xml:space="preserve">
+    <value>確認刪除目前筆記本。完整復原副本最多保留 30 天。</value>
+  </data>
+  <data name="Features.Command.sort-library.Name" xml:space="preserve">
+    <value>排序與篩選筆記庫…</value>
+  </data>
+  <data name="Features.Command.sort-library.Detail" xml:space="preserve">
+    <value>依分類篩選或按名稱排序；釘選的筆記本仍會排在前面。</value>
+  </data>
+  <data name="Features.Command.find-notebook.Name" xml:space="preserve">
+    <value>尋找筆記本</value>
+  </data>
+  <data name="Features.Command.find-notebook.Detail" xml:space="preserve">
+    <value>篩選筆記本標題及分類，不搜尋頁面內容。在首頁按 Ctrl+F 可聚焦篩選欄；清除搜尋也會清除分類篩選。</value>
+  </data>
+  <data name="Features.Command.clear-library-search.Name" xml:space="preserve">
+    <value>清除筆記本搜尋</value>
+  </data>
+  <data name="Features.Command.clear-library-search.Detail" xml:space="preserve">
+    <value>清除筆記本標題及分類篩選。</value>
+  </data>
+  <data name="Features.Command.add-page.Name" xml:space="preserve">
+    <value>新增頁面…</value>
+  </data>
+  <data name="Features.Command.add-page.Detail" xml:space="preserve">
+    <value>選擇空白、橫線、方格、點陣、康乃爾、座標或會議紙張，在目前頁面後插入 A4 頁面。</value>
+  </data>
+  <data name="Features.Command.page-actions.Name" xml:space="preserve">
+    <value>頁面操作</value>
+  </data>
+  <data name="Features.Command.page-actions.Detail" xml:space="preserve">
+    <value>重新命名、加書籤、複製、排序、移動或刪除選取的頁面。縮圖旁也提供相同操作。</value>
+  </data>
+  <data name="Features.Command.rename-page.Name" xml:space="preserve">
+    <value>頁面標題與書籤…</value>
+  </data>
+  <data name="Features.Command.rename-page.Detail" xml:space="preserve">
+    <value>設定頁面標題及書籤，不會更改頁面內容。</value>
+  </data>
+  <data name="Features.Command.bookmark-page.Name" xml:space="preserve">
+    <value>加入／移除書籤</value>
+  </data>
+  <data name="Features.Command.bookmark-page.Detail" xml:space="preserve">
+    <value>標記此頁以便日後檢閱。「搜尋 → 書籤」可列出整個筆記庫的書籤頁。</value>
+  </data>
+  <data name="Features.Command.duplicate-page.Name" xml:space="preserve">
+    <value>複製頁面</value>
+  </data>
+  <data name="Features.Command.duplicate-page.Detail" xml:space="preserve">
+    <value>複製此頁及其可編輯內容，放在原頁後方。</value>
+  </data>
+  <data name="Features.Command.move-page-up.Name" xml:space="preserve">
+    <value>上移頁面</value>
+  </data>
+  <data name="Features.Command.move-page-up.Detail" xml:space="preserve">
+    <value>將此頁在分區內向前移動。</value>
+  </data>
+  <data name="Features.Command.move-page-down.Name" xml:space="preserve">
+    <value>下移頁面</value>
+  </data>
+  <data name="Features.Command.move-page-down.Detail" xml:space="preserve">
+    <value>將此頁在分區內向後移動。</value>
+  </data>
+  <data name="Features.Command.move-page-section.Name" xml:space="preserve">
+    <value>移動頁面至分區…</value>
+  </data>
+  <data name="Features.Command.move-page-section.Detail" xml:space="preserve">
+    <value>選擇另一個現有分區；編輯器會跟隨移動後的頁面。</value>
+  </data>
+  <data name="Features.Command.delete-page.Name" xml:space="preserve">
+    <value>刪除頁面</value>
+  </data>
+  <data name="Features.Command.delete-page.Detail" xml:space="preserve">
+    <value>刪除此頁。筆記本開啟期間可復原；最近刪除也會保留筆記本副本。</value>
+  </data>
+  <data name="Features.Command.paper-style.Name" xml:space="preserve">
+    <value>紙張樣式…</value>
+  </data>
+  <data name="Features.Command.paper-style.Detail" xml:space="preserve">
+    <value>更改一般頁面的紙張範本並保留筆記。PDF 頁面會保留原有背景。</value>
+  </data>
+  <data name="Features.Command.extend-page.Name" xml:space="preserve">
+    <value>延伸頁面…</value>
+  </data>
+  <data name="Features.Command.extend-page.Detail" xml:space="preserve">
+    <value>在任意邊緣或角落加入空白，包括 PDF 周圍，不縮小現有內容。拖曳預覽或輸入毫米邊距。</value>
+  </data>
+  <data name="Features.Command.add-section.Name" xml:space="preserve">
+    <value>新增分區…</value>
+  </data>
+  <data name="Features.Command.add-section.Detail" xml:space="preserve">
+    <value>命名主題並建立第一頁紙張。</value>
+  </data>
+  <data name="Features.Command.section-actions.Name" xml:space="preserve">
+    <value>分區操作</value>
+  </data>
+  <data name="Features.Command.section-actions.Detail" xml:space="preserve">
+    <value>重新命名、排序或刪除目前分區。至少須保留一個分區。</value>
+  </data>
+  <data name="Features.Command.rename-section.Name" xml:space="preserve">
+    <value>重新命名分區…</value>
+  </data>
+  <data name="Features.Command.rename-section.Detail" xml:space="preserve">
+    <value>更改此分區的名稱。</value>
+  </data>
+  <data name="Features.Command.move-section-up.Name" xml:space="preserve">
+    <value>上移分區</value>
+  </data>
+  <data name="Features.Command.move-section-up.Detail" xml:space="preserve">
+    <value>將此主題在筆記本內向前移動。</value>
+  </data>
+  <data name="Features.Command.move-section-down.Name" xml:space="preserve">
+    <value>下移分區</value>
+  </data>
+  <data name="Features.Command.move-section-down.Detail" xml:space="preserve">
+    <value>將此主題在筆記本內向後移動。</value>
+  </data>
+  <data name="Features.Command.delete-section.Name" xml:space="preserve">
+    <value>刪除分區…</value>
+  </data>
+  <data name="Features.Command.delete-section.Detail" xml:space="preserve">
+    <value>確認刪除此分區及其頁面。仍可復原，並會保留復原副本。</value>
+  </data>
+  <data name="Features.Command.manage-pages.Name" xml:space="preserve">
+    <value>管理頁面…</value>
+  </data>
+  <data name="Features.Command.manage-pages.Detail" xml:space="preserve">
+    <value>勾選頁面或用 Ctrl／Shift 點選。拖曳、排序、複製、刪除或移動頁面；按「套用變更」提交整批操作。</value>
+  </data>
+  <data name="Features.Command.transfer-pages.Name" xml:space="preserve">
+    <value>移動／複製至其他筆記本…</value>
+  </data>
+  <data name="Features.Command.transfer-pages.Detail" xml:space="preserve">
+    <value>在管理頁面中選取頁面，再選「移動／複製至筆記本」。選擇筆記本和分區；勾選保留副本即可複製而非移動。</value>
+  </data>
+  <data name="Features.Command.undo-transfer.Name" xml:space="preserve">
+    <value>復原上次頁面轉移</value>
+  </data>
+  <data name="Features.Command.undo-transfer.Detail" xml:space="preserve">
+    <value>僅在來源和目標筆記本自轉移後均未改動時，復原本次工作階段的最後一次轉移。</value>
+  </data>
+  <data name="Features.Command.import-document.Name" xml:space="preserve">
+    <value>匯入文件…</value>
+  </data>
+  <data name="Features.Command.import-document.Detail" xml:space="preserve">
+    <value>預覽 PDF、DOCX、PPTX、PPSX、ODT 或 ODP 頁面，選擇範圍及目標分區或筆記本。Office 格式需要本機轉換器。</value>
+  </data>
+  <data name="Features.Command.import-folder.Name" xml:space="preserve">
+    <value>匯入資料夾…</value>
+  </data>
+  <data name="Features.Command.import-folder.Detail" xml:space="preserve">
+    <value>從我的筆記本匯入資料夾第一層的 PDF／PPTX，建立新筆記本，每個檔案一個分區。此功能不會同步資料夾。</value>
+  </data>
+  <data name="Features.Command.insert-image.Name" xml:space="preserve">
+    <value>插入圖片…</value>
+  </data>
+  <data name="Features.Command.insert-image.Detail" xml:space="preserve">
+    <value>在目前頁面插入 PNG 或 JPEG。使用選取工具顯示移動及縮放控制點；原始圖片資料會保留。</value>
+  </data>
+  <data name="Features.Command.export-pdf.Name" xml:space="preserve">
+    <value>匯出 PDF…</value>
+  </data>
+  <data name="Features.Command.export-pdf.Detail" xml:space="preserve">
+    <value>選擇目前頁面、分區、整本筆記本或頁碼範圍，再選原始大小或實際大小 A4 分頁。匯出不能取代可編輯的備份。</value>
+  </data>
+  <data name="Features.Command.a4-export.Name" xml:space="preserve">
+    <value>實際大小 A4 分頁…</value>
+  </data>
+  <data name="Features.Command.a4-export.Detail" xml:space="preserve">
+    <value>選取匯出頁面後選擇實際大小 A4 分頁。設定自動／直向／橫向及 0–30 毫米重疊，儲存前可預覽分頁格線。</value>
+  </data>
+  <data name="Features.Command.export-overflow.Name" xml:space="preserve">
+    <value>匯出前檢查溢出文字</value>
+  </data>
+  <data name="Features.Command.export-overflow.Detail" xml:space="preserve">
+    <value>匯出會檢查所選頁面是否有文字溢出。可前往選取文字繼續編輯，或明確選擇只匯出可見文字。儲存後可用 PDF 閱讀器列印。</value>
+  </data>
+  <data name="Features.Command.export-completion.Name" xml:space="preserve">
+    <value>開啟匯出檔案</value>
+  </data>
+  <data name="Features.Command.export-completion.Detail" xml:space="preserve">
+    <value>PDF 匯出成功後可開啟 PDF、顯示所在資料夾或完成。原 PDF 文字會保留；新增文字會匯出為向量輪廓，無法搜尋。</value>
+  </data>
+  <data name="Features.Command.search-content.Name" xml:space="preserve">
+    <value>搜尋內容…</value>
+  </data>
+  <data name="Features.Command.search-content.Detail" xml:space="preserve">
+    <value>搜尋筆記庫的筆記本、分類、分區、頁面名稱、輸入文字和可擷取的原 PDF 文字。在編輯器非文字輸入欄也可按 Ctrl+F。不支援手寫辨識或掃描 OCR。</value>
+  </data>
+  <data name="Features.Command.search-appearance.Name" xml:space="preserve">
+    <value>依外觀尋找…</value>
+  </data>
+  <data name="Features.Command.search-appearance.Detail" xml:space="preserve">
+    <value>依色系、九宮格位置、分區及標記類型搜尋此筆記本的墨跡或輸入文字。不會分析圖片或 PDF 內的像素。</value>
+  </data>
+  <data name="Features.Command.bookmarks.Name" xml:space="preserve">
+    <value>書籤…</value>
+  </data>
+  <data name="Features.Command.bookmarks.Detail" xml:space="preserve">
+    <value>開啟整個筆記庫的書籤頁清單。內容搜尋也可用僅顯示書籤頁的篩選條件縮小範圍。</value>
+  </data>
+  <data name="Features.Command.go-to-page.Name" xml:space="preserve">
+    <value>前往頁面…</value>
+  </data>
+  <data name="Features.Command.go-to-page.Detail" xml:space="preserve">
+    <value>輸入目前分區的頁碼，或按頁碼計數器。</value>
+  </data>
+  <data name="Features.Command.back-to-page.Name" xml:space="preserve">
+    <value>返回先前頁面</value>
+  </data>
+  <data name="Features.Command.back-to-page.Detail" xml:space="preserve">
+    <value>返回已記錄的搜尋、問題、練習或快速筆記位置。這是本次工作階段記錄，不包含每次捲動或點選縮圖。</value>
+  </data>
+  <data name="Features.Command.mark-question.Name" xml:space="preserve">
+    <value>標記問題…</value>
+  </data>
+  <data name="Features.Command.mark-question.Detail" xml:space="preserve">
+    <value>使用選取內容或選擇來源區域，記下問題、說明和下次嘗試，並手動設定需要協助、已理解、再試一次或已解決。</value>
+  </data>
+  <data name="Features.Command.question-inbox.Name" xml:space="preserve">
+    <value>問題收件匣…</value>
+  </data>
+  <data name="Features.Command.question-inbox.Detail" xml:space="preserve">
+    <value>搜尋、編輯或移除此筆記本的問題。可包含已解決項目；開啟來源會返回並短暫框出來源區域。</value>
+  </data>
+  <data name="Features.Command.resume-hint.Name" xml:space="preserve">
+    <value>留下接續提示…</value>
+  </data>
+  <data name="Features.Command.resume-hint.Detail" xml:space="preserve">
+    <value>在此頁或選取區域儲存一則下一步提示。可編輯或清除現有提示；已儲存提示會出現在繼續工作列。</value>
+  </data>
+  <data name="Features.Command.resume-thinking.Name" xml:space="preserve">
+    <value>接續我的思路…</value>
+  </data>
+  <data name="Features.Command.resume-thinking.Detail" xml:space="preserve">
+    <value>搜尋、編輯或移除此筆記本儲存的下一步，並開啟來源頁面。這些提示不包含在一般內容搜尋中。</value>
+  </data>
+  <data name="Features.Command.new-practice.Name" xml:space="preserve">
+    <value>新增練習嘗試…</value>
+  </data>
+  <data name="Features.Command.new-practice.Detail" xml:space="preserve">
+    <value>擷取任意頁面區域作為題目圖片，並建立橫線解答頁。不必先標記問題。從練習頁可重用已儲存的快照再次練習。</value>
+  </data>
+  <data name="Features.Command.practice-attempts.Name" xml:space="preserve">
+    <value>練習記錄…</value>
+  </data>
+  <data name="Features.Command.practice-attempts.Detail" xml:space="preserve">
+    <value>檢閱先前解答、記錄錯誤與下次方法、標記已檢閱、開啟原頁或再次嘗試。「儲存並開啟」會儲存反思；關閉則取消。</value>
+  </data>
+  <data name="Features.Command.restore-region.Name" xml:space="preserve">
+    <value>還原部分頁面…</value>
+  </data>
+  <data name="Features.Command.restore-region.Detail" xml:space="preserve">
+    <value>選擇相容的較早頁面版本及區域，還原其中完整墨跡、文字及圖片，保留其他內容。歷史僅保留至關閉筆記本。</value>
+  </data>
+  <data name="Features.Command.single-page.Name" xml:space="preserve">
+    <value>單頁</value>
+  </data>
+  <data name="Features.Command.single-page.Detail" xml:space="preserve">
+    <value>每列顯示一頁可編輯頁面，不更改頁面內容或匯出順序。</value>
+  </data>
+  <data name="Features.Command.two-pages.Name" xml:space="preserve">
+    <value>雙頁</value>
+  </data>
+  <data name="Features.Command.two-pages.Detail" xml:space="preserve">
+    <value>在此分區並排編輯 1–2、3–4 等相鄰頁面。兩頁均可編輯；最後的單數頁獨立顯示。</value>
+  </data>
+  <data name="Features.Command.fit-width.Name" xml:space="preserve">
+    <value>符合寬度</value>
+  </data>
+  <data name="Features.Command.fit-width.Detail" xml:space="preserve">
+    <value>讓頁面或跨頁符合書寫區寬度，視窗或側邊欄改變時持續調整。</value>
+  </data>
+  <data name="Features.Command.actual-size.Name" xml:space="preserve">
+    <value>實際大小 · 100%</value>
+  </data>
+  <data name="Features.Command.actual-size.Detail" xml:space="preserve">
+    <value>返回 100% 比例。只改變檢視，不改變儲存的頁面座標。</value>
+  </data>
+  <data name="Features.Command.zoom-in.Name" xml:space="preserve">
+    <value>放大</value>
+  </data>
+  <data name="Features.Command.zoom-in.Detail" xml:space="preserve">
+    <value>放大至最高 400%。也可用 Ctrl 加滑鼠滾輪或雙指縮放。</value>
+  </data>
+  <data name="Features.Command.zoom-out.Name" xml:space="preserve">
+    <value>縮小</value>
+  </data>
+  <data name="Features.Command.zoom-out.Detail" xml:space="preserve">
+    <value>縮小至最低 25%，不會縮小儲存的筆記。</value>
+  </data>
+  <data name="Features.Command.sidebar.Name" xml:space="preserve">
+    <value>顯示／隱藏側邊欄</value>
+  </data>
+  <data name="Features.Command.sidebar.Detail" xml:space="preserve">
+    <value>在書寫區旁顯示目錄及筆記本。</value>
+  </data>
+  <data name="Features.Command.focus-mode.Name" xml:space="preserve">
+    <value>專注模式</value>
+  </data>
+  <data name="Features.Command.focus-mode.Detail" xml:space="preserve">
+    <value>使用全螢幕書寫、精簡工具及所有工具。按 F11 或離開專注模式返回一般工作區。</value>
+  </data>
+  <data name="Features.Command.reference-view.Name" xml:space="preserve">
+    <value>參考檢視</value>
+  </data>
+  <data name="Features.Command.reference-view.Detail" xml:space="preserve">
+    <value>在書寫區旁開啟其他筆記本或頁面的唯讀快照。可獨立選頁、縮放或符合大小；重新整理會載入最新內容，返回書寫會移回焦點，關閉會隱藏面板。</value>
+  </data>
+  <data name="Features.Command.workspace-settings.Name" xml:space="preserve">
+    <value>工作區設定…</value>
+  </data>
+  <data name="Features.Command.workspace-settings.Detail" xml:space="preserve">
+    <value>設定雙指導覽、鎖定縮放、精簡常用筆列及專注工具停駐位置。變更只保存在此裝置。</value>
+  </data>
+  <data name="Features.Command.two-finger-navigation.Name" xml:space="preserve">
+    <value>需要雙指才能移動頁面</value>
+  </data>
+  <data name="Features.Command.two-finger-navigation.Detail" xml:space="preserve">
+    <value>忽略單指拖曳頁面。手指用於導覽，不會畫出墨跡。</value>
+  </data>
+  <data name="Features.Command.zoom-lock.Name" xml:space="preserve">
+    <value>書寫時鎖定縮放</value>
+  </data>
+  <data name="Features.Command.zoom-lock.Detail" xml:space="preserve">
+    <value>鎖定縮放，包括符合頁面、符合寬度及實際大小，直到關閉此設定。</value>
+  </data>
+  <data name="Features.Command.compact-toolbar.Name" xml:space="preserve">
+    <value>顯示／隱藏常用筆列</value>
+  </data>
+  <data name="Features.Command.compact-toolbar.Detail" xml:space="preserve">
+    <value>只隱藏一般工具列的常用筆。仍可用數字鍵或管理筆選取常用筆。</value>
+  </data>
+  <data name="Features.Command.focus-docking.Name" xml:space="preserve">
+    <value>專注工具停駐左側／右側</value>
+  </data>
+  <data name="Features.Command.focus-docking.Detail" xml:space="preserve">
+    <value>選擇專注模式浮動工具列的位置；書寫及參考內容會避開工具列。</value>
+  </data>
+  <data name="Features.Command.pen.Name" xml:space="preserve">
+    <value>筆</value>
+  </data>
+  <data name="Features.Command.pen.Detail" xml:space="preserve">
+    <value>使用支援壓力感應的觸控筆書寫，或用滑鼠繪畫。</value>
+  </data>
+  <data name="Features.Command.highlighter.Name" xml:space="preserve">
+    <value>螢光筆</value>
+  </data>
+  <data name="Features.Command.highlighter.Detail" xml:space="preserve">
+    <value>使用原生 50% 透明度標記。筆及螢光筆會分別記住目前顏色。</value>
+  </data>
+  <data name="Features.Command.eraser.Name" xml:space="preserve">
+    <value>橡皮擦</value>
+  </data>
+  <data name="Features.Command.eraser.Detail" xml:space="preserve">
+    <value>使用上次的像素／筆劃橡皮擦模式。在橡皮擦設定中選擇模式、大小或僅擦除螢光筆。</value>
+  </data>
+  <data name="Features.Command.lasso.Name" xml:space="preserve">
+    <value>套索</value>
+  </data>
+  <data name="Features.Command.lasso.Detail" xml:space="preserve">
+    <value>圈選墨跡、文字和圖片。拖曳移動或用邊緣控制點縮放；移動時按 Esc 取消。</value>
+  </data>
+  <data name="Features.Command.type.Name" xml:space="preserve">
+    <value>輸入文字</value>
+  </data>
+  <data name="Features.Command.type.Detail" xml:space="preserve">
+    <value>開始或繼續自由輸入。按空白紙面新增文字項目；橫線紙會對齊文字行。按 Ctrl+Enter 結束輸入。</value>
+  </data>
+  <data name="Features.Command.select.Name" xml:space="preserve">
+    <value>選取</value>
+  </data>
+  <data name="Features.Command.select.Detail" xml:space="preserve">
+    <value>選取文字或圖片後，拖曳移動／縮放控制點。自由輸入時隱藏控制點，啟用選取工具後再顯示。</value>
+  </data>
+  <data name="Features.Command.pen-settings.Name" xml:space="preserve">
+    <value>筆設定…</value>
+  </data>
+  <data name="Features.Command.pen-settings.Detail" xml:space="preserve">
+    <value>選擇墨色及粗細、儲存預設筆或啟用畫線停留拉直。也可修改所選墨跡的顏色及粗細。</value>
+  </data>
+  <data name="Features.Command.ink-color.Name" xml:space="preserve">
+    <value>墨色…</value>
+  </data>
+  <data name="Features.Command.ink-color.Detail" xml:space="preserve">
+    <value>選擇色票或更多顏色。選色器提供色相、飽和度／亮度、新舊顏色預覽、套用及取消。</value>
+  </data>
+  <data name="Features.Command.more-colors.Name" xml:space="preserve">
+    <value>更多墨色…</value>
+  </data>
+  <data name="Features.Command.more-colors.Detail" xml:space="preserve">
+    <value>為目前的筆或所選墨跡／文字開啟完整選色器。不提供十六進位輸入或滴管。</value>
+  </data>
+  <data name="Features.Command.ink-width.Name" xml:space="preserve">
+    <value>墨跡粗細…</value>
+  </data>
+  <data name="Features.Command.ink-width.Detail" xml:space="preserve">
+    <value>從 21 級粗細中選擇並即時預覽。拖曳滑桿結束後，所選墨跡的變更可一次復原。</value>
+  </data>
+  <data name="Features.Command.draw-hold.Name" xml:space="preserve">
+    <value>畫線停留拉直</value>
+  </data>
+  <data name="Features.Command.draw-hold.Detail" xml:space="preserve">
+    <value>畫大致直線後在端點停留約 0.65 秒即可拉直，再拖曳調整。適用於筆和螢光筆，不是一般形狀辨識。</value>
+  </data>
+  <data name="Features.Command.save-pen-preset.Name" xml:space="preserve">
+    <value>將目前設定儲存為預設筆…</value>
+  </data>
+  <data name="Features.Command.save-pen-preset.Detail" xml:space="preserve">
+    <value>命名並儲存目前的筆／螢光筆設定。最多可儲存 40 支預設筆。</value>
+  </data>
+  <data name="Features.Command.manage-pens.Name" xml:space="preserve">
+    <value>管理筆…</value>
+  </data>
+  <data name="Features.Command.manage-pens.Detail" xml:space="preserve">
+    <value>重新命名、複製、刪除或排序預設筆，設定工具、顏色、粗細、不透明度、壓力、平滑及常用狀態。儲存並使用會套用選取的筆，包括隱藏的筆。</value>
+  </data>
+  <data name="Features.Command.pen-opacity.Name" xml:space="preserve">
+    <value>筆不透明度…</value>
+  </data>
+  <data name="Features.Command.pen-opacity.Detail" xml:space="preserve">
+    <value>為筆預設設定 10–100% 不透明度。螢光筆固定使用原生 50% 透明度。</value>
+  </data>
+  <data name="Features.Command.pressure.Name" xml:space="preserve">
+    <value>壓力感應…</value>
+  </data>
+  <data name="Features.Command.pressure.Detail" xml:space="preserve">
+    <value>啟用或關閉預設筆的壓力感應。實際壓力效果需要相容的觸控筆硬體。</value>
+  </data>
+  <data name="Features.Command.smoothing.Name" xml:space="preserve">
+    <value>筆劃平滑…</value>
+  </data>
+  <data name="Features.Command.smoothing.Detail" xml:space="preserve">
+    <value>啟用或關閉預設筆的筆劃平滑。</value>
+  </data>
+  <data name="Features.Command.favorite-pens.Name" xml:space="preserve">
+    <value>常用筆工具列…</value>
+  </data>
+  <data name="Features.Command.favorite-pens.Detail" xml:space="preserve">
+    <value>選擇顯示於常用工具列，用箭頭排序或拖曳可見的常用筆。前九支對應數字快捷鍵；專注模式顯示前三支。</value>
+  </data>
+  <data name="Features.Command.eraser-settings.Name" xml:space="preserve">
+    <value>橡皮擦設定…</value>
+  </data>
+  <data name="Features.Command.eraser-settings.Detail" xml:space="preserve">
+    <value>選擇像素或筆劃橡皮擦、調整獨立大小，或用僅擦除螢光筆保護普通筆劃。</value>
+  </data>
+  <data name="Features.Command.pixel-eraser.Name" xml:space="preserve">
+    <value>像素橡皮擦</value>
+  </data>
+  <data name="Features.Command.pixel-eraser.Detail" xml:space="preserve">
+    <value>只擦除接觸的墨跡部分，其餘片段仍可編輯。不會擦除文字、圖片或背景。</value>
+  </data>
+  <data name="Features.Command.stroke-eraser.Name" xml:space="preserve">
+    <value>筆劃橡皮擦</value>
+  </data>
+  <data name="Features.Command.stroke-eraser.Detail" xml:space="preserve">
+    <value>碰觸墨跡的一部分即可移除整條筆劃。</value>
+  </data>
+  <data name="Features.Command.eraser-size.Name" xml:space="preserve">
+    <value>橡皮擦大小…</value>
+  </data>
+  <data name="Features.Command.eraser-size.Detail" xml:space="preserve">
+    <value>將橡皮擦範圍設為 12–120 頁面 DIP，獨立於筆粗細。</value>
+  </data>
+  <data name="Features.Command.text-formatting.Name" xml:space="preserve">
+    <value>文字格式…</value>
+  </data>
+  <data name="Features.Command.text-formatting.Detail" xml:space="preserve">
+    <value>顯示字型、大小、粗體、斜體、顏色、對齊、清單及文字接續。格式套用至整個文字項目，不限於選取的字詞。瀏覽這些工具不會新增文字。</value>
+  </data>
+  <data name="Features.Command.text-font.Name" xml:space="preserve">
+    <value>文字字型…</value>
+  </data>
+  <data name="Features.Command.text-font.Detail" xml:space="preserve">
+    <value>為整個文字項目選擇 Segoe UI、Arial、Calibri、微軟正黑體、Consolas 或 Times New Roman。</value>
+  </data>
+  <data name="Features.Command.text-size.Name" xml:space="preserve">
+    <value>文字大小…</value>
+  </data>
+  <data name="Features.Command.text-size.Detail" xml:space="preserve">
+    <value>為整個文字項目選擇或輸入 6–96 pt 的大小。</value>
+  </data>
+  <data name="Features.Command.text-bold.Name" xml:space="preserve">
+    <value>粗體文字</value>
+  </data>
+  <data name="Features.Command.text-bold.Detail" xml:space="preserve">
+    <value>切換整個選取文字項目的粗體。輸入時可按 Ctrl+B。</value>
+  </data>
+  <data name="Features.Command.text-italic.Name" xml:space="preserve">
+    <value>斜體文字</value>
+  </data>
+  <data name="Features.Command.text-italic.Detail" xml:space="preserve">
+    <value>切換整個選取文字項目的斜體。輸入時可按 Ctrl+I。</value>
+  </data>
+  <data name="Features.Command.text-color.Name" xml:space="preserve">
+    <value>文字顏色…</value>
+  </data>
+  <data name="Features.Command.text-color.Detail" xml:space="preserve">
+    <value>選擇文字項目的顏色。這是顏色控制項，不是底線格式。</value>
+  </data>
+  <data name="Features.Command.text-alignment.Name" xml:space="preserve">
+    <value>文字對齊…</value>
+  </data>
+  <data name="Features.Command.text-alignment.Detail" xml:space="preserve">
+    <value>將選取文字項目靠左、置中或靠右對齊。</value>
+  </data>
+  <data name="Features.Command.finish-typing.Name" xml:space="preserve">
+    <value>結束輸入</value>
+  </data>
+  <data name="Features.Command.finish-typing.Detail" xml:space="preserve">
+    <value>提交文字編輯並返回筆工具。輸入時原生文字復原及輸入法保留自己的按鍵操作。</value>
+  </data>
+  <data name="Features.Command.selection-actions.Name" xml:space="preserve">
+    <value>選取與剪貼簿</value>
+  </data>
+  <data name="Features.Command.selection-actions.Detail" xml:space="preserve">
+    <value>複製、剪下、貼上、全選、建立副本、刪除或微移可編輯頁面內容。原生文字控制項保留文字剪貼簿操作。</value>
+  </data>
+  <data name="Features.Command.select-all.Name" xml:space="preserve">
+    <value>選取頁面所有內容</value>
+  </data>
+  <data name="Features.Command.select-all.Detail" xml:space="preserve">
+    <value>以套索選取此頁全部墨跡、文字及圖片；PDF 背景不是可選物件。</value>
+  </data>
+  <data name="Features.Command.paste.Name" xml:space="preserve">
+    <value>貼上</value>
+  </data>
+  <data name="Features.Command.paste.Detail" xml:space="preserve">
+    <value>在非原生文字編輯狀態貼上 Penroam 選取內容、舊式墨跡、純文字或螢幕截圖／圖片。</value>
+  </data>
+  <data name="Features.Command.duplicate-selection.Name" xml:space="preserve">
+    <value>複製選取內容為副本</value>
+  </data>
+  <data name="Features.Command.duplicate-selection.Detail" xml:space="preserve">
+    <value>建立所選墨跡、文字或圖片的另一個可編輯副本。</value>
+  </data>
+  <data name="Features.Command.delete-selection.Name" xml:space="preserve">
+    <value>刪除選取內容</value>
+  </data>
+  <data name="Features.Command.delete-selection.Detail" xml:space="preserve">
+    <value>移除所選墨跡、文字或圖片。筆記本復原可還原已完成的變更。</value>
+  </data>
+  <data name="Features.Command.undo.Name" xml:space="preserve">
+    <value>復原</value>
+  </data>
+  <data name="Features.Command.undo.Detail" xml:space="preserve">
+    <value>在筆記本開啟期間復原已完成的編輯。輸入文字時 Ctrl+Z 由原生文字編輯器處理。</value>
+  </data>
+  <data name="Features.Command.redo.Name" xml:space="preserve">
+    <value>重做</value>
+  </data>
+  <data name="Features.Command.redo.Detail" xml:space="preserve">
+    <value>重做已復原的筆記本編輯。新編輯會清除重做記錄。</value>
+  </data>
+  <data name="Features.Command.save-now.Name" xml:space="preserve">
+    <value>立即儲存</value>
+  </data>
+  <data name="Features.Command.save-now.Detail" xml:space="preserve">
+    <value>提交尚未完成的編輯器輸入，並將此筆記本儲存至本機。已完成的編輯也會自動儲存。</value>
+  </data>
+  <data name="Features.Command.retry-save.Name" xml:space="preserve">
+    <value>重試儲存</value>
+  </data>
+  <data name="Features.Command.retry-save.Detail" xml:space="preserve">
+    <value>重試失敗的筆記本及書寫偏好儲存。失敗時待存內容會保留在記憶體中。</value>
+  </data>
+  <data name="Features.Command.backup-notebook.Name" xml:space="preserve">
+    <value>備份此筆記本…</value>
+  </data>
+  <data name="Features.Command.backup-notebook.Detail" xml:space="preserve">
+    <value>將所有分區及可編輯內容（包括待存編輯）儲存為 .moye 備份。</value>
+  </data>
+  <data name="Features.Command.backup-all.Name" xml:space="preserve">
+    <value>備份所有筆記本…</value>
+  </data>
+  <data name="Features.Command.backup-all.Detail" xml:space="preserve">
+    <value>建立筆記庫的可編輯 .moye 備份。備份未加密，也不包含此裝置的書寫／工作區偏好。</value>
+  </data>
+  <data name="Features.Command.restore-backup.Name" xml:space="preserve">
+    <value>還原 .moye 備份…</value>
+  </data>
+  <data name="Features.Command.restore-backup.Detail" xml:space="preserve">
+    <value>驗證備份、選擇筆記本並還原為新副本，不覆寫現有筆記本。</value>
+  </data>
+  <data name="Features.Command.backup-recovery.Name" xml:space="preserve">
+    <value>備份與復原…</value>
+  </data>
+  <data name="Features.Command.backup-recovery.Detail" xml:space="preserve">
+    <value>檢查自動備份狀態、還原備份、復原中斷的草稿或還原最近刪除的筆記本副本。</value>
+  </data>
+  <data name="Features.Command.recover-drafts.Name" xml:space="preserve">
+    <value>復原中斷的草稿…</value>
+  </data>
+  <data name="Features.Command.recover-drafts.Detail" xml:space="preserve">
+    <value>在中斷草稿中將選取快照復原為新副本或捨棄。草稿依賴本機筆記庫資產，只提供盡力復原，不能作為可攜備份。</value>
+  </data>
+  <data name="Features.Command.recently-deleted.Name" xml:space="preserve">
+    <value>最近刪除…</value>
+  </data>
+  <data name="Features.Command.recently-deleted.Detail" xml:space="preserve">
+    <value>還原刪除頁面／分區／筆記本前保留的完整副本，最多保留 30 天；自行移回需要的頁面。永久刪除需要確認。</value>
+  </data>
+  <data name="Features.Command.automatic-backups.Name" xml:space="preserve">
+    <value>自動本機備份…</value>
+  </data>
+  <data name="Features.Command.automatic-backups.Detail" xml:space="preserve">
+    <value>在 Penroam 開啟期間啟用備份、選擇資料夾、設定 1–168 小時間隔，並保留 1–100 份完整備份。這不是 Windows 背景工作。</value>
+  </data>
+  <data name="Features.Command.backup-folder.Name" xml:space="preserve">
+    <value>自動備份資料夾…</value>
+  </data>
+  <data name="Features.Command.backup-folder.Detail" xml:space="preserve">
+    <value>選擇自動備份的儲存位置；其他儲存裝置可提供較佳的磁碟故障保護。</value>
+  </data>
+  <data name="Features.Command.backup-interval.Name" xml:space="preserve">
+    <value>自動備份間隔…</value>
+  </data>
+  <data name="Features.Command.backup-interval.Detail" xml:space="preserve">
+    <value>設定 1–168 小時間隔。忙碌或筆輸入期間會延後備份。</value>
+  </data>
+  <data name="Features.Command.backup-retention.Name" xml:space="preserve">
+    <value>自動備份保留數量…</value>
+  </data>
+  <data name="Features.Command.backup-retention.Detail" xml:space="preserve">
+    <value>保留 1–100 份完成的自動備份。此保留規則不會刪除手動備份。</value>
+  </data>
+  <data name="Features.Command.check-updates.Name" xml:space="preserve">
+    <value>檢查更新…</value>
+  </data>
+  <data name="Features.Command.check-updates.Detail" xml:space="preserve">
+    <value>檢查 GitHub 穩定版本。立即更新會下載並驗證安裝程式，儲存後才安裝；稍後及取消下載可讓您繼續工作。</value>
+  </data>
+  <data name="Features.Command.writing-settings-warning.Name" xml:space="preserve">
+    <value>書寫設定狀態…</value>
+  </data>
+  <data name="Features.Command.writing-settings-warning.Detail" xml:space="preserve">
+    <value>檢視受保護／無法讀取的偏好檔警告，或重試待存設定。不會覆寫較新版本的設定檔。</value>
+  </data>
+  <data name="Features.Command.keyboard-help.Name" xml:space="preserve">
+    <value>鍵盤快捷鍵</value>
+  </data>
+  <data name="Features.Command.keyboard-help.Detail" xml:space="preserve">
+    <value>B／H／E／L／T／V 選擇工具；1–9 選擇常用筆。Ctrl+Shift+F 搜尋內容；Ctrl+G 跳頁；F9 切換側邊欄；F11 切換專注模式。非文字／選取編輯時，方向鍵及 PageUp／PageDown 換頁，Home／End 到分區首尾。Shift+F10 開啟聚焦頁面／分區選單；Ctrl+Shift+P 開啟所有工具。</value>
+  </data>
+  <data name="Features.Command.pan-touch-help.Name" xml:space="preserve">
+    <value>平移、縮放與筆輸入</value>
+  </data>
+  <data name="Features.Command.pan-touch-help.Detail" xml:space="preserve">
+    <value>按住空白鍵並以滑鼠左鍵拖曳可暫時平移。單指慣性捲動，雙指平移及縮放。手指導覽而不繪畫；筆接觸時暫停導覽。相容筆尾橡皮擦會使用所選模式。壓力及防誤觸效果取決於硬體和驅動程式。</value>
+  </data>
+  <data name="Features.Command.typing-help.Name" xml:space="preserve">
+    <value>自由輸入、清單與輸入法</value>
+  </data>
+  <data name="Features.Command.typing-help.Detail" xml:space="preserve">
+    <value>輸入工具會新增／接續可編輯文字；按空白紙面可新增項目。自由文字在橫線／康乃爾／會議紙張對齊水平線，新增空白邊距可自由放置。不需對齊可用固定文字方塊。原生支援 Windows 輸入法；格式套用整個文字項目，不能獨立設定部分字詞。</value>
+  </data>
+  <data name="Features.Command.autosave-help.Name" xml:space="preserve">
+    <value>自動儲存與閱讀位置</value>
+  </data>
+  <data name="Features.Command.autosave-help.Detail" xml:space="preserve">
+    <value>已完成編輯會排入本機儲存，頁尾顯示成功或失敗。開啟筆記本會還原此裝置的頁面、縮放及閱讀位置。偏好設定不包含在筆記本備份中。儲存失敗會保留待存內容；中斷草稿復原不保證最後一筆或正在組字的內容。</value>
+  </data>
+  <data name="Features.Command.document-help.Name" xml:space="preserve">
+    <value>文件匯入與匯出限制</value>
+  </data>
+  <data name="Features.Command.document-help.Detail" xml:space="preserve">
+    <value>PDF 匯入不需 Office。DOCX 需要 Word 或 LibreOffice；PPTX／PPSX 需要 PowerPoint 或 LibreOffice；ODT／ODP 需要 LibreOffice。轉換頁面是靜態 PDF 背景，不是可編輯 Office 物件。拒絕密碼、巨集、外部連結資源及不支援的 PDF 表單／簽章。來源不變；資料夾匯入只接受第一層 PDF／PPTX。</value>
+  </data>
+  <data name="Features.Command.isolated-library-help.Name" xml:space="preserve">
+    <value>使用獨立筆記庫</value>
+  </data>
+  <data name="Features.Command.isolated-library-help.Detail" xml:space="preserve">
+    <value>進階 --data-dir 啟動參數會指定獨立的筆記庫及偏好目錄，並停用更新檢查。程式內沒有筆記庫檔案切換器。切勿在未包含日誌檔時移動正在使用的 SQLite 資料庫。</value>
+  </data>
+  <data name="Features.ThisToolIsNotAvailableHere" xml:space="preserve">
+    <value>此處無法使用這個工具。</value>
+  </data>
+  <data name="Features.ThisWindowIsClosing" xml:space="preserve">
+    <value>此視窗正在關閉。</value>
+  </data>
+  <data name="Features.WaitForTheLibraryToFinishLoading" xml:space="preserve">
+    <value>請等待筆記庫載入完成。</value>
+  </data>
+  <data name="Features.FinishTheCurrentOperationFirst" xml:space="preserve">
+    <value>請先完成目前的操作。</value>
+  </data>
+  <data name="Features.LiftYourPenBeforeUsingThisAction" xml:space="preserve">
+    <value>使用此操作前請先提筆。</value>
+  </data>
+  <data name="Features.TheNotebookChangedOpenItsToolsAgain" xml:space="preserve">
+    <value>筆記本已變更，請重新開啟工具。</value>
+  </data>
+  <data name="Features.AddOrSelectAPageFirst" xml:space="preserve">
+    <value>請先新增或選取頁面。</value>
+  </data>
+  <data name="Features.ThePageChangedOpenItsActionsAgain" xml:space="preserve">
+    <value>頁面已變更，請重新開啟頁面操作。</value>
+  </data>
+  <data name="Features.SelectASectionFirst" xml:space="preserve">
+    <value>請先選取分區。</value>
+  </data>
+  <data name="Features.TheSectionIsNoLongerAvailable" xml:space="preserve">
+    <value>此分區已無法使用。</value>
+  </data>
+  <data name="Features.SelectTheOriginalPageInTheWritingArea" xml:space="preserve">
+    <value>請在書寫區選取原來的頁面。</value>
+  </data>
+  <data name="Features.FinishComposingTextFirst" xml:space="preserve">
+    <value>請先完成文字組字。</value>
+  </data>
+  <data name="Features.SelectInkTextOrImagesWithLassoOr" xml:space="preserve">
+    <value>請用套索或選取工具選取墨跡、文字或圖片。</value>
+  </data>
+  <data name="Features.SelectATextItemFirst" xml:space="preserve">
+    <value>請先選取文字項目。</value>
+  </data>
+  <data name="Features.UnlockZoomInWorkspaceSettingsFirst" xml:space="preserve">
+    <value>請先在工作區設定解除縮放鎖定。</value>
+  </data>
+  <data name="Features.ReturnToMyNotebooksFirst" xml:space="preserve">
+    <value>請先返回我的筆記本。</value>
+  </data>
+  <data name="Features.OpenANotebookToSaveAReadingPosition" xml:space="preserve">
+    <value>請先開啟筆記本以儲存閱讀位置。</value>
+  </data>
+  <data name="Features.NoNotebookFilterIsActive" xml:space="preserve">
+    <value>目前沒有筆記本篩選條件。</value>
+  </data>
+  <data name="Features.ThisIsTheFirstPageInItsSection" xml:space="preserve">
+    <value>這是此分區的第一頁。</value>
+  </data>
+  <data name="Features.ThisIsTheLastPageInItsSection" xml:space="preserve">
+    <value>這是此分區的最後一頁。</value>
+  </data>
+  <data name="Features.AddAnotherSectionFirst" xml:space="preserve">
+    <value>請先新增另一個分區。</value>
+  </data>
+  <data name="Features.PDFPagesKeepTheirBackgroundAddAPaper" xml:space="preserve">
+    <value>PDF 頁面會保留背景。請新增紙張頁面。</value>
+  </data>
+  <data name="Features.ThisIsTheFirstSection" xml:space="preserve">
+    <value>這是第一個分區。</value>
+  </data>
+  <data name="Features.ThisIsTheLastSection" xml:space="preserve">
+    <value>這是最後一個分區。</value>
+  </data>
+  <data name="Features.KeepAtLeastOneSectionInTheNotebook" xml:space="preserve">
+    <value>筆記本須保留至少一個分區。</value>
+  </data>
+  <data name="Features.NoPageTransferToUndoInThisSession" xml:space="preserve">
+    <value>本次工作階段沒有可復原的頁面轉移。</value>
+  </data>
+  <data name="Features.TheTransferChangedOpenItsToolsAgain" xml:space="preserve">
+    <value>轉移記錄已變更，請重新開啟工具。</value>
+  </data>
+  <data name="Features.CreateAPracticeAttemptFirst" xml:space="preserve">
+    <value>請先建立練習嘗試。</value>
+  </data>
+  <data name="Features.NoEarlierNotebookEditsInThisSessionCompatible" xml:space="preserve">
+    <value>本次工作階段沒有較早的筆記本編輯。開啟時會檢查相容的頁面版本。</value>
+  </data>
+  <data name="Features.FitTheCompletePageOrTwoPageSpread" xml:space="preserve">
+    <value>讓完整頁面或雙頁跨頁符合書寫區大小。</value>
+  </data>
+  <data name="Features.RemoveAPresetInManagePensFirst" xml:space="preserve">
+    <value>請先在管理筆中移除一支預設筆。</value>
+  </data>
+  <data name="Features.UseThisSavedFavoriteTheSameShortcutWorks" xml:space="preserve">
+    <value>使用此常用筆。即使隱藏常用筆列，快捷鍵仍有效。</value>
+  </data>
+  <data name="Features.ChooseThisFavoriteInManagePensFirst" xml:space="preserve">
+    <value>請先在管理筆中選擇此常用筆。</value>
+  </data>
+  <data name="Features.TheSelectedTextAlreadyFitsOnItsPage" xml:space="preserve">
+    <value>所選文字已完整顯示在頁面內。</value>
+  </data>
+  <data name="Features.MoveByOnePageDIPShiftArrowKeys" xml:space="preserve">
+    <value>移動一個頁面 DIP。Shift 加方向鍵移動十個；拖曳選取控制點可調整大小。</value>
+  </data>
+  <data name="Features.NoNotebookEditToUndo" xml:space="preserve">
+    <value>沒有可復原的筆記本編輯。</value>
+  </data>
+  <data name="Features.NoNotebookEditToRedo" xml:space="preserve">
+    <value>沒有可重做的筆記本編輯。</value>
+  </data>
+  <data name="Features.UpdatesAreDisabledForThisIsolatedLibrary" xml:space="preserve">
+    <value>此獨立筆記庫已停用更新。</value>
+  </data>
+  <data name="Features.ReorderMoveCopyOrDeletePages" xml:space="preserve">
+    <value>排序、移動、複製或刪除頁面</value>
+  </data>
+  <data name="Features.SwitchBetweenSinglePageAndEditableTwoPage" xml:space="preserve">
+    <value>切換單頁與可編輯雙頁檢視</value>
+  </data>
+  <data name="Features.OpenAPageBesideYourWritingAsA" xml:space="preserve">
+    <value>在書寫區旁開啟頁面作參考</value>
+  </data>
+  <data name="Features.AllTools" xml:space="preserve">
+    <value>所有工具</value>
+  </data>
+  <data name="Features.BrowseOrSearchEveryToolCtrlShiftP" xml:space="preserve">
+    <value>瀏覽或搜尋所有工具（Ctrl+Shift+P）</value>
+  </data>
+  <data name="Features.NotebookFeatures" xml:space="preserve">
+    <value>筆記本功能</value>
+  </data>
+  <data name="Features.RenameMoveOrOrganizeThisSectionYouCan" xml:space="preserve">
+    <value>重新命名、移動或整理分區；也可在分區按右鍵</value>
+  </data>
+  <data name="Features.ActionsForTheSelectedPage" xml:space="preserve">
+    <value>所選頁面的操作</value>
+  </data>
+  <data name="Features.PenSettingsColorThicknessAndSavedPens" xml:space="preserve">
+    <value>筆設定：顏色、粗細及已儲存的筆</value>
+  </data>
+  <data name="Features.PenSettings" xml:space="preserve">
+    <value>筆設定</value>
+  </data>
+  <data name="Features.Pens" xml:space="preserve">
+    <value>筆</value>
+  </data>
+  <data name="Features.ReturnToPenTools" xml:space="preserve">
+    <value>返回筆工具</value>
+  </data>
+  <data name="Features.BackToPens" xml:space="preserve">
+    <value>返回筆工具</value>
+  </data>
+  <data name="Features.SelectATextBoxToFormatItOr" xml:space="preserve">
+    <value>選取文字方塊以設定格式，或新增文字方塊。</value>
+  </data>
+  <data name="Features.ManagePensPressureSmoothingOpacity" xml:space="preserve">
+    <value>管理筆：壓力、平滑、不透明度</value>
+  </data>
+  <data name="Features.ManagePensPressureSmoothingOpacityHint" xml:space="preserve">
+    <value>管理筆 · 壓力、平滑、不透明度</value>
+  </data>
+  <data name="Features.BackUpNotebooksRestoreBackupsAndRecoverDrafts" xml:space="preserve">
+    <value>備份筆記本、還原備份及復原草稿</value>
+  </data>
+  <data name="Features.BackupAndRecovery" xml:space="preserve">
+    <value>備份與復原</value>
+  </data>
+  <data name="Features.NotebookActions" xml:space="preserve">
+    <value>筆記本操作</value>
+  </data>
+  <data name="Features.OpenPinChangeTheCoverOrDeleteThis" xml:space="preserve">
+    <value>開啟、釘選、更改封面或刪除此筆記本</value>
+  </data>
+  <data name="Features.AllToolsHelp" xml:space="preserve">
+    <value>所有工具與說明</value>
+  </data>
+  <data name="Features.SearchToolsHelpAndShortcuts" xml:space="preserve">
+    <value>搜尋工具、說明與快捷鍵</value>
+  </data>
+  <data name="Features.SearchToolsHelp" xml:space="preserve">
+    <value>搜尋工具與說明</value>
+  </data>
+  <data name="Features.ClearTheSearchAndShowAllCategories" xml:space="preserve">
+    <value>清除搜尋並顯示所有分類</value>
+  </data>
+  <data name="Features.ClearSearchAndCategoryFilter" xml:space="preserve">
+    <value>清除搜尋及分類篩選</value>
+  </data>
+  <data name="Features.AllCategories" xml:space="preserve">
+    <value>所有分類</value>
+  </data>
+  <data name="Features.FilterToolsByCategory" xml:space="preserve">
+    <value>依分類篩選工具</value>
+  </data>
+  <data name="Features.MatchingToolsAndHelpTopics" xml:space="preserve">
+    <value>符合條件的工具及說明主題</value>
+  </data>
+  <data name="Features.ToolsAndHelpTopics" xml:space="preserve">
+    <value>工具及說明主題</value>
+  </data>
+  <data name="Features.NoToolsMatchUseResetToClearThe" xml:space="preserve">
+    <value>沒有符合條件的工具。請用重設清除搜尋及分類篩選。</value>
+  </data>
+  <data name="Features.NoToolsMatchResetTheFiltersToSee" xml:space="preserve">
+    <value>沒有符合條件的工具。重設篩選可顯示所有工具。</value>
+  </data>
+  <data name="Features.SelectedToolDetailsAndRequirements" xml:space="preserve">
+    <value>所選工具的詳情與使用條件</value>
+  </data>
+  <data name="Features.RunSelectedCommand" xml:space="preserve">
+    <value>執行選取的指令</value>
+  </data>
+  <data name="Features.CloseAllToolsAndHelp" xml:space="preserve">
+    <value>關閉所有工具與說明</value>
+  </data>
+  <data name="Features.SelectAToolToSeeHowToUse" xml:space="preserve">
+    <value>選取工具以查看用法、一般位置及使用條件。</value>
+  </data>
+  <data name="Features.HowToUse" xml:space="preserve">
+    <value>使用方法</value>
+  </data>
+  <data name="Features.HideTheFavoritePenRowInTheMain" xml:space="preserve">
+    <value>隱藏主工具列的常用筆列</value>
+  </data>
+  <data name="Features.BackupIntervalInHours" xml:space="preserve">
+    <value>備份間隔（小時）</value>
+  </data>
+  <data name="Features.NumberOfCompletedBackupsToKeep" xml:space="preserve">
+    <value>保留的完整備份數量</value>
+  </data>
+  <data name="Features.Command.erase-highlighter-only.Name" xml:space="preserve">
+    <value>僅擦除螢光筆</value>
+  </data>
+  <data name="Features.Command.erase-highlighter-only.Detail" xml:space="preserve">
+    <value>擦除螢光標記時保護普通筆劃；兩種橡皮擦模式均適用。</value>
+  </data>
+  <data name="Features.Command.add-text-box.Name" xml:space="preserve">
+    <value>新增固定文字方塊</value>
+  </data>
+  <data name="Features.Command.add-text-box.Detail" xml:space="preserve">
+    <value>建立固定版面文字方塊，而非自由輸入。不同格式可使用不同方塊。</value>
+  </data>
+  <data name="Features.Command.bullet-list.Name" xml:space="preserve">
+    <value>項目符號清單</value>
+  </data>
+  <data name="Features.Command.bullet-list.Detail" xml:space="preserve">
+    <value>為目前或所選行切換純文字項目符號。Enter 延續清單；空白項目行結束清單。</value>
+  </data>
+  <data name="Features.Command.numbered-list.Name" xml:space="preserve">
+    <value>編號清單</value>
+  </data>
+  <data name="Features.Command.numbered-list.Detail" xml:space="preserve">
+    <value>為目前或所選行切換純文字編號。標記仍是可編輯字元。</value>
+  </data>
+  <data name="Features.Command.continue-text.Name" xml:space="preserve">
+    <value>接續文字至下一頁</value>
+  </data>
+  <data name="Features.Command.continue-text.Detail" xml:space="preserve">
+    <value>將可見文字留在此頁，溢出文字連同格式移至新頁。這是手動分頁，不是連結式自動文字流。</value>
+  </data>
+  <data name="Features.Command.copy-selection.Name" xml:space="preserve">
+    <value>複製選取內容</value>
+  </data>
+  <data name="Features.Command.copy-selection.Detail" xml:space="preserve">
+    <value>將混合墨跡、文字及圖片複製至其他頁面或筆記本，保留圖片資產及墨跡屬性。</value>
+  </data>
+  <data name="Features.Command.cut-selection.Name" xml:space="preserve">
+    <value>剪下選取內容</value>
+  </data>
+  <data name="Features.Command.cut-selection.Detail" xml:space="preserve">
+    <value>複製可編輯選取內容，成功後從此頁移除。</value>
+  </data>
+  <data name="Features.Category.Notebook" xml:space="preserve">
+    <value>筆記本</value>
+  </data>
+  <data name="Features.Category.Pages" xml:space="preserve">
+    <value>頁面</value>
+  </data>
+  <data name="Features.Category.Insertexport" xml:space="preserve">
+    <value>插入與匯出</value>
+  </data>
+  <data name="Features.Category.Search" xml:space="preserve">
+    <value>搜尋</value>
+  </data>
+  <data name="Features.Category.Study" xml:space="preserve">
+    <value>學習</value>
+  </data>
+  <data name="Features.Category.View" xml:space="preserve">
+    <value>檢視</value>
+  </data>
+  <data name="Features.Category.Tools" xml:space="preserve">
+    <value>工具</value>
+  </data>
+  <data name="Features.Category.Backup" xml:space="preserve">
+    <value>備份</value>
+  </data>
+  <data name="Features.Category.Help" xml:space="preserve">
+    <value>說明</value>
+  </data>
+  <data name="Features.CategoryActions" xml:space="preserve">
+    <value>{0}操作</value>
+  </data>
+  <data name="Features.ToggleOn" xml:space="preserve">
+    <value>{0}已開啟。按一下關閉。</value>
+  </data>
+  <data name="Features.ToggleOff" xml:space="preserve">
+    <value>{0}已關閉。按一下開啟。</value>
+  </data>
+  <data name="Features.FavoriteEmpty" xml:space="preserve">
+    <value>常用筆 {0}</value>
+  </data>
+  <data name="Features.FavoriteNamed" xml:space="preserve">
+    <value>常用筆 {0}：{1}</value>
+  </data>
+  <data name="Features.ToolCount" xml:space="preserve">
+    <value>{0} 個工具及說明主題</value>
+  </data>
+  <data name="Features.SingleToolCount" xml:space="preserve">
+    <value>{0} 個工具或說明主題</value>
+  </data>
+  <data name="Features.Unavailable" xml:space="preserve">
+    <value>無法使用：{0}</value>
+  </data>
+  <data name="Features.Shortcut" xml:space="preserve">
+    <value>快捷鍵：{0}</value>
+  </data>
+  <data name="Features.FormatHint" xml:space="preserve">
+    <value>選擇輸入文字開始書寫，或用選取工具設定現有文字格式。格式會套用至整個文字項目。</value>
+  </data>
+  <data name="Features.MovePageHeading" xml:space="preserve">
+    <value>將第 {0} 頁移至分區</value>
+  </data>
+  <data name="Features.NotebookActionsName" xml:space="preserve">
+    <value>{0}的操作</value>
+  </data>
+  <data name="Features.Nudge.left" xml:space="preserve">
+    <value>向左移動選取內容</value>
+  </data>
+  <data name="Features.Nudge.right" xml:space="preserve">
+    <value>向右移動選取內容</value>
+  </data>
+  <data name="Features.Nudge.up" xml:space="preserve">
+    <value>向上移動選取內容</value>
+  </data>
+  <data name="Features.Nudge.down" xml:space="preserve">
+    <value>向下移動選取內容</value>
+  </data>
+  <data name="Features.RenameNotebookName" xml:space="preserve">
+    <value>重新命名筆記本 {0}</value>
+  </data>
+</root>

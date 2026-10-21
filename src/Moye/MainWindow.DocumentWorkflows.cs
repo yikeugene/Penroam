@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,45 +21,45 @@ public partial class MainWindow
         Closed += (_, _) => _referencePane?.Dispose();
     }
 
-    private async Task<bool> RunDocumentOperationAsync(string title, Func<CancellationToken, IProgress<DocumentProgress>, Task> operation)
+    private async Task<bool> RunDocumentOperationAsync(string titleKey, Func<CancellationToken, IProgress<DocumentProgress>, Task> operation)
     {
         if (ViewModel.IsBusy) return false;
         CommitEditors(); CloseSettingsPopups(); ClearTouches();
-        ViewModel.IsBusy = true; ViewModel.Operation = title;
+        ViewModel.IsBusy = true; ViewModel.SetOperation(titleKey);
         try
         {
-            var completed = await DocumentOperationDialog.RunAsync(this, title, operation);
-            if (!completed) ViewModel.Status = "Operation canceled · Your notebook is unchanged";
+            var completed = await DocumentOperationDialog.RunAsync(this, L.Text(titleKey), operation);
+            if (!completed) ViewModel.SetStatus("Shell.OperationCanceled");
             return completed;
         }
-        catch (Exception ex) { MessageBox.Show(this, _errors.Report(ex), "Unable to complete the operation", MessageBoxButton.OK, MessageBoxImage.Warning); return false; }
+        catch (Exception ex) { MessageBox.Show(this, _errors.Report(ex), L.Text("Shell.OperationFailedTitle"), MessageBoxButton.OK, MessageBoxImage.Warning); return false; }
         finally { ViewModel.IsBusy = false; }
     }
 
     private async void ImportDocumentWorkflowClick(object sender, RoutedEventArgs e)
     {
         if (ViewModel.IsBusy) return;
-        var file = new OpenFileDialog { Filter = DocumentImportService.FileFilter, Title = "Choose a document to import" };
+        var file = new OpenFileDialog { Filter = L.Text("Shell.DocumentFileFilter"), Title = L.Text("Shell.ChooseImportDocument") };
         if (file.ShowDialog(this) != true) return;
         CommitEditors();
         using var prepared = new PreparedDocumentImport();
-        if (!await RunDocumentOperationAsync("Preparing document preview", (token, progress) => prepared.PrepareAsync(file.FileName, progress, token))) return;
+        if (!await RunDocumentOperationAsync("Shell.PreparingDocumentPreview", (token, progress) => prepared.PrepareAsync(file.FileName, progress, token))) return;
         var renderer = new PagePreviewRenderer(prepared.Pdf, prepared.LoadAsset);
         var target = ViewModel.IsLibraryVisible ? null : ViewModel.Document;
-        var dialog = new DocumentSelectionDialog(this, "Import document pages", prepared.Pages, renderer, target,
+        var dialog = new DocumentSelectionDialog(this, L.Text("Shell.ImportDocumentPages"), prepared.Pages, renderer, target,
             ViewModel.SelectedPage?.Page.Id, ViewModel.SelectedSection?.Id, true, Path.GetFileNameWithoutExtension(file.FileName));
         if (dialog.ShowDialog() != true) return;
         var destination = dialog.Destination!;
         var pages = dialog.SelectedPages;
         var afterId = dialog.InsertAfterCurrent ? ViewModel.SelectedPage?.Page.Id : null;
         string? selectedId = null, sectionId = null;
-        var succeeded = await RunDocumentOperationAsync("Importing selected pages", async (token, progress) =>
+        var succeeded = await RunDocumentOperationAsync("Shell.ImportingSelectedPages", async (token, progress) =>
         {
             await prepared.CommitAssetsAsync(ViewModel.Repository, pages, progress, token);
             token.ThrowIfCancellationRequested();
             // Past this point the import is committed as one edit. Cancellation must
             // not report unchanged after pages have been accepted into the notebook.
-            progress.Report(new("Saving imported pages…", CanCancel: false));
+            progress.Report(new(L.M("Shell.SavingImportedPages"), CanCancel: false));
             if (destination.Kind == ImportDestinationKind.NewNotebook)
             {
                 await ViewModel.Autosave.FlushAsync();
@@ -71,7 +72,7 @@ public partial class MainWindow
             }
             else
             {
-                if (target is null || !ReferenceEquals(target, ViewModel.Document)) throw new InvalidOperationException("The destination notebook changed. Please import again.");
+                if (target is null || !ReferenceEquals(target, ViewModel.Document)) throw new InvalidOperationException(L.Text("Shell.ImportDestinationChanged"));
                 sectionId = destination.SectionId;
                 if (destination.Kind == ImportDestinationKind.NewSection)
                 {
@@ -86,7 +87,7 @@ public partial class MainWindow
         if (sectionId is not null) ViewModel.SelectedSection = ViewModel.Sections.FirstOrDefault(section => section.Id == sectionId);
         ViewModel.SelectedPage = ViewModel.Pages.FirstOrDefault(page => page.Page.Id == selectedId) ?? ViewModel.SelectedPage;
         SelectLibraryCurrent(); ScrollToSelected();
-        ViewModel.Status = $"Imported {pages.Count} {(pages.Count == 1 ? "page" : "pages")}";
+        ViewModel.SetStatus(pages.Count == 1 ? "Shell.ImportedOnePage" : "Shell.ImportedPages", pages.Count);
     }
 
     private async void ExportDocumentWorkflowClick(object sender, RoutedEventArgs e)
@@ -94,7 +95,7 @@ public partial class MainWindow
         if (ViewModel.IsBusy || ViewModel.Document is null) return;
         CommitEditors();
         var source = ViewModel.Document.Snapshot();
-        var dialog = new DocumentSelectionDialog(this, "Export PDF pages", source.Pages,
+        var dialog = new DocumentSelectionDialog(this, L.Text("Shell.ExportPdfPages"), source.Pages,
             new PagePreviewRenderer(ViewModel.Pdf, ViewModel.Repository.GetAssetAsync), source,
             ViewModel.SelectedPage?.Page.Id, ViewModel.SelectedSection?.Id, false);
         if (dialog.ShowDialog() != true) return;
@@ -112,16 +113,16 @@ public partial class MainWindow
         var layout = new PdfExportLayoutDialog(this, snapshot.Pages,
             new PagePreviewRenderer(ViewModel.Pdf, ViewModel.Repository.GetAssetAsync));
         if (layout.ShowDialog() != true) return;
-        var file = new SaveFileDialog { Filter = "PDF documents|*.pdf", FileName = SafeFileName(snapshot.Title) + ".pdf", Title = $"Export {layout.OutputPageCount} pages as PDF" };
+        var file = new SaveFileDialog { Filter = L.Text("Shell.PdfFileFilter"), FileName = SafeFileName(snapshot.Title) + ".pdf", Title = L.Text("Shell.ExportPdfPickerTitle", layout.OutputPageCount) };
         if (file.ShowDialog(this) != true) return;
-        var completed = await RunDocumentOperationAsync("Exporting PDF", async (token, progress) =>
+        var completed = await RunDocumentOperationAsync("Shell.ExportingPdf", async (token, progress) =>
         {
             if (ViewModel.Pdf is PdfService pdf) await pdf.ExportAsync(file.FileName, snapshot, layout.Options, progress, token);
             else if (layout.Options.Layout == PdfExportLayout.OriginalSize) await ViewModel.Pdf.ExportAsync(file.FileName, snapshot, token);
-            else throw new InvalidOperationException("A4 pagination is unavailable for this PDF provider.");
+            else throw new InvalidOperationException(L.Text("Shell.PdfPaginationUnavailable"));
         });
         if (!completed) return;
-        ViewModel.Status = $"PDF exported · {layout.OutputPageCount} pages · {Path.GetFileName(file.FileName)}";
+        ViewModel.SetStatus("Shell.PdfExported", layout.OutputPageCount, Path.GetFileName(file.FileName));
         new DocumentCompletionDialog(this, file.FileName, layout.OutputPageCount).ShowDialog();
     }
 

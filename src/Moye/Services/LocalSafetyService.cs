@@ -2,7 +2,9 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using Moye.Localization;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
@@ -16,7 +18,8 @@ public sealed class LocalSafetyService(string directory, IBackupService backup)
 {
     private readonly SemaphoreSlim _gate = new(1);
     public string DirectoryPath { get; } = Path.GetFullPath(directory);
-    public string? Warning { get; private set; }
+    private LocalizedMessage? _warning;
+    public string? Warning => _warning?.ToString();
 
     public async Task<DeletedSnapshot> PreserveAsync(NotebookDocument document, string reason)
     {
@@ -39,7 +42,7 @@ public sealed class LocalSafetyService(string directory, IBackupService backup)
         if (!Directory.Exists(DirectoryPath)) return list;
         string[] paths;
         try { paths = Directory.GetFiles(DirectoryPath, "*.deleted.json"); }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Warning = "Recovery files could not be listed. " + ex.Message; return list; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _warning = L.M("Messages.Recovery.ListFailed", ex.Message); return list; }
         foreach (var path in paths)
         {
             try
@@ -50,7 +53,7 @@ public sealed class LocalSafetyService(string directory, IBackupService backup)
                 list.Add(entry);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
-            { Warning = "Some recovery entries could not be read and were kept. " + ex.Message; }
+            { _warning = L.M("Messages.Recovery.SomeUnreadable", ex.Message); }
         }
         return list.OrderByDescending(entry => entry.DeletedUtc).ToArray();
     }
