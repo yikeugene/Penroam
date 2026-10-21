@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -22,7 +23,7 @@ public sealed class NotebookDialog : Window
         PaperTemplate template = PaperTemplate.Ruled)
     {
         Owner = owner;
-        Title = "New Notebook";
+        Title = L.Text("Controls.Notebook.Title");
         Width = 560;
         SizeToContent = SizeToContent.Height;
         MaxHeight = SystemParameters.WorkArea.Height;
@@ -35,22 +36,24 @@ public sealed class NotebookDialog : Window
         var panel = new StackPanel { Margin = new Thickness(28) };
         panel.Children.Add(new TextBlock
         {
-            Text = "Create a notebook", FontSize = 24, FontWeight = FontWeights.SemiBold,
+            Text = L.Text("Controls.Notebook.Heading"), FontSize = 24, FontWeight = FontWeights.SemiBold,
             Margin = new Thickness(0, 0, 0, 6)
         });
         panel.Children.Add(new TextBlock
         {
-            Text = "A fresh place for your ideas. Make it yours.",
+            Text = L.Text("Controls.Notebook.Intro"),
             Foreground = (Brush)FindResource("MutedInk"), TextWrapping = TextWrapping.Wrap,
             Margin = new Thickness(0, 0, 0, 24)
         });
 
-        _title = AddField(panel, "Notebook name", title);
-        _folder = AddField(panel, "Category", folder);
-        panel.Children.Add(new TextBlock { Text = "Paper template", FontWeight = FontWeights.SemiBold });
+        _title = AddField(panel, L.Text("Controls.Notebook.Name"), title);
+        _title.Name = "NotebookTitleInput";
+        _folder = AddField(panel, L.Text("Controls.Common.Category"), folder);
+        _folder.Name = "NotebookFolderInput";
+        panel.Children.Add(new TextBlock { Text = L.Text("Controls.Notebook.Paper"), FontWeight = FontWeights.SemiBold });
         panel.Children.Add(new TextBlock
         {
-            Text = "Choose a starting page. Each page can use its own A4 template.",
+            Text = L.Text("Controls.Notebook.PaperHint"),
             FontSize = 12, Foreground = (Brush)FindResource("MutedInk"),
             Margin = new Thickness(0, 5, 0, 10), TextWrapping = TextWrapping.Wrap
         });
@@ -73,10 +76,10 @@ public sealed class NotebookDialog : Window
             Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right,
             Margin = new Thickness(0, 10, 0, 0)
         };
-        var cancel = new Button { Content = "Cancel", IsCancel = true, MinWidth = 88, Style = (Style)FindResource("SecondaryButton") };
+        var cancel = new Button { Name = "NotebookCancelButton", Content = L.Text("Controls.Common.Cancel"), IsCancel = true, MinWidth = 88, Style = (Style)FindResource("SecondaryButton") };
         var create = new Button
         {
-            Content = "Create Notebook", IsDefault = true, MinWidth = 148,
+            Name = "NotebookCreateButton", Content = L.Text("Controls.Notebook.Create"), IsDefault = true, MinWidth = 148,
             Style = (Style)FindResource("PrimaryButton")
         };
         create.Click += (_, _) =>
@@ -84,7 +87,7 @@ public sealed class NotebookDialog : Window
             var empty = string.IsNullOrWhiteSpace(_title.Text) ? _title : string.IsNullOrWhiteSpace(_folder.Text) ? _folder : null;
             if (empty is not null)
             {
-                error.Text = empty == _title ? "Enter a name for your notebook." : "Enter a category for your notebook.";
+                error.Text = empty == _title ? L.Text("Controls.Notebook.NameRequired") : L.Text("Controls.Notebook.CategoryRequired");
                 error.Visibility = Visibility.Visible;
                 empty.Focus();
                 return;

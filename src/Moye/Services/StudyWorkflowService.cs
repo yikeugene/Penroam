@@ -1,10 +1,26 @@
+using Moye.Localization;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
 public sealed record StudyInboxItem(string PageId, string SectionId, string Location, string Heading,
     string Detail, DateTimeOffset ModifiedUtc, StudyQuestion? Question, ResumeHint? Resume)
 {
+    private readonly string _location = Location;
+    public LocalizedMessage? LocalizedLocation { get; init; }
+    public string Location
+    {
+        get => LocalizedLocation?.ToString() ?? _location;
+        init { _location = value; LocalizedLocation = null; }
+    }
+    private readonly string _detail = Detail;
+    public LocalizedMessage? LocalizedDetail { get; init; }
+    public string Detail
+    {
+        get => LocalizedDetail?.ToString() ?? _detail;
+        init { _detail = value; LocalizedDetail = null; }
+    }
     public StudyAnchor? Anchor => Question?.Anchor ?? Resume?.Anchor;
     public string Identity => PageId + ":" + (Question?.Id ?? "resume");
 }
@@ -16,13 +32,15 @@ public static class StudyWorkflowService
     public const int MaximumResumeLength = 4000;
     public const int MaximumQuestionsPerPage = 10000;
 
-    public static string StatusLabel(StudyQuestionStatus status) => status switch
+    public static string StatusLabel(StudyQuestionStatus status) => StatusMessage(status).ToString();
+
+    private static LocalizedMessage StatusMessage(StudyQuestionStatus status) => status switch
     {
-        StudyQuestionStatus.NeedHelp => "Need help",
-        StudyQuestionStatus.Understood => "Understood",
-        StudyQuestionStatus.TryAgain => "Try again",
-        StudyQuestionStatus.Resolved => "Resolved",
-        _ => "Unknown"
+        StudyQuestionStatus.NeedHelp => L.M("Messages.Study.Status.NeedHelp"),
+        StudyQuestionStatus.Understood => L.M("Messages.Study.Status.Understood"),
+        StudyQuestionStatus.TryAgain => L.M("Messages.Study.Status.TryAgain"),
+        StudyQuestionStatus.Resolved => L.M("Messages.Study.Status.Resolved"),
+        _ => L.M("Messages.Study.Status.Unknown")
     };
 
     public static bool IsValid(NotePage page)
@@ -64,16 +82,18 @@ public static class StudyWorkflowService
         {
             var number = sectionNumbers.GetValueOrDefault(page.SectionId) + 1; sectionNumbers[page.SectionId] = number;
             var section = document.Sections.FirstOrDefault(s => s.Id == page.SectionId)?.Title ?? "General";
-            var location = $"{section} · Page {number}" + (string.IsNullOrWhiteSpace(page.Title) ? "" : $" · {page.Title}");
+            var location = L.M("Messages.Page.Location", section, number, string.IsNullOrWhiteSpace(page.Title) ? "" : $" · {page.Title}");
             if (resumeOnly)
             {
                 if (page.ResumeHint is { } hint)
-                    items.Add(new(page.Id, page.SectionId, location, hint.NextStep, "Next time, continue here", hint.ModifiedUtc, null, Copy(hint)));
+                    items.Add(new(page.Id, page.SectionId, "", hint.NextStep, "", hint.ModifiedUtc, null, Copy(hint))
+                    { LocalizedLocation = location, LocalizedDetail = L.M("Messages.Study.ResumeDetail") });
             }
             else
             {
                 foreach (var question in page.StudyQuestions.Where(q => includeResolved || q.Status != StudyQuestionStatus.Resolved))
-                    items.Add(new(page.Id, page.SectionId, location, question.Prompt, StatusLabel(question.Status), question.ModifiedUtc, Copy(question), null));
+                    items.Add(new(page.Id, page.SectionId, "", question.Prompt, "", question.ModifiedUtc, Copy(question), null)
+                    { LocalizedLocation = location, LocalizedDetail = StatusMessage(question.Status) });
             }
         }
         var term = query?.Trim() ?? "";

@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -16,7 +17,7 @@ public partial class MainWindow
         if (ViewModel.Document is not { } document || ViewModel.SelectedPage is not { } selected) return;
         var page = selected.Page;
         BitmapSource? preview = null;
-        await RunAsync("Preparing page preview…", async () =>
+        await RunAsync(L.M("Shell.PreparingPagePreview"), async () =>
             preview = await new PagePreviewRenderer(ViewModel.Pdf, ViewModel.Repository.GetAssetAsync).RenderAsync(page, 600));
         if (preview is null || _closing || !ReferenceEquals(ViewModel.Document, document)
             || !document.Pages.Any(candidate => ReferenceEquals(candidate, page))) return;
@@ -30,8 +31,8 @@ public partial class MainWindow
         }
         catch (Exception exception)
         {
-            MessageBox.Show(this, "The page could not be extended. Your original page is unchanged.\n\n" + exception.Message,
-                "Extend page", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(this, L.Text("Shell.ExtendPageFailed", exception.Message),
+                L.Text("Shell.ExtendPageTitle"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -71,7 +72,7 @@ public partial class MainWindow
         if (ViewModel.IsBusy || CurrentEditor is not { SelectedText: { } text, IsTextComposing: false } editor) return;
         CommitEditors();
         var continuation = TextFlow.CreateContinuation(editor.Page, text);
-        if (continuation is null) { ViewModel.Status = "This text already fits on its page."; return; }
+        if (continuation is null) { ViewModel.SetStatus("Shell.TextAlreadyFits"); return; }
         // Commit the split and page insertion together in notebook history.
         if (!ViewModel.ContinueTextOnNewPage(editor.Page.Id, text.Id, continuation.RetainedText, continuation.Text)) return;
         SetTool(InkTool.Text);
@@ -79,7 +80,7 @@ public partial class MainWindow
         await Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Loaded);
         if (ViewModel.SelectedPage?.Page.Texts.FirstOrDefault() is { } next) CurrentEditor?.BeginTypingText(next.Id);
         UpdateTextToolbar();
-        ViewModel.Status = "Text continued on a new page · Undo restores the original";
+        ViewModel.SetStatus("Shell.TextContinued");
     }
     private void FinishTyping()
     {
@@ -112,8 +113,8 @@ public partial class MainWindow
             TextAlignmentPicker.SelectedIndex = (int)text.Alignment;
             TextBoldButton.Background = text.Bold ? (Brush)FindResource("AccentSoft") : Brushes.Transparent;
             TextItalicButton.Background = text.Italic ? (Brush)FindResource("AccentSoft") : Brushes.Transparent;
-            System.Windows.Automation.AutomationProperties.SetHelpText(TextBoldButton, text.Bold ? "Bold is on" : "Bold is off");
-            System.Windows.Automation.AutomationProperties.SetHelpText(TextItalicButton, text.Italic ? "Italic is on" : "Italic is off");
+            L.Bind(TextBoldButton, System.Windows.Automation.AutomationProperties.HelpTextProperty, text.Bold ? "Shell.BoldOn" : "Shell.BoldOff");
+            L.Bind(TextItalicButton, System.Windows.Automation.AutomationProperties.HelpTextProperty, text.Italic ? "Shell.ItalicOn" : "Shell.ItalicOff");
             TextColorButton.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(text.Color));
             bool overflow = CurrentEditor?.HasTextOverflow == true;
             if (FindName("ContinueTextButton") is Button continuationButton)
@@ -121,9 +122,7 @@ public partial class MainWindow
                 continuationButton.Visibility = overflow ? Visibility.Visible : Visibility.Collapsed;
                 continuationButton.IsEnabled = CurrentEditor?.IsTextComposing == false;
             }
-            TypingHint.Text = overflow
-                ? "Text exceeds this page. Continue on a new page to keep all text visible in PDF export."
-                : "Click anywhere to type freely. Ruled paper aligns your text to the lines. Ctrl+Enter returns to Pen.";
+            L.Bind(TypingHint, TextBlock.TextProperty, overflow ? "Shell.TypingOverflowHint" : "Shell.TypingHint");
             TypingHint.Foreground = overflow ? (Brush)FindResource("Danger") : (Brush)FindResource("MutedInk");
         }
         finally { _syncingTextToolbar = false; }
@@ -160,7 +159,7 @@ public partial class MainWindow
     {
         if (_syncingTextToolbar || !CanCommitTextPicker() || TextSizePicker.IsDropDownOpen) return;
         if (!double.TryParse(TextSizePicker.Text, NumberStyles.Float, CultureInfo.CurrentCulture, out var points) || !double.IsFinite(points) || points < 6 || points > 96)
-        { TypingHint.Text = "Enter a text size from 6 to 96 pt."; TypingHint.Foreground = Brushes.Firebrick; return; }
+        { L.Bind(TypingHint, TextBlock.TextProperty, "Shell.InvalidTextSize"); TypingHint.Foreground = Brushes.Firebrick; return; }
         ApplyTextFormatting(fontSize: points / .75, restoreFocus: restoreFocus);
     }
     private void TextPickerLostFocus(object sender, KeyboardFocusChangedEventArgs e)
@@ -210,7 +209,7 @@ public partial class MainWindow
     private void TextColorClick(object sender, RoutedEventArgs e)
     {
         var text = CurrentEditor?.SelectedText ?? _textDefaults;
-        var dialog = new ColorPickerDialog(this, (Color)ColorConverter.ConvertFromString(text.Color), "Text Color");
+        var dialog = new ColorPickerDialog(this, (Color)ColorConverter.ConvertFromString(text.Color), L.Text("Shell.TextColor"));
         if (dialog.ShowDialog() != true) return;
         ApplyTextFormatting(color: dialog.SelectedColor);
     }

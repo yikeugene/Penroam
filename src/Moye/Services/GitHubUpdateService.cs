@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
@@ -63,20 +64,20 @@ public sealed class GitHubUpdateService : IAppUpdateService
         using var document = JsonDocument.Parse(metadata);
         var release = document.RootElement;
         if (release.ValueKind != JsonValueKind.Object)
-            throw new InvalidDataException("GitHub returned an invalid release description.");
+            throw new InvalidDataException(L.Text("Messages.Update.InvalidRelease"));
         if (ReadBoolean(release, "draft") || ReadBoolean(release, "prerelease")) return null;
         var tag = ReadString(release, "tag_name");
         if (!TryParseStableVersion(tag, out var version) || version <= _currentVersion) return null;
 
         var installerName = $"Penroam-{version.ToString(3)}-Setup-win-x64.exe";
         if (!release.TryGetProperty("assets", out var assets) || assets.ValueKind != JsonValueKind.Array)
-            throw new InvalidDataException("The new release does not include a Windows installer yet.");
+            throw new InvalidDataException(L.Text("Messages.Update.NoInstaller"));
         var installer = FindAsset(assets, installerName);
         if (installer is null)
-            throw new InvalidDataException("The new release does not include a compatible Windows x64 installer yet.");
+            throw new InvalidDataException(L.Text("Messages.Update.NoCompatibleInstaller"));
         if (!installer.Value.TryGetProperty("size", out var sizeElement) || sizeElement.ValueKind != JsonValueKind.Number || !sizeElement.TryGetInt64(out var size)
             || size <= 0 || size > MaximumInstallerBytes)
-            throw new InvalidDataException("The update installer has an invalid download size.");
+            throw new InvalidDataException(L.Text("Messages.Update.InvalidSize"));
         var installerUrl = ReadAssetUrl(installer.Value, tag!, installerName);
         var hash = ReadDigest(installer.Value);
         Uri? checksumUrl = null;
@@ -84,7 +85,7 @@ public sealed class GitHubUpdateService : IAppUpdateService
         {
             var checksumName = installerName + ".sha256";
             var checksum = FindAsset(assets, checksumName)
-                ?? throw new InvalidDataException("The new release is missing its SHA-256 checksum. Please try again after the release upload finishes.");
+                ?? throw new InvalidDataException(L.Text("Messages.Update.ChecksumMissing"));
             checksumUrl = ReadAssetUrl(checksum, tag!, checksumName);
             hash = await ReadChecksumAsync(checksumUrl, installerName, timeout.Token).ConfigureAwait(false);
         }
@@ -118,7 +119,7 @@ public sealed class GitHubUpdateService : IAppUpdateService
             using var response = await GetAsync(update.InstallerUrl, true, token).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
             if (response.Content.Headers.ContentLength is { } length && length != update.Size)
-                throw new InvalidDataException("The installer download size does not match the release. Please try again.");
+                throw new InvalidDataException(L.Text("Messages.Update.DownloadSizeMismatch"));
             await using (var source = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false))
             await using (var destination = new FileStream(partialPath, FileMode.CreateNew, FileAccess.Write,
                 FileShare.None, 81920, FileOptions.Asynchronous | FileOptions.WriteThrough))
@@ -131,17 +132,17 @@ public sealed class GitHubUpdateService : IAppUpdateService
                 {
                     total += read;
                     if (total > update.Size || total > MaximumInstallerBytes)
-                        throw new InvalidDataException("The installer download is larger than the published release.");
+                        throw new InvalidDataException(L.Text("Messages.Update.DownloadTooLarge"));
                     hash.AppendData(buffer, 0, read);
                     await destination.WriteAsync(buffer.AsMemory(0, read), token).ConfigureAwait(false);
                     // Verification still needs to finish before reporting completion.
                     progress?.Report(Math.Min(0.99, (double)total / update.Size));
                 }
                 if (total != update.Size)
-                    throw new InvalidDataException("The installer download is incomplete. Please try again.");
+                    throw new InvalidDataException(L.Text("Messages.Update.DownloadIncomplete"));
                 var actualHash = hash.GetHashAndReset();
                 if (!CryptographicOperations.FixedTimeEquals(actualHash, Convert.FromHexString(expectedHash)))
-                    throw new InvalidDataException("The installer checksum did not match. The download was removed; please try again.");
+                    throw new InvalidDataException(L.Text("Messages.Update.ChecksumMismatch"));
                 await destination.FlushAsync(token).ConfigureAwait(false);
                 destination.Flush(flushToDisk: true);
             }
@@ -229,7 +230,7 @@ public sealed class GitHubUpdateService : IAppUpdateService
         foreach (var asset in assets.EnumerateArray())
         {
             if (asset.ValueKind != JsonValueKind.Object || ReadString(asset, "name") != name) continue;
-            if (match is not null) throw new InvalidDataException("The release contains duplicate installer assets.");
+            if (match is not null) throw new InvalidDataException(L.Text("Messages.Update.DuplicateInstaller"));
             if (ReadString(asset, "state") is { } state && state != "uploaded") continue;
             match = asset;
         }
@@ -239,7 +240,7 @@ public sealed class GitHubUpdateService : IAppUpdateService
     private static bool ReadBoolean(JsonElement element, string name)
     {
         if (!element.TryGetProperty(name, out var value) || value.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
-            throw new InvalidDataException("GitHub returned an incomplete release description.");
+            throw new InvalidDataException(L.Text("Messages.Update.IncompleteRelease"));
         return value.GetBoolean();
     }
 
@@ -253,7 +254,7 @@ public sealed class GitHubUpdateService : IAppUpdateService
     {
         var expected = ExpectedAssetUrl(tag, name);
         if (!Uri.TryCreate(ReadString(asset, "browser_download_url"), UriKind.Absolute, out var actual) || !SameUrl(actual, expected))
-            throw new InvalidDataException("The installer download does not belong to the Penroam GitHub release.");
+            throw new InvalidDataException(L.Text("Messages.Update.WrongRelease"));
         return actual;
     }
 
@@ -277,7 +278,7 @@ public sealed class GitHubUpdateService : IAppUpdateService
         if (string.IsNullOrEmpty(digest)) return null;
         if (!digest.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase)) return null;
         var hash = digest[7..];
-        if (!ValidHash(hash)) throw new InvalidDataException("The release has an invalid SHA-256 checksum.");
+        if (!ValidHash(hash)) throw new InvalidDataException(L.Text("Messages.Update.InvalidChecksum"));
         return hash.ToLowerInvariant();
     }
 
@@ -293,7 +294,7 @@ public sealed class GitHubUpdateService : IAppUpdateService
             || (update.Sha256 is not null && !ValidHash(update.Sha256))
             || (update.Sha256 is null && update.ChecksumUrl is null)
             || (update.ChecksumUrl is not null && !SameUrl(update.ChecksumUrl, ExpectedAssetUrl(update.Tag, update.InstallerName + ".sha256"))))
-            throw new InvalidDataException("The update information is invalid. Check for updates again before downloading.");
+            throw new InvalidDataException(L.Text("Messages.Update.InvalidInformation"));
     }
 
     private async Task<string> ReadChecksumAsync(Uri url, string installerName, CancellationToken token)
@@ -304,7 +305,7 @@ public sealed class GitHubUpdateService : IAppUpdateService
         var text = Encoding.UTF8.GetString(bytes).Trim();
         var parts = text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length != 2 || !ValidHash(parts[0]) || parts[1].TrimStart('*') != installerName)
-            throw new InvalidDataException("The release checksum does not identify the expected Penroam installer.");
+            throw new InvalidDataException(L.Text("Messages.Update.WrongChecksumFile"));
         return parts[0].ToLowerInvariant();
     }
 
@@ -323,14 +324,14 @@ public sealed class GitHubUpdateService : IAppUpdateService
             var location = response.Headers.Location;
             response.Dispose();
             if (redirect == 5 || location is null || !allowAssetRedirects)
-                throw new InvalidDataException("GitHub returned an unexpected download redirect.");
+                throw new InvalidDataException(L.Text("Messages.Update.UnexpectedRedirect"));
             var next = location.IsAbsoluteUri ? location : new Uri(url, location);
             if (next.Scheme != Uri.UriSchemeHttps || !next.IsDefaultPort || next.UserInfo.Length > 0 || next.Fragment.Length > 0
                 || !IsReleaseDownloadHost(next))
-                throw new InvalidDataException("The update download redirected outside GitHub release storage.");
+                throw new InvalidDataException(L.Text("Messages.Update.RedirectOutsideGitHub"));
             url = next;
         }
-        throw new InvalidDataException("GitHub returned too many download redirects.");
+        throw new InvalidDataException(L.Text("Messages.Update.TooManyRedirects"));
     }
 
     private static bool IsReleaseDownloadHost(Uri uri) => uri.Host.ToLowerInvariant() switch
@@ -346,7 +347,7 @@ public sealed class GitHubUpdateService : IAppUpdateService
     private static async Task<byte[]> ReadLimitedAsync(HttpContent content, int maximumBytes, CancellationToken token)
     {
         if (content.Headers.ContentLength > maximumBytes)
-            throw new InvalidDataException("GitHub returned an unexpectedly large release response.");
+            throw new InvalidDataException(L.Text("Messages.Update.ResponseTooLarge"));
         await using var stream = await content.ReadAsStreamAsync(token).ConfigureAwait(false);
         using var result = new MemoryStream();
         var buffer = new byte[8192];
@@ -354,7 +355,7 @@ public sealed class GitHubUpdateService : IAppUpdateService
         while ((read = await stream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0)
         {
             if (result.Length + read > maximumBytes)
-                throw new InvalidDataException("GitHub returned an unexpectedly large release response.");
+                throw new InvalidDataException(L.Text("Messages.Update.ResponseTooLarge"));
             result.Write(buffer, 0, read);
         }
         return result.ToArray();

@@ -1,11 +1,23 @@
 using System.Globalization;
 using System.Security.Cryptography;
+using Moye.Localization;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
 public sealed record DocumentProgress(string Message, int Completed = 0, int Total = 0, bool CanCancel = true)
 {
+    private readonly string _message = Message;
+    public LocalizedMessage? LocalizedMessage { get; init; }
+    public string Message
+    {
+        get => LocalizedMessage?.ToString() ?? _message;
+        init { _message = value; LocalizedMessage = null; }
+    }
+    public DocumentProgress(LocalizedMessage message, int Completed = 0, int Total = 0, bool CanCancel = true)
+        : this("", Completed, Total, CanCancel) => LocalizedMessage = message;
+
     public double Percent => Total > 0 ? Math.Clamp(100d * Completed / Total, 0, 100) : 0;
 }
 
@@ -14,19 +26,19 @@ public static class DocumentWorkflows
 {
     public static IReadOnlyList<int> ParsePageRange(string value, int count)
     {
-        if (count < 1) throw new ArgumentException("This document has no pages.");
-        if (string.IsNullOrWhiteSpace(value)) throw new FormatException("Enter page numbers, for example 1–5, 8, 12.");
+        if (count < 1) throw new ArgumentException(L.Text("Messages.Document.NoPages"));
+        if (string.IsNullOrWhiteSpace(value)) throw new FormatException(L.Text("Messages.Range.EnterNumbers"));
         var selected = new SortedSet<int>();
         foreach (var part in value.Replace('–', '-').Replace('—', '-').Split(','))
         {
             var limits = part.Trim().Split('-');
             if (limits.Length is < 1 or > 2 || !int.TryParse(limits[0].Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var first))
-                throw new FormatException("Use page numbers and ascending ranges, for example 1–5, 8, 12.");
+                throw new FormatException(L.Text("Messages.Range.Ascending"));
             var last = first;
             if (limits.Length == 2 && !int.TryParse(limits[1].Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out last))
-                throw new FormatException("Enter a page number on both sides of a range.");
+                throw new FormatException(L.Text("Messages.Range.BothEnds"));
             if (first < 1 || last > count || last < first)
-                throw new FormatException($"Choose pages from 1 to {count}; ranges must be in ascending order.");
+                throw new FormatException(L.Text("Messages.Range.Bounds", count));
             for (var page = first; page <= last; page++) selected.Add(page - 1);
         }
         return selected.ToArray();
@@ -47,7 +59,7 @@ public static class DocumentWorkflows
     public static IReadOnlyList<NotePage> InsertPages(NotebookDocument document, IReadOnlyList<NotePage> source,
         string sectionId, string? afterPageId = null)
     {
-        if (!document.Sections.Any(section => section.Id == sectionId)) throw new ArgumentException("Choose an existing section.");
+        if (!document.Sections.Any(section => section.Id == sectionId)) throw new ArgumentException(L.Text("Messages.Document.ExistingSection"));
         var copies = source.Select(page => page.Snapshot()).ToArray();
         var copiedIds = copies.ToDictionary(page => page.Id, _ => Guid.NewGuid().ToString("N"), StringComparer.Ordinal);
         foreach (var page in copies)
@@ -103,13 +115,13 @@ public sealed class PreparedDocumentImport : IDisposable
         for (var i = 0; i < ids.Length; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            progress?.Report(new("Saving imported attachments…", i, ids.Length));
+            progress?.Report(new(L.M("Messages.Progress.SaveAttachments"), i, ids.Length));
             var asset = await _assets.GetAssetAsync(ids[i]);
             cancellationToken.ThrowIfCancellationRequested();
             if (asset.Id != ids[i] || Convert.ToHexStringLower(SHA256.HashData(asset.Bytes)) != asset.Id)
-                throw new InvalidDataException("The imported attachment could not be verified.");
+                throw new InvalidDataException(L.Text("Messages.Document.AttachmentUnverified"));
             var stored = await repository.PutAssetAsync(asset.FileName, asset.ContentType, asset.Bytes);
-            if (stored.Id != asset.Id) throw new InvalidDataException("The imported attachment could not be verified.");
+            if (stored.Id != asset.Id) throw new InvalidDataException(L.Text("Messages.Document.AttachmentUnverified"));
         }
     }
     public void Dispose()
@@ -128,7 +140,7 @@ public sealed class PreparedDocumentImport : IDisposable
             _values[asset.Id] = asset; return Task.FromResult(asset);
         }
         public Task<AssetData> GetAssetAsync(string id) => Task.FromResult(_values.TryGetValue(id, out var asset)
-            ? asset : throw new FileNotFoundException("The import preview attachment is no longer available."));
+            ? asset : throw new FileNotFoundException(L.Text("Messages.Document.PreviewAttachmentMissing")));
         public Task InitializeAsync() => Task.CompletedTask;
         public Task<IReadOnlyList<NotebookSummary>> ListAsync() => Task.FromResult<IReadOnlyList<NotebookSummary>>([]);
         public Task<NotebookDocument?> LoadAsync(string id) => Task.FromResult<NotebookDocument?>(null);

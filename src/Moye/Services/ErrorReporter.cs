@@ -1,4 +1,5 @@
 using System.IO;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
@@ -12,7 +13,7 @@ public sealed class ErrorReporter(string logPath)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(logPath))!);
             File.AppendAllText(logPath, $"{DateTimeOffset.Now:O} {exception}\n\n");
-            return message + "\n\nDetails were saved to:\n" + logPath;
+            return L.Text("Messages.Error.DetailsSaved", message, logPath);
         }
         catch { return message; } // Reporting must not replace the original failure.
     }
@@ -22,9 +23,7 @@ public sealed class ErrorReporter(string logPath)
         for (Exception? cause = exception; cause is not null; cause = cause.InnerException)
         {
             if (cause.HResult == unchecked((int)0x800711C7))
-                return "Windows application control blocked a component required by Penroam. " +
-                    "Install the latest Penroam update. If it is still blocked, share the error log with support or your administrator." +
-                    "\n\n" + cause.Message;
+                return L.Text("Messages.Error.WindowsBlocked", cause.Message);
         }
         var root = exception.GetBaseException();
         var message = exception.Message;

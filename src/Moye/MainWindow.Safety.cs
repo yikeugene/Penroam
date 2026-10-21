@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +21,7 @@ public partial class MainWindow
         if (_draftRecovery is null) return;
         var count = (await _draftRecovery.ReadAsync()).Count;
         RecoveryAlertButton.Visibility = count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        RecoveryAlertButton.Content = $"Recover drafts ({count})";
+        L.Bind(RecoveryAlertButton, ContentControl.ContentProperty, "Shell.RecoverDraftCount", count);
     }
 
     private async Task<List<NotebookDocument>> CaptureBackupDocumentsAsync(bool all, IProgress<string>? progress = null, CancellationToken cancellationToken = default)
@@ -35,7 +36,7 @@ public partial class MainWindow
             for (var i = 0; i < summaries.Count; i++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                progress?.Report($"Reading notebook {i + 1} of {summaries.Count}…");
+                progress?.Report(L.Text("Shell.ReadingBackupNotebook", i + 1, summaries.Count));
                 if (!overlay.ContainsKey(summaries[i].Id) && await ViewModel.Repository.LoadAsync(summaries[i].Id) is { } saved) documents.Add(saved);
             }
             documents.AddRange(overlay.Values);
@@ -66,7 +67,7 @@ public partial class MainWindow
         {
             _workspace.LastBackupError = ex.Message;
             _nextBackupAttempt = DateTimeOffset.UtcNow.AddMinutes(15);
-            ViewModel.Status = "Automatic backup failed · Open Backup & recovery";
+            ViewModel.SetStatus("Shell.AutomaticBackupFailed");
         }
         finally
         {
@@ -81,60 +82,65 @@ public partial class MainWindow
     {
         if (!all && ViewModel.Document is null) return;
         CommitEditors();
-        var dialog = new SaveFileDialog { Filter = "Penroam backups|*.moye", FileName = (all ? "All Penroam Notebooks" : SafeFileName(ViewModel.Title)) + $"-{DateTime.Now:yyyyMMdd}.moye" };
+        var dialog = new SaveFileDialog { Filter = L.Text("Shell.BackupFileFilter"), FileName = (all ? "All Penroam Notebooks" : SafeFileName(ViewModel.Title)) + $"-{DateTime.Now:yyyyMMdd}.moye" };
         if (dialog.ShowDialog(this) != true) return;
-        await RunAsync("Creating editable backup…", async () =>
+        await RunAsync(L.M("Shell.CreatingEditableBackup"), async () =>
         {
-            await SafetyProgressDialog.RunAsync(this, "Create backup", async (progress, token) =>
+            await SafetyProgressDialog.RunAsync(this, L.Text("Shell.CreateBackup"), async (progress, token) =>
             {
                 var documents = await CaptureBackupDocumentsAsync(all, progress, token);
-                progress.Report($"Writing {documents.Count} notebook(s) and their attachments…");
+                progress.Report(L.Text("Shell.WritingBackupNotebooks", documents.Count));
                 await ViewModel.Backup.ExportAsync(dialog.FileName, documents, token);
             });
-            ViewModel.Status = "Backup saved · " + Path.GetFileName(dialog.FileName);
+            ViewModel.SetStatus("Shell.BackupSaved", Path.GetFileName(dialog.FileName));
             OfferOutputFolder(dialog.FileName);
         });
     }
 
     private static void OfferOutputFolder(string path)
     {
-        if (MessageBox.Show("The file is ready. Show it in its folder?", "Saved", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+        if (MessageBox.Show(L.Text("Shell.ShowOutputFolderPrompt"), L.Text("Shell.Saved"), MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", "/select,\"" + Path.GetFullPath(path) + "\"") { UseShellExecute = true });
     }
 
     private async void RestoreSelectedClick(object sender, RoutedEventArgs e)
     {
-        var picker = new OpenFileDialog { Filter = "Penroam backups|*.moye", Title = "Choose notebooks to restore as new copies" };
+        var picker = new OpenFileDialog { Filter = L.Text("Shell.BackupFileFilter"), Title = L.Text("Shell.ChooseBackupToRestore") };
         if (picker.ShowDialog(this) != true) return;
         CommitEditors();
-        await RunAsync("Inspecting backup…", async () =>
+        await RunAsync(L.M("Shell.InspectingBackup"), async () =>
         {
             IReadOnlyList<NotebookDocument> documents = [];
-            await SafetyProgressDialog.RunAsync(this, "Validate backup", async (progress, token) =>
+            await SafetyProgressDialog.RunAsync(this, L.Text("Shell.ValidateBackup"), async (progress, token) =>
             {
-                progress.Report("Checking notebook data and attachment integrity…");
+                progress.Report(L.Text("Shell.CheckingBackupIntegrity"));
                 documents = await ViewModel.Backup.ImportAsync(picker.FileName, token);
             });
             var selected = ChooseRestoreDocuments(documents);
             if (selected.Count == 0) return;
             await ViewModel.Autosave.FlushAsync();
             await SaveRestoredDocumentsAsync(selected);
-            ViewModel.Status = $"Restored {selected.Count} notebook(s) as new copies";
+            ViewModel.SetStatus("Shell.NotebooksRestored", selected.Count);
         });
     }
 
     private IReadOnlyList<NotebookDocument> ChooseRestoreDocuments(IReadOnlyList<NotebookDocument> documents)
     {
-        var window = WorkspaceDialogUi.Window(this, "Choose notebooks to restore", 640, 540);
+        var window = CreateLocalizedSafetyWindow("Shell.ChooseRestoreNotebooks", 640, 540);
         var layout = new DockPanel { Margin = new Thickness(24) };
-        var instruction = WorkspaceDialogUi.Text("Select the notebooks to restore. Existing notebooks are kept; each selection becomes a new copy.");
+        var instruction = CreateLocalizedSafetyText("Shell.ChooseRestoreDescription");
         DockPanel.SetDock(instruction, Dock.Top); layout.Children.Add(instruction);
         var actions = new StackPanel { Orientation = Orientation.Horizontal };
         DockPanel.SetDock(actions, Dock.Bottom); layout.Children.Add(actions);
-        var boxes = documents.Select(document => new CheckBox { Content = $"{document.Title} · {document.Pages.Count} pages", Tag = document, IsChecked = true, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center }).ToArray();
-        actions.Children.Add(WorkspaceDialogUi.Button("Select all", (_, _) => { foreach (var box in boxes) box.IsChecked = true; }));
-        actions.Children.Add(WorkspaceDialogUi.Button("Clear", (_, _) => { foreach (var box in boxes) box.IsChecked = false; }));
-        actions.Children.Add(WorkspaceDialogUi.Button("Restore selected", (_, _) => window.DialogResult = true));
+        var boxes = documents.Select(document =>
+        {
+            var box = new CheckBox { Tag = document, IsChecked = true, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
+            L.Bind(box, ContentControl.ContentProperty, document.Pages.Count == 1 ? "Shell.RestoreNotebookChoiceOne" : "Shell.RestoreNotebookChoice", document.Title, document.Pages.Count);
+            return box;
+        }).ToArray();
+        actions.Children.Add(CreateLocalizedSafetyButton("Shell.SelectAll", (_, _) => { foreach (var box in boxes) box.IsChecked = true; }));
+        actions.Children.Add(CreateLocalizedSafetyButton("Shell.Clear", (_, _) => { foreach (var box in boxes) box.IsChecked = false; }));
+        actions.Children.Add(CreateLocalizedSafetyButton("Shell.RestoreSelected", (_, _) => window.DialogResult = true));
         var stack = new StackPanel(); foreach (var box in boxes) stack.Children.Add(box);
         layout.Children.Add(new ScrollViewer { Content = stack, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
         window.Content = layout;
@@ -154,68 +160,114 @@ public partial class MainWindow
         CommitEditors(); ClearTouches();
         var drafts = await _draftRecovery.ReadAsync();
         var deleted = await _localSafety.ListAsync();
-        var window = WorkspaceDialogUi.Window(this, "Backup & recovery", 760, 660);
+        var window = CreateLocalizedSafetyWindow("Shell.SafetyCenter", 760, 660);
         var layout = new DockPanel { Margin = new Thickness(22) };
-        var summary = WorkspaceDialogUi.Text($"Last automatic backup: {(_workspace.LastBackupUtc?.ToLocalTime().ToString("g") ?? "Never")}\n" +
-            (_workspace.LastBackupError.Length > 0 ? "Backup error: " + _workspace.LastBackupError : _workspace.BackupEnabled ? "Automatic backups run while Penroam is open." : "Automatic backups are off.") +
-            (_draftRecovery.LastError is { } error ? "\nDraft recovery: " + error : ""));
+        var summary = CreateLocalizedSafetyText("Shell.SafetySummary",
+            L.M("Shell.LastAutomaticBackup", _workspace.LastBackupUtc is { } lastBackup ? (object)lastBackup.ToLocalTime().ToString("g") : L.M("Shell.NeverBackedUp")),
+            _workspace.LastBackupError.Length > 0 ? L.M("Shell.BackupError", _workspace.LastBackupError) : L.M(_workspace.BackupEnabled ? "Shell.AutomaticBackupsEnabled" : "Shell.AutomaticBackupsDisabled"),
+            _draftRecovery.LastError is { } error ? (object)L.M("Shell.DraftRecoveryError", error) : "");
         DockPanel.SetDock(summary, Dock.Top); layout.Children.Add(summary);
         var actions = new WrapPanel(); DockPanel.SetDock(actions, Dock.Top); layout.Children.Add(actions);
-        actions.Children.Add(WorkspaceDialogUi.Button("Backup settings", (_, _) => { window.Close(); WorkspaceSettingsClick(this, new()); }));
-        actions.Children.Add(WorkspaceDialogUi.Button("Back up all now", async (_, _) => { window.Close(); await BackupWithProgressAsync(true); }));
-        actions.Children.Add(WorkspaceDialogUi.Button("Restore a backup…", (_, _) => { window.Close(); RestoreSelectedClick(this, new()); }));
+        actions.Children.Add(CreateLocalizedSafetyButton("Shell.BackupSettings", (_, _) => { window.Close(); WorkspaceSettingsClick(this, new()); }));
+        actions.Children.Add(CreateLocalizedSafetyButton("Shell.BackupAllNow", async (_, _) => { window.Close(); await BackupWithProgressAsync(true); }));
+        actions.Children.Add(CreateLocalizedSafetyButton("Shell.RestoreBackupAction", (_, _) => { window.Close(); RestoreSelectedClick(this, new()); }));
         var tabs = new TabControl { Margin = new Thickness(0, 12, 0, 0) }; layout.Children.Add(tabs);
         var draftPanel = new DockPanel { Margin = new Thickness(12) };
-        var draftNote = WorkspaceDialogUi.Text("Pending snapshots may contain edits from an interrupted session. Recovering creates a new notebook so saved notes are never overwritten.");
+        var draftNote = CreateLocalizedSafetyText("Shell.DraftRecoveryDescription");
         DockPanel.SetDock(draftNote, Dock.Top); draftPanel.Children.Add(draftNote);
-        var draftList = new ListBox { ItemsSource = drafts.Select(file => new SafetyListItem($"{file.Draft.Document.Title} · {file.Draft.CapturedUtc.ToLocalTime():g}", file)).ToArray(), DisplayMemberPath = "Label" };
+        var draftList = CreateSafetyList(drafts.Select(file => new SafetyListItem(L.M("Shell.RecoveryDraftItem", file.Draft.Document.Title, file.Draft.CapturedUtc.ToLocalTime()), file)).ToArray());
         var draftActions = new WrapPanel(); DockPanel.SetDock(draftActions, Dock.Bottom); draftPanel.Children.Add(draftActions);
-        draftActions.Children.Add(WorkspaceDialogUi.Button("Recover selected as copy", async (_, _) =>
+        draftActions.Children.Add(CreateLocalizedSafetyButton("Shell.RecoverDraftAsCopy", async (_, _) =>
         {
             if (draftList.SelectedItem is not SafetyListItem { Value: Services.RecoveryDraftFile file }) return;
             window.Close();
-            await RunAsync("Recovering draft…", async () =>
+            await RunAsync(L.M("Shell.RecoveringDraft"), async () =>
             {
                 var copy = MakeRecoveryCopy(file.Draft.Document);
                 foreach (var assetId in copy.Pages.SelectMany(page => page.Images.Select(image => image.AssetId).Concat(page.Pdf is { } pdf ? [pdf.AssetId] : Array.Empty<string>())).Distinct())
                     await ViewModel.Repository.GetAssetAsync(assetId);
                 await ViewModel.Repository.SaveAsync(copy); await _draftRecovery.ForgetAsync(file);
-                await ViewModel.RefreshLibraryAsync(); await RefreshRecoveryNoticeAsync(); ViewModel.Status = "Draft recovered as a new notebook";
+                await ViewModel.RefreshLibraryAsync(); await RefreshRecoveryNoticeAsync(); ViewModel.SetStatus("Shell.DraftRecovered");
             });
         }));
-        draftActions.Children.Add(WorkspaceDialogUi.Button("Discard selected…", async (_, _) =>
+        draftActions.Children.Add(CreateLocalizedSafetyButton("Shell.DiscardSelectedDraft", async (_, _) =>
         {
             if (draftList.SelectedItem is not SafetyListItem { Value: Services.RecoveryDraftFile file }) return;
-            if (MessageBox.Show(window, "Permanently discard this recovery draft?", "Discard draft", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
+            if (MessageBox.Show(window, L.Text("Shell.DiscardDraftConfirm"), L.Text("Shell.DiscardDraftTitle"), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
             try { await _draftRecovery.ForgetAsync(file); window.Close(); SafetyCenterClick(this, new()); }
-            catch (Exception ex) { MessageBox.Show(window, ex.Message, "Draft kept"); }
+            catch (Exception ex) { MessageBox.Show(window, ex.Message, L.Text("Shell.DraftKept")); }
         }));
-        draftPanel.Children.Add(draftList); tabs.Items.Add(new TabItem { Header = $"Interrupted drafts ({drafts.Count})", Content = draftPanel, MinHeight = 44 });
+        draftPanel.Children.Add(draftList);
+        var draftTab = new TabItem { Content = draftPanel, MinHeight = 44 };
+        L.Bind(draftTab, HeaderedContentControl.HeaderProperty, "Shell.InterruptedDrafts", drafts.Count);
+        tabs.Items.Add(draftTab);
         var deletedPanel = new DockPanel { Margin = new Thickness(12) };
-        var deletedNote = WorkspaceDialogUi.Text("Before deleting a notebook, section or pages, Penroam keeps the complete notebook for 30 days. Restore it as a new copy, then move back any pages you need.");
+        var deletedNote = CreateLocalizedSafetyText("Shell.DeletedRecoveryDescription");
         DockPanel.SetDock(deletedNote, Dock.Top); deletedPanel.Children.Add(deletedNote);
-        var deletedList = new ListBox { ItemsSource = deleted, DisplayMemberPath = "Label" };
+        var deletedList = CreateSafetyList(deleted.Select(entry => new SafetyListItem(L.M(entry.PageCount == 1 ? "Shell.DeletedSnapshotItemOne" : "Shell.DeletedSnapshotItem", entry.Title, LocalizedDeletionReason(entry.Reason), entry.PageCount, entry.DeletedUtc.ToLocalTime()), entry)).ToArray());
         var deletedActions = new WrapPanel(); DockPanel.SetDock(deletedActions, Dock.Bottom); deletedPanel.Children.Add(deletedActions);
-        deletedActions.Children.Add(WorkspaceDialogUi.Button("Restore selected as copy", async (_, _) =>
+        deletedActions.Children.Add(CreateLocalizedSafetyButton("Shell.RestoreDeletedAsCopy", async (_, _) =>
         {
-            if (deletedList.SelectedItem is not Services.DeletedSnapshot entry) return;
-            window.Close(); await RunAsync("Restoring deleted content…", async () =>
+            if (deletedList.SelectedItem is not SafetyListItem { Value: Services.DeletedSnapshot entry }) return;
+            window.Close(); await RunAsync(L.M("Shell.RestoringDeletedContent"), async () =>
             {
                 var documents = await _localSafety.RestoreAsync(entry); await SaveRestoredDocumentsAsync(documents);
-                ViewModel.Status = "Deleted content restored as a new notebook";
+                ViewModel.SetStatus("Shell.DeletedContentRestored");
             });
         }));
-        deletedActions.Children.Add(WorkspaceDialogUi.Button("Delete permanently…", (_, _) =>
+        deletedActions.Children.Add(CreateLocalizedSafetyButton("Shell.DeletePermanently", (_, _) =>
         {
-            if (deletedList.SelectedItem is not Services.DeletedSnapshot entry) return;
-            if (MessageBox.Show(window, "Permanently remove this recovery copy?", "Delete recovery copy", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
+            if (deletedList.SelectedItem is not SafetyListItem { Value: Services.DeletedSnapshot entry }) return;
+            if (MessageBox.Show(window, L.Text("Shell.DeleteRecoveryCopyConfirm"), L.Text("Shell.DeleteRecoveryCopyTitle"), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
             _localSafety.Delete(entry); window.Close(); SafetyCenterClick(this, new());
         }));
-        deletedPanel.Children.Add(deletedList); tabs.Items.Add(new TabItem { Header = $"Recently deleted ({deleted.Count})", Content = deletedPanel, MinHeight = 44 });
+        deletedPanel.Children.Add(deletedList);
+        var deletedTab = new TabItem { Content = deletedPanel, MinHeight = 44 };
+        L.Bind(deletedTab, HeaderedContentControl.HeaderProperty, "Shell.RecentlyDeleted", deleted.Count);
+        tabs.Items.Add(deletedTab);
         window.Content = layout; window.ShowDialog(); await RefreshRecoveryNoticeAsync();
     }
 
-    private sealed record SafetyListItem(string Label, object Value);
+    private Window CreateLocalizedSafetyWindow(string key, double width, double height)
+    {
+        var window = WorkspaceDialogUi.Window(this, "", width, height);
+        L.Bind(window, Window.TitleProperty, key);
+        return window;
+    }
+
+    private static TextBlock CreateLocalizedSafetyText(string key, params object?[] args)
+    {
+        var text = WorkspaceDialogUi.Text("");
+        L.Bind(text, TextBlock.TextProperty, key, args);
+        return text;
+    }
+
+    private static Button CreateLocalizedSafetyButton(string key, RoutedEventHandler action)
+    {
+        var button = WorkspaceDialogUi.Button("", action);
+        L.Bind(button, ContentControl.ContentProperty, key);
+        return button;
+    }
+
+    private static ListBox CreateSafetyList(IEnumerable<SafetyListItem> items)
+    {
+        var text = new FrameworkElementFactory(typeof(TextBlock));
+        text.SetBinding(TextBlock.TextProperty, L.FormatBinding("Shell.SafetyItemLabel", new System.Windows.Data.Binding(nameof(SafetyListItem.Label))));
+        return new ListBox { ItemsSource = items, ItemTemplate = new DataTemplate { VisualTree = text } };
+    }
+
+    private static object LocalizedDeletionReason(string reason) => reason switch
+    {
+        // Legacy reason values remain unchanged on disk; only their presentation is localized.
+        "Notebook deleted" => L.M("Shell.DeletionNotebook"),
+        "Page deleted" => L.M("Shell.DeletionPage"),
+        "Section deleted" => L.M("Shell.DeletionSection"),
+        "Pages deleted in organizer" => L.M("Shell.DeletionOrganizer"),
+        "Pages moved to another notebook" => L.M("Shell.DeletionTransfer"),
+        _ => reason
+    };
+
+    private sealed record SafetyListItem(Moye.Localization.LocalizedMessage Label, object Value);
 
     internal static NotebookDocument MakeRecoveryCopy(NotebookDocument document)
     {

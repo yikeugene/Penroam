@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -21,9 +22,9 @@ public partial class MainWindow
         if (bounds is null)
         {
             BitmapSource? preview = null;
-            await RunAsync("Preparing question source…", async () => preview = await new PagePreviewRenderer(ViewModel.Pdf, ViewModel.Repository.GetAssetAsync).RenderAsync(page, 900));
+            await RunAsync(L.M("Shell.PreparingQuestionSource"), async () => preview = await new PagePreviewRenderer(ViewModel.Pdf, ViewModel.Repository.GetAssetAsync).RenderAsync(page, 900));
             if (preview is null || _closing || !ReferenceEquals(ViewModel.Document, document) || !document.Pages.Contains(page)) return;
-            var region = new PageRegionDialog(this, page, preview, "Mark the question source");
+            var region = new PageRegionDialog(this, page, preview, L.Text("Shell.MarkQuestionSource"));
             if (region.ShowDialog() != true) return;
             bounds = region.Region;
         }
@@ -31,7 +32,7 @@ public partial class MainWindow
         var dialog = new StudyQuestionDialog(this, new StudyQuestion { Anchor = anchor }, true);
         if (dialog.ShowDialog() == true && ReferenceEquals(ViewModel.Document, document)
             && ViewModel.AddStudyQuestion(page.Id, dialog.Question))
-            ViewModel.Status = "Question added. Open Question inbox to keep its explanation and next attempt.";
+            ViewModel.SetStatus("Shell.QuestionAdded");
     }
 
     private void SetResumeHintClick(object sender, RoutedEventArgs e)
@@ -43,7 +44,7 @@ public partial class MainWindow
         var page = selected.Page;
         var dialog = new StudyResumeDialog(this, page.ResumeHint, ToStudyAnchor(page, CurrentEditor?.SelectedContentBounds));
         if (dialog.ShowDialog() == true && ViewModel.SetResumeHint(page.Id, dialog.Remove ? null : dialog.Hint))
-            ViewModel.Status = dialog.Remove ? "Resume note cleared." : "Next step saved. Open Resume notes when you return.";
+            ViewModel.SetStatus(dialog.Remove ? "Shell.ResumeNoteCleared" : "Shell.ResumeNoteSaved");
     }
 
     private void StudyInboxClick(object sender, RoutedEventArgs e) => ShowStudyInbox(false);
@@ -56,7 +57,8 @@ public partial class MainWindow
         if (dialog.ShowDialog() != true || dialog.Result is not { } item) return;
         RememberOrganizationVisit();
         if (!await NavigateOrganizationAsync(document.Id, item.SectionId, item.PageId)) return;
-        ViewModel.Status = item.Question is not null ? item.Detail + " · " + item.Heading : "Continue: " + item.Heading;
+        if (item.Question is not null) ViewModel.SetStatus("Shell.StudyQuestionStatus", (object?)item.LocalizedDetail ?? item.Detail, item.Heading);
+        else ViewModel.SetStatus("Shell.ContinueStudy", item.Heading);
         if (item.Anchor is not { } anchor) return;
         await Dispatcher.InvokeAsync(() =>
         {

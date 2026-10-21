@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Win32;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -31,41 +32,41 @@ public sealed class WorkspaceOptionsDialog
 
     public static Window Build(Window owner, WorkspacePreferences preferences)
     {
-        var window = WorkspaceDialogUi.Window(owner, "Workspace settings", height: 670);
+        var window = WorkspaceDialogUi.Window(owner, L.Text("Controls.Workspace.Title"), height: 670);
         var panel = new StackPanel { Margin = new Thickness(24) };
         window.Content = new ScrollViewer { Content = panel, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
-        panel.Children.Add(WorkspaceDialogUi.Text("Writing and workspace"));
+        panel.Children.Add(WorkspaceDialogUi.Text(L.Text("Controls.Workspace.Writing")));
         CheckBox Check(string label, bool value)
         {
             var box = new CheckBox { Content = new TextBlock { Text = label, TextWrapping = TextWrapping.Wrap }, IsChecked = value, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
             System.Windows.Automation.AutomationProperties.SetName(box, label);
             panel.Children.Add(box); return box;
         }
-        var touch = Check("Use two fingers to move pages (ignore one-finger drags)", preferences.TwoFingerNavigationOnly);
-        var zoom = Check("Lock zoom while writing", preferences.LockZoom);
-        var compact = Check("Hide the favorite pen row in the main toolbar", preferences.CompactToolbar);
-        var right = Check("Dock focus tools on the right", preferences.FocusToolsOnRight);
-        panel.Children.Add(WorkspaceDialogUi.Text("Automatic local backups"));
-        var enabled = Check("Back up while Penroam is open", preferences.BackupEnabled);
+        var touch = Check(L.Text("Controls.Workspace.TwoFingers"), preferences.TwoFingerNavigationOnly);
+        var zoom = Check(L.Text("Controls.Workspace.LockZoom"), preferences.LockZoom);
+        var compact = Check(L.Text("Controls.Workspace.Compact"), preferences.CompactToolbar);
+        var right = Check(L.Text("Controls.Workspace.FocusRight"), preferences.FocusToolsOnRight);
+        panel.Children.Add(WorkspaceDialogUi.Text(L.Text("Controls.Workspace.Backups")));
+        var enabled = Check(L.Text("Controls.Workspace.BackupEnabled"), preferences.BackupEnabled);
         var directory = new TextBox { Text = preferences.BackupDirectory, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
         panel.Children.Add(directory);
-        panel.Children.Add(WorkspaceDialogUi.Button("Choose backup folder…", (_, _) =>
+        panel.Children.Add(WorkspaceDialogUi.Button(L.Text("Controls.Workspace.ChooseFolder"), (_, _) =>
         {
-            var picker = new OpenFolderDialog { Title = "Automatic backup folder" };
+            var picker = new OpenFolderDialog { Title = L.Text("Controls.Workspace.BackupFolder") };
             if (picker.ShowDialog(window) == true) directory.Text = picker.FolderName;
         }));
-        panel.Children.Add(WorkspaceDialogUi.Text("Interval in hours (1–168) · keep completed backups (1–100)"));
+        panel.Children.Add(WorkspaceDialogUi.Text(L.Text("Controls.Workspace.BackupIntervals")));
         var values = new StackPanel { Orientation = Orientation.Horizontal };
         var hours = new TextBox { Text = preferences.BackupIntervalHours.ToString(), Width = 100, MinHeight = 44, Margin = new Thickness(0, 0, 12, 0) };
         var retention = new TextBox { Text = preferences.BackupRetention.ToString(), Width = 100, MinHeight = 44 };
         values.Children.Add(hours); values.Children.Add(retention); panel.Children.Add(values);
-        panel.Children.Add(WorkspaceDialogUi.Text("Backups contain editable notebooks. Recently deleted items are kept separately for 30 days. Both remain on this device unless you choose a synchronized folder."));
+        panel.Children.Add(WorkspaceDialogUi.Text(L.Text("Controls.Workspace.BackupHint")));
         var error = WorkspaceDialogUi.Text(""); error.Foreground = Brushes.DarkRed; panel.Children.Add(error);
-        panel.Children.Add(WorkspaceDialogUi.Button("Save settings", (_, _) =>
+        panel.Children.Add(WorkspaceDialogUi.Button(L.Text("Controls.Workspace.Save"), (_, _) =>
         {
             if (!int.TryParse(hours.Text, out var interval) || interval is < 1 or > 168 || !int.TryParse(retention.Text, out var keep) || keep is < 1 or > 100)
-            { error.Text = "Enter an interval from 1 to 168 hours and keep 1 to 100 backups."; return; }
-            if (enabled.IsChecked == true && string.IsNullOrWhiteSpace(directory.Text)) { error.Text = "Choose a backup folder first."; return; }
+            { error.Text = L.Text("Controls.Workspace.InvalidInterval"); return; }
+            if (enabled.IsChecked == true && string.IsNullOrWhiteSpace(directory.Text)) { error.Text = L.Text("Controls.Workspace.FolderRequired"); return; }
             preferences.TwoFingerNavigationOnly = touch.IsChecked == true;
             preferences.LockZoom = zoom.IsChecked == true; preferences.CompactToolbar = compact.IsChecked == true;
             preferences.FocusToolsOnRight = right.IsChecked == true; preferences.BackupEnabled = enabled.IsChecked == true;
@@ -86,10 +87,10 @@ internal sealed class SafetyProgressDialog
         var panel = new StackPanel { Margin = new Thickness(24) };
         var label = WorkspaceDialogUi.Text(title); panel.Children.Add(label);
         panel.Children.Add(new ProgressBar { IsIndeterminate = true, Height = 6, Margin = new Thickness(0, 12, 0, 12) });
-        var cancel = WorkspaceDialogUi.Button("Cancel", (_, _) => cancellation.Cancel()); panel.Children.Add(cancel);
+        var cancel = WorkspaceDialogUi.Button(L.Text("Controls.Common.Cancel"), (_, _) => cancellation.Cancel()); panel.Children.Add(cancel);
         window.Content = panel;
         var done = false;
-        window.Closing += (_, e) => { if (!done) { e.Cancel = true; cancellation.Cancel(); cancel.IsEnabled = false; label.Text = "Canceling after the current safe step…"; } };
+        window.Closing += (_, e) => { if (!done) { e.Cancel = true; cancellation.Cancel(); cancel.IsEnabled = false; label.Text = L.Text("Controls.Workspace.Canceling"); } };
         window.Loaded += async (_, _) =>
         {
             try { await action(new Progress<string>(message => label.Text = message), cancellation.Token); completion.SetResult(); }
@@ -109,14 +110,14 @@ public static class WorkspaceCommandDialog
 
     public static Window Build(Window owner, IReadOnlyList<WorkspaceCommand> commands)
     {
-        var window = WorkspaceDialogUi.Window(owner, "Commands & help", 690, 640);
+        var window = WorkspaceDialogUi.Window(owner, L.Text("Controls.Workspace.CommandsTitle"), 690, 640);
         var layout = new DockPanel { Margin = new Thickness(22) };
-        var search = new TextBox { MinHeight = 44, Margin = new Thickness(0, 0, 0, 12), ToolTip = "Search commands, tools and shortcuts" };
-        System.Windows.Automation.AutomationProperties.SetName(search, "Find a command");
+        var search = new TextBox { MinHeight = 44, Margin = new Thickness(0, 0, 0, 12), ToolTip = L.Text("Controls.Workspace.CommandSearch") };
+        System.Windows.Automation.AutomationProperties.SetName(search, L.Text("Controls.Workspace.FindCommand"));
         DockPanel.SetDock(search, Dock.Top); layout.Children.Add(search);
-        var hint = WorkspaceDialogUi.Text("Write with Pen · Move with your fingers · Use Lasso to move notes together. Select a command for its shortcut and explanation. Esc closes this panel.");
+        var hint = WorkspaceDialogUi.Text(L.Text("Controls.Workspace.CommandsHint"));
         DockPanel.SetDock(hint, Dock.Bottom); layout.Children.Add(hint);
-        var run = WorkspaceDialogUi.Button("Run selected command", (_, _) => { }); DockPanel.SetDock(run, Dock.Bottom); layout.Children.Add(run);
+        var run = WorkspaceDialogUi.Button(L.Text("Controls.Workspace.Run"), (_, _) => { }); DockPanel.SetDock(run, Dock.Bottom); layout.Children.Add(run);
         var list = new ListBox { DisplayMemberPath = nameof(WorkspaceCommand.Name), MinHeight = 44 };
         ScrollViewer.SetHorizontalScrollBarVisibility(list, ScrollBarVisibility.Disabled);
         var style = new Style(typeof(ListBoxItem)); style.Setters.Add(new Setter(FrameworkElement.MinHeightProperty, 44d)); style.Setters.Add(new Setter(Control.VerticalContentAlignmentProperty, VerticalAlignment.Center)); list.ItemContainerStyle = style;

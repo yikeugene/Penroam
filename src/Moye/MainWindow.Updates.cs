@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.IO;
 using System.Windows;
 using Moye.Services;
@@ -42,7 +43,7 @@ public partial class MainWindow
         if (_updateDownloadCancellation is not null) return;
         if (_updateService is null)
         {
-            if (manual) UpdateNotice.ShowError("Open Penroam from its normal shortcut to check for updates. Isolated test libraries do not run the updater.");
+            if (manual) UpdateNotice.ShowError(L.M("Shell.UpdatesDisabled"));
             return;
         }
         if (manual) { _updateNoticeDismissed = false; _showUpdateCheckResult = true; UpdateNotice.ShowChecking(); }
@@ -67,7 +68,7 @@ public partial class MainWindow
             // No network is needed to write notes. Startup failures stay quiet;
             // an explicit check reports the failure and offers a retry.
             if (_showUpdateCheckResult && !_updateNoticeDismissed && !_closing && !_updateShutdownRequested)
-                UpdateNotice.ShowError("Could not check GitHub for updates. " + ex.Message);
+                UpdateNotice.ShowError(L.M("Shell.UpdateCheckFailed", ex.Message));
         }
         finally { _checkingUpdates = false; _showUpdateCheckResult = false; }
     }
@@ -77,7 +78,7 @@ public partial class MainWindow
         if (!_ready || _closing || _updateShutdownRequested || _checkingUpdates || _updateDownloadCancellation is not null) return;
         if (UpdateMustWaitForWork)
         {
-            UpdateNotice.ShowError("Please finish the current operation or input, then try updating again.");
+            UpdateNotice.ShowError(L.M("Shell.UpdateWaitForInput"));
             return;
         }
         if (_retryUpdateCheck || _availableUpdate is not { } update || _updateService is null)
@@ -109,7 +110,7 @@ public partial class MainWindow
         catch (Exception ex)
         {
             _downloadedUpdatePath = null;
-            if (!_closing && !_updateShutdownRequested) UpdateNotice.ShowError(ex is OperationCanceledException ? "The update download timed out. Please try again when your connection is stable." : "Could not download the update. " + ex.Message);
+            if (!_closing && !_updateShutdownRequested) UpdateNotice.ShowError(ex is OperationCanceledException ? L.M("Shell.UpdateDownloadTimeout") : L.M("Shell.UpdateDownloadFailed", ex.Message));
         }
         finally
         {

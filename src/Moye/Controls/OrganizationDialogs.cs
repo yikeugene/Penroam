@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Moye.Models;
 using Moye.ViewModels;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -27,8 +28,8 @@ internal static class OrganizationDialogUi
     public static void Finish(Window window, Panel panel)
     {
         var row = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 18, 0, 0) };
-        var cancel = Button(window, "Cancel", () => window.DialogResult = false); cancel.IsCancel = true;
-        var apply = Button(window, "Apply", () => window.DialogResult = true); apply.IsDefault = true;
+        var cancel = Button(window, L.Text("Controls.Common.Cancel"), () => window.DialogResult = false); cancel.IsCancel = true;
+        var apply = Button(window, L.Text("Controls.Common.Apply"), () => window.DialogResult = true); apply.IsDefault = true;
         row.Children.Add(cancel); row.Children.Add(apply); panel.Children.Add(row);
     }
     public static TextBox Field(Panel panel, string label, string text)
@@ -46,9 +47,9 @@ public sealed class PageOrganizationDetailsDialog : Window
     public bool IsBookmarked => _bookmark.IsChecked == true;
     public PageOrganizationDetailsDialog(Window owner, NotePage page)
     {
-        var panel = OrganizationDialogUi.Initialize(this, owner, "Page title and bookmark");
-        _title = OrganizationDialogUi.Field(panel, "Page title (optional)", page.Title);
-        _bookmark = new CheckBox { Content = "Bookmark this page", IsChecked = page.IsBookmarked, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
+        var panel = OrganizationDialogUi.Initialize(this, owner, L.Text("Controls.Organization.PageDetails"));
+        _title = OrganizationDialogUi.Field(panel, L.Text("Controls.Organization.PageTitle"), page.Title);
+        _bookmark = new CheckBox { Content = L.Text("Controls.Organization.Bookmark"), IsChecked = page.IsBookmarked, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
         panel.Children.Add(_bookmark); OrganizationDialogUi.Finish(this, panel);
         Loaded += (_, _) => { _title.Focus(); _title.SelectAll(); };
     }
@@ -62,13 +63,13 @@ public sealed class NotebookOrganizationDialog : Window
     public string CoverColor => (_colors.SelectedItem as ComboBoxItem)?.Tag as string ?? "";
     public NotebookOrganizationDialog(Window owner, NotebookSummary notebook)
     {
-        var panel = OrganizationDialogUi.Initialize(this, owner, "Notebook appearance");
+        var panel = OrganizationDialogUi.Initialize(this, owner, L.Text("Controls.Organization.NotebookAppearance"));
         panel.Children.Add(new TextBlock { Text = notebook.Title, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 12) });
-        _pinned = new CheckBox { Content = "Pin above other notebooks", IsChecked = notebook.IsPinned, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
-        panel.Children.Add(_pinned); panel.Children.Add(new Label { Content = "Cover color" });
+        _pinned = new CheckBox { Content = L.Text("Controls.Organization.Pin"), IsChecked = notebook.IsPinned, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
+        panel.Children.Add(_pinned); panel.Children.Add(new Label { Content = L.Text("Controls.Organization.CoverColor") });
         _colors = new ComboBox { MinHeight = 44 };
-        var names = new[] { "Forest", "Slate", "Terracotta", "Plum", "Ochre", "Teal" };
-        var automatic = new ComboBoxItem { Content = "Automatic · keeps the same color", Tag = "" }; _colors.Items.Add(automatic);
+        var names = new[] { L.Text("Controls.Organization.Cover.Forest"), L.Text("Controls.Organization.Cover.Slate"), L.Text("Controls.Organization.Cover.Terracotta"), L.Text("Controls.Organization.Cover.Plum"), L.Text("Controls.Organization.Cover.Ochre"), L.Text("Controls.Organization.Cover.Teal") };
+        var automatic = new ComboBoxItem { Content = L.Text("Controls.Organization.AutomaticColor"), Tag = "" }; _colors.Items.Add(automatic);
         for (var index = 0; index < NotebookAppearance.Colors.Count; index++)
         {
             var color = NotebookAppearance.Colors[index]; var row = new StackPanel { Orientation = Orientation.Horizontal };
@@ -78,7 +79,7 @@ public sealed class NotebookOrganizationDialog : Window
             if (string.Equals(notebook.CoverColor, color, StringComparison.OrdinalIgnoreCase)) _colors.SelectedItem = item;
         }
         if (_colors.SelectedItem is null) _colors.SelectedItem = automatic;
-        AutomationProperties.SetName(_colors, "Cover color"); panel.Children.Add(_colors); OrganizationDialogUi.Finish(this, panel);
+        AutomationProperties.SetName(_colors, L.Text("Controls.Organization.CoverColor")); panel.Children.Add(_colors); OrganizationDialogUi.Finish(this, panel);
     }
 }
 
@@ -90,15 +91,15 @@ public sealed class LibraryOrganizationDialog : Window
     public bool SortByName => _sort.IsChecked == true;
     public LibraryOrganizationDialog(Window owner, MainViewModel model)
     {
-        var panel = OrganizationDialogUi.Initialize(this, owner, "Filter and sort notebooks");
-        panel.Children.Add(new Label { Content = "Category" }); _category = new ComboBox { MinHeight = 44 };
+        var panel = OrganizationDialogUi.Initialize(this, owner, L.Text("Controls.Organization.FilterSort"));
+        panel.Children.Add(new Label { Content = L.Text("Controls.Common.Category") }); _category = new ComboBox { MinHeight = 44 };
         foreach (var value in new[] { "" }.Concat(model.Categories))
         {
-            var item = new ComboBoxItem { Content = value.Length == 0 ? "All categories" : value, Tag = value, MinHeight = 36 };
+            var item = new ComboBoxItem { Content = value.Length == 0 ? L.Text("Controls.Organization.AllCategories") : value, Tag = value, MinHeight = 36 };
             _category.Items.Add(item); if (value == model.CategoryFilter) _category.SelectedItem = item;
         }
-        AutomationProperties.SetName(_category, "Category filter"); panel.Children.Add(_category);
-        _sort = new CheckBox { Content = "Sort by name (pinned notebooks stay first)", IsChecked = model.SortNotebooksByName, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
+        AutomationProperties.SetName(_category, L.Text("Controls.Organization.CategoryFilter")); panel.Children.Add(_category);
+        _sort = new CheckBox { Content = L.Text("Controls.Organization.SortByName"), IsChecked = model.SortNotebooksByName, MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center };
         panel.Children.Add(_sort); OrganizationDialogUi.Finish(this, panel);
     }
 }
@@ -107,7 +108,7 @@ public sealed class PageOrganizationTransferDialog : Window
 {
     private readonly ComboBox _notebooks = new() { MinHeight = 44, DisplayMemberPath = "Title" };
     private readonly ComboBox _sections = new() { MinHeight = 44, DisplayMemberPath = "Title" };
-    private readonly CheckBox _copy = new() { Content = "Keep a copy in this notebook", MinHeight = 44, IsChecked = false };
+    private readonly CheckBox _copy = new() { Content = L.Text("Controls.Organization.KeepCopy"), MinHeight = 44, IsChecked = false };
     private readonly TextBlock _status = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 0) };
     private readonly Button _apply;
     public string NotebookId => ((NotebookSummary)_notebooks.SelectedItem).Id;
@@ -115,14 +116,14 @@ public sealed class PageOrganizationTransferDialog : Window
     public bool Copy => _copy.IsChecked == true;
     public PageOrganizationTransferDialog(Window owner, MainViewModel model)
     {
-        var panel = OrganizationDialogUi.Initialize(this, owner, "Move pages to a notebook");
-        panel.Children.Add(new TextBlock { Text = "Both notebooks are updated together. Attachments stay in this library. Use Undo Last Page Transfer to reverse the transfer while both notebooks are unchanged.", TextWrapping = TextWrapping.Wrap });
-        panel.Children.Add(new Label { Content = "Notebook" }); panel.Children.Add(_notebooks);
-        panel.Children.Add(new Label { Content = "Section" }); panel.Children.Add(_sections); panel.Children.Add(_copy); panel.Children.Add(_status);
-        AutomationProperties.SetName(_notebooks, "Destination notebook"); AutomationProperties.SetName(_sections, "Destination section");
+        var panel = OrganizationDialogUi.Initialize(this, owner, L.Text("Controls.Organization.TransferTitle"));
+        panel.Children.Add(new TextBlock { Text = L.Text("Controls.Organization.TransferHint"), TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new Label { Content = L.Text("Controls.Organization.Notebook") }); panel.Children.Add(_notebooks);
+        panel.Children.Add(new Label { Content = L.Text("Controls.Common.Section") }); panel.Children.Add(_sections); panel.Children.Add(_copy); panel.Children.Add(_status);
+        AutomationProperties.SetName(_notebooks, L.Text("Controls.Organization.DestinationNotebook")); AutomationProperties.SetName(_sections, L.Text("Controls.Common.DestinationSection"));
         var actions = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right };
-        var cancel = OrganizationDialogUi.Button(this, "Cancel", () => DialogResult = false); cancel.IsCancel = true;
-        _apply = OrganizationDialogUi.Button(this, "Transfer pages", () => DialogResult = true); _apply.IsEnabled = false;
+        var cancel = OrganizationDialogUi.Button(this, L.Text("Controls.Common.Cancel"), () => DialogResult = false); cancel.IsCancel = true;
+        _apply = OrganizationDialogUi.Button(this, L.Text("Controls.Organization.Transfer"), () => DialogResult = true); _apply.IsEnabled = false;
         actions.Children.Add(cancel); actions.Children.Add(_apply); panel.Children.Add(actions);
         _notebooks.SelectionChanged += async (_, _) =>
         {
@@ -133,13 +134,13 @@ public sealed class PageOrganizationTransferDialog : Window
                 var document = await model.Repository.LoadAsync(selected.Id);
                 if ((_notebooks.SelectedItem as NotebookSummary)?.Id != selected.Id) return;
                 _sections.ItemsSource = document?.Sections; _sections.SelectedIndex = 0; _apply.IsEnabled = _sections.SelectedItem is not null;
-                _status.Text = document is null ? "This notebook no longer exists." : "";
+                _status.Text = document is null ? L.Text("Controls.Organization.NotebookMissing") : "";
             }
             catch (Exception ex) { _status.Text = ex.Message; }
         };
         Loaded += async (_, _) =>
         {
-            try { _notebooks.ItemsSource = (await model.Repository.ListAsync()).Where(note => note.Id != model.Document?.Id).ToArray(); _notebooks.SelectedIndex = 0; if (_notebooks.Items.Count == 0) _status.Text = "Create another notebook before transferring pages."; }
+            try { _notebooks.ItemsSource = (await model.Repository.ListAsync()).Where(note => note.Id != model.Document?.Id).ToArray(); _notebooks.SelectedIndex = 0; if (_notebooks.Items.Count == 0) _status.Text = L.Text("Controls.Organization.CreateDestination"); }
             catch (Exception ex) { _status.Text = ex.Message; }
         };
     }

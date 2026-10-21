@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -43,14 +44,14 @@ public sealed class InputDialog : Window
             Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right,
             Margin = new Thickness(0, 8, 0, 0)
         };
-        var cancel = new Button { Content = "Cancel", IsCancel = true, MinWidth = 88, Style = (Style)FindResource("SecondaryButton") };
-        var save = new Button { Content = "Save", IsDefault = true, MinWidth = 100, Style = (Style)FindResource("PrimaryButton") };
+        var cancel = new Button { Content = L.Text("Controls.Common.Cancel"), IsCancel = true, MinWidth = 88, Style = (Style)FindResource("SecondaryButton") };
+        var save = new Button { Content = L.Text("Controls.Common.Save"), IsDefault = true, MinWidth = 100, Style = (Style)FindResource("PrimaryButton") };
         save.Click += (_, _) =>
         {
             var empty = _inputs.FirstOrDefault(t => string.IsNullOrWhiteSpace(t.Text));
             if (empty is not null)
             {
-                error.Text = $"{AutomationProperties.GetName(empty)} is required.";
+                error.Text = L.Text("Controls.Input.Required", AutomationProperties.GetName(empty));
                 error.Visibility = Visibility.Visible;
                 empty.Focus();
                 return;

@@ -17,7 +17,7 @@ Penroam 1.2.0 includes the writing and study workflows below. It writes **SQLite
 Not implemented in this update: automatic comparison/reconciliation of a revised PDF with old annotations (reliable page/region alignment and scan OCR are missing); a separate original-page/side-note cross-referenced export mode; cross-session regional history; automatic mistake diagnosis or spaced review scheduling. No online account or AI service is needed for the implemented workflows.
 
 
-This guide describes the English interface in **Penroam 1.3.0** for Windows 11 x64, including folder import, editable two-page view, writing and study workflows, page extension and live lasso movement. Historical release and device-check notes keep their original scope.
+This guide uses the English control names in **Penroam 1.3.0** for Windows 11 x64, including folder import, editable two-page view, writing and study workflows, page extension and live lasso movement. The application interface also supports Traditional Chinese (繁體中文). Historical release and device-check notes keep their original scope.
 
 Penroam is the new name for Moye. Penroam 1.0.0 restarted version numbering with the new name/icon and the then-current features. Existing notebook data, preferences, recovery files and `.moye` backups keep their current names and locations. The 1.0.0 branding update retained Moye 2.0 data formats; the 1.1.0 page-extension update introduced schema/format 4, and 1.2.0 introduces schema/format 5.
 
@@ -44,6 +44,14 @@ When opened normally, Penroam checks the public [Penroam GitHub releases](https:
 Choose **Later** to dismiss the card and keep working. To check again, use **More → Check for Updates…**, **Library Options → Check for Updates…**, or search for the command in **Commands & Help**. **Try again** retries a failed check or update. Closing Penroam and running the newer installer from GitHub remains a manual fallback.
 
 Writing and saving work without an internet connection. A failed startup check stays quiet; an explicit check reports connection or release problems. Update requests go to GitHub and its release download servers and include Penroam's current version; notebook contents and local library paths are not uploaded. Launches using `--data-dir` disable both startup and manual update checks so isolated libraries cannot trigger an application update.
+
+## Interface language
+
+On the notebook home screen, use **Language / 語言** in the top header to choose **English** or **繁體中文**. Labels, menus, dialogs and application messages update immediately; no restart is needed. In the editor, choose **My notebooks** first to return home. The selector remains available in an empty library and while searching.
+
+Existing and first-run settings default to English. Your selection is saved in this library location's device-local `workspace-preferences.json` and applies from the next launch's first main screen. It is not included in notebook backups. If settings cannot be saved, the selected language still applies for the current session and the app reports the save problem; unreadable or newer settings files are preserved rather than replaced.
+
+Changing interface language does not translate notebook names, categories, page titles, pen preset names, typed notes, study content or imported documents. It also leaves the fixed labels printed on Meeting paper unchanged, so exported pages keep their original appearance. Number/date preferences and document layout are unchanged. Native Windows dialog buttons follow Windows language, while upstream release notes and technical error details may remain in their original language. This guide continues to use English control names.
 
 ## Notebooks, sections and pages
 

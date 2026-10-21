@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
@@ -29,8 +30,8 @@ public sealed class UpdateInstaller : IUpdateInstaller
         if (parentProcessId <= 0) throw new ArgumentOutOfRangeException(nameof(parentProcessId));
         installerPath = Path.GetFullPath(installerPath);
         installDirectory = Path.TrimEndingDirectorySeparator(Path.GetFullPath(installDirectory));
-        if (!File.Exists(installerPath)) throw new FileNotFoundException("The downloaded update installer is missing. Download it again.", installerPath);
-        if (!Directory.Exists(installDirectory)) throw new DirectoryNotFoundException("The current Penroam installation directory is missing.");
+        if (!File.Exists(installerPath)) throw new FileNotFoundException(L.Text("Messages.Update.InstallerMissing"), installerPath);
+        if (!Directory.Exists(installDirectory)) throw new DirectoryNotFoundException(L.Text("Messages.Update.InstallationMissing"));
 
         var start = new ProcessStartInfo(installerPath)
         {
@@ -53,6 +54,6 @@ public sealed class UpdateInstaller : IUpdateInstaller
     private static void StartProcess(ProcessStartInfo start)
     {
         using var process = Process.Start(start);
-        if (process is null) throw new IOException("Windows could not start the update installer. Your notes remain open; try updating again.");
+        if (process is null) throw new IOException(L.Text("Messages.Update.CannotStartInstaller"));
     }
 }

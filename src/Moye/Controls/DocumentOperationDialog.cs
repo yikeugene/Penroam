@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -12,7 +13,7 @@ public sealed class DocumentOperationDialog : Window
     private readonly CancellationTokenSource _cancellation = new();
     private readonly TextBlock _message = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 14, 0, 14) };
     private readonly ProgressBar _progress = new() { Height = 6, IsIndeterminate = true, Minimum = 0, Maximum = 100 };
-    private readonly Button _cancel = new() { Content = "Cancel", MinWidth = 100, MinHeight = 44, HorizontalAlignment = HorizontalAlignment.Right };
+    private readonly Button _cancel = new() { Content = L.Text("Controls.Common.Cancel"), MinWidth = 100, MinHeight = 44, HorizontalAlignment = HorizontalAlignment.Right };
     private bool _finished, _canCancel = true;
     private Exception? _error;
     private bool _succeeded;
@@ -54,7 +55,7 @@ public sealed class DocumentOperationDialog : Window
     private void Cancel()
     {
         if (_finished || !_canCancel) return;
-        _cancel.IsEnabled = false; _message.Text = "Canceling… Please wait for the current step to stop."; _cancellation.Cancel();
+        _cancel.IsEnabled = false; _message.Text = L.Text("Controls.DocumentOperation.Canceling"); _cancellation.Cancel();
     }
     private void OnClosing(object? sender, CancelEventArgs e)
     {

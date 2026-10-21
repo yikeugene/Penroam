@@ -2,14 +2,25 @@ using System.IO;
 using System.Windows;
 using System.Windows.Ink;
 using System.Windows.Media;
+using Moye.Localization;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
 public enum NoteColor { Any, Red, Orange, Yellow, Green, Blue, Purple, Black, Gray }
 public enum NotePosition { Anywhere, TopLeft, Top, TopRight, Left, Center, Right, BottomLeft, Bottom, BottomRight }
 public enum NoteMark { Any, Handwriting, Highlighter, TypedText }
-public sealed record VisualNoteMatch(string PageId, string SectionId, string Title, Rect Region, int Count);
+public sealed record VisualNoteMatch(string PageId, string SectionId, string Title, Rect Region, int Count)
+{
+    private readonly string _title = Title;
+    public LocalizedMessage? LocalizedTitle { get; init; }
+    public string Title
+    {
+        get => LocalizedTitle?.ToString() ?? _title;
+        init { _title = value; LocalizedTitle = null; }
+    }
+}
 
 public static class VisualNoteSearch
 {
@@ -65,7 +76,8 @@ public static class VisualNoteSearch
                 }
             if (count == 0) continue;
             var section = book.Sections.FirstOrDefault(s => s.Id == page.SectionId)?.Title ?? "General";
-            results.Add(new(page.Id, page.SectionId, $"{section} · Page {pageNumber}" + (page.Title.Length == 0 ? "" : $" · {page.Title}"), matched, count));
+            results.Add(new(page.Id, page.SectionId, "", matched, count)
+            { LocalizedTitle = L.M("Messages.Page.Location", section, pageNumber, page.Title.Length == 0 ? "" : $" · {page.Title}") });
         }
         return results;
     }

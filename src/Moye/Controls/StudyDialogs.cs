@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Moye.Models;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -21,28 +22,28 @@ public sealed class StudyQuestionDialog : Window
     public StudyQuestionDialog(Window owner, StudyQuestion question, bool creating = false)
     {
         _original = StudyWorkflowService.Copy(question);
-        var root = StudyDialogUi.Initialize(this, owner, creating ? "Add a question" : "Question and next attempt", 640, 660);
+        var root = StudyDialogUi.Initialize(this, owner, creating ? L.Text("Controls.StudyQuestion.CreateTitle") : L.Text("Controls.StudyQuestion.EditTitle"), 640, 660);
         var content = new StackPanel();
-        content.Children.Add(new TextBlock { Text = question.Anchor is null ? "Linked to this page. Reopen its source from the question inbox." : "Linked to the marked region of this page. Reopen its source from the question inbox.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 12) });
-        _prompt = StudyDialogUi.Field(content, "What do you want to understand?", question.Prompt, StudyWorkflowService.MaximumPromptLength, 76);
-        content.Children.Add(new Label { Content = "Progress" });
+        content.Children.Add(new TextBlock { Text = question.Anchor is null ? L.Text("Controls.StudyQuestion.PageLink") : L.Text("Controls.StudyQuestion.RegionLink"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 12) });
+        _prompt = StudyDialogUi.Field(content, L.Text("Controls.StudyQuestion.Prompt"), question.Prompt, StudyWorkflowService.MaximumPromptLength, 76);
+        content.Children.Add(new Label { Content = L.Text("Controls.StudyQuestion.Progress") });
         _status = new ComboBox { MinHeight = 44, Margin = new Thickness(0, 0, 0, 10) };
-        AutomationProperties.SetName(_status, "Question progress");
+        AutomationProperties.SetName(_status, L.Text("Controls.StudyQuestion.ProgressAccessible"));
         foreach (var value in Enum.GetValues<StudyQuestionStatus>())
         {
             var item = new ComboBoxItem { Content = StudyWorkflowService.StatusLabel(value), Tag = value, MinHeight = 36 };
             _status.Items.Add(item); if (value == question.Status) _status.SelectedItem = item;
         }
         content.Children.Add(_status);
-        _explanation = StudyDialogUi.Field(content, "What helped / explanation", question.Explanation, StudyWorkflowService.MaximumNotesLength, 96);
-        _retry = StudyDialogUi.Field(content, "Next attempt / what to check", question.RetryNotes, StudyWorkflowService.MaximumNotesLength, 96);
+        _explanation = StudyDialogUi.Field(content, L.Text("Controls.StudyQuestion.Explanation"), question.Explanation, StudyWorkflowService.MaximumNotesLength, 96);
+        _retry = StudyDialogUi.Field(content, L.Text("Controls.StudyQuestion.Retry"), question.RetryNotes, StudyWorkflowService.MaximumNotesLength, 96);
         var error = new TextBlock { Foreground = Brushes.Firebrick, TextWrapping = TextWrapping.Wrap };
         AutomationProperties.SetLiveSetting(error, AutomationLiveSetting.Assertive); content.Children.Add(error);
         var actions = StudyDialogUi.Actions(root);
-        var cancel = OrganizationDialogUi.Button(this, "Cancel", () => DialogResult = false); cancel.IsCancel = true;
-        var save = OrganizationDialogUi.Button(this, creating ? "Add question" : "Save", () =>
+        var cancel = OrganizationDialogUi.Button(this, L.Text("Controls.Common.Cancel"), () => DialogResult = false); cancel.IsCancel = true;
+        var save = OrganizationDialogUi.Button(this, creating ? L.Text("Controls.StudyQuestion.Add") : L.Text("Controls.Common.Save"), () =>
         {
-            if (string.IsNullOrWhiteSpace(_prompt.Text)) { error.Text = "Write a question before saving."; _prompt.Focus(); return; }
+            if (string.IsNullOrWhiteSpace(_prompt.Text)) { error.Text = L.Text("Controls.StudyQuestion.Required"); _prompt.Focus(); return; }
             DialogResult = true;
         });
         save.IsDefault = true; actions.Children.Add(cancel); actions.Children.Add(save);
@@ -61,17 +62,17 @@ public sealed class StudyResumeDialog : Window
     {
         _original = hint is null ? new ResumeHint() : StudyWorkflowService.Copy(hint);
         if (anchor is not null) _original.Anchor = anchor with {};
-        var root = StudyDialogUi.Initialize(this, owner, "Next time, continue here", 600, 440);
+        var root = StudyDialogUi.Initialize(this, owner, L.Text("Controls.StudyResume.Title"), 600, 440);
         var panel = new StackPanel();
-        panel.Children.Add(new TextBlock { Text = "Leave the next small step while it is still clear. This note stays with the page and appears in Resume notes.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 16) });
-        _next = StudyDialogUi.Field(panel, "What should you do when you return?", hint?.NextStep ?? "", StudyWorkflowService.MaximumResumeLength, 150);
+        panel.Children.Add(new TextBlock { Text = L.Text("Controls.StudyResume.Intro"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 16) });
+        _next = StudyDialogUi.Field(panel, L.Text("Controls.StudyResume.Prompt"), hint?.NextStep ?? "", StudyWorkflowService.MaximumResumeLength, 150);
         var error = new TextBlock { Foreground = Brushes.Firebrick, TextWrapping = TextWrapping.Wrap }; panel.Children.Add(error);
         var actions = StudyDialogUi.Actions(root);
-        if (hint is not null) actions.Children.Add(OrganizationDialogUi.Button(this, "Clear note", () => { Remove = true; DialogResult = true; }));
-        var cancel = OrganizationDialogUi.Button(this, "Cancel", () => DialogResult = false); cancel.IsCancel = true; actions.Children.Add(cancel);
-        var save = OrganizationDialogUi.Button(this, "Save", () =>
+        if (hint is not null) actions.Children.Add(OrganizationDialogUi.Button(this, L.Text("Controls.StudyResume.Clear"), () => { Remove = true; DialogResult = true; }));
+        var cancel = OrganizationDialogUi.Button(this, L.Text("Controls.Common.Cancel"), () => DialogResult = false); cancel.IsCancel = true; actions.Children.Add(cancel);
+        var save = OrganizationDialogUi.Button(this, L.Text("Controls.Common.Save"), () =>
         {
-            if (string.IsNullOrWhiteSpace(_next.Text)) { error.Text = "Write a next step before saving."; _next.Focus(); return; }
+            if (string.IsNullOrWhiteSpace(_next.Text)) { error.Text = L.Text("Controls.StudyResume.Required"); _next.Focus(); return; }
             DialogResult = true;
         });
         save.IsDefault = true; actions.Children.Add(save);

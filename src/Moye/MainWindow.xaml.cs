@@ -12,6 +12,8 @@ using Moye.Controls;
 using Moye.Models;
 using Moye.Services;
 using Moye.ViewModels;
+using Moye.Localization;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye;
 
@@ -43,19 +45,21 @@ public partial class MainWindow : Window
     private sealed record PageZoomAnchor(PageViewModel Page, Point PagePoint, Point ViewportPoint, bool RestoreHorizontal = true);
     private bool AnyPenDown => IsViewportPenContactActive || _editors.Values.Any(e => e.IsInputActive);
 
-    public MainWindow(INotebookRepository repository, WritingPreferencesStore? preferencesStore = null, ErrorReporter? errors = null, IAppUpdateService? updateService = null, IUpdateInstaller? updateInstaller = null)
+    public MainWindow(INotebookRepository repository, WritingPreferencesStore? preferencesStore = null, ErrorReporter? errors = null, IAppUpdateService? updateService = null, IUpdateInstaller? updateInstaller = null, WorkspacePreferencesStore? workspaceStore = null, WorkspacePreferences? workspace = null)
     {
         _errors = errors ?? new ErrorReporter(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Moye", "error.log"));
         _preferencesStore = preferencesStore ?? new WritingPreferencesStore();
+        if (workspace is not null) L.SetLanguage(workspace.UiLanguage);
         ViewModel = new(repository); InitializeComponent(); DataContext = ViewModel;
         InitializePageLayout();
         InitializeInputStability();
         InitializeTouchNavigation();
         InitializeWritingUi();
         InitializeTypingUi();
-        InitializeWorkspace();
+        InitializeWorkspace(workspaceStore, workspace);
         InitializeDocumentWorkflows(ReferenceHost);
         InitializeUpdates(updateService, updateInstaller);
+        InitializeLocalization();
         Width = Math.Min(1400, SystemParameters.WorkArea.Width - 24);
         Height = Math.Min(960, SystemParameters.WorkArea.Height - 24);
         SystemEvents.PowerModeChanged += PowerModeChanged;
@@ -70,20 +74,24 @@ public partial class MainWindow : Window
 
     private async void WindowLoaded(object sender, RoutedEventArgs e)
     {
-        await RunAsync("Loading your notebooks…", async () => { await LoadPreferencesAsync(); await ViewModel.InitializeAsync(); await LoadWorkspaceAsync(); _ready = true; UpdateTool(); });
-        if (_preferencesLoadWarning is not null) MessageBox.Show(this, _preferencesLoadWarning, "Writing Settings", MessageBoxButton.OK, MessageBoxImage.Warning);
+        await RunAsync(L.M("Core.Loading"), async () => { await LoadPreferencesAsync(); await ViewModel.InitializeAsync(); await LoadWorkspaceAsync(); _ready = true; UpdateTool(); });
+        if (_preferencesLoadWarning is not null) MessageBox.Show(this, _preferencesLoadWarning, L.Text("Core.WritingSettings"), MessageBoxButton.OK, MessageBoxImage.Warning);
         if (_ready) await CheckForUpdatesAsync(false);
     }
 
-    private async Task RunAsync(string message, Func<Task> action)
+    private Task RunAsync(LocalizedMessage message, Func<Task> action) => RunAsync(message.ToString(), action, message);
+
+    private async Task RunAsync(string message, Func<Task> action, LocalizedMessage? localizedMessage = null)
     {
         if (ViewModel.IsBusy) return;
         var previousFocus = Keyboard.FocusedElement as UIElement;
         CloseSettingsPopups();
-        ViewModel.Operation = message; ViewModel.IsBusy = true;
+        if (localizedMessage is null) ViewModel.Operation = message;
+        else ViewModel.SetOperation(localizedMessage.Key, localizedMessage.Arguments);
+        ViewModel.IsBusy = true;
         try { await action(); }
-        catch (OperationCanceledException) { ViewModel.Status = "Operation canceled"; }
-        catch (Exception ex) { MessageBox.Show(this, _errors.Report(ex), "Unable to complete the operation", MessageBoxButton.OK, MessageBoxImage.Warning); }
+        catch (OperationCanceledException) { ViewModel.SetStatus("Core.Canceled"); }
+        catch (Exception ex) { MessageBox.Show(this, _errors.Report(ex), L.Text("Core.UnableToComplete"), MessageBoxButton.OK, MessageBoxImage.Warning); }
         finally
         {
             ViewModel.IsBusy = false;
@@ -107,12 +115,12 @@ public partial class MainWindow : Window
         e.Cancel = true;
         var updatePath = _installOnClosePath;
         _installOnClosePath = null;
-        if (ViewModel.IsBusy) { MessageBox.Show(this, "Please wait for the current operation to finish before closing.", "Penroam"); return; }
+        if (ViewModel.IsBusy) { MessageBox.Show(this, L.Text("Core.WaitBeforeClosing"), "Penroam"); return; }
         _updateShutdownRequested = true;
         var canceledUpdateDownload = _updateDownloadCancellation is not null;
         _updateDownloadCancellation?.Cancel();
         ViewModel.IsBusy = true;
-        ViewModel.Operation = updatePath is null ? "Saving before closing…" : "Saving your notes before updating…";
+        ViewModel.SetOperation(updatePath is null ? "Core.SavingBeforeClosing" : "Core.SavingBeforeUpdating");
         try
         {
             if (updatePath is not null && _availableUpdate is { } update)
@@ -130,7 +138,7 @@ public partial class MainWindow : Window
             if (updatePath is not null)
             {
                 if (ex is System.IO.InvalidDataException) _downloadedUpdatePath = null;
-                UpdateNotice.ShowError("The update could not start. Your notebook is still open. " + ex.Message);
+                UpdateNotice.ShowError(L.M("Core.UpdateStartFailed", ex.Message));
             }
             else
             {
@@ -139,7 +147,7 @@ public partial class MainWindow : Window
                     if (_downloadedUpdatePath is not null) UpdateNotice.ShowReady(available.Version.ToString(3));
                     else UpdateNotice.ShowAvailable(available.Version.ToString(3), available.Notes);
                 }
-                MessageBox.Show(this, "Some changes could not be saved. This window will stay open.\nUse More → Retry Save, or Back Up This Notebook.\n\n" + ex.Message, "Unsaved Changes", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(this, L.Text("Core.UnsavedDetails", ex.Message), L.Text("Core.UnsavedTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
     }
@@ -160,13 +168,13 @@ public partial class MainWindow : Window
     {
         var dialog = new NotebookDialog(this, folder: ViewModel.Folder);
         if (dialog.ShowDialog() != true) return;
-        CommitEditors(); await RunAsync("Creating notebook…", async () => { await ViewModel.CreateAsync(dialog.NotebookTitle, dialog.Folder, dialog.SelectedTemplate); await PrepareNotebookViewAsync(); });
+        CommitEditors(); await RunAsync(L.M("Core.Creating"), async () => { await ViewModel.CreateAsync(dialog.NotebookTitle, dialog.Folder, dialog.SelectedTemplate); await PrepareNotebookViewAsync(); });
     }
 
     private void RenameClick(object sender, RoutedEventArgs e)
     {
         if (ViewModel.Document is null) return;
-        var dialog = new InputDialog(this, "Rename and Category", ("Name", ViewModel.Title), ("Category", ViewModel.Folder));
+        var dialog = new InputDialog(this, L.Text("Core.RenameCategory"), (L.Text("Core.Name"), ViewModel.Title), (L.Text("Core.Category"), ViewModel.Folder));
         if (dialog.ShowDialog() != true) return;
         CommitEditors(); ViewModel.Rename(dialog.Values[0], dialog.Values[1]); SelectLibraryCurrent();
     }
@@ -180,9 +188,9 @@ public partial class MainWindow : Window
         if (id is null) return;
         CloseSettingsPopups();
         if (MessageBox.Show(this,
-            $"Move \"{title}\" and all its pages to Recently deleted?\n\nA recovery copy is kept for 30 days in Backup & recovery.",
-            "Delete Notebook", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
-        await RunAsync("Deleting notebook…", async () =>
+            L.Text("Core.DeleteConfirm", title),
+            L.Text("Core.DeleteNotebook"), MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes) return;
+        await RunAsync(L.M("Core.Deleting"), async () =>
         {
             ClearTouches(); CommitEditors();
             var deleting = ViewModel.Document?.Id == id ? ViewModel.Document.Snapshot() : await ViewModel.Repository.LoadAsync(id);
@@ -226,7 +234,7 @@ public partial class MainWindow : Window
     }
     private async Task OpenNotebookAsync(string id)
     {
-        await RunAsync("Opening notebook…", async () =>
+        await RunAsync(L.M("Core.Opening"), async () =>
         {
             CommitEditors(); ClearTouches(); CaptureReadingPosition(); await SaveWorkspaceAsync();
             await ViewModel.OpenAsync(id); await PrepareNotebookViewAsync();
@@ -332,7 +340,7 @@ public partial class MainWindow : Window
             if (!cts.IsCancellationRequested && item.Thumbnail is null) QueueThumbnail(editor);
         }
         catch (OperationCanceledException) { }
-        catch (Exception ex) { if (!cts.IsCancellationRequested) ViewModel.Status = "Unable to load this page: " + ex.Message; }
+        catch (Exception ex) { if (!cts.IsCancellationRequested) ViewModel.SetStatus("Core.PageLoadFailed", ex.Message); }
     }
 
     private void DetachPage(Border host)
@@ -360,7 +368,7 @@ public partial class MainWindow : Window
         else { _ignoreTouchUntil = Environment.TickCount64 + 120; ScheduleFitWidth(); }
     }
     private void EditorVisualChanged(object? sender, EventArgs e) { if (sender is PageEditor editor) { InvalidateThumbnail(editor); QueueThumbnail(editor); } }
-    private void EditorAssetFailed(object? sender, string message) => ViewModel.Status = "Unable to load image: " + message;
+    private void EditorAssetFailed(object? sender, string message) => ViewModel.SetStatus("Core.ImageLoadFailed", message);
     private void PageHostMouseDown(object sender, MouseButtonEventArgs e)
     {
         if (!PenInkCanvas.IsTouch(e.StylusDevice)) ActivatePage((Border)sender);
@@ -399,7 +407,7 @@ public partial class MainWindow : Window
                 if (!cts.IsCancellationRequested && zoom == ViewModel.Zoom && _editors.TryGetValue(pair.Key, out var current) && ReferenceEquals(current, pair.Value)) current.SetPdfBackground(bitmap);
             }
             catch (OperationCanceledException) { }
-            catch (Exception ex) { if (!_closing) ViewModel.Status = "Unable to refresh PDF preview: " + ex.Message; }
+            catch (Exception ex) { if (!_closing) ViewModel.SetStatus("Core.PdfPreviewFailed", ex.Message); }
         }
     }
 
@@ -531,17 +539,12 @@ public partial class MainWindow : Window
             option.BorderBrush = selected ? (Brush)FindResource("Accent") : (Brush)FindResource("Border");
             option.BorderThickness = new Thickness(1);
         }
-        var eraserMode = _eraserTool == InkTool.PointEraser ? "Pixel" : "Stroke";
-        EraserModeLabel.Text = "Eraser";
-        EraserButton.ToolTip = $"{eraserMode} Eraser (E); click to choose an eraser mode";
-        System.Windows.Automation.AutomationProperties.SetHelpText(EraserButton, $"Current mode: {eraserMode} Eraser. Click to choose Pixel Eraser or Stroke Eraser.");
-        FocusEraserButton.ToolTip = EraserButton.ToolTip;
-        System.Windows.Automation.AutomationProperties.SetHelpText(FocusEraserButton, System.Windows.Automation.AutomationProperties.GetHelpText(EraserButton));
+        UpdateLocalizedToolLabels();
         foreach (var editor in _editors.Values)
         {
             ConfigureEditor(editor);
         }
-        ToolStatus.Text = (_tool switch { InkTool.Pen => "Pen", InkTool.Highlighter => "Highlighter", InkTool.PointEraser => "Pixel Eraser · Keep the rest of the stroke", InkTool.StrokeEraser => "Stroke Eraser · Remove the whole stroke", InkTool.Lasso => "Lasso · Draw to select / Ctrl+D to duplicate", InkTool.Text => "Text · Tap the page to type", InkTool.Select => "Select · Drag to move / resize from the corner", _ => "Browse" }) + "  ·  One finger to pan · Pinch to zoom";
+
         UpdateTextToolbar();
     }
     private void ColorClick(object sender, RoutedEventArgs e)
@@ -553,7 +556,7 @@ public partial class MainWindow : Window
     private void CustomColorClick(object sender, RoutedEventArgs e)
     {
         CloseSettingsPopups();
-        var dialog = new ColorPickerDialog(this, _color, "Ink Color");
+        var dialog = new ColorPickerDialog(this, _color, L.Text("Core.InkColor"));
         if (dialog.ShowDialog() != true) return;
         _color = dialog.SelectedColor;
         if (_tool is InkTool.Lasso or InkTool.Text or InkTool.Select) CurrentEditor?.ApplyColorToSelection(_color);
@@ -592,7 +595,7 @@ public partial class MainWindow : Window
     private async void DeletePageClick(object sender, RoutedEventArgs e)
     {
         if (sender is not MenuItem { Tag: PageActionTarget target } || !ActivatePageAction(target)) return;
-        await RunAsync("Keeping a recovery copy…", async () =>
+        await RunAsync(L.M("Core.RecoveryCopy"), async () =>
         {
             await PreserveDeletedAsync(target.Document, "Page deleted");
             if (ReferenceEquals(ViewModel.Document, target.Document) && ViewModel.SelectedPage?.Page.Id == target.PageId)
@@ -614,9 +617,9 @@ public partial class MainWindow : Window
         TemplatePicker.SelectedTemplate = ViewModel.SelectedPage?.Page.Pdf is null ? ViewModel.SelectedPage?.Page.Template ?? PaperTemplate.Ruled : PaperTemplate.Ruled;
         TemplatePicker.IsEnabled = addingPage || ViewModel.SelectedPage?.Page.Pdf is null;
         ApplyPaperButton.IsEnabled = TemplatePicker.IsEnabled;
-        PaperPickerTitle.Text = addingPage ? "Add a Page" : "Choose Paper";
-        PaperPickerHint.Text = addingPage ? "A4 paper · Insert after the current page." : TemplatePicker.IsEnabled ? "Change this page's background. Your notes stay in place." : "PDF pages keep their original background. Add a new page to use a template.";
-        ApplyPaperButton.Content = addingPage ? "Add Page" : "Apply Paper";
+        PaperPickerTitle.Text = addingPage ? L.Text("Core.AddPageTitle") : L.Text("Core.ChoosePaper");
+        PaperPickerHint.Text = addingPage ? L.Text("Core.AddPaperHint") : TemplatePicker.IsEnabled ? L.Text("Core.ChangePaperHint") : L.Text("Core.PdfPaperHint");
+        ApplyPaperButton.Content = addingPage ? L.Text("Core.AddPage") : L.Text("Core.ApplyPaper");
         PaperSettingsPopup.PlacementTarget = _focusMode ? (addingPage ? FocusAddPageButton : FocusPenSettingsButton)
             : Sidebar.Visibility == Visibility.Visible ? ThumbnailList : PenSettingsButton;
         PaperSettingsPopup.Placement = _focusMode ? (_workspace.FocusToolsOnRight ? PlacementMode.Left : PlacementMode.Right)
@@ -637,7 +640,7 @@ public partial class MainWindow : Window
     private CancellationTokenSource? _documentImportCancellation;
     private async void ImportDocumentClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog { Filter = DocumentImportService.FileFilter, Title = "Import Document into This Notebook" };
+        var dialog = new OpenFileDialog { Filter = DocumentImportService.FileFilter, Title = L.Text("Core.ImportTitle") };
         if (dialog.ShowDialog(this) != true) return;
         CommitEditors();
         var isPdf = Path.GetExtension(dialog.FileName).Equals(".pdf", StringComparison.OrdinalIgnoreCase);
@@ -647,7 +650,7 @@ public partial class MainWindow : Window
         CancelDocumentImportButton.IsEnabled = true;
         try
         {
-            await RunAsync(isPdf ? "Importing PDF…" : "Converting document into note pages…", async () =>
+            await RunAsync(isPdf ? L.M("Core.ImportPdf") : L.M("Core.ConvertingDocument"), async () =>
             {
                 var pages = await ViewModel.Documents.ImportAsync(dialog.FileName, cancellation.Token);
                 cancellation.Token.ThrowIfCancellationRequested();
@@ -664,7 +667,7 @@ public partial class MainWindow : Window
     {
         if (_documentImportCancellation is null) return;
         CancelDocumentImportButton.IsEnabled = false;
-        ViewModel.Operation = "Canceling document import…";
+        ViewModel.SetOperation("Core.CancelingImport");
         _documentImportCancellation.Cancel();
     }
     private async void ExportPdfClick(object sender, RoutedEventArgs e)
@@ -675,30 +678,30 @@ public partial class MainWindow : Window
         if (snapshot is null) return;
         if (snapshot.Pages.Count == 0)
         {
-            MessageBox.Show(this, "This section has no pages. Add a page before exporting it as a PDF.",
-                "Export Section PDF", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(this, L.Text("Core.EmptySectionExport"),
+                L.Text("Core.ExportSection"), MessageBoxButton.OK, MessageBoxImage.Information);
             return;
         }
         var dialog = new SaveFileDialog
         {
-            Filter = "PDF documents|*.pdf",
+            Filter = L.Text("Core.PdfFilter"),
             FileName = SafeFileName(snapshot.Title) + ".pdf",
-            Title = "Export Section PDF (text boxes become vector outlines)"
+            Title = L.Text("Core.ExportSectionTitle")
         };
         if (dialog.ShowDialog(this) != true) return;
-        await RunAsync("Exporting section PDF…", async () => { await ViewModel.Pdf.ExportAsync(dialog.FileName, snapshot); ViewModel.Status = "Section PDF exported · " + Path.GetFileName(dialog.FileName); });
+        await RunAsync(L.M("Core.ExportingSection"), async () => { await ViewModel.Pdf.ExportAsync(dialog.FileName, snapshot); ViewModel.SetStatus("Core.SectionExported", Path.GetFileName(dialog.FileName)); });
     }
     private async void ImageClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog { Filter = "Images|*.png;*.jpg;*.jpeg", Title = "Insert Image" };
+        var dialog = new OpenFileDialog { Filter = L.Text("Core.ImageFilter"), Title = L.Text("Core.InsertImage") };
         if (dialog.ShowDialog(this) != true) return;
-        await RunAsync("Inserting image…", async () => { await InsertImageAsync(await File.ReadAllBytesAsync(dialog.FileName), Path.GetFileName(dialog.FileName), Path.GetExtension(dialog.FileName).Equals(".png", StringComparison.OrdinalIgnoreCase) ? "image/png" : "image/jpeg"); });
+        await RunAsync(L.M("Core.InsertingImage"), async () => { await InsertImageAsync(await File.ReadAllBytesAsync(dialog.FileName), Path.GetFileName(dialog.FileName), Path.GetExtension(dialog.FileName).Equals(".png", StringComparison.OrdinalIgnoreCase) ? "image/png" : "image/jpeg"); });
     }
     private async Task InsertImageAsync(byte[] bytes, string name, string contentType)
     {
         if (ViewModel.SelectedPage is null) return;
         CommitEditors(); var bitmap = new BitmapImage(); using (var stream = new MemoryStream(bytes)) { bitmap.BeginInit(); bitmap.CacheOption = BitmapCacheOption.OnLoad; bitmap.StreamSource = stream; bitmap.EndInit(); bitmap.Freeze(); }
-        if (bitmap.PixelWidth > 20000 || bitmap.PixelHeight > 20000 || (long)bitmap.PixelWidth * bitmap.PixelHeight > 80_000_000) throw new InvalidDataException("This image is too large. Resize it to at most 80 million pixels, with neither side exceeding 20,000 pixels.");
+        if (bitmap.PixelWidth > 20000 || bitmap.PixelHeight > 20000 || (long)bitmap.PixelWidth * bitmap.PixelHeight > 80_000_000) throw new InvalidDataException(L.Text("Core.ImageTooLarge"));
         var asset = await ViewModel.Repository.PutAssetAsync(name, contentType, bytes);
         var page = ViewModel.SelectedPage.Page; var width = Math.Min(Math.Max(1, page.Width - Math.Min(96, page.Width / 2)), bitmap.PixelWidth * .75); var height = width * bitmap.PixelHeight / bitmap.PixelWidth;
         var availableHeight = Math.Max(1, page.Height - Math.Min(96, page.Height / 2));
@@ -714,33 +717,33 @@ public partial class MainWindow : Window
         if (!Clipboard.ContainsImage()) return;
         var bitmap = Clipboard.GetImage(); if (bitmap is null) return;
         var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap)); using var stream = new MemoryStream(); encoder.Save(stream);
-        await RunAsync("Pasting image…", () => InsertImageAsync(stream.ToArray(), "Screenshot.png", "image/png"));
+        await RunAsync(L.M("Core.PastingImage"), () => InsertImageAsync(stream.ToArray(), "Screenshot.png", "image/png"));
     }
     private async void BackupNoteClick(object sender, RoutedEventArgs e) => await BackupAsync(false);
     private async void BackupAllClick(object sender, RoutedEventArgs e) => await BackupAsync(true);
     private async Task BackupAsync(bool all) => await BackupWithProgressAsync(all);
     private async void RestoreClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog { Filter = "Penroam backups|*.moye", Title = "Restore as New Notebook Copies" };
+        var dialog = new OpenFileDialog { Filter = L.Text("Core.BackupFilter"), Title = L.Text("Core.RestoreCopies") };
         if (dialog.ShowDialog(this) != true) return;
-        CommitEditors(); await RunAsync("Validating and restoring backup…", async () =>
+        CommitEditors(); await RunAsync(L.M("Core.Restoring"), async () =>
         {
             await ViewModel.Autosave.FlushAsync(); var docs = await ViewModel.Backup.ImportAsync(dialog.FileName);
             foreach (var doc in docs) await ViewModel.Repository.SaveAsync(doc);
             await ViewModel.RefreshLibraryAsync();
             if (!ViewModel.IsLibraryVisible && docs.Count > 0) { await ViewModel.OpenAsync(docs[0].Id); await PrepareNotebookViewAsync(); }
             SelectLibraryCurrent();
-            ViewModel.Status = $"Restored {docs.Count} notebook(s)";
+            ViewModel.SetStatus("Core.Restored", docs.Count);
         });
     }
-    private async void RetrySaveClick(object sender, RoutedEventArgs e) => await RunAsync("Retrying save…", async () => { await ViewModel.Autosave.RetryAsync(); await SavePreferencesAsync(true); });
+    private async void RetrySaveClick(object sender, RoutedEventArgs e) => await RunAsync(L.M("Core.RetryingSave"), async () => { await ViewModel.Autosave.RetryAsync(); await SavePreferencesAsync(true); });
     private void MoreClick(object sender, RoutedEventArgs e) { var button = (Button)sender; button.ContextMenu.PlacementTarget = button; button.ContextMenu.Placement = PlacementMode.Bottom; button.ContextMenu.IsOpen = true; }
     private void HelpClick(object sender, RoutedEventArgs e) => ShowCommandsClick(sender, e);
 
     private void SidebarTabClick(object sender, RoutedEventArgs e) => ShowSidebarTab((string)((Button)sender).Tag == "Notebooks");
     private async void ShowNotebooksClick(object sender, RoutedEventArgs e)
     {
-        await RunAsync("Saving and returning to your notebooks…", async () =>
+        await RunAsync(L.M("Core.ReturningHome"), async () =>
         {
             ClearTouches(); CommitEditors(); CaptureReadingPosition(); await SaveWorkspaceAsync();
             await ViewModel.ReturnToLibraryAsync();
@@ -771,7 +774,7 @@ public partial class MainWindow : Window
         if (_focusMode) { _oldWindowState = WindowState; _sidebarBeforeFocus = Sidebar.Visibility == Visibility.Visible; WindowStyle = WindowStyle.None; WindowState = WindowState.Maximized; Sidebar.Visibility = Visibility.Collapsed; SidebarColumn.Width = new GridLength(0); }
         else { WindowStyle = WindowStyle.SingleBorderWindow; WindowState = _oldWindowState; Sidebar.Visibility = _sidebarBeforeFocus ? Visibility.Visible : Visibility.Collapsed; SidebarColumn.Width = new GridLength(_sidebarBeforeFocus ? 224 : 0); }
         FocusButton.Content = _focusMode ? "\uE73F" : "\uE740";
-        FocusButton.ToolTip = _focusMode ? "Exit Focus Mode (F11)" : "Focus Mode (F11)";
+        L.Bind(FocusButton, ToolTipProperty, _focusMode ? "Core.ExitFocus" : "Core.Focus");
         ApplyFocusChrome();
     }
     private void ZoomInClick(object sender, RoutedEventArgs e) => ChangeZoom(ViewModel.Zoom * 1.15, new Point(Viewport.ActualWidth / 2, Viewport.ActualHeight / 2));
@@ -779,7 +782,7 @@ public partial class MainWindow : Window
     private void FitWidthClick(object sender, RoutedEventArgs e) { ClearTouches(); FitWidth(); }
     private void FitWidth()
     {
-        if (_workspace.LockZoom && !_restoringReadingPosition) { ViewModel.Status = "Zoom is locked · Change it in Workspace settings"; return; }
+        if (_workspace.LockZoom && !_restoringReadingPosition) { ViewModel.SetStatus("Core.ZoomLocked"); return; }
         if (ViewModel.IsLibraryVisible || AnyPenDown || ViewModel.SelectedPage is not { } target || Viewport.ActualWidth < 100 || SpreadForPage(target) is not { } spread) return;
         // Reserve the real scrollbar width even before it appears. The paper
         // retains a small gutter on either side and never runs under the sidebar.
@@ -817,7 +820,7 @@ public partial class MainWindow : Window
     private void ActualSizeClick(object sender, RoutedEventArgs e) => ChangeZoom(1, new Point(Viewport.ActualWidth / 2, Viewport.ActualHeight / 2));
     private void FitPage()
     {
-        if (_workspace.LockZoom && !_restoringReadingPosition) { ViewModel.Status = "Zoom is locked · Change it in Workspace settings"; return; }
+        if (_workspace.LockZoom && !_restoringReadingPosition) { ViewModel.SetStatus("Core.ZoomLocked"); return; }
         ClearTouches();
         if (AnyPenDown || ViewModel.SelectedPage is not { } target || Viewport.ActualWidth < 100 || Viewport.ActualHeight < 140 || SpreadForPage(target) is not { } spread) return;
         ClearFitWidth();

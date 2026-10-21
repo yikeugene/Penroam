@@ -1,11 +1,20 @@
+using Moye.Localization;
 using Moye.Models;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
+using L = Moye.Localization.LocalizationService;
 using PigDocument = UglyToad.PdfPig.PdfDocument;
 
 namespace Moye.Services;
 
 public sealed record PdfTextResult(string Text, string? Warning = null)
 {
+    private readonly string? _warning = Warning;
+    public LocalizedMessage? LocalizedWarning { get; init; }
+    public string? Warning
+    {
+        get => LocalizedWarning?.ToString() ?? _warning;
+        init { _warning = value; LocalizedWarning = null; }
+    }
     public bool HasText => !string.IsNullOrWhiteSpace(Text);
 }
 
@@ -36,7 +45,7 @@ public sealed class PdfTextExtractionService(INotebookRepository repository)
                     pages = await Task.Run(() => Extract(asset.Bytes, cancellationToken), cancellationToken).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException) { throw; }
-                catch (Exception ex) { return new("", "PDF text could not be read: " + ex.Message); }
+                catch (Exception ex) { return new("") { LocalizedWarning = L.M("Messages.Search.PdfReadFailed", ex.Message) }; }
                 var characters = pages.Sum(page => page.Text.Length);
                 while (_order.Count > 0 && (_cache.Count >= 8 || _characters + characters > MaximumCachedCharacters))
                 {
@@ -45,7 +54,7 @@ public sealed class PdfTextExtractionService(INotebookRepository repository)
                 _cache[assetId] = pages; _order.Enqueue(assetId); _characters += characters;
             }
             cancellationToken.ThrowIfCancellationRequested();
-            return pageIndex >= 0 && pageIndex < pages.Count ? pages[pageIndex] : new("", "The original PDF page is unavailable.");
+            return pageIndex >= 0 && pageIndex < pages.Count ? pages[pageIndex] : new("") { LocalizedWarning = L.M("Messages.Search.PdfPageUnavailable") };
         }
         finally { _gate.Release(); }
     }
@@ -60,7 +69,7 @@ public sealed class PdfTextExtractionService(INotebookRepository repository)
             cancellationToken.ThrowIfCancellationRequested();
             if (characters >= MaximumCachedCharacters)
             {
-                pages.Add(new("", "The PDF text limit was reached. This page was not indexed.")); continue;
+                pages.Add(new("") { LocalizedWarning = L.M("Messages.Search.PdfTextLimit") }); continue;
             }
             try
             {
@@ -70,11 +79,11 @@ public sealed class PdfTextExtractionService(INotebookRepository repository)
                 var truncated = text.Length > allowed;
                 if (truncated) text = text[..allowed];
                 characters += text.Length;
-                pages.Add(new(text, truncated ? "Only the beginning of this very long PDF page was indexed."
-                    : string.IsNullOrWhiteSpace(text) ? "No extractable PDF text. Scanned pages and handwriting require OCR, which is not enabled." : null));
+                pages.Add(new(text) { LocalizedWarning = truncated ? L.M("Messages.Search.PdfTextTruncated")
+                    : string.IsNullOrWhiteSpace(text) ? L.M("Messages.Search.NoExtractableText") : null });
             }
             catch (OperationCanceledException) { throw; }
-            catch (Exception ex) { pages.Add(new("", $"PDF page {number} text could not be read: {ex.Message}")); }
+            catch (Exception ex) { pages.Add(new("") { LocalizedWarning = L.M("Messages.Search.PdfPageReadFailed", number, ex.Message) }); }
         }
         return pages;
     }

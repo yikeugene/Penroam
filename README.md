@@ -18,6 +18,7 @@ Version **1.3.0** adds folder import into notebook sections and an editable two-
 
 ## Features
 
+- **Interface languages:** switch between English and Traditional Chinese (繁體中文) in the notebook home header, without restarting. The choice is remembered on this device; notebook contents and names stay unchanged.
 - **Handwriting:** pressure-sensitive pen and highlighter, saved pen presets, draw-and-hold straight lines, pixel/stroke erasers, mixed ink/text/image lasso selections and notebook undo/redo.
 - **Flexible pages:** Blank, Ruled, Grid, Dot Grid, Cornell, Graph and Meeting paper. Extend any paper or PDF page on any side without scaling the original content.
 - **Typed notes and images:** free typing with ruled alignment, fixed text boxes, whole-box formatting, PNG/JPEG images and pasted screenshots. Move overflowing text to a new page explicitly.
@@ -35,7 +36,7 @@ The default library is `%LOCALAPPDATA%\Moye\moye.db`. The Penroam rename did not
 
 Use **More → Back Up All Notebooks** to make a portable editable backup. Restoring creates new notebook copies without overwriting existing ones. Backups preserve ink, text, images, original PDFs and notebook organization; **they are not encrypted**.
 
-Writing settings live in `writing-preferences.json`; reading positions, workspace options and backup settings live in `workspace-preferences.json`, alongside the database. These device-local preferences are not included in notebook backups. Recovery drafts depend on assets in the local library and are not portable backups. See [autosave and backups](docs/USER_GUIDE.md#autosave-and-backups).
+Writing settings live in `writing-preferences.json`; interface language, reading positions, workspace options and backup settings live in `workspace-preferences.json`, alongside the database. These device-local preferences are not included in notebook backups. Recovery drafts depend on assets in the local library and are not portable backups. See [autosave and backups](docs/USER_GUIDE.md#autosave-and-backups).
 
 ## Install, update and uninstall
 

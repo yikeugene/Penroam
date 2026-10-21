@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -8,7 +9,7 @@ public sealed class PracticeAttemptsDialog : Window
 {
     private readonly ListBox _attempts = new() { Height = 160 };
     private readonly TextBox _reflection;
-    private readonly CheckBox _reviewed = new() { Content = "Reviewed — I have checked this solution", MinHeight = 44 };
+    private readonly CheckBox _reviewed = new() { Content = L.Text("Controls.Practice.Reviewed"), MinHeight = 44 };
     public NotePage? SelectedPage => (_attempts.SelectedItem as ListBoxItem)?.Tag as NotePage;
     private readonly Dictionary<string, (string Reflection, bool Reviewed)> _changes = [];
     private string? _editingId;
@@ -26,15 +27,15 @@ public sealed class PracticeAttemptsDialog : Window
 
     public PracticeAttemptsDialog(Window owner, IEnumerable<NotePage> pages, string? selectedId)
     {
-        var panel = OrganizationDialogUi.Initialize(this, owner, "Practice attempts", 650);
-        panel.Children.Add(new TextBlock { Text = "Keep your working for each attempt. Record what went wrong and what you would change next time.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10) });
+        var panel = OrganizationDialogUi.Initialize(this, owner, L.Text("Controls.Practice.Title"), 650);
+        panel.Children.Add(new TextBlock { Text = L.Text("Controls.Practice.Intro"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 10) });
         foreach (var page in pages.Where(p => p.Practice is not null).OrderBy(p => p.Practice!.GroupId).ThenBy(p => p.Practice!.Number))
         {
             var attempt = page.Practice!;
-            _attempts.Items.Add(new ListBoxItem { MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center, Content = new TextBlock { Text = $"{(attempt.Reviewed ? "✓ " : "")}{attempt.Question} · Attempt {attempt.Number}", TextWrapping = TextWrapping.Wrap }, Tag = page });
+            _attempts.Items.Add(new ListBoxItem { MinHeight = 44, VerticalContentAlignment = VerticalAlignment.Center, Content = new TextBlock { Text = L.Text("Controls.Practice.AttemptLabel", attempt.Reviewed ? "✓ " : "", attempt.Question, attempt.Number), TextWrapping = TextWrapping.Wrap }, Tag = page });
         }
         panel.Children.Add(_attempts);
-        _reflection = OrganizationDialogUi.Field(panel, "What went wrong / next approach", "");
+        _reflection = OrganizationDialogUi.Field(panel, L.Text("Controls.Practice.Reflection"), "");
         _reflection.MaxLength = 16000; _reflection.AcceptsReturn = true; _reflection.TextWrapping = TextWrapping.Wrap; _reflection.Height = 120; _reflection.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
         panel.Children.Add(_reviewed);
         _attempts.SelectionChanged += (_, _) =>
@@ -46,9 +47,9 @@ public sealed class PracticeAttemptsDialog : Window
             _reflection.Text = attempt.Reflection; _reviewed.IsChecked = attempt.Reviewed;
         };
         var buttons = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Right };
-        foreach (var (caption, action) in new[] { ("Save & open", "open"), ("Another attempt", "new"), ("Original page", "source") })
+        foreach (var (caption, action) in new[] { (L.Text("Controls.Practice.SaveOpen"), "open"), (L.Text("Controls.Practice.Another"), "new"), (L.Text("Controls.Practice.Original"), "source") })
             buttons.Children.Add(OrganizationDialogUi.Button(this, caption, () => { if (SelectedPage is not null) { Action = action; DialogResult = true; } }));
-        var cancel = OrganizationDialogUi.Button(this, "Close", () => DialogResult = false); cancel.IsCancel = true; buttons.Children.Add(cancel); panel.Children.Add(buttons);
+        var cancel = OrganizationDialogUi.Button(this, L.Text("Controls.Common.Close"), () => DialogResult = false); cancel.IsCancel = true; buttons.Children.Add(cancel); panel.Children.Add(buttons);
         _attempts.SelectedItem = _attempts.Items.Cast<ListBoxItem>().FirstOrDefault(item => ((NotePage)item.Tag).Id == selectedId) ?? _attempts.Items.Cast<ListBoxItem>().FirstOrDefault();
     }
 }

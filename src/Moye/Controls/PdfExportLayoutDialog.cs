@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Moye.Models;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -14,8 +15,8 @@ public sealed class PdfExportLayoutDialog : Window
 {
     private readonly IReadOnlyList<NotePage> _pages;
     private readonly PagePreviewRenderer _renderer;
-    private readonly ComboBox _layout = new() { MinHeight = 44, ItemsSource = new[] { "Original page sizes", "A4 sheets · actual size" }, SelectedIndex = 0 };
-    private readonly ComboBox _orientation = new() { MinHeight = 44, ItemsSource = new[] { "Automatic · fewest sheets", "Portrait", "Landscape" }, SelectedIndex = 0 };
+    private readonly ComboBox _layout = new() { MinHeight = 44, ItemsSource = new[] { L.Text("Controls.PdfLayout.Original"), L.Text("Controls.PdfLayout.A4") }, SelectedIndex = 0 };
+    private readonly ComboBox _orientation = new() { MinHeight = 44, ItemsSource = new[] { L.Text("Controls.PdfLayout.AutoOrientation"), L.Text("Controls.PdfLayout.Portrait"), L.Text("Controls.PdfLayout.Landscape") }, SelectedIndex = 0 };
     private readonly TextBox _overlap = new() { MinHeight = 44, Text = "10", VerticalContentAlignment = VerticalAlignment.Center };
     private readonly TextBlock _summary = new() { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 12, 0, 8) };
     private readonly TextBlock _error = new() { TextWrapping = TextWrapping.Wrap, Foreground = Brushes.Firebrick, Margin = new Thickness(0, 6, 0, 6) };
@@ -30,26 +31,26 @@ public sealed class PdfExportLayoutDialog : Window
 
     public PdfExportLayoutDialog(Window owner, IReadOnlyList<NotePage> pages, PagePreviewRenderer renderer)
     {
-        Owner = owner; Title = "PDF page layout"; Width = 640; Height = 700; MinWidth = 520; MinHeight = 560;
+        Owner = owner; Title = L.Text("Controls.PdfLayout.Title"); Width = 640; Height = 700; MinWidth = 520; MinHeight = 560;
         MaxHeight = SystemParameters.WorkArea.Height; WindowStartupLocation = WindowStartupLocation.CenterOwner;
         _pages = pages; _renderer = renderer;
         var root = new DockPanel { Margin = new Thickness(20) };
         var footer = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 12, 0, 0) };
         DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer);
-        footer.Children.Add(new Button { Content = "Cancel", IsCancel = true, MinHeight = 44, MinWidth = 90, Margin = new Thickness(8, 0, 0, 0), Style = TryFindResource("SecondaryButton") as Style });
-        _accept = new Button { Content = "Continue to save", IsDefault = true, MinHeight = 44, Margin = new Thickness(8, 0, 0, 0), Style = TryFindResource("PrimaryButton") as Style };
+        footer.Children.Add(new Button { Content = L.Text("Controls.Common.Cancel"), IsCancel = true, MinHeight = 44, MinWidth = 90, Margin = new Thickness(8, 0, 0, 0), Style = TryFindResource("SecondaryButton") as Style });
+        _accept = new Button { Content = L.Text("Controls.PdfLayout.Save"), IsDefault = true, MinHeight = 44, Margin = new Thickness(8, 0, 0, 0), Style = TryFindResource("PrimaryButton") as Style };
         _accept.Click += (_, _) => { if (_accept.IsEnabled) DialogResult = true; }; footer.Children.Add(_accept);
         var body = new StackPanel(); root.Children.Add(new ScrollViewer { Content = body, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
-        body.Children.Add(new TextBlock { Text = "Keep expanded notes readable", FontSize = 22, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 6) });
-        body.Children.Add(new TextBlock { Text = "Keep each canvas intact, or divide it across A4 sheets without shrinking handwriting or text.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 14) });
-        AddField(body, "Page layout", _layout);
+        body.Children.Add(new TextBlock { Text = L.Text("Controls.PdfLayout.Heading"), FontSize = 22, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 6) });
+        body.Children.Add(new TextBlock { Text = L.Text("Controls.PdfLayout.Intro"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 14) });
+        AddField(body, L.Text("Controls.PdfLayout.Layout"), _layout);
         var settings = new Grid { Margin = new Thickness(0, 10, 0, 0) }; settings.ColumnDefinitions.Add(new()); settings.ColumnDefinitions.Add(new() { Width = new GridLength(150) });
-        var orientationPanel = new StackPanel { Margin = new Thickness(0, 0, 12, 0) }; AddField(orientationPanel, "A4 orientation", _orientation); settings.Children.Add(orientationPanel);
-        var overlapPanel = new StackPanel(); AddField(overlapPanel, "Overlap (0–30 mm)", _overlap); Grid.SetColumn(overlapPanel, 1); settings.Children.Add(overlapPanel); body.Children.Add(settings);
-        body.Children.Add(_summary); AddField(body, "Preview source page", _page); body.Children.Add(_preview);
-        body.Children.Add(new TextBlock { Text = "A4 sheets read left to right, then top to bottom. Overlap repeats a narrow strip so notes remain legible at joins. Print at Actual size / 100% to retain scale.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 10, 0, 0), Foreground = Brushes.DimGray });
+        var orientationPanel = new StackPanel { Margin = new Thickness(0, 0, 12, 0) }; AddField(orientationPanel, L.Text("Controls.PdfLayout.Orientation"), _orientation); settings.Children.Add(orientationPanel);
+        var overlapPanel = new StackPanel(); AddField(overlapPanel, L.Text("Controls.PdfLayout.Overlap"), _overlap); Grid.SetColumn(overlapPanel, 1); settings.Children.Add(overlapPanel); body.Children.Add(settings);
+        body.Children.Add(_summary); AddField(body, L.Text("Controls.PdfLayout.PreviewPage"), _page); body.Children.Add(_preview);
+        body.Children.Add(new TextBlock { Text = L.Text("Controls.PdfLayout.PrintHint"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 10, 0, 0), Foreground = Brushes.DimGray });
         body.Children.Add(_error); Content = root;
-        _page.ItemsSource = pages.Select((page, index) => $"Page {index + 1} · {page.Width / PdfExportPagination.DipsPerMillimeter:0.#} × {page.Height / PdfExportPagination.DipsPerMillimeter:0.#} mm").ToArray();
+        _page.ItemsSource = pages.Select((page, index) => L.Text("Controls.PdfLayout.PageSize", index + 1, page.Width / PdfExportPagination.DipsPerMillimeter, page.Height / PdfExportPagination.DipsPerMillimeter)).ToArray();
         _layout.SelectionChanged += (_, _) => UpdatePlan(); _orientation.SelectionChanged += (_, _) => UpdatePlan(); _overlap.TextChanged += (_, _) => UpdatePlan();
         _page.SelectionChanged += async (_, _) => await UpdatePreviewAsync();
         Closed += (_, _) => { _closed = true; _previewCancellation?.Cancel(); };
@@ -68,13 +69,13 @@ public sealed class PdfExportLayoutDialog : Window
         {
             var overlap = 10d;
             if (tiled && (!double.TryParse(_overlap.Text, NumberStyles.Float, CultureInfo.CurrentCulture, out overlap) || !double.IsFinite(overlap)))
-                throw new ArgumentException("Enter an overlap from 0 to 30 mm.");
+                throw new ArgumentException(L.Text("Controls.PdfLayout.InvalidOverlap"));
             Options = new PdfExportOptions { Layout = tiled ? PdfExportLayout.A4Tiles : PdfExportLayout.OriginalSize, Orientation = (PdfTileOrientation)Math.Max(0, _orientation.SelectedIndex), OverlapMillimeters = overlap };
             _tiles = PdfExportPagination.Plan(_pages, Options); _accept.IsEnabled = _tiles.Count > 0; _error.Text = "";
-            _summary.Text = $"{_pages.Count} source {(_pages.Count == 1 ? "page" : "pages")} → {_tiles.Count} PDF {(_tiles.Count == 1 ? "page" : "pages")}" + (tiled ? " · A4 at 100% scale" : " · Original dimensions preserved");
+            _summary.Text = L.Text("Controls.PdfLayout.PageCount", _pages.Count, L.Text(_pages.Count == 1 ? "Controls.Common.PageSingular" : "Controls.Common.PagePlural"), _tiles.Count, L.Text(_tiles.Count == 1 ? "Controls.Common.PageSingular" : "Controls.Common.PagePlural")) + (tiled ? L.Text("Controls.PdfLayout.A4Summary") : L.Text("Controls.PdfLayout.OriginalSummary"));
             UpdateGrid();
         }
-        catch (ArgumentException ex) { _error.Text = ex.Message; _accept.IsEnabled = false; _summary.Text = "Check the layout settings."; _preview.Tiles = []; _preview.InvalidateVisual(); }
+        catch (ArgumentException ex) { _error.Text = ex.Message; _accept.IsEnabled = false; _summary.Text = L.Text("Controls.PdfLayout.CheckSettings"); _preview.Tiles = []; _preview.InvalidateVisual(); }
     }
 
     private void UpdateGrid()
@@ -96,7 +97,7 @@ public sealed class PdfExportLayoutDialog : Window
             if (!_closed && !cancellation.IsCancellationRequested) { _preview.Bitmap = bitmap; _preview.InvalidateVisual(); }
         }
         catch (OperationCanceledException) { }
-        catch (Exception) { if (!_closed && !cancellation.IsCancellationRequested) _error.Text = "Page image unavailable. Sheet boundaries and count are still shown."; }
+        catch (Exception) { if (!_closed && !cancellation.IsCancellationRequested) _error.Text = L.Text("Controls.PdfLayout.ImageUnavailable"); }
         finally { if (ReferenceEquals(_previewCancellation, cancellation)) _previewCancellation = null; cancellation.Dispose(); }
     }
 

@@ -2,8 +2,10 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Media;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -31,18 +33,18 @@ public sealed class PaperTemplatePicker : UserControl
         MinWidth = 240;
         var group = new UniformGrid { Columns = 4 };
         var groupName = $"PaperTemplates_{Guid.NewGuid():N}";
-        AddChoice(group, groupName, PaperTemplate.Plain, "Blank", "Free-form notes");
-        AddChoice(group, groupName, PaperTemplate.Ruled, "Ruled", "Everyday writing");
-        AddChoice(group, groupName, PaperTemplate.Grid, "Grid", "Diagrams & maths");
-        AddChoice(group, groupName, PaperTemplate.DotGrid, "Dot Grid", "Flexible layouts");
-        AddChoice(group, groupName, PaperTemplate.Cornell, "Cornell", "Cues & summaries");
-        AddChoice(group, groupName, PaperTemplate.Graph, "Graph", "Fine-scale plotting");
-        AddChoice(group, groupName, PaperTemplate.Meeting, "Meeting", "Notes & actions");
+        AddChoice(group, groupName, PaperTemplate.Plain, "Controls.Paper.Plain.Caption", "Controls.Paper.Plain.Description");
+        AddChoice(group, groupName, PaperTemplate.Ruled, "Controls.Paper.Ruled.Caption", "Controls.Paper.Ruled.Description");
+        AddChoice(group, groupName, PaperTemplate.Grid, "Controls.Paper.Grid.Caption", "Controls.Paper.Grid.Description");
+        AddChoice(group, groupName, PaperTemplate.DotGrid, "Controls.Paper.DotGrid.Caption", "Controls.Paper.DotGrid.Description");
+        AddChoice(group, groupName, PaperTemplate.Cornell, "Controls.Paper.Cornell.Caption", "Controls.Paper.Cornell.Description");
+        AddChoice(group, groupName, PaperTemplate.Graph, "Controls.Paper.Graph.Caption", "Controls.Paper.Graph.Description");
+        AddChoice(group, groupName, PaperTemplate.Meeting, "Controls.Paper.Meeting.Caption", "Controls.Paper.Meeting.Description");
         Content = group;
         UpdateSelection();
     }
 
-    private void AddChoice(Panel group, string groupName, PaperTemplate template, string name, string description)
+    private void AddChoice(Panel group, string groupName, PaperTemplate template, string nameKey, string descriptionKey)
     {
         var content = new StackPanel();
         var paper = new Border
@@ -57,17 +59,21 @@ public sealed class PaperTemplatePicker : UserControl
             }
         };
         content.Children.Add(paper);
-        content.Children.Add(new TextBlock
+        var name = new TextBlock
         {
-            Text = name, FontSize = 13, FontWeight = FontWeights.SemiBold,
+            FontSize = 13, FontWeight = FontWeights.SemiBold,
             HorizontalAlignment = HorizontalAlignment.Center
-        });
-        content.Children.Add(new TextBlock
+        };
+        L.Bind(name, TextBlock.TextProperty, nameKey);
+        content.Children.Add(name);
+        var description = new TextBlock
         {
-            Text = description, FontSize = 11, Foreground = Brush("#65736D"),
+            FontSize = 11, Foreground = Brush("#65736D"),
             TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Center,
             Margin = new Thickness(0, 4, 0, 0), MinHeight = 30
-        });
+        };
+        L.Bind(description, TextBlock.TextProperty, descriptionKey);
+        content.Children.Add(description);
 
         var choiceContent = new Grid();
         choiceContent.Children.Add(content);
@@ -86,14 +92,27 @@ public sealed class PaperTemplatePicker : UserControl
             HorizontalContentAlignment = HorizontalAlignment.Stretch,
             VerticalContentAlignment = VerticalAlignment.Center,
             Cursor = System.Windows.Input.Cursors.Hand,
-            Style = ChoiceStyle(), ToolTip = $"{name} paper — {description}"
+            Style = ChoiceStyle()
         };
-        AutomationProperties.SetName(choice, $"{name} paper");
-        AutomationProperties.SetHelpText(choice, description);
+        BindingOperations.SetBinding(choice, ToolTipProperty, L.FormatBinding("Controls.Paper.ToolTip", L.Binding(nameKey), L.Binding(descriptionKey)));
+        BindingOperations.SetBinding(choice, AutomationProperties.NameProperty, L.FormatBinding("Controls.Paper.Accessible", L.Binding(nameKey)));
+        L.Bind(choice, AutomationProperties.HelpTextProperty, descriptionKey);
         choice.Checked += (_, _) => SetCurrentValue(SelectedTemplateProperty, template);
         _choices[template] = choice;
         group.Children.Add(choice);
     }
+
+    public static string DisplayName(PaperTemplate template) => template switch
+    {
+        PaperTemplate.Plain => L.Text("Controls.Paper.Plain.Name"),
+        PaperTemplate.Ruled => L.Text("Controls.Paper.Ruled.Name"),
+        PaperTemplate.Grid => L.Text("Controls.Paper.Grid.Name"),
+        PaperTemplate.DotGrid => L.Text("Controls.Paper.DotGrid.Name"),
+        PaperTemplate.Cornell => L.Text("Controls.Paper.Cornell.Name"),
+        PaperTemplate.Graph => L.Text("Controls.Paper.Graph.Name"),
+        PaperTemplate.Meeting => L.Text("Controls.Paper.Meeting.Name"),
+        _ => template.ToString()
+    };
 
     private static Style ChoiceStyle()
     {

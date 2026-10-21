@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye;
 
@@ -27,7 +28,7 @@ public partial class App : Application
     private System.Threading.Mutex? _instanceMutex;
     protected override async void OnStartup(StartupEventArgs e)
     {
-        // UI language is English; document text and the user's number/date formats are preserved.
+        // Keep framework diagnostics stable; interface resources use the saved language explicitly.
         System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
         base.OnStartup(e);
         // The isolated converter has no notebook library, preferences or main window.
@@ -56,14 +57,18 @@ public partial class App : Application
         var location = LibraryLocation.Resolve(dataIndex >= 0 && dataIndex + 1 < e.Args.Length ? e.Args[dataIndex + 1] : null);
         var errors = new ErrorReporter(Path.Combine(Path.GetDirectoryName(location.DatabasePath)!, "error.log"));
         _instanceMutex = new(true, location.MutexName, out bool first);
-        if (!first) { MessageBox.Show("Penroam is already open. Please use the existing window.", "Penroam"); Shutdown(); return; }
+        var workspaceStore = new WorkspacePreferencesStore(Path.Combine(Path.GetDirectoryName(location.PreferencesPath)!, "workspace-preferences.json"));
+        var workspace = await workspaceStore.LoadAsync();
+        L.SetLanguage(workspace.UiLanguage);
+        if (!first) { MessageBox.Show(L.Text("Core.AlreadyOpen"), "Penroam"); Shutdown(); return; }
         DispatcherUnhandledException += (_, args) =>
         {
-            MessageBox.Show("The operation could not be completed. Previously saved notes are unaffected.\n\n" + errors.Report(args.Exception), "Penroam", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(L.Text("Core.UnhandledOperation", errors.Report(args.Exception)), "Penroam", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
         };
         var window = new MainWindow(new SqliteNotebookRepository(location.DatabasePath), new WritingPreferencesStore(location.PreferencesPath), errors,
-            dataIndex < 0 ? new GitHubUpdateService(GitHubUpdateService.CurrentVersion) : null);
+            dataIndex < 0 ? new GitHubUpdateService(GitHubUpdateService.CurrentVersion) : null,
+            workspaceStore: workspaceStore, workspace: workspace);
         MainWindow = window; window.Show();
     }
     protected override void OnExit(ExitEventArgs e) { _instanceMutex?.Dispose(); base.OnExit(e); }

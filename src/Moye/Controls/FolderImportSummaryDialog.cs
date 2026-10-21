@@ -3,6 +3,7 @@ using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Data;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -12,7 +13,7 @@ public sealed class FolderImportSummaryDialog : Window
 
     public FolderImportSummaryDialog(Window owner, FolderImportSummary summary)
     {
-        Owner = owner; Title = "Folder import summary"; Width = 660; Height = 560;
+        Owner = owner; Title = L.Text("Controls.FolderImport.Title"); Width = 660; Height = 560;
         MinWidth = 440; MinHeight = 380; MaxHeight = Math.Max(380, SystemParameters.WorkArea.Height - 24);
         WindowStartupLocation = WindowStartupLocation.CenterOwner; ShowInTaskbar = false;
         var panel = new DockPanel { Margin = new Thickness(24) }; Content = panel;
@@ -21,35 +22,35 @@ public sealed class FolderImportSummaryDialog : Window
         header.Children.Add(new TextBlock { Text = summary.NotebookTitle, FontSize = 22, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
         header.Children.Add(new TextBlock
         {
-            Text = $"{summary.ReadyCount} ready · {summary.FailedCount} failed · {summary.SkippedCount} skipped · {summary.PageCount} {(summary.PageCount == 1 ? "page" : "pages")}",
+            Text = L.Text("Controls.FolderImport.Summary", summary.ReadyCount, summary.FailedCount, summary.SkippedCount, summary.PageCount, L.Text(summary.PageCount == 1 ? "Controls.Common.PageSingular" : "Controls.Common.PagePlural")),
             TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 10, 0, 8)
         });
         header.Children.Add(new TextBlock
         {
             Text = summary.RequiresConfirmation
-                ? "Some files could not be prepared. Import the successful files, or cancel without creating a notebook."
+                ? L.Text("Controls.FolderImport.Confirmation")
                 : summary.ReadyCount == 0
-                    ? "No supported documents could be prepared. No notebook was created."
-                    : "Each successful file becomes a section, in natural filename order.",
+                    ? L.Text("Controls.FolderImport.Empty")
+                    : L.Text("Controls.FolderImport.Order"),
             TextWrapping = TextWrapping.Wrap
         });
         header.Children.Add(new TextBlock
         {
-            Text = "Only top-level PDF and PPTX files are included. Sources stay unchanged; this one-time import does not watch the folder for changes.",
+            Text = L.Text("Controls.FolderImport.Scope"),
             TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 0)
         });
         var actions = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 16, 0, 0) };
         DockPanel.SetDock(actions, Dock.Bottom); panel.Children.Add(actions);
         if (summary.RequiresConfirmation)
         {
-            var cancel = ActionButton("Cancel", false); cancel.IsCancel = true; actions.Children.Add(cancel);
-            var accept = ActionButton("Import Successful Files", true); accept.IsDefault = true;
+            var cancel = ActionButton(L.Text("Controls.Common.Cancel"), false); cancel.IsCancel = true; actions.Children.Add(cancel);
+            var accept = ActionButton(L.Text("Controls.FolderImport.Accept"), true); accept.IsDefault = true;
             accept.Click += (_, _) => { ImportSuccessfulFiles = true; DialogResult = true; };
             actions.Children.Add(accept);
         }
         else
         {
-            var done = ActionButton(summary.ReadyCount == 0 ? "Close" : "Done", true);
+            var done = ActionButton(summary.ReadyCount == 0 ? L.Text("Controls.Common.Close") : L.Text("Controls.Common.Done"), true);
             done.IsDefault = true; done.IsCancel = true;
             done.Click += (_, _) => DialogResult = true; actions.Children.Add(done);
         }
@@ -58,7 +59,7 @@ public sealed class FolderImportSummaryDialog : Window
             ItemsSource = summary.Items.Select(item => new SummaryRow(item)).ToArray(),
             HorizontalContentAlignment = HorizontalAlignment.Stretch
         };
-        AutomationProperties.SetName(list, "Folder import file results");
+        AutomationProperties.SetName(list, L.Text("Controls.FolderImport.Results"));
         ScrollViewer.SetHorizontalScrollBarVisibility(list, ScrollBarVisibility.Disabled);
         ScrollViewer.SetVerticalScrollBarVisibility(list, ScrollBarVisibility.Auto);
         var rowStyle = new Style(typeof(ListBoxItem));
@@ -95,7 +96,12 @@ public sealed class FolderImportSummaryDialog : Window
     {
         public string Name => item.Name;
         public string Detail => (item.Status == FolderImportItemStatus.Ready
-            ? $"Ready · {item.PageCount} {(item.PageCount == 1 ? "page" : "pages")}" : item.Status.ToString())
+            ? L.Text("Controls.FolderImport.ReadyCount", item.PageCount, L.Text(item.PageCount == 1 ? "Controls.Common.PageSingular" : "Controls.Common.PagePlural")) : item.Status switch
+            {
+                FolderImportItemStatus.Failed => L.Text("Controls.FolderImport.Failed"),
+                FolderImportItemStatus.Skipped => L.Text("Controls.FolderImport.Skipped"),
+                _ => item.Status.ToString()
+            })
             + (string.IsNullOrWhiteSpace(item.Message) ? "" : "\n" + item.Message);
         public string AccessibleName => Name + ". " + Detail;
     }

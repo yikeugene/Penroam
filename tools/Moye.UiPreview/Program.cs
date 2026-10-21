@@ -20,7 +20,7 @@ using Moye.ViewModels;
 
 namespace Moye.UiPreview;
 
-internal static class Program
+internal static partial class Program
 {
     // No Application.Run, Window.Show, input injection, UI Automation client,
     // desktop capture, or user database is involved in this renderer.
@@ -40,6 +40,8 @@ internal static class Program
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
             var application = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
             application.Resources = ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml"));
+            RunBilingualPreview(output);
+            if (args.Contains("--bilingual-only", StringComparer.Ordinal)) return 0;
             DocumentWorkflowPreviewScenes.Run(output);
             PageExtensionPreviewScenes.Run(output);
             FreeTypingPreviewScenes.Run(output);

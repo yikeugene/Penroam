@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -267,10 +268,11 @@ public partial class MainWindow
     {
         SinglePageMenuItem.IsChecked = !_twoPageView;
         TwoPagesMenuItem.IsChecked = _twoPageView;
-        var label = _twoPageView ? "Fit Spread" : "Fit Page";
-        FitPageMenuItem.Header = label; FitPageButton.Content = label;
-        FitPageButton.ToolTip = _twoPageView ? "Show the whole two-page spread" : "Show the whole page";
-        AutomationProperties.SetName(FitPageButton, label);
-        FitWidthButton.ToolTip = _twoPageView ? "Fit both pages to the available writing area" : "Fit the paper to the available writing area";
+        var key = _twoPageView ? "Shell.FitSpread" : "Shell.FitPage";
+        L.Bind(FitPageMenuItem, HeaderedItemsControl.HeaderProperty, key);
+        L.Bind(FitPageButton, ContentControl.ContentProperty, key);
+        L.Bind(FitPageButton, FrameworkElement.ToolTipProperty, _twoPageView ? "Shell.FitSpreadHint" : "Shell.FitPageHint");
+        L.Bind(FitPageButton, AutomationProperties.NameProperty, key);
+        L.Bind(FitWidthButton, FrameworkElement.ToolTipProperty, _twoPageView ? "Shell.FitSpreadWidthHint" : "Shell.FitWidthHint");
     }
 }

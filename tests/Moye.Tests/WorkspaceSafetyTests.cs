@@ -19,12 +19,13 @@ public sealed class WorkspaceSafetyTests
         preferences.ReadingPositions["note"] = new("section", "page", .2, .6, .5, .1, 1.3, true, DateTimeOffset.UtcNow);
         preferences.LastNotebookId = "note"; preferences.TwoFingerNavigationOnly = true;
         preferences.BackupRetention = 7; preferences.FocusToolsOnRight = true; preferences.TwoPageView = true;
+        preferences.UiLanguage = "zh-TW";
         await store.SaveAsync(preferences);
         var reopened = await new WorkspacePreferencesStore(path).LoadAsync();
         Assert.Equal(preferences.ReadingPositions["note"], reopened.ReadingPositions["note"]);
         Assert.True(reopened.TwoFingerNavigationOnly); Assert.True(reopened.FocusToolsOnRight);
         Assert.True(reopened.TwoPageView); Assert.Equal(1, reopened.Version);
-        Assert.Equal(7, reopened.BackupRetention);
+        Assert.Equal(7, reopened.BackupRetention); Assert.Equal("zh-TW", reopened.UiLanguage);
         Assert.False(File.Exists(directory.DatabasePath));
     }
 
@@ -42,6 +43,44 @@ public sealed class WorkspaceSafetyTests
         var reopened = await new WorkspacePreferencesStore(path).LoadAsync();
         Assert.Equal(1, reopened.Version); Assert.True(reopened.TwoPageView);
         Assert.Equal("existing", reopened.LastNotebookId);
+    }
+
+    [Theory]
+    [InlineData(null, "en")]
+    [InlineData("null", "en")]
+    [InlineData("\"unknown\"", "en")]
+    [InlineData("\"en\"", "en")]
+    [InlineData("\"zh-TW\"", "zh-TW")]
+    public async Task InterfaceLanguageLoadsAndNormalizesWithinWorkspaceFormatOne(string? languageJson, string expected)
+    {
+        using var directory = new StorageTestDirectory();
+        var path = Path.Combine(directory.Root, "workspace.json");
+        var content = "{\"version\":1,\"lastNotebookId\":\"existing\"" +
+            (languageJson is null ? "" : ",\"uiLanguage\":" + languageJson) + "}";
+        await File.WriteAllTextAsync(path, content);
+        var store = new WorkspacePreferencesStore(path);
+
+        var preferences = await store.LoadAsync();
+
+        Assert.Null(store.Warning); Assert.Equal(expected, preferences.UiLanguage);
+        Assert.Equal(content, await File.ReadAllTextAsync(path));
+        await store.SaveAsync(preferences);
+        var reopened = await new WorkspacePreferencesStore(path).LoadAsync();
+        Assert.Equal(1, reopened.Version); Assert.Equal(expected, reopened.UiLanguage);
+        Assert.Equal("existing", reopened.LastNotebookId);
+        using var saved = JsonDocument.Parse(await File.ReadAllTextAsync(path));
+        Assert.Equal(expected, saved.RootElement.GetProperty("uiLanguage").GetString());
+    }
+
+    [Fact]
+    public async Task LanguagePreferenceCannotBypassReadBeforeWriteGuard()
+    {
+        using var directory = new StorageTestDirectory();
+        var path = Path.Combine(directory.Root, "workspace.json");
+        var store = new WorkspacePreferencesStore(path);
+        await Assert.ThrowsAsync<IOException>(() => store.SaveAsync(new() { UiLanguage = "zh-TW" }));
+        Assert.False(File.Exists(path));
+        Assert.Equal("en", (await store.LoadAsync()).UiLanguage);
     }
 
     [Fact]
@@ -94,7 +133,8 @@ public sealed class WorkspaceSafetyTests
         var path = Path.Combine(directory.Root, "workspace.json"); await File.WriteAllTextAsync(path, content);
         var store = new WorkspacePreferencesStore(path); var preferences = await store.LoadAsync();
         Assert.NotNull(store.Warning);
-        preferences.TwoPageView = true; // Layout changes cannot bypass the unreadable/newer-file guard.
+        Assert.Equal("en", preferences.UiLanguage);
+        preferences.TwoPageView = true; preferences.UiLanguage = "zh-TW"; // UI choices cannot bypass the unreadable/newer-file guard.
         await Assert.ThrowsAsync<IOException>(() => store.SaveAsync(preferences));
         Assert.Equal(content, await File.ReadAllTextAsync(path));
     }

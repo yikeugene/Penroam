@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Moye.Models;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -14,9 +15,9 @@ public sealed class PresetManagerDialog : Window
     private readonly Button _color = new() { MinHeight = 44, HorizontalContentAlignment = HorizontalAlignment.Stretch };
     private readonly Border _colorSwatch = new() { Width = 36, Height = 26, CornerRadius = new CornerRadius(4), BorderBrush = Brushes.SlateGray, BorderThickness = new Thickness(1), Margin = new Thickness(0, 0, 12, 0) };
     private readonly StrokeWidthPicker _width = new();
-    private readonly ComboBox _tool = new() { ItemsSource = new[] { "Pen", "Highlighter" } };
+    private readonly ComboBox _tool = new() { ItemsSource = new[] { L.Text("Controls.Preset.Pen"), L.Text("Controls.Preset.Highlighter") } };
     private readonly TextBox _opacity = new();
-    private readonly CheckBox _pressure = Check("Pressure sensitivity"), _smoothing = Check("Stroke smoothing"), _favorite = Check("Show in favourite toolbar");
+    private readonly CheckBox _pressure = Check(L.Text("Controls.Preset.Pressure")), _smoothing = Check(L.Text("Controls.Preset.Smoothing")), _favorite = Check(L.Text("Controls.Preset.Favorite"));
     private readonly TextBlock _error = new() { Foreground = Brushes.Firebrick, TextWrapping = TextWrapping.Wrap, MinHeight = 34 };
     private WritingPreset? _editing;
     private bool _loading;
@@ -26,39 +27,39 @@ public sealed class PresetManagerDialog : Window
     public PresetManagerDialog(Window owner, WritingPreferences preferences)
     {
         Preferences = preferences.Snapshot();
-        Owner = owner; Title = "Pen Presets"; Width = 760; Height = 760;
+        Owner = owner; Title = L.Text("Controls.Preset.Title"); Width = 760; Height = 760;
         MaxHeight = Math.Max(500, SystemParameters.WorkArea.Height - 30);
         WindowStartupLocation = WindowStartupLocation.CenterOwner; ShowInTaskbar = false; Background = Brushes.White;
         var root = new Grid { Margin = new Thickness(24), Background = Brushes.White };
         root.RowDefinitions.Add(new() { Height = GridLength.Auto }); root.RowDefinitions.Add(new()); root.RowDefinitions.Add(new() { Height = GridLength.Auto });
-        root.Children.Add(new TextBlock { Text = "Your everyday pens", FontSize = 24, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 18) });
+        root.Children.Add(new TextBlock { Text = L.Text("Controls.Preset.Heading"), FontSize = 24, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 18) });
         var body = new Grid(); body.ColumnDefinitions.Add(new() { Width = new GridLength(240) }); body.ColumnDefinitions.Add(new()); Grid.SetRow(body, 1); root.Children.Add(body);
         var left = new DockPanel { Margin = new Thickness(0, 0, 20, 0) };
         var actions = new WrapPanel { Margin = new Thickness(0, 12, 0, 0) };
-        AddButton(actions, "↑", () => Move(-1), "Move preset up"); AddButton(actions, "↓", () => Move(1), "Move preset down");
-        AddButton(actions, "Duplicate", Duplicate); AddButton(actions, "Delete", Delete);
+        AddButton(actions, "↑", () => Move(-1), L.Text("Controls.Preset.MoveUp")); AddButton(actions, "↓", () => Move(1), L.Text("Controls.Preset.MoveDown"));
+        AddButton(actions, L.Text("Controls.Common.Duplicate"), Duplicate); AddButton(actions, L.Text("Controls.Common.Delete"), Delete);
         DockPanel.SetDock(actions, Dock.Bottom); left.Children.Add(actions);
         _list.ItemContainerStyle = new Style(typeof(ListBoxItem));
         _list.ItemContainerStyle.Setters.Add(new Setter(MinHeightProperty, 48d));
         _list.ItemContainerStyle.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(10)));
         left.Children.Add(_list); body.Children.Add(left);
         var form = new StackPanel();
-        AddField(form, "Preset name", _name); AddField(form, "Tool", _tool);
+        AddField(form, L.Text("Controls.Preset.Name"), _name); AddField(form, L.Text("Controls.Preset.Tool"), _tool);
         var colorContent = new StackPanel { Orientation = Orientation.Horizontal };
         colorContent.Children.Add(_colorSwatch);
-        colorContent.Children.Add(new TextBlock { Text = "Choose color…", VerticalAlignment = VerticalAlignment.Center });
+        colorContent.Children.Add(new TextBlock { Text = L.Text("Controls.Preset.ChooseColor"), VerticalAlignment = VerticalAlignment.Center });
         _color.Content = colorContent;
-        System.Windows.Automation.AutomationProperties.SetName(_color, "Choose preset color");
+        System.Windows.Automation.AutomationProperties.SetName(_color, L.Text("Controls.Preset.ColorAccessible"));
         _color.Click += (_, _) => ChooseColor();
-        AddField(form, "Color", _color);
+        AddField(form, L.Text("Controls.Common.Color"), _color);
         _width.Margin = new Thickness(0, 0, 0, 12); form.Children.Add(_width);
-        AddField(form, "Pen opacity (%)", _opacity);
-        form.Children.Add(new TextBlock { Text = "Highlighter uses its native 50% transparency.", Foreground = Brushes.SlateGray, FontSize = 12, TextWrapping = TextWrapping.Wrap });
+        AddField(form, L.Text("Controls.Preset.Opacity"), _opacity);
+        form.Children.Add(new TextBlock { Text = L.Text("Controls.Preset.HighlighterHint"), Foreground = Brushes.SlateGray, FontSize = 12, TextWrapping = TextWrapping.Wrap });
         form.Children.Add(_pressure); form.Children.Add(_smoothing); form.Children.Add(_favorite); form.Children.Add(_error);
         var scroll = new ScrollViewer { Content = form, VerticalScrollBarVisibility = ScrollBarVisibility.Auto }; Grid.SetColumn(scroll, 1); body.Children.Add(scroll);
         var footer = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 16, 0, 0) };
-        footer.Children.Add(new Button { Content = "Cancel", IsCancel = true, Style = TryFindResource("SecondaryButton") as Style });
-        var save = new Button { Content = "Save and Use", IsDefault = true, Style = TryFindResource("PrimaryButton") as Style };
+        footer.Children.Add(new Button { Content = L.Text("Controls.Common.Cancel"), IsCancel = true, Style = TryFindResource("SecondaryButton") as Style });
+        var save = new Button { Content = L.Text("Controls.Preset.SaveUse"), IsDefault = true, Style = TryFindResource("PrimaryButton") as Style };
         save.Click += (_, _) => { if (CommitSelection()) DialogResult = true; }; footer.Children.Add(save); Grid.SetRow(footer, 2); root.Children.Add(footer); Content = root;
         _list.SelectionChanged += (_, _) =>
         {
@@ -109,7 +110,7 @@ public sealed class PresetManagerDialog : Window
     }
     private void ChooseColor()
     {
-        var dialog = new ColorPickerDialog(this, _selectedColor, "Choose Preset Color");
+        var dialog = new ColorPickerDialog(this, _selectedColor, L.Text("Controls.Preset.ColorTitle"));
         if (dialog.ShowDialog() == true) SetSelectedColor(dialog.SelectedColor);
     }
     private void SetSelectedColor(Color color)
@@ -131,9 +132,9 @@ public sealed class PresetManagerDialog : Window
     private bool StoreEditor()
     {
         if (_editing is null) return true;
-        if (string.IsNullOrWhiteSpace(_name.Text)) { _error.Text = "Give this preset a name."; return false; }
+        if (string.IsNullOrWhiteSpace(_name.Text)) { _error.Text = L.Text("Controls.Preset.NameRequired"); return false; }
         if (!double.TryParse(_opacity.Text, NumberStyles.Float, CultureInfo.CurrentCulture, out var opacity) || !double.IsFinite(opacity) || opacity < 10 || opacity > 100)
-        { _error.Text = "Use an opacity between 10 and 100 percent."; return false; }
+        { _error.Text = L.Text("Controls.Preset.InvalidOpacity"); return false; }
         _editing.Name = _name.Text.Trim();
         _editing.Width = _width.StrokeWidth;
         _editing.Color = _selectedColor.ToString();
@@ -158,14 +159,14 @@ public sealed class PresetManagerDialog : Window
     private void Duplicate()
     {
         if (!StoreEditor() || _editing is null) return;
-        if (Preferences.Presets.Count >= 40) { _error.Text = "You can keep up to 40 presets."; return; }
+        if (Preferences.Presets.Count >= 40) { _error.Text = L.Text("Controls.Preset.Maximum"); return; }
         var copy = _editing.Snapshot(); copy.Id = Guid.NewGuid().ToString("N"); copy.Name = _editing.Name + " Copy";
         Preferences.Presets.Insert(Preferences.Presets.IndexOf(_editing) + 1, copy); Refresh(copy);
     }
     private void Delete()
     {
         if (_editing is null) return;
-        if (Preferences.Presets.Count == 1) { _error.Text = "Keep at least one preset."; return; }
+        if (Preferences.Presets.Count == 1) { _error.Text = L.Text("Controls.Preset.Minimum"); return; }
         var index = Preferences.Presets.IndexOf(_editing); Preferences.Presets.Remove(_editing);
         if (Preferences.LastPresetId == _editing.Id) Preferences.LastPresetId = Preferences.Presets[0].Id;
         _editing = null; Refresh(Preferences.Presets[Math.Min(index, Preferences.Presets.Count - 1)]);

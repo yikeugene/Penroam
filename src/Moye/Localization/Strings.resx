@@ -1,0 +1,3587 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Controls.Clipboard.ImageTooLarge" xml:space="preserve">
+    <value>Clipboard image exceeds the supported dimensions.</value>
+  </data>
+  <data name="Controls.Clipboard.SelectionTooLarge" xml:space="preserve">
+    <value>This selection is too large for the clipboard.</value>
+  </data>
+  <data name="Controls.Clipboard.SelectionTooLargeHint" xml:space="preserve">
+    <value>This selection is too large for the clipboard. Copy fewer objects.</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Amber" xml:space="preserve">
+    <value>Amber</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Black" xml:space="preserve">
+    <value>Black</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Blue" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Brown" xml:space="preserve">
+    <value>Brown</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Gray" xml:space="preserve">
+    <value>Gray</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Green" xml:space="preserve">
+    <value>Green</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Ink" xml:space="preserve">
+    <value>Ink</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Magenta" xml:space="preserve">
+    <value>Magenta</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Orange" xml:space="preserve">
+    <value>Orange</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Pink" xml:space="preserve">
+    <value>Pink</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Purple" xml:space="preserve">
+    <value>Purple</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Red" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Skyblue" xml:space="preserve">
+    <value>Sky blue</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Teal" xml:space="preserve">
+    <value>Teal</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.White" xml:space="preserve">
+    <value>White</value>
+  </data>
+  <data name="Controls.ColorPicker.Color.Yellow" xml:space="preserve">
+    <value>Yellow</value>
+  </data>
+  <data name="Controls.ColorPicker.Current" xml:space="preserve">
+    <value>Current</value>
+  </data>
+  <data name="Controls.ColorPicker.FieldHelp" xml:space="preserve">
+    <value>Arrow keys adjust the color field. Hold Shift for larger steps.</value>
+  </data>
+  <data name="Controls.ColorPicker.FieldStatus" xml:space="preserve">
+    <value>Saturation {0:P0}, brightness {1:P0}</value>
+  </data>
+  <data name="Controls.ColorPicker.Hue" xml:space="preserve">
+    <value>Hue</value>
+  </data>
+  <data name="Controls.ColorPicker.HueHelp" xml:space="preserve">
+    <value>Choose a hue. Use left and right arrow keys for fine adjustment.</value>
+  </data>
+  <data name="Controls.ColorPicker.New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="Controls.ColorPicker.NewColorDescription" xml:space="preserve">
+    <value>New color: red {0}, green {1}, blue {2}, opacity {3:P0}</value>
+  </data>
+  <data name="Controls.ColorPicker.OpacityHelp" xml:space="preserve">
+    <value>Opacity stays at {0:P0}. Arrow keys adjust the color field.</value>
+  </data>
+  <data name="Controls.ColorPicker.Palette" xml:space="preserve">
+    <value>Palette</value>
+  </data>
+  <data name="Controls.ColorPicker.Restore" xml:space="preserve">
+    <value>Restore current color</value>
+  </data>
+  <data name="Controls.ColorPicker.SaturationBrightness" xml:space="preserve">
+    <value>Saturation and brightness</value>
+  </data>
+  <data name="Controls.ColorPicker.SaturationBrightnessHelp" xml:space="preserve">
+    <value>Left and right adjust saturation. Up and down adjust brightness. Hold Shift for larger steps.</value>
+  </data>
+  <data name="Controls.ColorPicker.Selected" xml:space="preserve">
+    <value>Selected</value>
+  </data>
+  <data name="Controls.ColorPicker.Title" xml:space="preserve">
+    <value>Choose Color</value>
+  </data>
+  <data name="Controls.Common.Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Controls.Common.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Controls.Common.Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Controls.Common.Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Controls.Common.Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="Controls.Common.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Controls.Common.DestinationSection" xml:space="preserve">
+    <value>Destination section</value>
+  </data>
+  <data name="Controls.Common.Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Controls.Common.Duplicate" xml:space="preserve">
+    <value>Duplicate</value>
+  </data>
+  <data name="Controls.Common.PageNumber" xml:space="preserve">
+    <value>Page {0}</value>
+  </data>
+  <data name="Controls.Common.PagePlural" xml:space="preserve">
+    <value>pages</value>
+  </data>
+  <data name="Controls.Common.PageSingular" xml:space="preserve">
+    <value>page</value>
+  </data>
+  <data name="Controls.Common.PreviewUnavailable" xml:space="preserve">
+    <value>Preview unavailable: {0}</value>
+  </data>
+  <data name="Controls.Common.Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Controls.Common.SearchFailed" xml:space="preserve">
+    <value>Search could not finish: {0}</value>
+  </data>
+  <data name="Controls.Common.Section" xml:space="preserve">
+    <value>Section</value>
+  </data>
+  <data name="Controls.Common.SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="Controls.DocumentCompletion.Exported" xml:space="preserve">
+    <value>{0} {1} exported</value>
+  </data>
+  <data name="Controls.DocumentCompletion.Open" xml:space="preserve">
+    <value>Open PDF</value>
+  </data>
+  <data name="Controls.DocumentCompletion.ShowFolder" xml:space="preserve">
+    <value>Show in folder</value>
+  </data>
+  <data name="Controls.DocumentCompletion.Title" xml:space="preserve">
+    <value>PDF exported</value>
+  </data>
+  <data name="Controls.DocumentOperation.Canceling" xml:space="preserve">
+    <value>Canceling… Please wait for the current step to stop.</value>
+  </data>
+  <data name="Controls.DocumentSelection.ApplyRange" xml:space="preserve">
+    <value>Apply range</value>
+  </data>
+  <data name="Controls.DocumentSelection.Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Controls.DocumentSelection.Destination" xml:space="preserve">
+    <value>Destination</value>
+  </data>
+  <data name="Controls.DocumentSelection.Export" xml:space="preserve">
+    <value>Continue to export</value>
+  </data>
+  <data name="Controls.DocumentSelection.ExportHint" xml:space="preserve">
+    <value>Choose pages in their notebook order. Added text is outlined in the PDF.</value>
+  </data>
+  <data name="Controls.DocumentSelection.ExportScope" xml:space="preserve">
+    <value>Export scope</value>
+  </data>
+  <data name="Controls.DocumentSelection.Import" xml:space="preserve">
+    <value>Import selected pages</value>
+  </data>
+  <data name="Controls.DocumentSelection.ImportDestination" xml:space="preserve">
+    <value>Import destination</value>
+  </data>
+  <data name="Controls.DocumentSelection.ImportHint" xml:space="preserve">
+    <value>Choose pages before adding them. Your document stays unchanged.</value>
+  </data>
+  <data name="Controls.DocumentSelection.LoadingPreview" xml:space="preserve">
+    <value>{0} · Loading preview…</value>
+  </data>
+  <data name="Controls.DocumentSelection.NameRequired" xml:space="preserve">
+    <value>Enter a name for the new notebook or section.</value>
+  </data>
+  <data name="Controls.DocumentSelection.NewName" xml:space="preserve">
+    <value>New notebook or section name</value>
+  </data>
+  <data name="Controls.DocumentSelection.NewNotebook" xml:space="preserve">
+    <value>New notebook…</value>
+  </data>
+  <data name="Controls.DocumentSelection.NewSection" xml:space="preserve">
+    <value>New section…</value>
+  </data>
+  <data name="Controls.DocumentSelection.Placement" xml:space="preserve">
+    <value>Page placement</value>
+  </data>
+  <data name="Controls.DocumentSelection.PositionAfter" xml:space="preserve">
+    <value>After the current page</value>
+  </data>
+  <data name="Controls.DocumentSelection.PositionEnd" xml:space="preserve">
+    <value>At the end of the section</value>
+  </data>
+  <data name="Controls.DocumentSelection.PreviewHint" xml:space="preserve">
+    <value>Select a page to preview</value>
+  </data>
+  <data name="Controls.DocumentSelection.Range" xml:space="preserve">
+    <value>Page range</value>
+  </data>
+  <data name="Controls.DocumentSelection.RangeHelp" xml:space="preserve">
+    <value>Page numbers in the list, for example 1–5, 8</value>
+  </data>
+  <data name="Controls.DocumentSelection.ScopeCustom" xml:space="preserve">
+    <value>Choose pages below</value>
+  </data>
+  <data name="Controls.DocumentSelection.ScopeNotebook" xml:space="preserve">
+    <value>Whole notebook</value>
+  </data>
+  <data name="Controls.DocumentSelection.ScopePage" xml:space="preserve">
+    <value>Current page</value>
+  </data>
+  <data name="Controls.DocumentSelection.ScopeSection" xml:space="preserve">
+    <value>Current section</value>
+  </data>
+  <data name="Controls.DocumentSelection.SelectRequired" xml:space="preserve">
+    <value>Select at least one page.</value>
+  </data>
+  <data name="Controls.DocumentSelection.SelectedCount" xml:space="preserve">
+    <value>{0} of {1} pages selected</value>
+  </data>
+  <data name="Controls.Extend.Both50" xml:space="preserve">
+    <value>Both +50 mm</value>
+  </data>
+  <data name="Controls.Extend.Bottom50" xml:space="preserve">
+    <value>Bottom +50 mm</value>
+  </data>
+  <data name="Controls.Extend.CurrentPage" xml:space="preserve">
+    <value>Current page</value>
+  </data>
+  <data name="Controls.Extend.Direction.Bottom" xml:space="preserve">
+    <value>bottom</value>
+  </data>
+  <data name="Controls.Extend.Direction.Bottomleft" xml:space="preserve">
+    <value>bottom left</value>
+  </data>
+  <data name="Controls.Extend.Direction.Bottomright" xml:space="preserve">
+    <value>bottom right</value>
+  </data>
+  <data name="Controls.Extend.Direction.Left" xml:space="preserve">
+    <value>left</value>
+  </data>
+  <data name="Controls.Extend.Direction.Right" xml:space="preserve">
+    <value>right</value>
+  </data>
+  <data name="Controls.Extend.Direction.Top" xml:space="preserve">
+    <value>top</value>
+  </data>
+  <data name="Controls.Extend.Direction.Topleft" xml:space="preserve">
+    <value>top left</value>
+  </data>
+  <data name="Controls.Extend.Direction.Topright" xml:space="preserve">
+    <value>top right</value>
+  </data>
+  <data name="Controls.Extend.Drag" xml:space="preserve">
+    <value>Drag to extend {0}</value>
+  </data>
+  <data name="Controls.Extend.Edge" xml:space="preserve">
+    <value>Extend {0} edge</value>
+  </data>
+  <data name="Controls.Extend.Empty" xml:space="preserve">
+    <value>Add blank space to one or more sides.</value>
+  </data>
+  <data name="Controls.Extend.Heading" xml:space="preserve">
+    <value>More room for your notes</value>
+  </data>
+  <data name="Controls.Extend.Intro" xml:space="preserve">
+    <value>Drag an edge or corner, or enter extra space below.
+Your PDF and notes keep their original size.</value>
+  </data>
+  <data name="Controls.Extend.InvalidNumber" xml:space="preserve">
+    <value>Enter a number of 0 or more for each side.</value>
+  </data>
+  <data name="Controls.Extend.Maximum" xml:space="preserve">
+    <value>The page can be at most {0:0} mm wide or tall.</value>
+  </data>
+  <data name="Controls.Extend.NumberHelp" xml:space="preserve">
+    <value>Extra blank space. Use Up or Down for 1 mm, or Shift with Up or Down for 10 mm.</value>
+  </data>
+  <data name="Controls.Extend.Ready" xml:space="preserve">
+    <value>Green shows the extra writing space. Apply once, undo once.</value>
+  </data>
+  <data name="Controls.Extend.Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Controls.Extend.Right50" xml:space="preserve">
+    <value>Right +50 mm</value>
+  </data>
+  <data name="Controls.Extend.Side.Bottom" xml:space="preserve">
+    <value>Bottom</value>
+  </data>
+  <data name="Controls.Extend.Side.Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="Controls.Extend.Side.Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="Controls.Extend.Side.Top" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="Controls.Extend.SideAccessible" xml:space="preserve">
+    <value>{0} extension in millimeters</value>
+  </data>
+  <data name="Controls.Extend.SideLabel" xml:space="preserve">
+    <value>{0} (mm)</value>
+  </data>
+  <data name="Controls.Extend.Size" xml:space="preserve">
+    <value>Page size: {0:0.#} × {1:0.#} mm</value>
+  </data>
+  <data name="Controls.Extend.Title" xml:space="preserve">
+    <value>Extend page</value>
+  </data>
+  <data name="Controls.FolderImport.Accept" xml:space="preserve">
+    <value>Import Successful Files</value>
+  </data>
+  <data name="Controls.FolderImport.Confirmation" xml:space="preserve">
+    <value>Some files could not be prepared. Import the successful files, or cancel without creating a notebook.</value>
+  </data>
+  <data name="Controls.FolderImport.Empty" xml:space="preserve">
+    <value>No supported documents could be prepared. No notebook was created.</value>
+  </data>
+  <data name="Controls.FolderImport.Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="Controls.FolderImport.Order" xml:space="preserve">
+    <value>Each successful file becomes a section, in natural filename order.</value>
+  </data>
+  <data name="Controls.FolderImport.ReadyCount" xml:space="preserve">
+    <value>Ready · {0} {1}</value>
+  </data>
+  <data name="Controls.FolderImport.Results" xml:space="preserve">
+    <value>Folder import file results</value>
+  </data>
+  <data name="Controls.FolderImport.Scope" xml:space="preserve">
+    <value>Only top-level PDF and PPTX files are included. Sources stay unchanged; this one-time import does not watch the folder for changes.</value>
+  </data>
+  <data name="Controls.FolderImport.Skipped" xml:space="preserve">
+    <value>Skipped</value>
+  </data>
+  <data name="Controls.FolderImport.Summary" xml:space="preserve">
+    <value>{0} ready · {1} failed · {2} skipped · {3} {4}</value>
+  </data>
+  <data name="Controls.FolderImport.Title" xml:space="preserve">
+    <value>Folder import summary</value>
+  </data>
+  <data name="Controls.Input.Required" xml:space="preserve">
+    <value>{0} is required.</value>
+  </data>
+  <data name="Controls.NoteItem.Move" xml:space="preserve">
+    <value>Drag to move</value>
+  </data>
+  <data name="Controls.NoteItem.MoveHelp" xml:space="preserve">
+    <value>Arrow keys move the selected object. Hold Shift for larger steps.</value>
+  </data>
+  <data name="Controls.NoteItem.Resize" xml:space="preserve">
+    <value>Drag to resize</value>
+  </data>
+  <data name="Controls.Notebook.CategoryRequired" xml:space="preserve">
+    <value>Enter a category for your notebook.</value>
+  </data>
+  <data name="Controls.Notebook.Create" xml:space="preserve">
+    <value>Create Notebook</value>
+  </data>
+  <data name="Controls.Notebook.Heading" xml:space="preserve">
+    <value>Create a notebook</value>
+  </data>
+  <data name="Controls.Notebook.Intro" xml:space="preserve">
+    <value>A fresh place for your ideas. Make it yours.</value>
+  </data>
+  <data name="Controls.Notebook.Name" xml:space="preserve">
+    <value>Notebook name</value>
+  </data>
+  <data name="Controls.Notebook.NameRequired" xml:space="preserve">
+    <value>Enter a name for your notebook.</value>
+  </data>
+  <data name="Controls.Notebook.Paper" xml:space="preserve">
+    <value>Paper template</value>
+  </data>
+  <data name="Controls.Notebook.PaperHint" xml:space="preserve">
+    <value>Choose a starting page. Each page can use its own A4 template.</value>
+  </data>
+  <data name="Controls.Notebook.Title" xml:space="preserve">
+    <value>New Notebook</value>
+  </data>
+  <data name="Controls.NotebookSearch.Bookmarks" xml:space="preserve">
+    <value>Bookmarks</value>
+  </data>
+  <data name="Controls.NotebookSearch.BookmarksOnly" xml:space="preserve">
+    <value>Bookmarked pages only</value>
+  </data>
+  <data name="Controls.NotebookSearch.EmptyQuery" xml:space="preserve">
+    <value>Enter a search term, or show bookmarked pages.</value>
+  </data>
+  <data name="Controls.NotebookSearch.Intro" xml:space="preserve">
+    <value>Find notebook, section and page titles, typed text and extractable PDF text. Search stays on this device.</value>
+  </data>
+  <data name="Controls.NotebookSearch.Limit" xml:space="preserve">
+    <value>Showing the first 250 matches. Refine your search.</value>
+  </data>
+  <data name="Controls.NotebookSearch.NoResults" xml:space="preserve">
+    <value>No matching pages. Try a shorter phrase or turn off the bookmark filter.</value>
+  </data>
+  <data name="Controls.NotebookSearch.Open" xml:space="preserve">
+    <value>Open result</value>
+  </data>
+  <data name="Controls.NotebookSearch.Query" xml:space="preserve">
+    <value>Search notebook content</value>
+  </data>
+  <data name="Controls.NotebookSearch.QueryHint" xml:space="preserve">
+    <value>Search titles, typed text and original PDF text</value>
+  </data>
+  <data name="Controls.NotebookSearch.ResultCount" xml:space="preserve">
+    <value>{0} result(s) · Choose a result to jump to its page.</value>
+  </data>
+  <data name="Controls.NotebookSearch.Results" xml:space="preserve">
+    <value>Search results</value>
+  </data>
+  <data name="Controls.NotebookSearch.Searching" xml:space="preserve">
+    <value>Searching…</value>
+  </data>
+  <data name="Controls.NotebookSearch.Title" xml:space="preserve">
+    <value>Search all notes</value>
+  </data>
+  <data name="Controls.Organization.AllCategories" xml:space="preserve">
+    <value>All categories</value>
+  </data>
+  <data name="Controls.Organization.AutomaticColor" xml:space="preserve">
+    <value>Automatic · keeps the same color</value>
+  </data>
+  <data name="Controls.Organization.Bookmark" xml:space="preserve">
+    <value>Bookmark this page</value>
+  </data>
+  <data name="Controls.Organization.CategoryFilter" xml:space="preserve">
+    <value>Category filter</value>
+  </data>
+  <data name="Controls.Organization.Cover.Forest" xml:space="preserve">
+    <value>Forest</value>
+  </data>
+  <data name="Controls.Organization.Cover.Ochre" xml:space="preserve">
+    <value>Ochre</value>
+  </data>
+  <data name="Controls.Organization.Cover.Plum" xml:space="preserve">
+    <value>Plum</value>
+  </data>
+  <data name="Controls.Organization.Cover.Slate" xml:space="preserve">
+    <value>Slate</value>
+  </data>
+  <data name="Controls.Organization.Cover.Teal" xml:space="preserve">
+    <value>Teal</value>
+  </data>
+  <data name="Controls.Organization.Cover.Terracotta" xml:space="preserve">
+    <value>Terracotta</value>
+  </data>
+  <data name="Controls.Organization.CoverColor" xml:space="preserve">
+    <value>Cover color</value>
+  </data>
+  <data name="Controls.Organization.CreateDestination" xml:space="preserve">
+    <value>Create another notebook before transferring pages.</value>
+  </data>
+  <data name="Controls.Organization.DestinationNotebook" xml:space="preserve">
+    <value>Destination notebook</value>
+  </data>
+  <data name="Controls.Organization.FilterSort" xml:space="preserve">
+    <value>Filter and sort notebooks</value>
+  </data>
+  <data name="Controls.Organization.KeepCopy" xml:space="preserve">
+    <value>Keep a copy in this notebook</value>
+  </data>
+  <data name="Controls.Organization.Notebook" xml:space="preserve">
+    <value>Notebook</value>
+  </data>
+  <data name="Controls.Organization.NotebookAppearance" xml:space="preserve">
+    <value>Notebook appearance</value>
+  </data>
+  <data name="Controls.Organization.NotebookMissing" xml:space="preserve">
+    <value>This notebook no longer exists.</value>
+  </data>
+  <data name="Controls.Organization.PageDetails" xml:space="preserve">
+    <value>Page title and bookmark</value>
+  </data>
+  <data name="Controls.Organization.PageTitle" xml:space="preserve">
+    <value>Page title (optional)</value>
+  </data>
+  <data name="Controls.Organization.Pin" xml:space="preserve">
+    <value>Pin above other notebooks</value>
+  </data>
+  <data name="Controls.Organization.SortByName" xml:space="preserve">
+    <value>Sort by name (pinned notebooks stay first)</value>
+  </data>
+  <data name="Controls.Organization.Transfer" xml:space="preserve">
+    <value>Transfer pages</value>
+  </data>
+  <data name="Controls.Organization.TransferHint" xml:space="preserve">
+    <value>Both notebooks are updated together. Attachments stay in this library. Use Undo Last Page Transfer to reverse the transfer while both notebooks are unchanged.</value>
+  </data>
+  <data name="Controls.Organization.TransferTitle" xml:space="preserve">
+    <value>Move pages to a notebook</value>
+  </data>
+  <data name="Controls.PageEditor.ImageError" xml:space="preserve">
+    <value>Unable to load image: {0}</value>
+  </data>
+  <data name="Controls.PageEditor.ImageUnavailable" xml:space="preserve">
+    <value>Unable to load image</value>
+  </data>
+  <data name="Controls.PageManager.Apply" xml:space="preserve">
+    <value>Apply changes</value>
+  </data>
+  <data name="Controls.PageManager.DeleteSelected" xml:space="preserve">
+    <value>Delete selected</value>
+  </data>
+  <data name="Controls.PageManager.Details" xml:space="preserve">
+    <value>Title / bookmark</value>
+  </data>
+  <data name="Controls.PageManager.Grid" xml:space="preserve">
+    <value>Page organizer grid</value>
+  </data>
+  <data name="Controls.PageManager.Intro" xml:space="preserve">
+    <value>Use each page's checkbox or Ctrl/Shift-click to select. Drag pages before another page, or use Move up/down. Apply changes together as one undo step.</value>
+  </data>
+  <data name="Controls.PageManager.MoveDown" xml:space="preserve">
+    <value>Move down</value>
+  </data>
+  <data name="Controls.PageManager.MoveSection" xml:space="preserve">
+    <value>Move to section</value>
+  </data>
+  <data name="Controls.PageManager.MoveUp" xml:space="preserve">
+    <value>Move up</value>
+  </data>
+  <data name="Controls.PageManager.PendingSummary" xml:space="preserve">
+    <value>{0} selected · {1} pages · Changes are not applied until you choose Apply.</value>
+  </data>
+  <data name="Controls.PageManager.SelectOne" xml:space="preserve">
+    <value>Select one page to edit its title and bookmark.</value>
+  </data>
+  <data name="Controls.PageManager.SelectPage" xml:space="preserve">
+    <value>Select page</value>
+  </data>
+  <data name="Controls.PageManager.SelectRequired" xml:space="preserve">
+    <value>Select one or more pages first.</value>
+  </data>
+  <data name="Controls.PageManager.SelectionSummary" xml:space="preserve">
+    <value>{0} selected · {1} pages · Cancel discards all organizer changes.</value>
+  </data>
+  <data name="Controls.PageManager.Title" xml:space="preserve">
+    <value>Organize pages</value>
+  </data>
+  <data name="Controls.PageManager.Transfer" xml:space="preserve">
+    <value>Move / copy to notebook…</value>
+  </data>
+  <data name="Controls.PageRegion.CoordinateName" xml:space="preserve">
+    <value>{0} in page units</value>
+  </data>
+  <data name="Controls.PageRegion.Height" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="Controls.PageRegion.Intro" xml:space="preserve">
+    <value>Drag over the page, or enter a region in page units below.</value>
+  </data>
+  <data name="Controls.PageRegion.InvalidNumbers" xml:space="preserve">
+    <value>Enter valid numbers.</value>
+  </data>
+  <data name="Controls.PageRegion.InvalidRegion" xml:space="preserve">
+    <value>Choose a region inside the page, at least 1 × 1.</value>
+  </data>
+  <data name="Controls.PageRegion.Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="Controls.PageRegion.ScaleHint" xml:space="preserve">
+    <value>The preview is scaled; the saved region uses original page coordinates.</value>
+  </data>
+  <data name="Controls.PageRegion.Top" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="Controls.PageRegion.Use" xml:space="preserve">
+    <value>Use region</value>
+  </data>
+  <data name="Controls.PageRegion.WholePage" xml:space="preserve">
+    <value>Whole page</value>
+  </data>
+  <data name="Controls.PageRegion.Width" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="Controls.Paper.Accessible" xml:space="preserve">
+    <value>{0} paper</value>
+  </data>
+  <data name="Controls.Paper.Cornell.Caption" xml:space="preserve">
+    <value>Cornell</value>
+  </data>
+  <data name="Controls.Paper.Cornell.Description" xml:space="preserve">
+    <value>Cues &amp; summaries</value>
+  </data>
+  <data name="Controls.Paper.Cornell.Name" xml:space="preserve">
+    <value>Cornell</value>
+  </data>
+  <data name="Controls.Paper.DotGrid.Caption" xml:space="preserve">
+    <value>Dot Grid</value>
+  </data>
+  <data name="Controls.Paper.DotGrid.Description" xml:space="preserve">
+    <value>Flexible layouts</value>
+  </data>
+  <data name="Controls.Paper.DotGrid.Name" xml:space="preserve">
+    <value>DotGrid</value>
+  </data>
+  <data name="Controls.Paper.Graph.Caption" xml:space="preserve">
+    <value>Graph</value>
+  </data>
+  <data name="Controls.Paper.Graph.Description" xml:space="preserve">
+    <value>Fine-scale plotting</value>
+  </data>
+  <data name="Controls.Paper.Graph.Name" xml:space="preserve">
+    <value>Graph</value>
+  </data>
+  <data name="Controls.Paper.Grid.Caption" xml:space="preserve">
+    <value>Grid</value>
+  </data>
+  <data name="Controls.Paper.Grid.Description" xml:space="preserve">
+    <value>Diagrams &amp; maths</value>
+  </data>
+  <data name="Controls.Paper.Grid.Name" xml:space="preserve">
+    <value>Grid</value>
+  </data>
+  <data name="Controls.Paper.Meeting.Caption" xml:space="preserve">
+    <value>Meeting</value>
+  </data>
+  <data name="Controls.Paper.Meeting.Description" xml:space="preserve">
+    <value>Notes &amp; actions</value>
+  </data>
+  <data name="Controls.Paper.Meeting.Name" xml:space="preserve">
+    <value>Meeting</value>
+  </data>
+  <data name="Controls.Paper.Plain.Caption" xml:space="preserve">
+    <value>Blank</value>
+  </data>
+  <data name="Controls.Paper.Plain.Description" xml:space="preserve">
+    <value>Free-form notes</value>
+  </data>
+  <data name="Controls.Paper.Plain.Name" xml:space="preserve">
+    <value>Plain</value>
+  </data>
+  <data name="Controls.Paper.Ruled.Caption" xml:space="preserve">
+    <value>Ruled</value>
+  </data>
+  <data name="Controls.Paper.Ruled.Description" xml:space="preserve">
+    <value>Everyday writing</value>
+  </data>
+  <data name="Controls.Paper.Ruled.Name" xml:space="preserve">
+    <value>Ruled</value>
+  </data>
+  <data name="Controls.Paper.ToolTip" xml:space="preserve">
+    <value>{0} paper — {1}</value>
+  </data>
+  <data name="Controls.PdfLayout.A4" xml:space="preserve">
+    <value>A4 sheets · actual size</value>
+  </data>
+  <data name="Controls.PdfLayout.A4Summary" xml:space="preserve">
+    <value> · A4 at 100% scale</value>
+  </data>
+  <data name="Controls.PdfLayout.AutoOrientation" xml:space="preserve">
+    <value>Automatic · fewest sheets</value>
+  </data>
+  <data name="Controls.PdfLayout.CheckSettings" xml:space="preserve">
+    <value>Check the layout settings.</value>
+  </data>
+  <data name="Controls.PdfLayout.Heading" xml:space="preserve">
+    <value>Keep expanded notes readable</value>
+  </data>
+  <data name="Controls.PdfLayout.ImageUnavailable" xml:space="preserve">
+    <value>Page image unavailable. Sheet boundaries and count are still shown.</value>
+  </data>
+  <data name="Controls.PdfLayout.Intro" xml:space="preserve">
+    <value>Keep each canvas intact, or divide it across A4 sheets without shrinking handwriting or text.</value>
+  </data>
+  <data name="Controls.PdfLayout.InvalidOverlap" xml:space="preserve">
+    <value>Enter an overlap from 0 to 30 mm.</value>
+  </data>
+  <data name="Controls.PdfLayout.Landscape" xml:space="preserve">
+    <value>Landscape</value>
+  </data>
+  <data name="Controls.PdfLayout.Layout" xml:space="preserve">
+    <value>Page layout</value>
+  </data>
+  <data name="Controls.PdfLayout.Orientation" xml:space="preserve">
+    <value>A4 orientation</value>
+  </data>
+  <data name="Controls.PdfLayout.Original" xml:space="preserve">
+    <value>Original page sizes</value>
+  </data>
+  <data name="Controls.PdfLayout.OriginalSummary" xml:space="preserve">
+    <value> · Original dimensions preserved</value>
+  </data>
+  <data name="Controls.PdfLayout.Overlap" xml:space="preserve">
+    <value>Overlap (0–30 mm)</value>
+  </data>
+  <data name="Controls.PdfLayout.PageCount" xml:space="preserve">
+    <value>{0} source {1} → {2} PDF {3}</value>
+  </data>
+  <data name="Controls.PdfLayout.PageSize" xml:space="preserve">
+    <value>Page {0} · {1:0.#} × {2:0.#} mm</value>
+  </data>
+  <data name="Controls.PdfLayout.Portrait" xml:space="preserve">
+    <value>Portrait</value>
+  </data>
+  <data name="Controls.PdfLayout.PreviewPage" xml:space="preserve">
+    <value>Preview source page</value>
+  </data>
+  <data name="Controls.PdfLayout.PrintHint" xml:space="preserve">
+    <value>A4 sheets read left to right, then top to bottom. Overlap repeats a narrow strip so notes remain legible at joins. Print at Actual size / 100% to retain scale.</value>
+  </data>
+  <data name="Controls.PdfLayout.Save" xml:space="preserve">
+    <value>Continue to save</value>
+  </data>
+  <data name="Controls.PdfLayout.Title" xml:space="preserve">
+    <value>PDF page layout</value>
+  </data>
+  <data name="Controls.Practice.Another" xml:space="preserve">
+    <value>Another attempt</value>
+  </data>
+  <data name="Controls.Practice.AttemptLabel" xml:space="preserve">
+    <value>{0}{1} · Attempt {2}</value>
+  </data>
+  <data name="Controls.Practice.Intro" xml:space="preserve">
+    <value>Keep your working for each attempt. Record what went wrong and what you would change next time.</value>
+  </data>
+  <data name="Controls.Practice.Original" xml:space="preserve">
+    <value>Original page</value>
+  </data>
+  <data name="Controls.Practice.Reflection" xml:space="preserve">
+    <value>What went wrong / next approach</value>
+  </data>
+  <data name="Controls.Practice.Reviewed" xml:space="preserve">
+    <value>Reviewed — I have checked this solution</value>
+  </data>
+  <data name="Controls.Practice.SaveOpen" xml:space="preserve">
+    <value>Save &amp; open</value>
+  </data>
+  <data name="Controls.Practice.Title" xml:space="preserve">
+    <value>Practice attempts</value>
+  </data>
+  <data name="Controls.Preset.ChooseColor" xml:space="preserve">
+    <value>Choose color…</value>
+  </data>
+  <data name="Controls.Preset.ColorAccessible" xml:space="preserve">
+    <value>Choose preset color</value>
+  </data>
+  <data name="Controls.Preset.ColorTitle" xml:space="preserve">
+    <value>Choose Preset Color</value>
+  </data>
+  <data name="Controls.Preset.Favorite" xml:space="preserve">
+    <value>Show in favourite toolbar</value>
+  </data>
+  <data name="Controls.Preset.Heading" xml:space="preserve">
+    <value>Your everyday pens</value>
+  </data>
+  <data name="Controls.Preset.Highlighter" xml:space="preserve">
+    <value>Highlighter</value>
+  </data>
+  <data name="Controls.Preset.HighlighterHint" xml:space="preserve">
+    <value>Highlighter uses its native 50% transparency.</value>
+  </data>
+  <data name="Controls.Preset.InvalidOpacity" xml:space="preserve">
+    <value>Use an opacity between 10 and 100 percent.</value>
+  </data>
+  <data name="Controls.Preset.Maximum" xml:space="preserve">
+    <value>You can keep up to 40 presets.</value>
+  </data>
+  <data name="Controls.Preset.Minimum" xml:space="preserve">
+    <value>Keep at least one preset.</value>
+  </data>
+  <data name="Controls.Preset.MoveDown" xml:space="preserve">
+    <value>Move preset down</value>
+  </data>
+  <data name="Controls.Preset.MoveUp" xml:space="preserve">
+    <value>Move preset up</value>
+  </data>
+  <data name="Controls.Preset.Name" xml:space="preserve">
+    <value>Preset name</value>
+  </data>
+  <data name="Controls.Preset.NameRequired" xml:space="preserve">
+    <value>Give this preset a name.</value>
+  </data>
+  <data name="Controls.Preset.Opacity" xml:space="preserve">
+    <value>Pen opacity (%)</value>
+  </data>
+  <data name="Controls.Preset.Pen" xml:space="preserve">
+    <value>Pen</value>
+  </data>
+  <data name="Controls.Preset.Pressure" xml:space="preserve">
+    <value>Pressure sensitivity</value>
+  </data>
+  <data name="Controls.Preset.SaveUse" xml:space="preserve">
+    <value>Save and Use</value>
+  </data>
+  <data name="Controls.Preset.Smoothing" xml:space="preserve">
+    <value>Stroke smoothing</value>
+  </data>
+  <data name="Controls.Preset.Title" xml:space="preserve">
+    <value>Pen Presets</value>
+  </data>
+  <data name="Controls.Preset.Tool" xml:space="preserve">
+    <value>Tool</value>
+  </data>
+  <data name="Controls.Reference.Back" xml:space="preserve">
+    <value>Back to writing</value>
+  </data>
+  <data name="Controls.Reference.CreateNotebook" xml:space="preserve">
+    <value>Create a notebook to use a reference.</value>
+  </data>
+  <data name="Controls.Reference.DisplayError" xml:space="preserve">
+    <value>Unable to display this page: {0}</value>
+  </data>
+  <data name="Controls.Reference.Empty" xml:space="preserve">
+    <value>No pages to display.</value>
+  </data>
+  <data name="Controls.Reference.Fit" xml:space="preserve">
+    <value>Fit</value>
+  </data>
+  <data name="Controls.Reference.FitName" xml:space="preserve">
+    <value>Fit reference to pane width</value>
+  </data>
+  <data name="Controls.Reference.Hint" xml:space="preserve">
+    <value>Read-only copy · your writing stays in place</value>
+  </data>
+  <data name="Controls.Reference.LoadNotebookError" xml:space="preserve">
+    <value>Unable to load this notebook: {0}</value>
+  </data>
+  <data name="Controls.Reference.LoadReferencesError" xml:space="preserve">
+    <value>Unable to load references: {0}</value>
+  </data>
+  <data name="Controls.Reference.Loading" xml:space="preserve">
+    <value>Loading reference…</value>
+  </data>
+  <data name="Controls.Reference.LoadingPage" xml:space="preserve">
+    <value>Loading page…</value>
+  </data>
+  <data name="Controls.Reference.Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="Controls.Reference.Notebook" xml:space="preserve">
+    <value>Reference notebook</value>
+  </data>
+  <data name="Controls.Reference.Page" xml:space="preserve">
+    <value>Reference page</value>
+  </data>
+  <data name="Controls.Reference.PageChoice" xml:space="preserve">
+    <value>Page {0}{1} · {2}</value>
+  </data>
+  <data name="Controls.Reference.PageStatus" xml:space="preserve">
+    <value>Page {0} of {1} · {2:P0} · Read only</value>
+  </data>
+  <data name="Controls.Reference.Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Controls.Reference.Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Controls.Reference.Title" xml:space="preserve">
+    <value>Reference</value>
+  </data>
+  <data name="Controls.Reference.ZoomIn" xml:space="preserve">
+    <value>+</value>
+  </data>
+  <data name="Controls.Reference.ZoomInName" xml:space="preserve">
+    <value>Zoom reference in</value>
+  </data>
+  <data name="Controls.Reference.ZoomOut" xml:space="preserve">
+    <value>−</value>
+  </data>
+  <data name="Controls.Reference.ZoomOutName" xml:space="preserve">
+    <value>Zoom reference out</value>
+  </data>
+  <data name="Controls.RegionHistory.ChooseArea" xml:space="preserve">
+    <value>Choose area…</value>
+  </data>
+  <data name="Controls.RegionHistory.Intro" xml:space="preserve">
+    <value>Choose an earlier version, then mark the area to restore. Whole ink strokes, text and images entirely inside the area are restored. Objects crossing its edge stay unchanged.
+History is available while this notebook stays open (up to 100 edits). Versions with a different page size/background are omitted.</value>
+  </data>
+  <data name="Controls.RegionHistory.Loading" xml:space="preserve">
+    <value>Loading preview…</value>
+  </data>
+  <data name="Controls.RegionHistory.Title" xml:space="preserve">
+    <value>Restore part of this page</value>
+  </data>
+  <data name="Controls.RegionHistory.Version" xml:space="preserve">
+    <value>Earlier page version {0} · {1} text item(s), {2} image(s)</value>
+  </data>
+  <data name="Controls.StrokeWidth.Accessible" xml:space="preserve">
+    <value>Stroke thickness</value>
+  </data>
+  <data name="Controls.StrokeWidth.CurrentHelp" xml:space="preserve">
+    <value>Current thickness: {0}. {1} thickness levels; arrow keys choose the next size.</value>
+  </data>
+  <data name="Controls.StrokeWidth.Hint" xml:space="preserve">
+    <value>Drag between fixed thickness levels. Arrow keys choose the next size.</value>
+  </data>
+  <data name="Controls.StrokeWidth.Thickness" xml:space="preserve">
+    <value>Thickness</value>
+  </data>
+  <data name="Controls.StudyInbox.Count" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
+  <data name="Controls.StudyInbox.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Controls.StudyInbox.FilterQuestions" xml:space="preserve">
+    <value>Filter questions</value>
+  </data>
+  <data name="Controls.StudyInbox.FilterResume" xml:space="preserve">
+    <value>Filter resume notes</value>
+  </data>
+  <data name="Controls.StudyInbox.IncludeResolved" xml:space="preserve">
+    <value>Include resolved questions</value>
+  </data>
+  <data name="Controls.StudyInbox.Items" xml:space="preserve">
+    <value>Question inbox items</value>
+  </data>
+  <data name="Controls.StudyInbox.NoMatches" xml:space="preserve">
+    <value>No matches. Try a shorter phrase.</value>
+  </data>
+  <data name="Controls.StudyInbox.NoQuestions" xml:space="preserve">
+    <value>No open questions. Add a question from a page, or include resolved questions.</value>
+  </data>
+  <data name="Controls.StudyInbox.NoResume" xml:space="preserve">
+    <value>No resume notes yet. Use Next time, continue here on a page.</value>
+  </data>
+  <data name="Controls.StudyInbox.Open" xml:space="preserve">
+    <value>Open source</value>
+  </data>
+  <data name="Controls.StudyInbox.QuestionCountLabel" xml:space="preserve">
+    <value>question(s)</value>
+  </data>
+  <data name="Controls.StudyInbox.QuestionIntro" xml:space="preserve">
+    <value>Questions across this notebook. Keep the explanation and your next attempt with the original page.</value>
+  </data>
+  <data name="Controls.StudyInbox.QuestionTitle" xml:space="preserve">
+    <value>Question inbox</value>
+  </data>
+  <data name="Controls.StudyInbox.Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Controls.StudyInbox.RemoveQuestion" xml:space="preserve">
+    <value>Remove this question and its explanation? You can undo this after closing the inbox.</value>
+  </data>
+  <data name="Controls.StudyInbox.RemoveResume" xml:space="preserve">
+    <value>Remove this resume note? You can undo this after closing the inbox.</value>
+  </data>
+  <data name="Controls.StudyInbox.RemoveTitle" xml:space="preserve">
+    <value>Remove note</value>
+  </data>
+  <data name="Controls.StudyInbox.ResumeCountLabel" xml:space="preserve">
+    <value>resume note(s)</value>
+  </data>
+  <data name="Controls.StudyInbox.ResumeIntro" xml:space="preserve">
+    <value>Your next steps across this notebook. Open a source page to continue where you left off.</value>
+  </data>
+  <data name="Controls.StudyInbox.ResumeTitle" xml:space="preserve">
+    <value>Resume notes</value>
+  </data>
+  <data name="Controls.StudyQuestion.Add" xml:space="preserve">
+    <value>Add question</value>
+  </data>
+  <data name="Controls.StudyQuestion.CreateTitle" xml:space="preserve">
+    <value>Add a question</value>
+  </data>
+  <data name="Controls.StudyQuestion.EditTitle" xml:space="preserve">
+    <value>Question and next attempt</value>
+  </data>
+  <data name="Controls.StudyQuestion.Explanation" xml:space="preserve">
+    <value>What helped / explanation</value>
+  </data>
+  <data name="Controls.StudyQuestion.PageLink" xml:space="preserve">
+    <value>Linked to this page. Reopen its source from the question inbox.</value>
+  </data>
+  <data name="Controls.StudyQuestion.Progress" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="Controls.StudyQuestion.ProgressAccessible" xml:space="preserve">
+    <value>Question progress</value>
+  </data>
+  <data name="Controls.StudyQuestion.Prompt" xml:space="preserve">
+    <value>What do you want to understand?</value>
+  </data>
+  <data name="Controls.StudyQuestion.RegionLink" xml:space="preserve">
+    <value>Linked to the marked region of this page. Reopen its source from the question inbox.</value>
+  </data>
+  <data name="Controls.StudyQuestion.Required" xml:space="preserve">
+    <value>Write a question before saving.</value>
+  </data>
+  <data name="Controls.StudyQuestion.Retry" xml:space="preserve">
+    <value>Next attempt / what to check</value>
+  </data>
+  <data name="Controls.StudyResume.Clear" xml:space="preserve">
+    <value>Clear note</value>
+  </data>
+  <data name="Controls.StudyResume.Intro" xml:space="preserve">
+    <value>Leave the next small step while it is still clear. This note stays with the page and appears in Resume notes.</value>
+  </data>
+  <data name="Controls.StudyResume.Prompt" xml:space="preserve">
+    <value>What should you do when you return?</value>
+  </data>
+  <data name="Controls.StudyResume.Required" xml:space="preserve">
+    <value>Write a next step before saving.</value>
+  </data>
+  <data name="Controls.StudyResume.Title" xml:space="preserve">
+    <value>Next time, continue here</value>
+  </data>
+  <data name="Controls.TextOverflow.Export" xml:space="preserve">
+    <value>Export visible text</value>
+  </data>
+  <data name="Controls.TextOverflow.Go" xml:space="preserve">
+    <value>Go to selected text</value>
+  </data>
+  <data name="Controls.TextOverflow.IntroPlural" xml:space="preserve">
+    <value>{0} text boxes extend beyond its visible area. The PDF only includes the visible text. Go to a box and use Continue on next page, or export its current appearance.</value>
+  </data>
+  <data name="Controls.TextOverflow.IntroSingular" xml:space="preserve">
+    <value>{0} text box extends beyond its visible area. The PDF only includes the visible text. Go to a box and use Continue on next page, or export its current appearance.</value>
+  </data>
+  <data name="Controls.TextOverflow.Page" xml:space="preserve">
+    <value>Export page {0} · {1}</value>
+  </data>
+  <data name="Controls.TextOverflow.Title" xml:space="preserve">
+    <value>Check text before exporting</value>
+  </data>
+  <data name="Controls.Update.AccessibleMessage" xml:space="preserve">
+    <value>{0}. {1}</value>
+  </data>
+  <data name="Controls.Update.AccessibleName" xml:space="preserve">
+    <value>Software updates</value>
+  </data>
+  <data name="Controls.Update.AvailableHeading" xml:space="preserve">
+    <value>Penroam {0} is available</value>
+  </data>
+  <data name="Controls.Update.AvailableMessage" xml:space="preserve">
+    <value>Update to the latest version. Your notes will be saved before Penroam closes for installation.</value>
+  </data>
+  <data name="Controls.Update.CancelDownload" xml:space="preserve">
+    <value>Cancel download</value>
+  </data>
+  <data name="Controls.Update.CheckingHeading" xml:space="preserve">
+    <value>Checking for updates…</value>
+  </data>
+  <data name="Controls.Update.CheckingMessage" xml:space="preserve">
+    <value>Looking for a new Penroam release on GitHub.</value>
+  </data>
+  <data name="Controls.Update.CurrentHeading" xml:space="preserve">
+    <value>You’re up to date</value>
+  </data>
+  <data name="Controls.Update.CurrentMessage" xml:space="preserve">
+    <value>You have Penroam {0}. No newer release is available.</value>
+  </data>
+  <data name="Controls.Update.Dismiss" xml:space="preserve">
+    <value>Dismiss</value>
+  </data>
+  <data name="Controls.Update.Downloaded" xml:space="preserve">
+    <value>{0:P0} downloaded</value>
+  </data>
+  <data name="Controls.Update.Downloading" xml:space="preserve">
+    <value>Downloading…</value>
+  </data>
+  <data name="Controls.Update.DownloadingHeading" xml:space="preserve">
+    <value>Downloading update…</value>
+  </data>
+  <data name="Controls.Update.DownloadingMessage" xml:space="preserve">
+    <value>You can keep working while the update downloads. Penroam will save your notes before installation.</value>
+  </data>
+  <data name="Controls.Update.DownloadingName" xml:space="preserve">
+    <value>Downloading Penroam update</value>
+  </data>
+  <data name="Controls.Update.ErrorHeading" xml:space="preserve">
+    <value>Update could not finish</value>
+  </data>
+  <data name="Controls.Update.Install" xml:space="preserve">
+    <value>Install update</value>
+  </data>
+  <data name="Controls.Update.Later" xml:space="preserve">
+    <value>Later</value>
+  </data>
+  <data name="Controls.Update.PreparingHeading" xml:space="preserve">
+    <value>Preparing to update…</value>
+  </data>
+  <data name="Controls.Update.PreparingMessage" xml:space="preserve">
+    <value>Saving your notes and starting the installer. Penroam will reopen after installation.</value>
+  </data>
+  <data name="Controls.Update.ProgressName" xml:space="preserve">
+    <value>Update download progress</value>
+  </data>
+  <data name="Controls.Update.RawError" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="Controls.Update.ReadyHeading" xml:space="preserve">
+    <value>Penroam {0} is ready to install</value>
+  </data>
+  <data name="Controls.Update.ReadyMessage" xml:space="preserve">
+    <value>Finish your current work, then install. Your notes will be saved and Penroam will reopen.</value>
+  </data>
+  <data name="Controls.Update.ReleaseNotes" xml:space="preserve">
+    <value>Release notes</value>
+  </data>
+  <data name="Controls.Update.Retry" xml:space="preserve">
+    <value>Try again</value>
+  </data>
+  <data name="Controls.Update.UpdateNow" xml:space="preserve">
+    <value>Update now</value>
+  </data>
+  <data name="Controls.VisualSearch.AllSections" xml:space="preserve">
+    <value>All sections</value>
+  </data>
+  <data name="Controls.VisualSearch.Intro" xml:space="preserve">
+    <value>Find ink and typed notes in this notebook by color and position. PDF and image colors are not indexed.</value>
+  </data>
+  <data name="Controls.VisualSearch.Mark" xml:space="preserve">
+    <value>Mark</value>
+  </data>
+  <data name="Controls.VisualSearch.MarkCount" xml:space="preserve">
+    <value>{0} matching mark(s)</value>
+  </data>
+  <data name="Controls.VisualSearch.MatchCount" xml:space="preserve">
+    <value>{0} matching pages · showing up to 60 previews</value>
+  </data>
+  <data name="Controls.VisualSearch.NoMatches" xml:space="preserve">
+    <value>No matches. Try another color or a wider area.</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Any" xml:space="preserve">
+    <value>Any</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Black" xml:space="preserve">
+    <value>Black</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Blue" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Gray" xml:space="preserve">
+    <value>Gray</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Green" xml:space="preserve">
+    <value>Green</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Orange" xml:space="preserve">
+    <value>Orange</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Purple" xml:space="preserve">
+    <value>Purple</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Red" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteColor.Yellow" xml:space="preserve">
+    <value>Yellow</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteMark.Any" xml:space="preserve">
+    <value>Any</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteMark.Handwriting" xml:space="preserve">
+    <value>Handwriting</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteMark.Highlighter" xml:space="preserve">
+    <value>Highlighter</value>
+  </data>
+  <data name="Controls.VisualSearch.NoteMark.TypedText" xml:space="preserve">
+    <value>Typed Text</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Anywhere" xml:space="preserve">
+    <value>Anywhere</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Bottom" xml:space="preserve">
+    <value>Bottom</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.BottomLeft" xml:space="preserve">
+    <value>Bottom Left</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.BottomRight" xml:space="preserve">
+    <value>Bottom Right</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Center" xml:space="preserve">
+    <value>Center</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Left" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Right" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.Top" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.TopLeft" xml:space="preserve">
+    <value>Top Left</value>
+  </data>
+  <data name="Controls.VisualSearch.NotePosition.TopRight" xml:space="preserve">
+    <value>Top Right</value>
+  </data>
+  <data name="Controls.VisualSearch.Open" xml:space="preserve">
+    <value>Open page</value>
+  </data>
+  <data name="Controls.VisualSearch.Position" xml:space="preserve">
+    <value>Position on page</value>
+  </data>
+  <data name="Controls.VisualSearch.Searching" xml:space="preserve">
+    <value>Looking through your notes…</value>
+  </data>
+  <data name="Controls.VisualSearch.Title" xml:space="preserve">
+    <value>Find by appearance</value>
+  </data>
+  <data name="Controls.Workspace.BackupEnabled" xml:space="preserve">
+    <value>Back up while Penroam is open</value>
+  </data>
+  <data name="Controls.Workspace.BackupFolder" xml:space="preserve">
+    <value>Automatic backup folder</value>
+  </data>
+  <data name="Controls.Workspace.BackupHint" xml:space="preserve">
+    <value>Backups contain editable notebooks. Recently deleted items are kept separately for 30 days. Both remain on this device unless you choose a synchronized folder.</value>
+  </data>
+  <data name="Controls.Workspace.BackupIntervals" xml:space="preserve">
+    <value>Interval in hours (1–168) · keep completed backups (1–100)</value>
+  </data>
+  <data name="Controls.Workspace.Backups" xml:space="preserve">
+    <value>Automatic local backups</value>
+  </data>
+  <data name="Controls.Workspace.Canceling" xml:space="preserve">
+    <value>Canceling after the current safe step…</value>
+  </data>
+  <data name="Controls.Workspace.ChooseFolder" xml:space="preserve">
+    <value>Choose backup folder…</value>
+  </data>
+  <data name="Controls.Workspace.CommandSearch" xml:space="preserve">
+    <value>Search commands, tools and shortcuts</value>
+  </data>
+  <data name="Controls.Workspace.CommandsHint" xml:space="preserve">
+    <value>Write with Pen · Move with your fingers · Use Lasso to move notes together. Select a command for its shortcut and explanation. Esc closes this panel.</value>
+  </data>
+  <data name="Controls.Workspace.CommandsTitle" xml:space="preserve">
+    <value>Commands &amp; help</value>
+  </data>
+  <data name="Controls.Workspace.Compact" xml:space="preserve">
+    <value>Hide the favorite pen row in the main toolbar</value>
+  </data>
+  <data name="Controls.Workspace.FindCommand" xml:space="preserve">
+    <value>Find a command</value>
+  </data>
+  <data name="Controls.Workspace.FocusRight" xml:space="preserve">
+    <value>Dock focus tools on the right</value>
+  </data>
+  <data name="Controls.Workspace.FolderRequired" xml:space="preserve">
+    <value>Choose a backup folder first.</value>
+  </data>
+  <data name="Controls.Workspace.InvalidInterval" xml:space="preserve">
+    <value>Enter an interval from 1 to 168 hours and keep 1 to 100 backups.</value>
+  </data>
+  <data name="Controls.Workspace.LockZoom" xml:space="preserve">
+    <value>Lock zoom while writing</value>
+  </data>
+  <data name="Controls.Workspace.Run" xml:space="preserve">
+    <value>Run selected command</value>
+  </data>
+  <data name="Controls.Workspace.Save" xml:space="preserve">
+    <value>Save settings</value>
+  </data>
+  <data name="Controls.Workspace.Title" xml:space="preserve">
+    <value>Workspace settings</value>
+  </data>
+  <data name="Controls.Workspace.TwoFingers" xml:space="preserve">
+    <value>Use two fingers to move pages (ignore one-finger drags)</value>
+  </data>
+  <data name="Controls.Workspace.Writing" xml:space="preserve">
+    <value>Writing and workspace</value>
+  </data>
+  <data name="Core.AddPage" xml:space="preserve">
+    <value>Add Page</value>
+  </data>
+  <data name="Core.AddPageTitle" xml:space="preserve">
+    <value>Add a Page</value>
+  </data>
+  <data name="Core.AddPaperHint" xml:space="preserve">
+    <value>A4 paper · Insert after the current page.</value>
+  </data>
+  <data name="Core.AlreadyOpen" xml:space="preserve">
+    <value>Penroam is already open. Please use the existing window.</value>
+  </data>
+  <data name="Core.ApplyPaper" xml:space="preserve">
+    <value>Apply Paper</value>
+  </data>
+  <data name="Core.BackupFilter" xml:space="preserve">
+    <value>Penroam backups|*.moye</value>
+  </data>
+  <data name="Core.Canceled" xml:space="preserve">
+    <value>Operation canceled</value>
+  </data>
+  <data name="Core.CancelingImport" xml:space="preserve">
+    <value>Canceling document import…</value>
+  </data>
+  <data name="Core.Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Core.ChangePaperHint" xml:space="preserve">
+    <value>Change this page's background. Your notes stay in place.</value>
+  </data>
+  <data name="Core.ChoosePaper" xml:space="preserve">
+    <value>Choose Paper</value>
+  </data>
+  <data name="Core.CommandAppearance" xml:space="preserve">
+    <value>Find by appearance</value>
+  </data>
+  <data name="Core.CommandAppearanceHint" xml:space="preserve">
+    <value>Find ink and typed notes by color, location and section in this notebook.</value>
+  </data>
+  <data name="Core.CommandCheckUpdates" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="Core.CommandCheckUpdatesHint" xml:space="preserve">
+    <value>Find and install the latest Penroam release from GitHub.</value>
+  </data>
+  <data name="Core.CommandContinue" xml:space="preserve">
+    <value>Continue last notebook</value>
+  </data>
+  <data name="Core.CommandContinueHint" xml:space="preserve">
+    <value>Return to the page and zoom you last used.</value>
+  </data>
+  <data name="Core.CommandContinueText" xml:space="preserve">
+    <value>Continue text on next page</value>
+  </data>
+  <data name="Core.CommandContinueTextHint" xml:space="preserve">
+    <value>Move overflowing text into a new page while retaining its formatting.</value>
+  </data>
+  <data name="Core.CommandEraser" xml:space="preserve">
+    <value>Eraser · E</value>
+  </data>
+  <data name="Core.CommandEraserHint" xml:space="preserve">
+    <value>Choose pixel or stroke erasing, size, and highlighter-only mode.</value>
+  </data>
+  <data name="Core.CommandExportPdf" xml:space="preserve">
+    <value>Export PDF</value>
+  </data>
+  <data name="Core.CommandExportPdfHint" xml:space="preserve">
+    <value>Choose pages and check text overflow before sharing.</value>
+  </data>
+  <data name="Core.CommandExtendPage" xml:space="preserve">
+    <value>Extend page</value>
+  </data>
+  <data name="Core.CommandExtendPageHint" xml:space="preserve">
+    <value>Add writing space on any side of this page, preserving the original PDF size and your notes.</value>
+  </data>
+  <data name="Core.CommandFitWidth" xml:space="preserve">
+    <value>Fit width</value>
+  </data>
+  <data name="Core.CommandFitWidthHint" xml:space="preserve">
+    <value>Fill the writing area. Unlock zoom in Workspace settings if necessary.</value>
+  </data>
+  <data name="Core.CommandFocusMode" xml:space="preserve">
+    <value>Focus mode · F11</value>
+  </data>
+  <data name="Core.CommandFocusModeHint" xml:space="preserve">
+    <value>More writing space, with dockable tools and favorite pens.</value>
+  </data>
+  <data name="Core.CommandGoTo" xml:space="preserve">
+    <value>Go to page · Ctrl+G</value>
+  </data>
+  <data name="Core.CommandGoToHint" xml:space="preserve">
+    <value>Enter the page number within this section.</value>
+  </data>
+  <data name="Core.CommandHighlighter" xml:space="preserve">
+    <value>Highlighter · H</value>
+  </data>
+  <data name="Core.CommandHighlighterHint" xml:space="preserve">
+    <value>Mark important material using your selected highlighter.</value>
+  </data>
+  <data name="Core.CommandImportDocument" xml:space="preserve">
+    <value>Import document</value>
+  </data>
+  <data name="Core.CommandImportDocumentHint" xml:space="preserve">
+    <value>Preview a PDF or locally converted Office document and choose its pages and destination.</value>
+  </data>
+  <data name="Core.CommandImportFolder" xml:space="preserve">
+    <value>Import Folder</value>
+  </data>
+  <data name="Core.CommandImportFolderHint" xml:space="preserve">
+    <value>Create a notebook from first-level PDF and PowerPoint (.pptx) files, with a section for each document.</value>
+  </data>
+  <data name="Core.CommandLasso" xml:space="preserve">
+    <value>Lasso · L</value>
+  </data>
+  <data name="Core.CommandLassoHint" xml:space="preserve">
+    <value>Circle ink, text and images to move or copy them together.</value>
+  </data>
+  <data name="Core.CommandLeaveHint" xml:space="preserve">
+    <value>Leave a resume hint</value>
+  </data>
+  <data name="Core.CommandLeaveHintHint" xml:space="preserve">
+    <value>Write your next step so you can recover your train of thought.</value>
+  </data>
+  <data name="Core.CommandManagePages" xml:space="preserve">
+    <value>Manage pages</value>
+  </data>
+  <data name="Core.CommandManagePagesHint" xml:space="preserve">
+    <value>Select multiple thumbnails; reorder, move, duplicate or delete them as one change.</value>
+  </data>
+  <data name="Core.CommandMarkQuestion" xml:space="preserve">
+    <value>Mark a question</value>
+  </data>
+  <data name="Core.CommandMarkQuestionHint" xml:space="preserve">
+    <value>Anchor a question to this page or a chosen region.</value>
+  </data>
+  <data name="Core.CommandNewNotebook" xml:space="preserve">
+    <value>New notebook</value>
+  </data>
+  <data name="Core.CommandNewNotebookHint" xml:space="preserve">
+    <value>Choose a name, category and paper style.</value>
+  </data>
+  <data name="Core.CommandPen" xml:space="preserve">
+    <value>Pen · B</value>
+  </data>
+  <data name="Core.CommandPenHint" xml:space="preserve">
+    <value>Write with pressure-sensitive ink. Hold a line briefly to straighten it.</value>
+  </data>
+  <data name="Core.CommandPractice" xml:space="preserve">
+    <value>New practice attempt</value>
+  </data>
+  <data name="Core.CommandPracticeAttempts" xml:space="preserve">
+    <value>Practice attempts</value>
+  </data>
+  <data name="Core.CommandPracticeAttemptsHint" xml:space="preserve">
+    <value>Return to earlier solutions and record mistakes and a next approach.</value>
+  </data>
+  <data name="Core.CommandPracticeHint" xml:space="preserve">
+    <value>Capture the question and keep a separate solution for each attempt.</value>
+  </data>
+  <data name="Core.CommandQuestionInbox" xml:space="preserve">
+    <value>Question inbox</value>
+  </data>
+  <data name="Core.CommandQuestionInboxHint" xml:space="preserve">
+    <value>Follow questions from Need help through explanation and retry to Resolved.</value>
+  </data>
+  <data name="Core.CommandQuickNote" xml:space="preserve">
+    <value>Quick note</value>
+  </data>
+  <data name="Core.CommandQuickNoteHint" xml:space="preserve">
+    <value>Start writing immediately in your Inbox; organize the page later.</value>
+  </data>
+  <data name="Core.CommandRecovery" xml:space="preserve">
+    <value>Backup &amp; recovery</value>
+  </data>
+  <data name="Core.CommandRecoveryHint" xml:space="preserve">
+    <value>Recover deleted notebooks and pages, restore pending drafts, or choose which notebooks to restore from a backup.</value>
+  </data>
+  <data name="Core.CommandReference" xml:space="preserve">
+    <value>Reference view</value>
+  </data>
+  <data name="Core.CommandReferenceHint" xml:space="preserve">
+    <value>Read another notebook beside your writing area, with independent navigation and zoom.</value>
+  </data>
+  <data name="Core.CommandRestoreRegion" xml:space="preserve">
+    <value>Restore part of this page</value>
+  </data>
+  <data name="Core.CommandRestoreRegionHint" xml:space="preserve">
+    <value>Restore complete objects in a region from this session's history, retaining other edits.</value>
+  </data>
+  <data name="Core.CommandResume" xml:space="preserve">
+    <value>Resume my thinking</value>
+  </data>
+  <data name="Core.CommandResumeHint" xml:space="preserve">
+    <value>Read saved next steps and jump to their source regions.</value>
+  </data>
+  <data name="Core.CommandSearch" xml:space="preserve">
+    <value>Search notebook contents · Ctrl+F</value>
+  </data>
+  <data name="Core.CommandSearchHint" xml:space="preserve">
+    <value>Find page names, bookmarks, topics and typed notes, then jump straight to the result.</value>
+  </data>
+  <data name="Core.CommandType" xml:space="preserve">
+    <value>Type · T</value>
+  </data>
+  <data name="Core.CommandTypeHint" xml:space="preserve">
+    <value>Click anywhere to type without a visible box; ruled paper aligns text. Ctrl+Enter returns to Pen.</value>
+  </data>
+  <data name="Core.CommandUndo" xml:space="preserve">
+    <value>Undo · Ctrl+Z</value>
+  </data>
+  <data name="Core.CommandUndoHint" xml:space="preserve">
+    <value>Undo a completed edit while this notebook stays open.</value>
+  </data>
+  <data name="Core.CommandWorkspaceSettings" xml:space="preserve">
+    <value>Workspace settings</value>
+  </data>
+  <data name="Core.CommandWorkspaceSettingsHint" xml:space="preserve">
+    <value>Two-finger navigation, zoom lock, compact toolbar, focus docking and scheduled local backups.</value>
+  </data>
+  <data name="Core.ContinueHint" xml:space="preserve">
+    <value>Open the last notebook at your saved reading position</value>
+  </data>
+  <data name="Core.ConvertingDocument" xml:space="preserve">
+    <value>Converting document into note pages…</value>
+  </data>
+  <data name="Core.Creating" xml:space="preserve">
+    <value>Creating notebook…</value>
+  </data>
+  <data name="Core.DeleteConfirm" xml:space="preserve">
+    <value>Move "{0}" and all its pages to Recently deleted?
+
+A recovery copy is kept for 30 days in Backup &amp; recovery.</value>
+  </data>
+  <data name="Core.DeleteNotebook" xml:space="preserve">
+    <value>Delete Notebook</value>
+  </data>
+  <data name="Core.Deleting" xml:space="preserve">
+    <value>Deleting notebook…</value>
+  </data>
+  <data name="Core.EmptySectionExport" xml:space="preserve">
+    <value>This section has no pages. Add a page before exporting it as a PDF.</value>
+  </data>
+  <data name="Core.Eraser" xml:space="preserve">
+    <value>Eraser</value>
+  </data>
+  <data name="Core.EraserPixelHelp" xml:space="preserve">
+    <value>Current mode: Pixel Eraser. Click to choose Pixel Eraser or Stroke Eraser.</value>
+  </data>
+  <data name="Core.EraserPixelTooltip" xml:space="preserve">
+    <value>Pixel Eraser (E); click to choose an eraser mode</value>
+  </data>
+  <data name="Core.EraserStrokeHelp" xml:space="preserve">
+    <value>Current mode: Stroke Eraser. Click to choose Pixel Eraser or Stroke Eraser.</value>
+  </data>
+  <data name="Core.EraserStrokeTooltip" xml:space="preserve">
+    <value>Stroke Eraser (E); click to choose an eraser mode</value>
+  </data>
+  <data name="Core.ExitFocus" xml:space="preserve">
+    <value>Exit Focus Mode (F11)</value>
+  </data>
+  <data name="Core.ExportSection" xml:space="preserve">
+    <value>Export Section PDF</value>
+  </data>
+  <data name="Core.ExportSectionTitle" xml:space="preserve">
+    <value>Export Section PDF (text boxes become vector outlines)</value>
+  </data>
+  <data name="Core.ExportingSection" xml:space="preserve">
+    <value>Exporting section PDF…</value>
+  </data>
+  <data name="Core.FitPage" xml:space="preserve">
+    <value>Fit Page</value>
+  </data>
+  <data name="Core.FitPageHint" xml:space="preserve">
+    <value>Show the whole current page or spread. Unlock zoom in Workspace settings if necessary.</value>
+  </data>
+  <data name="Core.FitSpread" xml:space="preserve">
+    <value>Fit Spread</value>
+  </data>
+  <data name="Core.Focus" xml:space="preserve">
+    <value>Focus Mode (F11)</value>
+  </data>
+  <data name="Core.GoToPage" xml:space="preserve">
+    <value>Go to page</value>
+  </data>
+  <data name="Core.ImageFilter" xml:space="preserve">
+    <value>Images|*.png;*.jpg;*.jpeg</value>
+  </data>
+  <data name="Core.ImageLoadFailed" xml:space="preserve">
+    <value>Unable to load image: {0}</value>
+  </data>
+  <data name="Core.ImageTooLarge" xml:space="preserve">
+    <value>This image is too large. Resize it to at most 80 million pixels, with neither side exceeding 20,000 pixels.</value>
+  </data>
+  <data name="Core.ImportPdf" xml:space="preserve">
+    <value>Importing PDF…</value>
+  </data>
+  <data name="Core.ImportTitle" xml:space="preserve">
+    <value>Import Document into This Notebook</value>
+  </data>
+  <data name="Core.InkColor" xml:space="preserve">
+    <value>Ink Color</value>
+  </data>
+  <data name="Core.InsertImage" xml:space="preserve">
+    <value>Insert Image</value>
+  </data>
+  <data name="Core.InsertingImage" xml:space="preserve">
+    <value>Inserting image…</value>
+  </data>
+  <data name="Core.InvalidPage" xml:space="preserve">
+    <value>Enter a page number in this section.</value>
+  </data>
+  <data name="Core.Loading" xml:space="preserve">
+    <value>Loading your notebooks…</value>
+  </data>
+  <data name="Core.Locked" xml:space="preserve">
+    <value>Zoom locked</value>
+  </data>
+  <data name="Core.Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Core.OneFinger" xml:space="preserve">
+    <value>One-finger navigation</value>
+  </data>
+  <data name="Core.Opening" xml:space="preserve">
+    <value>Opening notebook…</value>
+  </data>
+  <data name="Core.PageLoadFailed" xml:space="preserve">
+    <value>Unable to load this page: {0}</value>
+  </data>
+  <data name="Core.PageNumber" xml:space="preserve">
+    <value>Page number (1–{0})</value>
+  </data>
+  <data name="Core.PastingImage" xml:space="preserve">
+    <value>Pasting image…</value>
+  </data>
+  <data name="Core.PdfFilter" xml:space="preserve">
+    <value>PDF documents|*.pdf</value>
+  </data>
+  <data name="Core.PdfPaperHint" xml:space="preserve">
+    <value>PDF pages keep their original background. Add a new page to use a template.</value>
+  </data>
+  <data name="Core.PdfPreviewFailed" xml:space="preserve">
+    <value>Unable to refresh PDF preview: {0}</value>
+  </data>
+  <data name="Core.RecoveryCopy" xml:space="preserve">
+    <value>Keeping a recovery copy…</value>
+  </data>
+  <data name="Core.RenameCategory" xml:space="preserve">
+    <value>Rename and Category</value>
+  </data>
+  <data name="Core.RestoreCopies" xml:space="preserve">
+    <value>Restore as New Notebook Copies</value>
+  </data>
+  <data name="Core.Restored" xml:space="preserve">
+    <value>Restored {0} notebook(s)</value>
+  </data>
+  <data name="Core.Restoring" xml:space="preserve">
+    <value>Validating and restoring backup…</value>
+  </data>
+  <data name="Core.RetryingSave" xml:space="preserve">
+    <value>Retrying save…</value>
+  </data>
+  <data name="Core.ReturningHome" xml:space="preserve">
+    <value>Saving and returning to your notebooks…</value>
+  </data>
+  <data name="Core.SavingBeforeClosing" xml:space="preserve">
+    <value>Saving before closing…</value>
+  </data>
+  <data name="Core.SavingBeforeUpdating" xml:space="preserve">
+    <value>Saving your notes before updating…</value>
+  </data>
+  <data name="Core.SectionExported" xml:space="preserve">
+    <value>Section PDF exported · {0}</value>
+  </data>
+  <data name="Core.SinglePage" xml:space="preserve">
+    <value>Single Page</value>
+  </data>
+  <data name="Core.SinglePageCurrent" xml:space="preserve">
+    <value>Single Page · Current</value>
+  </data>
+  <data name="Core.SinglePageHint" xml:space="preserve">
+    <value>Show one editable page per row.</value>
+  </data>
+  <data name="Core.ToolBrowse" xml:space="preserve">
+    <value>Browse  ·  One finger to pan · Pinch to zoom</value>
+  </data>
+  <data name="Core.ToolHighlighter" xml:space="preserve">
+    <value>Highlighter  ·  One finger to pan · Pinch to zoom</value>
+  </data>
+  <data name="Core.ToolLasso" xml:space="preserve">
+    <value>Lasso · Draw to select / Ctrl+D to duplicate  ·  One finger to pan · Pinch to zoom</value>
+  </data>
+  <data name="Core.ToolPen" xml:space="preserve">
+    <value>Pen  ·  One finger to pan · Pinch to zoom</value>
+  </data>
+  <data name="Core.ToolPixel" xml:space="preserve">
+    <value>Pixel Eraser · Keep the rest of the stroke  ·  One finger to pan · Pinch to zoom</value>
+  </data>
+  <data name="Core.ToolSelect" xml:space="preserve">
+    <value>Select · Drag to move / resize from the corner  ·  One finger to pan · Pinch to zoom</value>
+  </data>
+  <data name="Core.ToolStroke" xml:space="preserve">
+    <value>Stroke Eraser · Remove the whole stroke  ·  One finger to pan · Pinch to zoom</value>
+  </data>
+  <data name="Core.ToolText" xml:space="preserve">
+    <value>Text · Tap the page to type  ·  One finger to pan · Pinch to zoom</value>
+  </data>
+  <data name="Core.TwoFinger" xml:space="preserve">
+    <value>Two-finger navigation</value>
+  </data>
+  <data name="Core.TwoPages" xml:space="preserve">
+    <value>Two Pages</value>
+  </data>
+  <data name="Core.TwoPagesCurrent" xml:space="preserve">
+    <value>Two Pages · Current</value>
+  </data>
+  <data name="Core.TwoPagesHint" xml:space="preserve">
+    <value>Read and annotate pages 1–2, 3–4 side by side within this section.</value>
+  </data>
+  <data name="Core.UnableToComplete" xml:space="preserve">
+    <value>Unable to complete the operation</value>
+  </data>
+  <data name="Core.UnhandledOperation" xml:space="preserve">
+    <value>The operation could not be completed. Previously saved notes are unaffected.
+
+{0}</value>
+  </data>
+  <data name="Core.Unlocked" xml:space="preserve">
+    <value>Zoom unlocked</value>
+  </data>
+  <data name="Core.UnsavedDetails" xml:space="preserve">
+    <value>Some changes could not be saved. This window will stay open.
+Use More → Retry Save, or Back Up This Notebook.
+
+{0}</value>
+  </data>
+  <data name="Core.UnsavedTitle" xml:space="preserve">
+    <value>Unsaved Changes</value>
+  </data>
+  <data name="Core.UpdateStartFailed" xml:space="preserve">
+    <value>The update could not start. Your notebook is still open. {0}</value>
+  </data>
+  <data name="Core.WaitBeforeClosing" xml:space="preserve">
+    <value>Please wait for the current operation to finish before closing.</value>
+  </data>
+  <data name="Core.Workspace" xml:space="preserve">
+    <value>Workspace</value>
+  </data>
+  <data name="Core.WorkspaceHint" xml:space="preserve">
+    <value>{0} · {1} · click to change</value>
+  </data>
+  <data name="Core.WorkspaceLoadFailed" xml:space="preserve">
+    <value>Workspace settings could not be loaded. The existing file has been kept; changes apply to this session only. {0}</value>
+  </data>
+  <data name="Core.WorkspaceMissing" xml:space="preserve">
+    <value>No workspace settings were found.</value>
+  </data>
+  <data name="Core.WorkspaceReadFirst" xml:space="preserve">
+    <value>Load workspace settings before saving them.</value>
+  </data>
+  <data name="Core.WorkspaceSaveFailed" xml:space="preserve">
+    <value>Workspace settings not saved · {0}</value>
+  </data>
+  <data name="Core.WorkspaceVersionUnsupported" xml:space="preserve">
+    <value>Workspace settings version {0} is not supported.</value>
+  </data>
+  <data name="Core.WritingGuard" xml:space="preserve">
+    <value>Writing guard ●</value>
+  </data>
+  <data name="Core.WritingSettings" xml:space="preserve">
+    <value>Writing Settings</value>
+  </data>
+  <data name="Core.ZoomLocked" xml:space="preserve">
+    <value>Zoom is locked · Change it in Workspace settings</value>
+  </data>
+  <data name="Messages.Count.FilteredNotebooks" xml:space="preserve">
+    <value>{0} of {1} notebooks</value>
+  </data>
+  <data name="Messages.Count.Notebook" xml:space="preserve">
+    <value>{0} notebook</value>
+  </data>
+  <data name="Messages.Count.Notebooks" xml:space="preserve">
+    <value>{0} notebooks</value>
+  </data>
+  <data name="Messages.Count.Page" xml:space="preserve">
+    <value>{0} page</value>
+  </data>
+  <data name="Messages.Count.Pages" xml:space="preserve">
+    <value>{0} pages</value>
+  </data>
+  <data name="Messages.Document.AttachmentUnverified" xml:space="preserve">
+    <value>The imported attachment could not be verified.</value>
+  </data>
+  <data name="Messages.Document.ExistingSection" xml:space="preserve">
+    <value>Choose an existing section.</value>
+  </data>
+  <data name="Messages.Document.NoPages" xml:space="preserve">
+    <value>This document has no pages.</value>
+  </data>
+  <data name="Messages.Document.PreviewAttachmentMissing" xml:space="preserve">
+    <value>The import preview attachment is no longer available.</value>
+  </data>
+  <data name="Messages.Error.DetailsSaved" xml:space="preserve">
+    <value>{0}
+
+Details were saved to:
+{1}</value>
+  </data>
+  <data name="Messages.Error.WindowsBlocked" xml:space="preserve">
+    <value>Windows application control blocked a component required by Penroam. Install the latest Penroam update. If it is still blocked, share the error log with support or your administrator.
+
+{0}</value>
+  </data>
+  <data name="Messages.Export.AddPageFirst" xml:space="preserve">
+    <value>Add a page to the notebook first.</value>
+  </data>
+  <data name="Messages.Export.AnnotationsNotPreserved" xml:space="preserve">
+    <value>The existing PDF annotations could not be fully preserved. The export file was not overwritten.</value>
+  </data>
+  <data name="Messages.Export.FolderMissing" xml:space="preserve">
+    <value>The export folder does not exist.</value>
+  </data>
+  <data name="Messages.Export.InvalidPageSize" xml:space="preserve">
+    <value>A page has invalid dimensions.</value>
+  </data>
+  <data name="Messages.Export.OverlapRange" xml:space="preserve">
+    <value>Overlap must be between 0 and 30 mm.</value>
+  </data>
+  <data name="Messages.Export.TooManySheets" xml:space="preserve">
+    <value>This export needs more than {0} sheets. Select fewer pages or reduce the overlap.</value>
+  </data>
+  <data name="Messages.Export.UnsupportedLayout" xml:space="preserve">
+    <value>Choose a supported PDF layout and orientation.</value>
+  </data>
+  <data name="Messages.Folder.AcceptPartial" xml:space="preserve">
+    <value>Choose Import Successful Files before saving this partial import.</value>
+  </data>
+  <data name="Messages.Folder.AlreadySaving" xml:space="preserve">
+    <value>This folder is already being saved.</value>
+  </data>
+  <data name="Messages.Folder.FileProgress" xml:space="preserve">
+    <value>File {0} of {1}: {2}
+{3}</value>
+  </data>
+  <data name="Messages.Folder.LegacyPowerPoint" xml:space="preserve">
+    <value>Legacy .ppt files are not supported. Save this presentation as .pptx, then import it.</value>
+  </data>
+  <data name="Messages.Folder.NoPages" xml:space="preserve">
+    <value>This document has no pages to import.</value>
+  </data>
+  <data name="Messages.Folder.NothingPrepared" xml:space="preserve">
+    <value>No documents were prepared. No notebook was created.</value>
+  </data>
+  <data name="Messages.Folder.SaveBeforeOpen" xml:space="preserve">
+    <value>Save the imported notebook before opening it.</value>
+  </data>
+  <data name="Messages.Folder.Section" xml:space="preserve">
+    <value>Section: {0}</value>
+  </data>
+  <data name="Messages.Folder.StagingFailed" xml:space="preserve">
+    <value>The temporary import files could not be stored or read. No notebook was created. Check available disk space and folder permissions, then try again.</value>
+  </data>
+  <data name="Messages.Folder.SubfolderSkipped" xml:space="preserve">
+    <value>Subfolder skipped. Only files directly in the selected folder are imported.</value>
+  </data>
+  <data name="Messages.Folder.UnsupportedType" xml:space="preserve">
+    <value>Unsupported file type. Folder import includes only PDF and PPTX files.</value>
+  </data>
+  <data name="Messages.Import.FileFilter" xml:space="preserve">
+    <value>Supported documents|*.pdf;*.docx;*.pptx;*.ppsx;*.odt;*.odp|PDF documents|*.pdf|Word documents|*.docx|PowerPoint presentations|*.pptx;*.ppsx|OpenDocument files|*.odt;*.odp</value>
+  </data>
+  <data name="Messages.Import.NoConvertedPdf" xml:space="preserve">
+    <value>The document converter did not produce a PDF. No pages were imported.</value>
+  </data>
+  <data name="Messages.Import.UnsupportedDocument" xml:space="preserve">
+    <value>Choose a PDF, DOCX, PPTX, PPSX, ODT or ODP document.</value>
+  </data>
+  <data name="Messages.Library.EmptyDescription" xml:space="preserve">
+    <value>Create a notebook and choose the paper that works for you.</value>
+  </data>
+  <data name="Messages.Library.EmptySearchDescription" xml:space="preserve">
+    <value>Try another notebook name or category, or clear your search.</value>
+  </data>
+  <data name="Messages.Library.EmptySearchTitle" xml:space="preserve">
+    <value>No notebooks found</value>
+  </data>
+  <data name="Messages.Library.EmptyTitle" xml:space="preserve">
+    <value>Your next idea starts here</value>
+  </data>
+  <data name="Messages.Notebook.ChangedBeforeOrganizing" xml:space="preserve">
+    <value>The notebook changed. Open the organizer again.</value>
+  </data>
+  <data name="Messages.Notebook.InboxUnavailable" xml:space="preserve">
+    <value>The quick notes inbox could not be opened.</value>
+  </data>
+  <data name="Messages.Notebook.InvalidCoverColor" xml:space="preserve">
+    <value>Choose a valid cover color.</value>
+  </data>
+  <data name="Messages.Notebook.NotFound" xml:space="preserve">
+    <value>This notebook could not be found.</value>
+  </data>
+  <data name="Messages.Office.ConversionFailed" xml:space="preserve">
+    <value>Office could not convert this document. Open it in Word or PowerPoint and export a PDF copy.</value>
+  </data>
+  <data name="Messages.Office.ConverterNotStopped" xml:space="preserve">
+    <value>The document converter could not be confirmed stopped. Its temporary profile has been retained.</value>
+  </data>
+  <data name="Messages.Office.ConverterRequired" xml:space="preserve">
+    <value>Office document import needs Microsoft Word/PowerPoint or LibreOffice installed on this computer. ODT and ODP files require LibreOffice. Install a local converter, or save your document as PDF and import that copy. PDF import works without Office.</value>
+  </data>
+  <data name="Messages.Office.DesktopAppMissing" xml:space="preserve">
+    <value>The required Microsoft Office desktop application is not installed. Export this document to PDF in its source application, then import the PDF.</value>
+  </data>
+  <data name="Messages.Office.InvalidPdf" xml:space="preserve">
+    <value>The document converter returned an invalid PDF.</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeFailed" xml:space="preserve">
+    <value>LibreOffice could not convert the document. {0}</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeInvalidPdf" xml:space="preserve">
+    <value>LibreOffice did not produce a valid PDF file.</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeNoPdf" xml:space="preserve">
+    <value>LibreOffice did not produce a PDF. The document may be encrypted, damaged, or unsupported.</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeRequired" xml:space="preserve">
+    <value>LibreOffice is not installed. Install LibreOffice to convert this document, or save it as PDF in its original application.</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeStartAdvice" xml:space="preserve">
+    <value>LibreOffice could not be started. Check that it is installed and allowed to run on this device.</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeStartFailed" xml:space="preserve">
+    <value>LibreOffice could not be started.</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeSupported" xml:space="preserve">
+    <value>LibreOffice conversion supports DOCX, ODT, PPTX, PPSX, and ODP files.</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeTimeout" xml:space="preserve">
+    <value>LibreOffice conversion took too long and was stopped. Try saving the document as PDF in its original application.</value>
+  </data>
+  <data name="Messages.Office.LibreOfficeUnsupported" xml:space="preserve">
+    <value>The document format is not supported by the LibreOffice converter.</value>
+  </data>
+  <data name="Messages.Office.LocalPathsRequired" xml:space="preserve">
+    <value>Office conversion requires local file paths.</value>
+  </data>
+  <data name="Messages.Office.NoReadablePdf" xml:space="preserve">
+    <value>Office did not produce a readable PDF. Export a PDF from the source application and try again.</value>
+  </data>
+  <data name="Messages.Office.OutputExists" xml:space="preserve">
+    <value>The conversion output already exists.</value>
+  </data>
+  <data name="Messages.Office.PdfOutputRequired" xml:space="preserve">
+    <value>The conversion output must be a PDF file.</value>
+  </data>
+  <data name="Messages.Office.PreserveSource" xml:space="preserve">
+    <value>The conversion output must not replace the source document.</value>
+  </data>
+  <data name="Messages.Office.SourceMissing" xml:space="preserve">
+    <value>The document to convert could not be found.</value>
+  </data>
+  <data name="Messages.Office.Timeout" xml:space="preserve">
+    <value>Office conversion took too long. Penroam stopped its conversion worker without closing your Office sessions. If Office is waiting for a password, repair, activation or another dialog, resolve it there, then export a PDF and import that copy.</value>
+  </data>
+  <data name="Messages.Office.WorkerMissing" xml:space="preserve">
+    <value>Penroam's document conversion worker is missing. Extract the complete Penroam ZIP and try again.</value>
+  </data>
+  <data name="Messages.Office.WorkerStartFailed" xml:space="preserve">
+    <value>Unable to start the Office conversion worker.</value>
+  </data>
+  <data name="Messages.Page.Current" xml:space="preserve">
+    <value>Page {0} of {1}</value>
+  </data>
+  <data name="Messages.Page.Location" xml:space="preserve">
+    <value>{0} · Page {1}{2}</value>
+  </data>
+  <data name="Messages.Page.Number" xml:space="preserve">
+    <value>Page {0}</value>
+  </data>
+  <data name="Messages.Paper.Blank" xml:space="preserve">
+    <value>Blank</value>
+  </data>
+  <data name="Messages.Paper.Cornell" xml:space="preserve">
+    <value>Cornell</value>
+  </data>
+  <data name="Messages.Paper.DotGrid" xml:space="preserve">
+    <value>Dot Grid</value>
+  </data>
+  <data name="Messages.Paper.Graph" xml:space="preserve">
+    <value>Graph</value>
+  </data>
+  <data name="Messages.Paper.Grid" xml:space="preserve">
+    <value>Grid</value>
+  </data>
+  <data name="Messages.Paper.Meeting" xml:space="preserve">
+    <value>Meeting Notes</value>
+  </data>
+  <data name="Messages.Paper.Pdf" xml:space="preserve">
+    <value>PDF</value>
+  </data>
+  <data name="Messages.Paper.Ruled" xml:space="preserve">
+    <value>Ruled</value>
+  </data>
+  <data name="Messages.Pdf.CustomUnits" xml:space="preserve">
+    <value>The PDF uses custom page units. Save it as a standard PDF first.</value>
+  </data>
+  <data name="Messages.Pdf.EmptyFile" xml:space="preserve">
+    <value>The PDF file is empty.</value>
+  </data>
+  <data name="Messages.Pdf.Encrypted" xml:space="preserve">
+    <value>Encrypted PDFs are not supported. Save an unencrypted copy and try again.</value>
+  </data>
+  <data name="Messages.Pdf.FormsOrSignatures" xml:space="preserve">
+    <value>PDF forms and digital signatures are not supported. Export a standard PDF first.</value>
+  </data>
+  <data name="Messages.Pdf.ImportFailed" xml:space="preserve">
+    <value>This PDF could not be imported. Use a standard, unencrypted PDF.</value>
+  </data>
+  <data name="Messages.Pdf.InteractiveAnnotations" xml:space="preserve">
+    <value>The PDF contains unsupported interactive annotations. Flatten its annotations before importing.</value>
+  </data>
+  <data name="Messages.Pdf.NoPages" xml:space="preserve">
+    <value>The PDF has no pages.</value>
+  </data>
+  <data name="Messages.Pdf.OriginalPageMissing" xml:space="preserve">
+    <value>The original PDF page could not be found.</value>
+  </data>
+  <data name="Messages.Pdf.PageCountMismatch" xml:space="preserve">
+    <value>The PDF readers reported different page counts. The file was not imported.</value>
+  </data>
+  <data name="Messages.Pdf.PageError" xml:space="preserve">
+    <value>PDF page {0}: {1}</value>
+  </data>
+  <data name="Messages.Pdf.PageReadFailed" xml:space="preserve">
+    <value>Unable to read PDF page {0}. The file was not imported. Try saving a fresh PDF copy from the source application.</value>
+  </data>
+  <data name="Messages.Pdf.PageRotationUnsupported" xml:space="preserve">
+    <value>PDF page {0}: The page rotation is not supported.</value>
+  </data>
+  <data name="Messages.Pdf.Signatures" xml:space="preserve">
+    <value>PDFs containing digital signatures are not supported.</value>
+  </data>
+  <data name="Messages.Pdf.UnsupportedPageSize" xml:space="preserve">
+    <value>The page has an unsupported size.</value>
+  </data>
+  <data name="Messages.Pdf.WindowsOpenFailed" xml:space="preserve">
+    <value>Windows could not open this PDF. Save it as a standard, unencrypted PDF and try again.</value>
+  </data>
+  <data name="Messages.Progress.ConvertDocument" xml:space="preserve">
+    <value>Converting document locally…</value>
+  </data>
+  <data name="Messages.Progress.ExportPage" xml:space="preserve">
+    <value>Exporting page {0} of {1}…</value>
+  </data>
+  <data name="Messages.Progress.FindFolderDocuments" xml:space="preserve">
+    <value>Finding PDF and PowerPoint files…</value>
+  </data>
+  <data name="Messages.Progress.FolderReady" xml:space="preserve">
+    <value>Folder ready</value>
+  </data>
+  <data name="Messages.Progress.LoadExportAttachments" xml:space="preserve">
+    <value>Loading export attachments…</value>
+  </data>
+  <data name="Messages.Progress.PdfExported" xml:space="preserve">
+    <value>PDF exported</value>
+  </data>
+  <data name="Messages.Progress.PdfReady" xml:space="preserve">
+    <value>PDF ready</value>
+  </data>
+  <data name="Messages.Progress.PrepareA4Sheet" xml:space="preserve">
+    <value>Preparing A4 sheet {0} of {1}…</value>
+  </data>
+  <data name="Messages.Progress.PrepareFolderFile" xml:space="preserve">
+    <value>Preparing file {0} of {1}: {2}</value>
+  </data>
+  <data name="Messages.Progress.ReadPdf" xml:space="preserve">
+    <value>Reading PDF…</value>
+  </data>
+  <data name="Messages.Progress.SaveAttachments" xml:space="preserve">
+    <value>Saving imported attachments…</value>
+  </data>
+  <data name="Messages.Progress.SaveImportedNotebook" xml:space="preserve">
+    <value>Saving imported notebook…</value>
+  </data>
+  <data name="Messages.Progress.SavePendingChanges" xml:space="preserve">
+    <value>Saving pending notebook changes…</value>
+  </data>
+  <data name="Messages.Progress.ValidatePdfPage" xml:space="preserve">
+    <value>Validating page {0} of {1}…</value>
+  </data>
+  <data name="Messages.Range.Ascending" xml:space="preserve">
+    <value>Use page numbers and ascending ranges, for example 1–5, 8, 12.</value>
+  </data>
+  <data name="Messages.Range.BothEnds" xml:space="preserve">
+    <value>Enter a page number on both sides of a range.</value>
+  </data>
+  <data name="Messages.Range.Bounds" xml:space="preserve">
+    <value>Choose pages from 1 to {0}; ranges must be in ascending order.</value>
+  </data>
+  <data name="Messages.Range.EnterNumbers" xml:space="preserve">
+    <value>Enter page numbers, for example 1–5, 8, 12.</value>
+  </data>
+  <data name="Messages.Recovery.ListFailed" xml:space="preserve">
+    <value>Recovery files could not be listed. {0}</value>
+  </data>
+  <data name="Messages.Recovery.SomeUnreadable" xml:space="preserve">
+    <value>Some recovery entries could not be read and were kept. {0}</value>
+  </data>
+  <data name="Messages.Recovery.UnreadableKept" xml:space="preserve">
+    <value>A recovery file could not be read and was kept. {0}</value>
+  </data>
+  <data name="Messages.Recovery.UnsupportedKept" xml:space="preserve">
+    <value>An unsupported recovery file was kept: {0}</value>
+  </data>
+  <data name="Messages.Resume.Summary" xml:space="preserve">
+    <value>Continue: {0}</value>
+  </data>
+  <data name="Messages.Search.BookmarkedPage" xml:space="preserve">
+    <value>Bookmarked page</value>
+  </data>
+  <data name="Messages.Search.IncompletePdf" xml:space="preserve">
+    <value>PDF coverage: {0} page(s) could not be fully searched. {1}</value>
+  </data>
+  <data name="Messages.Search.MetadataMatch" xml:space="preserve">
+    <value>Page title, section or notebook match</value>
+  </data>
+  <data name="Messages.Search.NoExtractableText" xml:space="preserve">
+    <value>No extractable PDF text. Scanned pages and handwriting require OCR, which is not enabled.</value>
+  </data>
+  <data name="Messages.Search.NoOcr" xml:space="preserve">
+    <value>Handwriting and scanned images are not searched (no OCR).</value>
+  </data>
+  <data name="Messages.Search.PdfPageReadFailed" xml:space="preserve">
+    <value>PDF page {0} text could not be read: {1}</value>
+  </data>
+  <data name="Messages.Search.PdfPageUnavailable" xml:space="preserve">
+    <value>The original PDF page is unavailable.</value>
+  </data>
+  <data name="Messages.Search.PdfReadFailed" xml:space="preserve">
+    <value>PDF text could not be read: {0}</value>
+  </data>
+  <data name="Messages.Search.PdfTextLimit" xml:space="preserve">
+    <value>The PDF text limit was reached. This page was not indexed.</value>
+  </data>
+  <data name="Messages.Search.PdfTextTruncated" xml:space="preserve">
+    <value>Only the beginning of this very long PDF page was indexed.</value>
+  </data>
+  <data name="Messages.Status.LocalLibrary" xml:space="preserve">
+    <value>Your notebooks, on this device</value>
+  </data>
+  <data name="Messages.Status.SaveFailed" xml:space="preserve">
+    <value>Save failed · Retry or create a backup</value>
+  </data>
+  <data name="Messages.Status.SavedLocally" xml:space="preserve">
+    <value>Saved on this device</value>
+  </data>
+  <data name="Messages.Status.Saving" xml:space="preserve">
+    <value>Saving…</value>
+  </data>
+  <data name="Messages.Status.WaitingToSave" xml:space="preserve">
+    <value>Waiting to save…</value>
+  </data>
+  <data name="Messages.Study.ResumeDetail" xml:space="preserve">
+    <value>Next time, continue here</value>
+  </data>
+  <data name="Messages.Study.Status.NeedHelp" xml:space="preserve">
+    <value>Need help</value>
+  </data>
+  <data name="Messages.Study.Status.Resolved" xml:space="preserve">
+    <value>Resolved</value>
+  </data>
+  <data name="Messages.Study.Status.TryAgain" xml:space="preserve">
+    <value>Try again</value>
+  </data>
+  <data name="Messages.Study.Status.Understood" xml:space="preserve">
+    <value>Understood</value>
+  </data>
+  <data name="Messages.Study.Status.Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="Messages.Transfer.AtomicUnsupported" xml:space="preserve">
+    <value>This library does not support atomic page transfers.</value>
+  </data>
+  <data name="Messages.Transfer.NotebookMissing" xml:space="preserve">
+    <value>The destination notebook no longer exists.</value>
+  </data>
+  <data name="Messages.Transfer.OpenNotebookFirst" xml:space="preserve">
+    <value>Open a notebook first.</value>
+  </data>
+  <data name="Messages.Transfer.PageMissing" xml:space="preserve">
+    <value>One or more selected pages no longer exist.</value>
+  </data>
+  <data name="Messages.Transfer.SameNotebook" xml:space="preserve">
+    <value>Use Move to Section for pages in this notebook.</value>
+  </data>
+  <data name="Messages.Transfer.SectionMissing" xml:space="preserve">
+    <value>The destination section no longer exists.</value>
+  </data>
+  <data name="Messages.Transfer.UnsafeUndo" xml:space="preserve">
+    <value>A transferred notebook has changed. Undo transfer is no longer safe; use the page organizer to move the pages back.</value>
+  </data>
+  <data name="Messages.Update.CannotStartInstaller" xml:space="preserve">
+    <value>Windows could not start the update installer. Your notes remain open; try updating again.</value>
+  </data>
+  <data name="Messages.Update.ChecksumMismatch" xml:space="preserve">
+    <value>The installer checksum did not match. The download was removed; please try again.</value>
+  </data>
+  <data name="Messages.Update.ChecksumMissing" xml:space="preserve">
+    <value>The new release is missing its SHA-256 checksum. Please try again after the release upload finishes.</value>
+  </data>
+  <data name="Messages.Update.DownloadIncomplete" xml:space="preserve">
+    <value>The installer download is incomplete. Please try again.</value>
+  </data>
+  <data name="Messages.Update.DownloadSizeMismatch" xml:space="preserve">
+    <value>The installer download size does not match the release. Please try again.</value>
+  </data>
+  <data name="Messages.Update.DownloadTooLarge" xml:space="preserve">
+    <value>The installer download is larger than the published release.</value>
+  </data>
+  <data name="Messages.Update.DuplicateInstaller" xml:space="preserve">
+    <value>The release contains duplicate installer assets.</value>
+  </data>
+  <data name="Messages.Update.IncompleteRelease" xml:space="preserve">
+    <value>GitHub returned an incomplete release description.</value>
+  </data>
+  <data name="Messages.Update.InstallationMissing" xml:space="preserve">
+    <value>The current Penroam installation directory is missing.</value>
+  </data>
+  <data name="Messages.Update.InstallerMissing" xml:space="preserve">
+    <value>The downloaded update installer is missing. Download it again.</value>
+  </data>
+  <data name="Messages.Update.InvalidChecksum" xml:space="preserve">
+    <value>The release has an invalid SHA-256 checksum.</value>
+  </data>
+  <data name="Messages.Update.InvalidInformation" xml:space="preserve">
+    <value>The update information is invalid. Check for updates again before downloading.</value>
+  </data>
+  <data name="Messages.Update.InvalidRelease" xml:space="preserve">
+    <value>GitHub returned an invalid release description.</value>
+  </data>
+  <data name="Messages.Update.InvalidSize" xml:space="preserve">
+    <value>The update installer has an invalid download size.</value>
+  </data>
+  <data name="Messages.Update.NoCompatibleInstaller" xml:space="preserve">
+    <value>The new release does not include a compatible Windows x64 installer yet.</value>
+  </data>
+  <data name="Messages.Update.NoInstaller" xml:space="preserve">
+    <value>The new release does not include a Windows installer yet.</value>
+  </data>
+  <data name="Messages.Update.NoVerificationChecksum" xml:space="preserve">
+    <value>The update has no valid verification checksum.</value>
+  </data>
+  <data name="Messages.Update.PayloadIncomplete" xml:space="preserve">
+    <value>The downloaded update is incomplete. Please download it again.</value>
+  </data>
+  <data name="Messages.Update.PayloadUnverified" xml:space="preserve">
+    <value>The downloaded update could not be verified. Please download it again.</value>
+  </data>
+  <data name="Messages.Update.RedirectOutsideGitHub" xml:space="preserve">
+    <value>The update download redirected outside GitHub release storage.</value>
+  </data>
+  <data name="Messages.Update.ResponseTooLarge" xml:space="preserve">
+    <value>GitHub returned an unexpectedly large release response.</value>
+  </data>
+  <data name="Messages.Update.TooManyRedirects" xml:space="preserve">
+    <value>GitHub returned too many download redirects.</value>
+  </data>
+  <data name="Messages.Update.UnexpectedRedirect" xml:space="preserve">
+    <value>GitHub returned an unexpected download redirect.</value>
+  </data>
+  <data name="Messages.Update.WrongChecksumFile" xml:space="preserve">
+    <value>The release checksum does not identify the expected Penroam installer.</value>
+  </data>
+  <data name="Messages.Update.WrongRelease" xml:space="preserve">
+    <value>The installer download does not belong to the Penroam GitHub release.</value>
+  </data>
+  <data name="Messages.Writing.DamagedNotPreserved" xml:space="preserve">
+    <value>The writing-preferences file is damaged and could not be preserved separately. The original was kept. Reload settings before saving. {0}</value>
+  </data>
+  <data name="Messages.Writing.DamagedPreserved" xml:space="preserve">
+    <value>The writing-preferences file was damaged. Default tools are available, and the damaged file was preserved at {0}.</value>
+  </data>
+  <data name="Messages.Writing.EmptySettings" xml:space="preserve">
+    <value>The settings file contains no preferences.</value>
+  </data>
+  <data name="Messages.Writing.NewerVersion" xml:space="preserve">
+    <value>Writing-preferences version {0} is not supported. The existing file was kept and will not be overwritten.</value>
+  </data>
+  <data name="Messages.Writing.Unreadable" xml:space="preserve">
+    <value>Writing preferences could not be read. The existing file was kept. Reload settings before saving. {0}</value>
+  </data>
+  <data name="Messages.Writing.UnsupportedVersion" xml:space="preserve">
+    <value>This writing-preferences version is not supported.</value>
+  </data>
+  <data name="Messages.Writing.ValuesReset" xml:space="preserve">
+    <value>Some writing settings were invalid and have been reset to supported values.</value>
+  </data>
+  <data name="Shell.ActualSize" xml:space="preserve">
+    <value>Actual Size · 100%</value>
+  </data>
+  <data name="Shell.AddPage" xml:space="preserve">
+    <value>Add Page</value>
+  </data>
+  <data name="Shell.AddPageShort" xml:space="preserve">
+    <value>Add page</value>
+  </data>
+  <data name="Shell.AddSection" xml:space="preserve">
+    <value>Add Section</value>
+  </data>
+  <data name="Shell.AddSectionHint" xml:space="preserve">
+    <value>Add a section for a topic</value>
+  </data>
+  <data name="Shell.AddTextBox" xml:space="preserve">
+    <value>Add Text Box</value>
+  </data>
+  <data name="Shell.AddTextBoxHint" xml:space="preserve">
+    <value>Add another text box</value>
+  </data>
+  <data name="Shell.AlignCenter" xml:space="preserve">
+    <value>Center</value>
+  </data>
+  <data name="Shell.AlignLeft" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="Shell.AlignRight" xml:space="preserve">
+    <value>Right</value>
+  </data>
+  <data name="Shell.AllNotebooks" xml:space="preserve">
+    <value>All notebooks</value>
+  </data>
+  <data name="Shell.ApplyPaper" xml:space="preserve">
+    <value>Apply Paper</value>
+  </data>
+  <data name="Shell.AutomaticBackupFailed" xml:space="preserve">
+    <value>Automatic backup failed · Open Backup &amp; recovery</value>
+  </data>
+  <data name="Shell.AutomaticBackupsDisabled" xml:space="preserve">
+    <value>Automatic backups are off.</value>
+  </data>
+  <data name="Shell.AutomaticBackupsEnabled" xml:space="preserve">
+    <value>Automatic backups run while Penroam is open.</value>
+  </data>
+  <data name="Shell.BackupAllMenu" xml:space="preserve">
+    <value>Back Up All Notebooks…</value>
+  </data>
+  <data name="Shell.BackupAllNow" xml:space="preserve">
+    <value>Back up all now</value>
+  </data>
+  <data name="Shell.BackupError" xml:space="preserve">
+    <value>Backup error: {0}</value>
+  </data>
+  <data name="Shell.BackupFileFilter" xml:space="preserve">
+    <value>Penroam backups|*.moye</value>
+  </data>
+  <data name="Shell.BackupNotebookMenu" xml:space="preserve">
+    <value>Back Up This Notebook…</value>
+  </data>
+  <data name="Shell.BackupSaved" xml:space="preserve">
+    <value>Backup saved · {0}</value>
+  </data>
+  <data name="Shell.BackupSettings" xml:space="preserve">
+    <value>Backup settings</value>
+  </data>
+  <data name="Shell.Blue" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="Shell.BoldHint" xml:space="preserve">
+    <value>Bold entire text box (Ctrl+B)</value>
+  </data>
+  <data name="Shell.BoldOff" xml:space="preserve">
+    <value>Bold is off</value>
+  </data>
+  <data name="Shell.BoldOn" xml:space="preserve">
+    <value>Bold is on</value>
+  </data>
+  <data name="Shell.BoldText" xml:space="preserve">
+    <value>Bold Text</value>
+  </data>
+  <data name="Shell.BookmarkPage" xml:space="preserve">
+    <value>Bookmark Page</value>
+  </data>
+  <data name="Shell.BookmarksMenu" xml:space="preserve">
+    <value>Bookmarks…</value>
+  </data>
+  <data name="Shell.BulletList" xml:space="preserve">
+    <value>Bullet List</value>
+  </data>
+  <data name="Shell.BulletListHint" xml:space="preserve">
+    <value>Toggle bullets on selected lines</value>
+  </data>
+  <data name="Shell.BulletListShort" xml:space="preserve">
+    <value>• List</value>
+  </data>
+  <data name="Shell.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Shell.CancelFolderImport" xml:space="preserve">
+    <value>Cancel folder import</value>
+  </data>
+  <data name="Shell.CancelImport" xml:space="preserve">
+    <value>Cancel Import</value>
+  </data>
+  <data name="Shell.CancelImportHint" xml:space="preserve">
+    <value>Cancel document import (Esc)</value>
+  </data>
+  <data name="Shell.CheckUpdatesMenu" xml:space="preserve">
+    <value>Check for Updates…</value>
+  </data>
+  <data name="Shell.CheckingBackupIntegrity" xml:space="preserve">
+    <value>Checking notebook data and attachment integrity…</value>
+  </data>
+  <data name="Shell.ChooseBackupToRestore" xml:space="preserve">
+    <value>Choose notebooks to restore as new copies</value>
+  </data>
+  <data name="Shell.ChooseCoverColor" xml:space="preserve">
+    <value>Choose Cover Color…</value>
+  </data>
+  <data name="Shell.ChooseImportDocument" xml:space="preserve">
+    <value>Choose a document to import</value>
+  </data>
+  <data name="Shell.ChooseImportFolder" xml:space="preserve">
+    <value>Import a folder of PDF and PowerPoint files</value>
+  </data>
+  <data name="Shell.ChoosePaper" xml:space="preserve">
+    <value>Choose Paper</value>
+  </data>
+  <data name="Shell.ChoosePaperHint" xml:space="preserve">
+    <value>Choose a template for this page.</value>
+  </data>
+  <data name="Shell.ChooseRestoreDescription" xml:space="preserve">
+    <value>Select the notebooks to restore. Existing notebooks are kept; each selection becomes a new copy.</value>
+  </data>
+  <data name="Shell.ChooseRestoreNotebooks" xml:space="preserve">
+    <value>Choose notebooks to restore</value>
+  </data>
+  <data name="Shell.ChooseRestoreRegion" xml:space="preserve">
+    <value>Choose the area to restore</value>
+  </data>
+  <data name="Shell.Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Shell.ClearSearch" xml:space="preserve">
+    <value>Clear search</value>
+  </data>
+  <data name="Shell.ClipboardInkUnsupported" xml:space="preserve">
+    <value>Unsupported clipboard ink.</value>
+  </data>
+  <data name="Shell.ClipboardSelectionUnsupported" xml:space="preserve">
+    <value>Unsupported clipboard selection.</value>
+  </data>
+  <data name="Shell.ClipboardTextTooLong" xml:space="preserve">
+    <value>The text is too long to paste into one box.</value>
+  </data>
+  <data name="Shell.CommandsHelp" xml:space="preserve">
+    <value>Commands &amp; Help</value>
+  </data>
+  <data name="Shell.Contents" xml:space="preserve">
+    <value>Contents</value>
+  </data>
+  <data name="Shell.Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="Shell.ContinueStudy" xml:space="preserve">
+    <value>Continue: {0}</value>
+  </data>
+  <data name="Shell.ContinueText" xml:space="preserve">
+    <value>Continue text on next page</value>
+  </data>
+  <data name="Shell.ContinuousPages" xml:space="preserve">
+    <value>Continuous Notebook Pages</value>
+  </data>
+  <data name="Shell.CopySelection" xml:space="preserve">
+    <value>Copy Selection</value>
+  </data>
+  <data name="Shell.CopyingSelection" xml:space="preserve">
+    <value>Copying selection…</value>
+  </data>
+  <data name="Shell.Coral" xml:space="preserve">
+    <value>Coral</value>
+  </data>
+  <data name="Shell.CreateBackup" xml:space="preserve">
+    <value>Create backup</value>
+  </data>
+  <data name="Shell.CreateFirstNotebook" xml:space="preserve">
+    <value>Create your first notebook</value>
+  </data>
+  <data name="Shell.CreatingEditableBackup" xml:space="preserve">
+    <value>Creating editable backup…</value>
+  </data>
+  <data name="Shell.CreatingQuickNote" xml:space="preserve">
+    <value>Creating a quick note…</value>
+  </data>
+  <data name="Shell.CutSelection" xml:space="preserve">
+    <value>Cut Selection</value>
+  </data>
+  <data name="Shell.CuttingSelection" xml:space="preserve">
+    <value>Cutting selection…</value>
+  </data>
+  <data name="Shell.Cyan" xml:space="preserve">
+    <value>Cyan</value>
+  </data>
+  <data name="Shell.DeleteNotebookMenu" xml:space="preserve">
+    <value>Delete Notebook…</value>
+  </data>
+  <data name="Shell.DeletePage" xml:space="preserve">
+    <value>Delete Page</value>
+  </data>
+  <data name="Shell.DeletePageHint" xml:space="preserve">
+    <value>Delete this page · Undo while open, or restore a notebook copy from Recently deleted within 30 days</value>
+  </data>
+  <data name="Shell.DeletePermanently" xml:space="preserve">
+    <value>Delete permanently…</value>
+  </data>
+  <data name="Shell.DeleteRecoveryCopyConfirm" xml:space="preserve">
+    <value>Permanently remove this recovery copy?</value>
+  </data>
+  <data name="Shell.DeleteRecoveryCopyTitle" xml:space="preserve">
+    <value>Delete recovery copy</value>
+  </data>
+  <data name="Shell.DeleteSection" xml:space="preserve">
+    <value>Delete Section</value>
+  </data>
+  <data name="Shell.DeleteSectionConfirm" xml:space="preserve">
+    <value>Delete "{0}" and its {1} pages?
+
+Undo is available while open. A notebook recovery copy is also kept for 30 days in Backup &amp; recovery.</value>
+  </data>
+  <data name="Shell.DeleteSectionConfirmOne" xml:space="preserve">
+    <value>Delete "{0}" and its {1} page?
+
+Undo is available while open. A notebook recovery copy is also kept for 30 days in Backup &amp; recovery.</value>
+  </data>
+  <data name="Shell.DeleteSectionHint" xml:space="preserve">
+    <value>Delete this section and its pages · Undo available</value>
+  </data>
+  <data name="Shell.DeleteSectionMenu" xml:space="preserve">
+    <value>Delete Section…</value>
+  </data>
+  <data name="Shell.DeletedContentRestored" xml:space="preserve">
+    <value>Deleted content restored as a new notebook</value>
+  </data>
+  <data name="Shell.DeletedRecoveryDescription" xml:space="preserve">
+    <value>Before deleting a notebook, section or pages, Penroam keeps the complete notebook for 30 days. Restore it as a new copy, then move back any pages you need.</value>
+  </data>
+  <data name="Shell.DeletedSnapshotItem" xml:space="preserve">
+    <value>{0} · {1} · {2} pages · {3:g}</value>
+  </data>
+  <data name="Shell.DeletedSnapshotItemOne" xml:space="preserve">
+    <value>{0} · {1} · {2} page · {3:g}</value>
+  </data>
+  <data name="Shell.DeletionNotebook" xml:space="preserve">
+    <value>Notebook deleted</value>
+  </data>
+  <data name="Shell.DeletionOrganizer" xml:space="preserve">
+    <value>Pages deleted in organizer</value>
+  </data>
+  <data name="Shell.DeletionPage" xml:space="preserve">
+    <value>Page deleted</value>
+  </data>
+  <data name="Shell.DeletionSection" xml:space="preserve">
+    <value>Section deleted</value>
+  </data>
+  <data name="Shell.DeletionTransfer" xml:space="preserve">
+    <value>Pages moved to another notebook</value>
+  </data>
+  <data name="Shell.DiscardDraftConfirm" xml:space="preserve">
+    <value>Permanently discard this recovery draft?</value>
+  </data>
+  <data name="Shell.DiscardDraftTitle" xml:space="preserve">
+    <value>Discard draft</value>
+  </data>
+  <data name="Shell.DiscardSelectedDraft" xml:space="preserve">
+    <value>Discard selected…</value>
+  </data>
+  <data name="Shell.DocumentFileFilter" xml:space="preserve">
+    <value>Supported documents|*.pdf;*.docx;*.pptx;*.ppsx;*.odt;*.odp|PDF documents|*.pdf|Word documents|*.docx|PowerPoint presentations|*.pptx;*.ppsx|OpenDocument files|*.odt;*.odp</value>
+  </data>
+  <data name="Shell.Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Shell.DraftKept" xml:space="preserve">
+    <value>Draft kept</value>
+  </data>
+  <data name="Shell.DraftRecovered" xml:space="preserve">
+    <value>Draft recovered as a new notebook</value>
+  </data>
+  <data name="Shell.DraftRecoveryDescription" xml:space="preserve">
+    <value>Pending snapshots may contain edits from an interrupted session. Recovering creates a new notebook so saved notes are never overwritten.</value>
+  </data>
+  <data name="Shell.DraftRecoveryError" xml:space="preserve">
+    <value>
+Draft recovery: {0}</value>
+  </data>
+  <data name="Shell.DrawHold" xml:space="preserve">
+    <value>Draw and Hold</value>
+  </data>
+  <data name="Shell.DrawHoldHint" xml:space="preserve">
+    <value>Pause at the end of a line to straighten it. Keep holding to adjust; lift to finish.</value>
+  </data>
+  <data name="Shell.DuplicatePage" xml:space="preserve">
+    <value>Duplicate Page</value>
+  </data>
+  <data name="Shell.EmptySectionHint" xml:space="preserve">
+    <value>Start this topic with a fresh page.</value>
+  </data>
+  <data name="Shell.EraseHighlighterOnly" xml:space="preserve">
+    <value>Erase highlighter only</value>
+  </data>
+  <data name="Shell.Eraser" xml:space="preserve">
+    <value>Eraser</value>
+  </data>
+  <data name="Shell.EraserChoiceHint" xml:space="preserve">
+    <value>Choose what your eraser removes.</value>
+  </data>
+  <data name="Shell.EraserRememberHint" xml:space="preserve">
+    <value>Press E to use your last eraser mode. Settings are remembered on this device.</value>
+  </data>
+  <data name="Shell.EraserSettings" xml:space="preserve">
+    <value>Eraser Settings</value>
+  </data>
+  <data name="Shell.EraserSize" xml:space="preserve">
+    <value>Eraser Size</value>
+  </data>
+  <data name="Shell.EraserSizeLabel" xml:space="preserve">
+    <value>Eraser size</value>
+  </data>
+  <data name="Shell.ExitFocus" xml:space="preserve">
+    <value>Exit Focus</value>
+  </data>
+  <data name="Shell.ExitFocusHint" xml:space="preserve">
+    <value>Exit Focus Mode (F11 or Esc)</value>
+  </data>
+  <data name="Shell.Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Shell.ExportPdf" xml:space="preserve">
+    <value>Export PDF</value>
+  </data>
+  <data name="Shell.ExportPdfHint" xml:space="preserve">
+    <value>Choose pages to export as a PDF</value>
+  </data>
+  <data name="Shell.ExportPdfPages" xml:space="preserve">
+    <value>Export PDF pages</value>
+  </data>
+  <data name="Shell.ExportPdfPickerTitle" xml:space="preserve">
+    <value>Export {0} pages as PDF</value>
+  </data>
+  <data name="Shell.ExportingPdf" xml:space="preserve">
+    <value>Exporting PDF</value>
+  </data>
+  <data name="Shell.ExtendPageFailed" xml:space="preserve">
+    <value>The page could not be extended. Your original page is unchanged.
+
+{0}</value>
+  </data>
+  <data name="Shell.ExtendPageHint" xml:space="preserve">
+    <value>Add writing space around this page</value>
+  </data>
+  <data name="Shell.ExtendPageMenu" xml:space="preserve">
+    <value>Extend Page…</value>
+  </data>
+  <data name="Shell.ExtendPageTitle" xml:space="preserve">
+    <value>Extend page</value>
+  </data>
+  <data name="Shell.FindContent" xml:space="preserve">
+    <value>Find content</value>
+  </data>
+  <data name="Shell.FindNotebook" xml:space="preserve">
+    <value>Find notebook</value>
+  </data>
+  <data name="Shell.FitPage" xml:space="preserve">
+    <value>Fit Page</value>
+  </data>
+  <data name="Shell.FitPageHint" xml:space="preserve">
+    <value>Show the whole page</value>
+  </data>
+  <data name="Shell.FitSpread" xml:space="preserve">
+    <value>Fit Spread</value>
+  </data>
+  <data name="Shell.FitSpreadHint" xml:space="preserve">
+    <value>Show the whole two-page spread</value>
+  </data>
+  <data name="Shell.FitSpreadWidthHint" xml:space="preserve">
+    <value>Fit both pages to the available writing area</value>
+  </data>
+  <data name="Shell.FitWidth" xml:space="preserve">
+    <value>Fit Width</value>
+  </data>
+  <data name="Shell.FitWidthHint" xml:space="preserve">
+    <value>Fit the paper to the available writing area</value>
+  </data>
+  <data name="Shell.FocusAddPage" xml:space="preserve">
+    <value>Focus Add Page</value>
+  </data>
+  <data name="Shell.FocusAddPageHint" xml:space="preserve">
+    <value>Add a page after the current page</value>
+  </data>
+  <data name="Shell.FocusEraser" xml:space="preserve">
+    <value>Focus Eraser</value>
+  </data>
+  <data name="Shell.FocusEraserHint" xml:space="preserve">
+    <value>Eraser (E); click to choose an eraser mode</value>
+  </data>
+  <data name="Shell.FocusHighlighter" xml:space="preserve">
+    <value>Focus Highlighter</value>
+  </data>
+  <data name="Shell.FocusLasso" xml:space="preserve">
+    <value>Focus Lasso</value>
+  </data>
+  <data name="Shell.FocusLassoHint" xml:space="preserve">
+    <value>Lasso (L)</value>
+  </data>
+  <data name="Shell.FocusMode" xml:space="preserve">
+    <value>Focus Mode</value>
+  </data>
+  <data name="Shell.FocusModeHint" xml:space="preserve">
+    <value>Focus Mode (F11)</value>
+  </data>
+  <data name="Shell.FocusPen" xml:space="preserve">
+    <value>Focus Pen</value>
+  </data>
+  <data name="Shell.FocusPenHint" xml:space="preserve">
+    <value>Pen (B)</value>
+  </data>
+  <data name="Shell.FocusPenSettings" xml:space="preserve">
+    <value>Focus Pen Settings</value>
+  </data>
+  <data name="Shell.FocusRedo" xml:space="preserve">
+    <value>Focus Redo</value>
+  </data>
+  <data name="Shell.FocusSelect" xml:space="preserve">
+    <value>Focus Select</value>
+  </data>
+  <data name="Shell.FocusSelectHint" xml:space="preserve">
+    <value>Select objects (V)</value>
+  </data>
+  <data name="Shell.FocusType" xml:space="preserve">
+    <value>Focus Type</value>
+  </data>
+  <data name="Shell.FocusTypeHint" xml:space="preserve">
+    <value>Type (T)</value>
+  </data>
+  <data name="Shell.FocusUndo" xml:space="preserve">
+    <value>Focus Undo</value>
+  </data>
+  <data name="Shell.FocusWritingTools" xml:space="preserve">
+    <value>Focus Writing Tools</value>
+  </data>
+  <data name="Shell.FolderImportCanceled" xml:space="preserve">
+    <value>Folder import canceled · No notebook was created</value>
+  </data>
+  <data name="Shell.FolderImportComplete" xml:space="preserve">
+    <value>Imported files: {0} · Pages: {1}</value>
+  </data>
+  <data name="Shell.FolderImportCompleteFailed" xml:space="preserve">
+    <value>Imported files: {0} · Pages: {1} · Failed: {2}</value>
+  </data>
+  <data name="Shell.FolderImportCompletePartial" xml:space="preserve">
+    <value>Imported files: {0} · Pages: {1} · Failed: {2} · Skipped: {3}</value>
+  </data>
+  <data name="Shell.FolderImportCompleteSkipped" xml:space="preserve">
+    <value>Imported files: {0} · Pages: {1} · Skipped: {3}</value>
+  </data>
+  <data name="Shell.FolderImportEmpty" xml:space="preserve">
+    <value>No documents imported · No notebook was created</value>
+  </data>
+  <data name="Shell.FolderImportErrorTitle" xml:space="preserve">
+    <value>Unable to import folder</value>
+  </data>
+  <data name="Shell.FolderImportFailed" xml:space="preserve">
+    <value>Folder import failed · No notebook was created</value>
+  </data>
+  <data name="Shell.FolderImportNotSaved" xml:space="preserve">
+    <value>Folder import not saved · No notebook was created</value>
+  </data>
+  <data name="Shell.FolderImportSaveErrorTitle" xml:space="preserve">
+    <value>Unable to save imported notebook</value>
+  </data>
+  <data name="Shell.FolderImportSavedError" xml:space="preserve">
+    <value>The imported notebook is already saved in your library. Do not import the folder again to retry opening it.
+
+{0}</value>
+  </data>
+  <data name="Shell.FolderImportUnsavedError" xml:space="preserve">
+    <value>No notebook was created.
+
+{0}</value>
+  </data>
+  <data name="Shell.FontFamily" xml:space="preserve">
+    <value>Font family</value>
+  </data>
+  <data name="Shell.GoToPageHint" xml:space="preserve">
+    <value>Go to page (Ctrl+G)</value>
+  </data>
+  <data name="Shell.Green" xml:space="preserve">
+    <value>Green</value>
+  </data>
+  <data name="Shell.Guard" xml:space="preserve">
+    <value>Guard</value>
+  </data>
+  <data name="Shell.GuardSettings" xml:space="preserve">
+    <value>Writing guard settings</value>
+  </data>
+  <data name="Shell.Highlighter" xml:space="preserve">
+    <value>Highlighter</value>
+  </data>
+  <data name="Shell.HighlighterHint" xml:space="preserve">
+    <value>Highlighter (H)</value>
+  </data>
+  <data name="Shell.HomeSearchHint" xml:space="preserve">
+    <value>Search by title or category (Ctrl+F)</value>
+  </data>
+  <data name="Shell.ImportDestinationChanged" xml:space="preserve">
+    <value>The destination notebook changed. Please import again.</value>
+  </data>
+  <data name="Shell.ImportDocumentHint" xml:space="preserve">
+    <value>PDF, Word and PowerPoint · Office files need a local converter</value>
+  </data>
+  <data name="Shell.ImportDocumentMenu" xml:space="preserve">
+    <value>Import Document…</value>
+  </data>
+  <data name="Shell.ImportDocumentPages" xml:space="preserve">
+    <value>Import document pages</value>
+  </data>
+  <data name="Shell.ImportFolder" xml:space="preserve">
+    <value>Import Folder</value>
+  </data>
+  <data name="Shell.ImportFolderHint" xml:space="preserve">
+    <value>Create a notebook from the PDFs and PPTX files in a folder. You can also drop a folder here.</value>
+  </data>
+  <data name="Shell.ImportFolderShort" xml:space="preserve">
+    <value>Import folder</value>
+  </data>
+  <data name="Shell.ImportedOnePage" xml:space="preserve">
+    <value>Imported {0} page</value>
+  </data>
+  <data name="Shell.ImportedOpenFailed" xml:space="preserve">
+    <value>The imported notebook was saved · Could not finish opening it</value>
+  </data>
+  <data name="Shell.ImportedOpenInterrupted" xml:space="preserve">
+    <value>The imported notebook was saved · Opening was interrupted</value>
+  </data>
+  <data name="Shell.ImportedPages" xml:space="preserve">
+    <value>Imported {0} pages</value>
+  </data>
+  <data name="Shell.ImportingFolder" xml:space="preserve">
+    <value>Importing folder…</value>
+  </data>
+  <data name="Shell.ImportingSelectedPages" xml:space="preserve">
+    <value>Importing selected pages</value>
+  </data>
+  <data name="Shell.InkBlack" xml:space="preserve">
+    <value>Ink Black</value>
+  </data>
+  <data name="Shell.InkColor" xml:space="preserve">
+    <value>Ink Color</value>
+  </data>
+  <data name="Shell.Insert" xml:space="preserve">
+    <value>Insert</value>
+  </data>
+  <data name="Shell.InsertHint" xml:space="preserve">
+    <value>Add a page, import a document or insert an image</value>
+  </data>
+  <data name="Shell.InsertImageMenu" xml:space="preserve">
+    <value>Insert Image…</value>
+  </data>
+  <data name="Shell.InspectingBackup" xml:space="preserve">
+    <value>Inspecting backup…</value>
+  </data>
+  <data name="Shell.InterruptedDrafts" xml:space="preserve">
+    <value>Interrupted drafts ({0})</value>
+  </data>
+  <data name="Shell.InvalidTextSize" xml:space="preserve">
+    <value>Enter a text size from 6 to 96 pt.</value>
+  </data>
+  <data name="Shell.ItalicHint" xml:space="preserve">
+    <value>Italic entire text box (Ctrl+I)</value>
+  </data>
+  <data name="Shell.ItalicOff" xml:space="preserve">
+    <value>Italic is off</value>
+  </data>
+  <data name="Shell.ItalicOn" xml:space="preserve">
+    <value>Italic is on</value>
+  </data>
+  <data name="Shell.ItalicText" xml:space="preserve">
+    <value>Italic Text</value>
+  </data>
+  <data name="Shell.KeepOneSectionDescription" xml:space="preserve">
+    <value>Keep at least one section in your notebook. You can rename this section or delete individual pages.</value>
+  </data>
+  <data name="Shell.KeepOneSectionHint" xml:space="preserve">
+    <value>Keep at least one section in your notebook</value>
+  </data>
+  <data name="Shell.KeepSavedNotebookClose" xml:space="preserve">
+    <value>Keep saved notebook and close</value>
+  </data>
+  <data name="Shell.KeepingRecoveryCopy" xml:space="preserve">
+    <value>Keeping a recovery copy…</value>
+  </data>
+  <data name="Shell.Lasso" xml:space="preserve">
+    <value>Lasso</value>
+  </data>
+  <data name="Shell.LassoClipboardHint" xml:space="preserve">
+    <value>Lasso (L); right-click for Copy, Cut and Paste</value>
+  </data>
+  <data name="Shell.LastAutomaticBackup" xml:space="preserve">
+    <value>Last automatic backup: {0}</value>
+  </data>
+  <data name="Shell.LibraryCreateHint" xml:space="preserve">
+    <value>Create a notebook, or drop a folder of PDFs and PPTX files.</value>
+  </data>
+  <data name="Shell.LibraryFooter" xml:space="preserve">
+    <value>On your device. Ready when you are.</value>
+  </data>
+  <data name="Shell.LibraryOptions" xml:space="preserve">
+    <value>Library Options</value>
+  </data>
+  <data name="Shell.LibraryOptionsHint" xml:space="preserve">
+    <value>Library options</value>
+  </data>
+  <data name="Shell.Logo" xml:space="preserve">
+    <value>Penroam logo</value>
+  </data>
+  <data name="Shell.ManagePagesMenu" xml:space="preserve">
+    <value>Manage Pages…</value>
+  </data>
+  <data name="Shell.ManagePens" xml:space="preserve">
+    <value>Manage pens</value>
+  </data>
+  <data name="Shell.ManagePensHint" xml:space="preserve">
+    <value>Save, rename, reorder or hide favourite pens</value>
+  </data>
+  <data name="Shell.ManagePensMenu" xml:space="preserve">
+    <value>Manage Pens…</value>
+  </data>
+  <data name="Shell.ManagePresets" xml:space="preserve">
+    <value>Manage Pen Presets</value>
+  </data>
+  <data name="Shell.MarkQuestionMenu" xml:space="preserve">
+    <value>Mark a Question…</value>
+  </data>
+  <data name="Shell.MarkQuestionSource" xml:space="preserve">
+    <value>Mark the question source</value>
+  </data>
+  <data name="Shell.More" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="Shell.MoreColors" xml:space="preserve">
+    <value>More Colors…</value>
+  </data>
+  <data name="Shell.MovePageDown" xml:space="preserve">
+    <value>Move Page Down</value>
+  </data>
+  <data name="Shell.MovePageToSection" xml:space="preserve">
+    <value>Move Page to Section</value>
+  </data>
+  <data name="Shell.MovePageUp" xml:space="preserve">
+    <value>Move Page Up</value>
+  </data>
+  <data name="Shell.MoveSectionDown" xml:space="preserve">
+    <value>Move Section Down</value>
+  </data>
+  <data name="Shell.MoveSectionUp" xml:space="preserve">
+    <value>Move Section Up</value>
+  </data>
+  <data name="Shell.MyNotebooks" xml:space="preserve">
+    <value>My notebooks</value>
+  </data>
+  <data name="Shell.NameLabel" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Shell.NamePracticeQuestion" xml:space="preserve">
+    <value>Name this question</value>
+  </data>
+  <data name="Shell.NamedImportedNotebookSaved" xml:space="preserve">
+    <value>"{0}" was saved · Could not finish opening it</value>
+  </data>
+  <data name="Shell.NeverBackedUp" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="Shell.NewNotebook" xml:space="preserve">
+    <value>New Notebook</value>
+  </data>
+  <data name="Shell.NewNotebookShort" xml:space="preserve">
+    <value>New notebook</value>
+  </data>
+  <data name="Shell.NewPracticeMenu" xml:space="preserve">
+    <value>New Practice Attempt…</value>
+  </data>
+  <data name="Shell.NoCompatibleRegionHistory" xml:space="preserve">
+    <value>No earlier version with the same page size and background. History is kept while this notebook stays open.</value>
+  </data>
+  <data name="Shell.NoFavoritePens" xml:space="preserve">
+    <value>Add favorites in Manage pens</value>
+  </data>
+  <data name="Shell.NoMatchingNotebooks" xml:space="preserve">
+    <value>No matching notebooks</value>
+  </data>
+  <data name="Shell.NoPreviousLocation" xml:space="preserve">
+    <value>No earlier search or quick-note location.</value>
+  </data>
+  <data name="Shell.NoTransferToUndo" xml:space="preserve">
+    <value>No page transfer is available to undo in this session.</value>
+  </data>
+  <data name="Shell.NotebookOptions" xml:space="preserve">
+    <value>Notebook options</value>
+  </data>
+  <data name="Shell.NotebookOptionsName" xml:space="preserve">
+    <value>Options for {0}</value>
+  </data>
+  <data name="Shell.NotebookSaved" xml:space="preserve">
+    <value>Notebook saved</value>
+  </data>
+  <data name="Shell.NotebookSections" xml:space="preserve">
+    <value>Notebook Sections</value>
+  </data>
+  <data name="Shell.Notebooks" xml:space="preserve">
+    <value>Notebooks</value>
+  </data>
+  <data name="Shell.NotebooksRestored" xml:space="preserve">
+    <value>Restored {0} notebook(s) as new copies</value>
+  </data>
+  <data name="Shell.NumberedList" xml:space="preserve">
+    <value>Numbered List</value>
+  </data>
+  <data name="Shell.NumberedListHint" xml:space="preserve">
+    <value>Toggle numbering on selected lines</value>
+  </data>
+  <data name="Shell.NumberedListShort" xml:space="preserve">
+    <value>1. List</value>
+  </data>
+  <data name="Shell.OfflineWorkspace" xml:space="preserve">
+    <value>Your offline workspace</value>
+  </data>
+  <data name="Shell.OpenNotebook" xml:space="preserve">
+    <value>Open Notebook</value>
+  </data>
+  <data name="Shell.OpenNotebooksHint" xml:space="preserve">
+    <value>Open your notebooks</value>
+  </data>
+  <data name="Shell.OpeningImportedNotebook" xml:space="preserve">
+    <value>Opening imported notebook…</value>
+  </data>
+  <data name="Shell.OpeningPage" xml:space="preserve">
+    <value>Opening page…</value>
+  </data>
+  <data name="Shell.OpeningPracticeQuestion" xml:space="preserve">
+    <value>Opening the saved question…</value>
+  </data>
+  <data name="Shell.OperationCanceled" xml:space="preserve">
+    <value>Operation canceled · Your notebook is unchanged</value>
+  </data>
+  <data name="Shell.OperationFailedTitle" xml:space="preserve">
+    <value>Unable to complete the operation</value>
+  </data>
+  <data name="Shell.Orange" xml:space="preserve">
+    <value>Orange</value>
+  </data>
+  <data name="Shell.OrganizingPages" xml:space="preserve">
+    <value>Organizing pages…</value>
+  </data>
+  <data name="Shell.PageContextHint" xml:space="preserve">
+    <value>Right-click for page actions · Shift+F10 with keyboard</value>
+  </data>
+  <data name="Shell.PageCount" xml:space="preserve">
+    <value>{0} pages</value>
+  </data>
+  <data name="Shell.PageHeading" xml:space="preserve">
+    <value>Page {0}</value>
+  </data>
+  <data name="Shell.PageThumbnails" xml:space="preserve">
+    <value>Page Thumbnails</value>
+  </data>
+  <data name="Shell.PageUnavailable" xml:space="preserve">
+    <value>This page is no longer available. Search again to see current results.</value>
+  </data>
+  <data name="Shell.PagesTransferred" xml:space="preserve">
+    <value>Pages transferred · Undo Last Page Transfer is available in More.</value>
+  </data>
+  <data name="Shell.PaperStyleMenu" xml:space="preserve">
+    <value>Paper Style…</value>
+  </data>
+  <data name="Shell.Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="Shell.PasteFailed" xml:space="preserve">
+    <value>Unable to paste: {0}</value>
+  </data>
+  <data name="Shell.PastingSelection" xml:space="preserve">
+    <value>Pasting selection…</value>
+  </data>
+  <data name="Shell.PdfExported" xml:space="preserve">
+    <value>PDF exported · {0} pages · {1}</value>
+  </data>
+  <data name="Shell.PdfFileFilter" xml:space="preserve">
+    <value>PDF documents|*.pdf</value>
+  </data>
+  <data name="Shell.PdfPaginationUnavailable" xml:space="preserve">
+    <value>A4 pagination is unavailable for this PDF provider.</value>
+  </data>
+  <data name="Shell.Pen" xml:space="preserve">
+    <value>Pen</value>
+  </data>
+  <data name="Shell.PenPresets" xml:space="preserve">
+    <value>Pen Presets</value>
+  </data>
+  <data name="Shell.PenPressureHint" xml:space="preserve">
+    <value>Pressure-sensitive pen (B)</value>
+  </data>
+  <data name="Shell.PenSettings" xml:space="preserve">
+    <value>Pen Settings</value>
+  </data>
+  <data name="Shell.PenSettingsHint" xml:space="preserve">
+    <value>Pen Settings: color and thickness</value>
+  </data>
+  <data name="Shell.Pinned" xml:space="preserve">
+    <value>Pinned</value>
+  </data>
+  <data name="Shell.PixelEraser" xml:space="preserve">
+    <value>Pixel Eraser</value>
+  </data>
+  <data name="Shell.PixelEraserDetail" xml:space="preserve">
+    <value>Erase the part you touch. The rest of the stroke stays.</value>
+  </data>
+  <data name="Shell.PixelEraserDetailHint" xml:space="preserve">
+    <value>Erase only the touched part and keep the remaining stroke fragments.</value>
+  </data>
+  <data name="Shell.PixelEraserHint" xml:space="preserve">
+    <value>Pixel Eraser (E); click to choose an eraser mode</value>
+  </data>
+  <data name="Shell.PracticeAttemptsMenu" xml:space="preserve">
+    <value>Practice Attempts…</value>
+  </data>
+  <data name="Shell.PracticeEmptyHint" xml:space="preserve">
+    <value>Use New practice attempt to capture a question and begin.</value>
+  </data>
+  <data name="Shell.PracticeReady" xml:space="preserve">
+    <value>New attempt ready · The question is a saved snapshot · Your earlier working is kept</value>
+  </data>
+  <data name="Shell.PracticeSourceMissing" xml:space="preserve">
+    <value>The original page is no longer in this notebook. The saved question and all attempts are still available.</value>
+  </data>
+  <data name="Shell.PreparingDocumentPreview" xml:space="preserve">
+    <value>Preparing document preview</value>
+  </data>
+  <data name="Shell.PreparingEarlierPage" xml:space="preserve">
+    <value>Preparing earlier page…</value>
+  </data>
+  <data name="Shell.PreparingFolderImport" xml:space="preserve">
+    <value>Preparing folder import</value>
+  </data>
+  <data name="Shell.PreparingPagePreview" xml:space="preserve">
+    <value>Preparing page preview…</value>
+  </data>
+  <data name="Shell.PreparingPracticeQuestion" xml:space="preserve">
+    <value>Preparing the question…</value>
+  </data>
+  <data name="Shell.PreparingQuestionSource" xml:space="preserve">
+    <value>Preparing question source…</value>
+  </data>
+  <data name="Shell.PresetLimit" xml:space="preserve">
+    <value>You can keep up to 40 presets. Remove one in Presets first.</value>
+  </data>
+  <data name="Shell.PresetName" xml:space="preserve">
+    <value>Preset {0}: {1}</value>
+  </data>
+  <data name="Shell.PresetTooltip" xml:space="preserve">
+    <value>{0} · {1:0.##} mm ({2})
+Drag to reorder. Use Manage pens to edit or hide.</value>
+  </data>
+  <data name="Shell.PreviousPage" xml:space="preserve">
+    <value>Back to Previous Page</value>
+  </data>
+  <data name="Shell.Purple" xml:space="preserve">
+    <value>Purple</value>
+  </data>
+  <data name="Shell.Question" xml:space="preserve">
+    <value>Question</value>
+  </data>
+  <data name="Shell.QuestionAdded" xml:space="preserve">
+    <value>Question added. Open Question inbox to keep its explanation and next attempt.</value>
+  </data>
+  <data name="Shell.QuestionInboxMenu" xml:space="preserve">
+    <value>Question Inbox…</value>
+  </data>
+  <data name="Shell.QuickNote" xml:space="preserve">
+    <value>Quick note</value>
+  </data>
+  <data name="Shell.QuickNoteMenu" xml:space="preserve">
+    <value>Quick Note</value>
+  </data>
+  <data name="Shell.ReadingBackupNotebook" xml:space="preserve">
+    <value>Reading notebook {0} of {1}…</value>
+  </data>
+  <data name="Shell.RecentlyDeleted" xml:space="preserve">
+    <value>Recently deleted ({0})</value>
+  </data>
+  <data name="Shell.RecoverDraftAsCopy" xml:space="preserve">
+    <value>Recover selected as copy</value>
+  </data>
+  <data name="Shell.RecoverDraftCount" xml:space="preserve">
+    <value>Recover drafts ({0})</value>
+  </data>
+  <data name="Shell.RecoverDrafts" xml:space="preserve">
+    <value>Recover drafts</value>
+  </data>
+  <data name="Shell.RecoveringDraft" xml:space="preserve">
+    <value>Recovering draft…</value>
+  </data>
+  <data name="Shell.RecoveryDraftItem" xml:space="preserve">
+    <value>{0} · {1:g}</value>
+  </data>
+  <data name="Shell.Red" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Shell.Redo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="Shell.RedoHint" xml:space="preserve">
+    <value>Redo (Ctrl+Y)</value>
+  </data>
+  <data name="Shell.ReferenceViewMenu" xml:space="preserve">
+    <value>Reference View…</value>
+  </data>
+  <data name="Shell.RegionRestoreFailed" xml:space="preserve">
+    <value>The area could not be restored: {0}</value>
+  </data>
+  <data name="Shell.RegionRestored" xml:space="preserve">
+    <value>Area restored · Other parts of the page kept · Undo is available</value>
+  </data>
+  <data name="Shell.RegionUnchanged" xml:space="preserve">
+    <value>This area already matches that version.</value>
+  </data>
+  <data name="Shell.RemoveBookmark" xml:space="preserve">
+    <value>Remove Bookmark</value>
+  </data>
+  <data name="Shell.RenameCategoryHint" xml:space="preserve">
+    <value>Rename and change category</value>
+  </data>
+  <data name="Shell.RenameCategoryMenu" xml:space="preserve">
+    <value>Rename and Category…</value>
+  </data>
+  <data name="Shell.RenamePageMenu" xml:space="preserve">
+    <value>Rename Page…</value>
+  </data>
+  <data name="Shell.RenameSection" xml:space="preserve">
+    <value>Rename Section</value>
+  </data>
+  <data name="Shell.RenameSectionMenu" xml:space="preserve">
+    <value>Rename Section…</value>
+  </data>
+  <data name="Shell.RepeatPracticeReady" xml:space="preserve">
+    <value>Another attempt ready · Earlier working and reflections kept</value>
+  </data>
+  <data name="Shell.RestoreBackup" xml:space="preserve">
+    <value>Restore backup</value>
+  </data>
+  <data name="Shell.RestoreBackupAction" xml:space="preserve">
+    <value>Restore a backup…</value>
+  </data>
+  <data name="Shell.RestoreBackupMenu" xml:space="preserve">
+    <value>Restore .moye Backup…</value>
+  </data>
+  <data name="Shell.RestoreDeletedAsCopy" xml:space="preserve">
+    <value>Restore selected as copy</value>
+  </data>
+  <data name="Shell.RestoreNotebookChoice" xml:space="preserve">
+    <value>{0} · {1} pages</value>
+  </data>
+  <data name="Shell.RestoreNotebookChoiceOne" xml:space="preserve">
+    <value>{0} · {1} page</value>
+  </data>
+  <data name="Shell.RestoreRegionMenu" xml:space="preserve">
+    <value>Restore Part of This Page…</value>
+  </data>
+  <data name="Shell.RestoreSelected" xml:space="preserve">
+    <value>Restore selected</value>
+  </data>
+  <data name="Shell.RestoringDeletedContent" xml:space="preserve">
+    <value>Restoring deleted content…</value>
+  </data>
+  <data name="Shell.ResumeHintMenu" xml:space="preserve">
+    <value>Leave a Resume Hint…</value>
+  </data>
+  <data name="Shell.ResumeNoteCleared" xml:space="preserve">
+    <value>Resume note cleared.</value>
+  </data>
+  <data name="Shell.ResumeNoteSaved" xml:space="preserve">
+    <value>Next step saved. Open Resume notes when you return.</value>
+  </data>
+  <data name="Shell.ResumeThinking" xml:space="preserve">
+    <value>Resume my thinking</value>
+  </data>
+  <data name="Shell.ResumeThinkingMenu" xml:space="preserve">
+    <value>Resume My Thinking…</value>
+  </data>
+  <data name="Shell.RetryFolderOpenDescription" xml:space="preserve">
+    <value>Your imported notebook is already saved in the library, but it could not be opened. Retry Open uses that same notebook; it does not import another copy.
+
+{0}</value>
+  </data>
+  <data name="Shell.RetryFolderSaveDescription" xml:space="preserve">
+    <value>The imported notebook has not been saved. Your existing notebook and any pending changes are kept. Retry Save uses the prepared files; Cancel discards this import.
+
+{0}</value>
+  </data>
+  <data name="Shell.RetryOpen" xml:space="preserve">
+    <value>Retry Open</value>
+  </data>
+  <data name="Shell.RetryOpenSavedNotebook" xml:space="preserve">
+    <value>Retry opening saved notebook</value>
+  </data>
+  <data name="Shell.RetrySave" xml:space="preserve">
+    <value>Retry Save</value>
+  </data>
+  <data name="Shell.RetrySaveImportedNotebook" xml:space="preserve">
+    <value>Retry saving imported notebook</value>
+  </data>
+  <data name="Shell.SafetyCenter" xml:space="preserve">
+    <value>Backup &amp; recovery</value>
+  </data>
+  <data name="Shell.SafetyCenterMenu" xml:space="preserve">
+    <value>Backup &amp; Recovery…</value>
+  </data>
+  <data name="Shell.SafetyItemLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="Shell.SafetySummary" xml:space="preserve">
+    <value>{0}
+{1}{2}</value>
+  </data>
+  <data name="Shell.SaveCurrentPreset" xml:space="preserve">
+    <value>Save Current as Preset…</value>
+  </data>
+  <data name="Shell.SavePenPreset" xml:space="preserve">
+    <value>Save Pen Preset</value>
+  </data>
+  <data name="Shell.Saved" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="Shell.SavingImportedNotebook" xml:space="preserve">
+    <value>Saving imported notebook</value>
+  </data>
+  <data name="Shell.SavingImportedPages" xml:space="preserve">
+    <value>Saving imported pages…</value>
+  </data>
+  <data name="Shell.SavingPracticeQuestion" xml:space="preserve">
+    <value>Saving the question…</value>
+  </data>
+  <data name="Shell.SearchContentsMenu" xml:space="preserve">
+    <value>Search Contents…</value>
+  </data>
+  <data name="Shell.SearchNotebooks" xml:space="preserve">
+    <value>Search notebooks</value>
+  </data>
+  <data name="Shell.SearchTitleCategory" xml:space="preserve">
+    <value>Search by title or category</value>
+  </data>
+  <data name="Shell.SectionContextHint" xml:space="preserve">
+    <value>Right-click for section actions · Shift+F10 with keyboard</value>
+  </data>
+  <data name="Shell.SectionNameLabel" xml:space="preserve">
+    <value>Topic or section name</value>
+  </data>
+  <data name="Shell.SectionOptions" xml:space="preserve">
+    <value>Section Options</value>
+  </data>
+  <data name="Shell.SectionOptionsHint" xml:space="preserve">
+    <value>Section Options · You can also right-click a section</value>
+  </data>
+  <data name="Shell.SectionsHeading" xml:space="preserve">
+    <value>SECTIONS</value>
+  </data>
+  <data name="Shell.Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="Shell.SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="Shell.SelectHint" xml:space="preserve">
+    <value>Move or resize text and images (V)</value>
+  </data>
+  <data name="Shell.SelectPracticeQuestion" xml:space="preserve">
+    <value>Select the question to practise</value>
+  </data>
+  <data name="Shell.SelectionCopied" xml:space="preserve">
+    <value>Selection copied · Paste onto another page with Ctrl+V</value>
+  </data>
+  <data name="Shell.SelectionCut" xml:space="preserve">
+    <value>Selection cut · Paste onto another page with Ctrl+V</value>
+  </data>
+  <data name="Shell.SelectionPasted" xml:space="preserve">
+    <value>Selection pasted</value>
+  </data>
+  <data name="Shell.SettingsWarning" xml:space="preserve">
+    <value>! Settings</value>
+  </data>
+  <data name="Shell.ShowOutputFolderPrompt" xml:space="preserve">
+    <value>The file is ready. Show it in its folder?</value>
+  </data>
+  <data name="Shell.SidebarToggle" xml:space="preserve">
+    <value>Toggle Sidebar</value>
+  </data>
+  <data name="Shell.SidebarToggleHint" xml:space="preserve">
+    <value>Show or hide the sidebar (F9)</value>
+  </data>
+  <data name="Shell.SinglePage" xml:space="preserve">
+    <value>Single Page</value>
+  </data>
+  <data name="Shell.SinglePageCount" xml:space="preserve">
+    <value>{0} page</value>
+  </data>
+  <data name="Shell.SortFilter" xml:space="preserve">
+    <value>Sort &amp; filter</value>
+  </data>
+  <data name="Shell.SortFilterLibraryMenu" xml:space="preserve">
+    <value>Sort &amp; Filter Library…</value>
+  </data>
+  <data name="Shell.StrokeEraser" xml:space="preserve">
+    <value>Stroke Eraser</value>
+  </data>
+  <data name="Shell.StrokeEraserDetail" xml:space="preserve">
+    <value>Touch any part of a stroke to remove the whole stroke.</value>
+  </data>
+  <data name="Shell.StrokeEraserDetailHint" xml:space="preserve">
+    <value>Delete the entire stroke when any part of it is touched.</value>
+  </data>
+  <data name="Shell.StudyQuestionStatus" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="Shell.StudyReviewMenu" xml:space="preserve">
+    <value>Study &amp; Review</value>
+  </data>
+  <data name="Shell.Tagline" xml:space="preserve">
+    <value>Write freely. Keep it yours.</value>
+  </data>
+  <data name="Shell.TextAlignment" xml:space="preserve">
+    <value>Text Alignment</value>
+  </data>
+  <data name="Shell.TextAlignmentHint" xml:space="preserve">
+    <value>Text alignment</value>
+  </data>
+  <data name="Shell.TextAlreadyFits" xml:space="preserve">
+    <value>This text already fits on its page.</value>
+  </data>
+  <data name="Shell.TextBox" xml:space="preserve">
+    <value>Text box</value>
+  </data>
+  <data name="Shell.TextColor" xml:space="preserve">
+    <value>Text Color</value>
+  </data>
+  <data name="Shell.TextColorHint" xml:space="preserve">
+    <value>Text color</value>
+  </data>
+  <data name="Shell.TextContinued" xml:space="preserve">
+    <value>Text continued on a new page · Undo restores the original</value>
+  </data>
+  <data name="Shell.TextFont" xml:space="preserve">
+    <value>Text Font</value>
+  </data>
+  <data name="Shell.TextSize" xml:space="preserve">
+    <value>Text Size</value>
+  </data>
+  <data name="Shell.TextSizeHint" xml:space="preserve">
+    <value>Font size in points (6–96 pt)</value>
+  </data>
+  <data name="Shell.ThumbnailRefreshFailed" xml:space="preserve">
+    <value>Unable to refresh page preview: {0}</value>
+  </data>
+  <data name="Shell.TogglePin" xml:space="preserve">
+    <value>Pin / Unpin</value>
+  </data>
+  <data name="Shell.ToolStatusDefault" xml:space="preserve">
+    <value>Write with your pen · Pan with one finger · Pinch to zoom</value>
+  </data>
+  <data name="Shell.TwoPages" xml:space="preserve">
+    <value>Two Pages</value>
+  </data>
+  <data name="Shell.Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Shell.TypeHint" xml:space="preserve">
+    <value>Type freely on the page (T); ruled paper aligns your lines</value>
+  </data>
+  <data name="Shell.TypingHint" xml:space="preserve">
+    <value>Click anywhere to type freely. Ruled paper aligns your text to the lines. Ctrl+Enter returns to Pen.</value>
+  </data>
+  <data name="Shell.TypingHintInitial" xml:space="preserve">
+    <value>Click anywhere to type freely. Ruled paper aligns your lines. Ctrl+Enter returns to Pen.</value>
+  </data>
+  <data name="Shell.TypingOverflowHint" xml:space="preserve">
+    <value>Text exceeds this page. Continue on a new page to keep all text visible in PDF export.</value>
+  </data>
+  <data name="Shell.Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="Shell.UndoHint" xml:space="preserve">
+    <value>Undo (Ctrl+Z)</value>
+  </data>
+  <data name="Shell.UndoTransfer" xml:space="preserve">
+    <value>Undo Last Page Transfer</value>
+  </data>
+  <data name="Shell.UndoingTransfer" xml:space="preserve">
+    <value>Undoing page transfer…</value>
+  </data>
+  <data name="Shell.UpdateCheckFailed" xml:space="preserve">
+    <value>Could not check GitHub for updates. {0}</value>
+  </data>
+  <data name="Shell.UpdateDownloadFailed" xml:space="preserve">
+    <value>Could not download the update. {0}</value>
+  </data>
+  <data name="Shell.UpdateDownloadTimeout" xml:space="preserve">
+    <value>The update download timed out. Please try again when your connection is stable.</value>
+  </data>
+  <data name="Shell.UpdateWaitForInput" xml:space="preserve">
+    <value>Please finish the current operation or input, then try updating again.</value>
+  </data>
+  <data name="Shell.UpdatesDisabled" xml:space="preserve">
+    <value>Open Penroam from its normal shortcut to check for updates. Isolated test libraries do not run the updater.</value>
+  </data>
+  <data name="Shell.UpdatingAppearance" xml:space="preserve">
+    <value>Updating notebook appearance…</value>
+  </data>
+  <data name="Shell.UpdatingPinnedNotebooks" xml:space="preserve">
+    <value>Updating pinned notebooks…</value>
+  </data>
+  <data name="Shell.ValidateBackup" xml:space="preserve">
+    <value>Validate backup</value>
+  </data>
+  <data name="Shell.VisualSearchMenu" xml:space="preserve">
+    <value>Find by Appearance…</value>
+  </data>
+  <data name="Shell.White" xml:space="preserve">
+    <value>White</value>
+  </data>
+  <data name="Shell.WindowTitle" xml:space="preserve">
+    <value>Penroam · Handwritten Notes</value>
+  </data>
+  <data name="Shell.Workspace" xml:space="preserve">
+    <value>Workspace</value>
+  </data>
+  <data name="Shell.WorkspaceSettingsMenu" xml:space="preserve">
+    <value>Workspace Settings…</value>
+  </data>
+  <data name="Shell.WritingBackupNotebooks" xml:space="preserve">
+    <value>Writing {0} notebook(s) and their attachments…</value>
+  </data>
+  <data name="Shell.WritingReadOnlySessionWarning" xml:space="preserve">
+    <value>Writing settings are read-only. Tool changes apply only to this session. Restart after resolving the settings file.</value>
+  </data>
+  <data name="Shell.WritingSettings" xml:space="preserve">
+    <value>Writing Settings</value>
+  </data>
+  <data name="Shell.WritingSettingsProtected" xml:space="preserve">
+    <value>The writing settings file cannot be overwritten.</value>
+  </data>
+  <data name="Shell.WritingSettingsSaveFailed" xml:space="preserve">
+    <value>Writing settings could not be saved. {0}</value>
+  </data>
+  <data name="Shell.WritingSettingsSaved" xml:space="preserve">
+    <value>Writing settings are saved.</value>
+  </data>
+  <data name="Shell.WritingWarningSessionSuffix" xml:space="preserve">
+    <value>{0} Tool changes apply only to this session. Restart after resolving the settings file.</value>
+  </data>
+  <data name="Shell.Yellow" xml:space="preserve">
+    <value>Yellow</value>
+  </data>
+  <data name="Shell.YourNotebooks" xml:space="preserve">
+    <value>Your notebooks</value>
+  </data>
+  <data name="Shell.ZoomIn" xml:space="preserve">
+    <value>Zoom In</value>
+  </data>
+  <data name="Shell.ZoomOptions" xml:space="preserve">
+    <value>Zoom Options</value>
+  </data>
+  <data name="Shell.ZoomOptionsHint" xml:space="preserve">
+    <value>Zoom and page layout</value>
+  </data>
+  <data name="Shell.ZoomOut" xml:space="preserve">
+    <value>Zoom Out</value>
+  </data>
+</root>

@@ -1,6 +1,8 @@
 using System.IO;
 using System.Text.Json;
 using Moye.Models;
+using Moye.Localization;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Services;
 
@@ -9,7 +11,9 @@ public sealed class WorkspacePreferencesStore(string path)
     private readonly SemaphoreSlim _gate = new(1);
     private bool _read, _blocked;
     public string FilePath { get; } = Path.GetFullPath(path);
-    public string? Warning { get; private set; }
+    private LocalizedMessage? _warning;
+    public string? Warning => _warning?.ToString();
+    public LocalizedMessage? WarningMessage => _warning;
 
     public async Task<WorkspacePreferences> LoadAsync()
     {
@@ -19,8 +23,9 @@ public sealed class WorkspacePreferencesStore(string path)
             _read = true;
             if (!File.Exists(FilePath)) return new();
             var state = JsonSerializer.Deserialize<WorkspacePreferences>(await File.ReadAllTextAsync(FilePath), DocumentJson.Options)
-                ?? throw new JsonException("No workspace settings were found.");
-            if (state.Version != 1) throw new NotSupportedException($"Workspace settings version {state.Version} is not supported.");
+                ?? throw new JsonException(L.Text("Core.WorkspaceMissing"));
+            if (state.Version != 1) throw new NotSupportedException(L.Text("Core.WorkspaceVersionUnsupported", state.Version));
+            state.UiLanguage = L.NormalizeLanguage(state.UiLanguage);
             state.ReadingPositions ??= [];
             state.ReadingPositions = state.ReadingPositions.Where(item => !string.IsNullOrWhiteSpace(item.Key) && item.Value is not null).ToDictionary(item => item.Key, item => item.Value);
             state.LastNotebookId ??= ""; state.BackupDirectory ??= ""; state.LastBackupError ??= "";
@@ -31,7 +36,7 @@ public sealed class WorkspacePreferencesStore(string path)
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or NotSupportedException)
         {
             _blocked = true;
-            Warning = "Workspace settings could not be loaded. The existing file has been kept; changes apply to this session only. " + ex.Message;
+            _warning = L.M("Core.WorkspaceLoadFailed", ex.Message);
             return new();
         }
         finally { _gate.Release(); }
@@ -44,7 +49,7 @@ public sealed class WorkspacePreferencesStore(string path)
         await _gate.WaitAsync();
         try
         {
-            if (!_read || _blocked) throw new IOException(Warning ?? "Load workspace settings before saving them.");
+            if (!_read || _blocked) throw new IOException(Warning ?? L.Text("Core.WorkspaceReadFirst"));
             await AtomicLocalFile.WriteAsync(FilePath, bytes);
         }
         finally { _gate.Release(); }

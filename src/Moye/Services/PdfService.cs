@@ -12,6 +12,7 @@ using PdfSharp.Pdf;
 using PdfSharp.Pdf.Advanced;
 using PdfSharp.Pdf.IO;
 using Windows.Storage.Streams;
+using L = Moye.Localization.LocalizationService;
 using NativePdf = Windows.Data.Pdf.PdfDocument;
 using NativePage = Windows.Data.Pdf.PdfPage;
 
@@ -33,27 +34,27 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
 
     public async Task<IReadOnlyList<NotePage>> ImportAsync(string path, IProgress<DocumentProgress>? progress, CancellationToken cancellationToken = default)
     {
-        progress?.Report(new("Reading PDF…"));
+        progress?.Report(new(L.M("Messages.Progress.ReadPdf")));
         var bytes = await File.ReadAllBytesAsync(path, cancellationToken);
-        if (bytes.Length == 0) throw new InvalidDataException("The PDF file is empty.");
+        if (bytes.Length == 0) throw new InvalidDataException(L.Text("Messages.Pdf.EmptyFile"));
         // Validate both readers before storing an asset or adding notebook pages.
         var metadata = await RunStaAsync(() => ReadMetadata(bytes), cancellationToken);
         using var input = await NativeStreamAsync(bytes, cancellationToken);
         NativePdf native;
         try { native = await NativePdf.LoadFromStreamAsync(input).AsTask(cancellationToken); }
         catch (Exception ex) when (ex is not OperationCanceledException)
-        { throw new InvalidDataException("Windows could not open this PDF. Save it as a standard, unencrypted PDF and try again.", ex); }
-        if (native.PageCount != metadata.Count) throw new InvalidDataException("The PDF readers reported different page counts. The file was not imported.");
+        { throw new InvalidDataException(L.Text("Messages.Pdf.WindowsOpenFailed"), ex); }
+        if (native.PageCount != metadata.Count) throw new InvalidDataException(L.Text("Messages.Pdf.PageCountMismatch"));
         for (uint index = 0; index < native.PageCount; index++)
         {
-            progress?.Report(new($"Validating page {index + 1} of {native.PageCount}…", (int)index, (int)native.PageCount));
+            progress?.Report(new(L.M("Messages.Progress.ValidatePdfPage", index + 1, native.PageCount), (int)index, (int)native.PageCount));
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
                 using var page = native.GetPage(index);
                 var size = page.Size;
                 if (!ValidDimension(size.Width) || !ValidDimension(size.Height))
-                    throw new InvalidDataException("The page has an unsupported size.");
+                    throw new InvalidDataException(L.Text("Messages.Pdf.UnsupportedPageSize"));
                 metadata[(int)index].Width = size.Width;
                 metadata[(int)index].Height = size.Height;
                 await page.PreparePageAsync().AsTask(cancellationToken);
@@ -70,14 +71,13 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                throw new InvalidDataException($"Unable to read PDF page {index + 1}. The file was not imported. " +
-                    "Try saving a fresh PDF copy from the source application.", ex);
+                throw new InvalidDataException(L.Text("Messages.Pdf.PageReadFailed", index + 1), ex);
             }
         }
         cancellationToken.ThrowIfCancellationRequested();
         var asset = await repository.PutAssetAsync(Path.GetFileName(path), "application/pdf", bytes);
         foreach (var page in metadata) page.Pdf!.AssetId = asset.Id;
-        progress?.Report(new("PDF ready", metadata.Count, metadata.Count));
+        progress?.Report(new(L.M("Messages.Progress.PdfReady"), metadata.Count, metadata.Count));
         return metadata;
     }
 
@@ -119,7 +119,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                 using var input = await NativeStreamAsync(asset.Bytes, cancellationToken);
                 var document = await NativePdf.LoadFromStreamAsync(input).AsTask(cancellationToken);
                 if (page.Pdf.PageIndex < 0 || page.Pdf.PageIndex >= document.PageCount)
-                    throw new InvalidDataException("The original PDF page could not be found.");
+                    throw new InvalidDataException(L.Text("Messages.Pdf.OriginalPageMissing"));
                 using var nativePage = document.GetPage((uint)page.Pdf.PageIndex);
                 bitmap = await RenderNativePageAsync(nativePage, width, height, cancellationToken);
             }
@@ -147,9 +147,9 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
     {
         var snapshot = document.Snapshot();
         var tiles = PdfExportPagination.Plan(snapshot.Pages, options);
-        if (snapshot.Pages.Count == 0) throw new InvalidOperationException("Add a page to the notebook first.");
+        if (snapshot.Pages.Count == 0) throw new InvalidOperationException(L.Text("Messages.Export.AddPageFirst"));
         var assets = new Dictionary<string, AssetData>();
-        progress?.Report(new("Loading export attachments…"));
+        progress?.Report(new(L.M("Messages.Progress.LoadExportAttachments")));
         foreach (var id in snapshot.Pages.SelectMany(p => p.Images.Select(i => i.AssetId)
                      .Concat(p.Pdf is null ? [] : new[] { p.Pdf.AssetId })).Distinct())
         {
@@ -158,7 +158,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
         }
         var destination = Path.GetFullPath(path);
         var directory = Path.GetDirectoryName(destination)!;
-        if (!Directory.Exists(directory)) throw new DirectoryNotFoundException("The export folder does not exist.");
+        if (!Directory.Exists(directory)) throw new DirectoryNotFoundException(L.Text("Messages.Export.FolderMissing"));
         var temporary = Path.Combine(directory, $".{Path.GetFileName(destination)}.{Guid.NewGuid():N}.tmp");
         try
         {
@@ -177,7 +177,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                     using var pageDocument = options.Layout == PdfExportLayout.A4Tiles ? new PdfDocument() : null;
                     var canvasDocument = pageDocument ?? result;
                     canvasDocument.Options.CompressContentStreams = false;
-                    progress?.Report(new($"Exporting page {sourceIndex + 1} of {snapshot.Pages.Count}…", completed, tiles.Count));
+                    progress?.Report(new(L.M("Messages.Progress.ExportPage", sourceIndex + 1, snapshot.Pages.Count), completed, tiles.Count));
                     cancellationToken.ThrowIfCancellationRequested();
                     PdfPage outputPage;
                     if (note.Pdf is { } source)
@@ -186,11 +186,11 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                         using var stream = new MemoryStream(assets[source.AssetId].Bytes, false);
                         using var original = OpenStaticPdf(stream);
                         if (source.PageIndex < 0 || source.PageIndex >= original.PageCount)
-                            throw new InvalidDataException("The original PDF page could not be found.");
+                            throw new InvalidDataException(L.Text("Messages.Pdf.OriginalPageMissing"));
                         var originalPage = original.Pages[source.PageIndex];
                         outputPage = canvasDocument.AddPage(originalPage);
                         if (AnnotationCount(outputPage) != AnnotationCount(originalPage))
-                            throw new InvalidDataException("The existing PDF annotations could not be fully preserved. The export file was not overwritten.");
+                            throw new InvalidDataException(L.Text("Messages.Export.AnnotationsNotPreserved"));
                         ExtendPdfCanvas(note, outputPage);
                     }
                     else
@@ -259,7 +259,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
                             var sheet = result.AddPage(original.Pages[0]);
                             SetTileBounds(sheet, tile.Bounds);
                             completed++;
-                            progress?.Report(new($"Preparing A4 sheet {completed} of {tiles.Count}…", completed, tiles.Count));
+                            progress?.Report(new(L.M("Messages.Progress.PrepareA4Sheet", completed, tiles.Count), completed, tiles.Count));
                         }
                     }
                     else completed++;
@@ -273,7 +273,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
             cancellationToken.ThrowIfCancellationRequested();
             if (File.Exists(destination)) File.Replace(temporary, destination, null);
             else File.Move(temporary, destination);
-            progress?.Report(new("PDF exported", tiles.Count, tiles.Count));
+            progress?.Report(new(L.M("Messages.Progress.PdfExported"), tiles.Count, tiles.Count));
         }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
     }
@@ -282,14 +282,14 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
     {
         using var stream = new MemoryStream(bytes, false);
         using var document = OpenStaticPdf(stream);
-        if (document.PageCount == 0) throw new InvalidDataException("The PDF has no pages.");
+        if (document.PageCount == 0) throw new InvalidDataException(L.Text("Messages.Pdf.NoPages"));
         var pages = new List<NotePage>(document.PageCount);
         for (var index = 0; index < document.PageCount; index++)
         {
             var page = document.Pages[index];
             var crop = VisibleBox(page);
             var rotation = ((page.Rotate % 360) + 360) % 360;
-            if (rotation % 90 != 0) throw new InvalidDataException($"PDF page {index + 1}: The page rotation is not supported.");
+            if (rotation % 90 != 0) throw new InvalidDataException(L.Text("Messages.Pdf.PageRotationUnsupported", index + 1));
             pages.Add(new NotePage { Pdf = new PdfPageSource { PageIndex = index, Rotation = rotation,
                 CropX = crop.X1, CropY = crop.Y1, CropWidth = crop.Width, CropHeight = crop.Height } });
         }
@@ -300,20 +300,20 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
     {
         PdfDocument document;
         try { document = PdfReader.Open(stream, PdfDocumentOpenMode.Import); }
-        catch (Exception ex) { throw new InvalidDataException("This PDF could not be imported. Use a standard, unencrypted PDF.", ex); }
+        catch (Exception ex) { throw new InvalidDataException(L.Text("Messages.Pdf.ImportFailed"), ex); }
         try
         {
-            if (document.SecuritySettings.IsEncrypted) throw new InvalidDataException("Encrypted PDFs are not supported. Save an unencrypted copy and try again.");
+            if (document.SecuritySettings.IsEncrypted) throw new InvalidDataException(L.Text("Messages.Pdf.Encrypted"));
             var catalog = document.Internals.Catalog;
             if (HasInteractiveForm(catalog) || ReadPdfEntry(catalog, "/Perms") is not null)
-                throw new InvalidDataException("PDF forms and digital signatures are not supported. Export a standard PDF first.");
+                throw new InvalidDataException(L.Text("Messages.Pdf.FormsOrSignatures"));
             foreach (var item in document.Internals.GetAllObjects().OfType<PdfDictionary>())
                 if (item.Elements.GetName("/Type") == "/Sig" || item.Elements.GetName("/FT") == "/Sig")
-                    throw new InvalidDataException("PDFs containing digital signatures are not supported.");
+                    throw new InvalidDataException(L.Text("Messages.Pdf.Signatures"));
             for (var pageIndex = 0; pageIndex < document.PageCount; pageIndex++)
             {
                 try { ValidateStaticPage(document.Pages[pageIndex]); }
-                catch (InvalidDataException ex) { throw new InvalidDataException($"PDF page {pageIndex + 1}: {ex.Message}", ex); }
+                catch (InvalidDataException ex) { throw new InvalidDataException(L.Text("Messages.Pdf.PageError", pageIndex + 1, ex.Message), ex); }
             }
             return document;
         }
@@ -324,7 +324,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
     {
         _ = VisibleBox(page);
         var userUnit = page.Elements.GetReal("/UserUnit");
-        if (userUnit != 0 && userUnit != 1) throw new InvalidDataException("The PDF uses custom page units. Save it as a standard PDF first.");
+        if (userUnit != 0 && userUnit != 1) throw new InvalidDataException(L.Text("Messages.Pdf.CustomUnits"));
         var annotations = page.Elements.GetArray("/Annots");
         if (annotations is null) return;
         for (var index = 0; index < annotations.Elements.Count; index++)
@@ -333,7 +333,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
             var subtype = annotation?.Elements.GetName("/Subtype");
             if (subtype is not ("/Text" or "/FreeText" or "/Square" or "/Circle" or "/Highlight" or "/Underline"
                 or "/StrikeOut" or "/Squiggly" or "/Ink" or "/Stamp" or "/Line" or "/Polygon" or "/PolyLine" or "/Caret" or "/Popup" or "/Link"))
-                throw new InvalidDataException("The PDF contains unsupported interactive annotations. Flatten its annotations before importing.");
+                throw new InvalidDataException(L.Text("Messages.Pdf.InteractiveAnnotations"));
             // A destination or action does not make the visible annotation
             // unreadable. Strip its behavior only in this in-memory document
             // before export copies a page; the source file and stored PDF bytes

@@ -1,3 +1,4 @@
+using L = Moye.Localization.LocalizationService;
 using System.IO;
 using System.Windows;
 using System.Windows.Automation;
@@ -17,7 +18,7 @@ public partial class MainWindow
     {
         await ImportFolderAsync(() =>
         {
-            var picker = new OpenFolderDialog { Title = "Import a folder of PDF and PowerPoint files", Multiselect = false };
+            var picker = new OpenFolderDialog { Title = L.Text("Shell.ChooseImportFolder"), Multiselect = false };
             return picker.ShowDialog(this) == true ? picker.FolderName : null;
         });
     }
@@ -54,7 +55,7 @@ public partial class MainWindow
     {
         if (!CanImportFolder) return;
         _folderImportActive = true;
-        ViewModel.IsBusy = true; ViewModel.Operation = "Importing folder…";
+        ViewModel.IsBusy = true; ViewModel.SetOperation("Shell.ImportingFolder");
         PreparedFolderImport? prepared = null;
         try
         {
@@ -63,19 +64,19 @@ public partial class MainWindow
             if (folder is null) return;
             // Keep the feature guard and busy state across picker, progress, summary and retries.
             // The single-file helper releases busy and reports "unchanged", which is unsafe after our save boundary.
-            var completed = await DocumentOperationDialog.RunAsync(this, "Preparing folder import", async (token, progress) =>
+            var completed = await DocumentOperationDialog.RunAsync(this, L.Text("Shell.PreparingFolderImport"), async (token, progress) =>
             {
                 prepared = await new FolderImportService().PrepareAsync(folder, progress, token);
             });
             if (!completed || prepared is null)
             {
-                ViewModel.Status = "Folder import canceled · No notebook was created";
+                ViewModel.SetStatus("Shell.FolderImportCanceled");
                 return;
             }
             if (prepared.Summary.ReadyCount == 0)
             {
                 new FolderImportSummaryDialog(this, prepared.Summary).ShowDialog();
-                ViewModel.Status = "No documents imported · No notebook was created";
+                ViewModel.SetStatus("Shell.FolderImportEmpty");
                 return;
             }
             if (prepared.Summary.RequiresConfirmation)
@@ -83,7 +84,7 @@ public partial class MainWindow
                 var summary = new FolderImportSummaryDialog(this, prepared.Summary);
                 if (summary.ShowDialog() != true || !summary.ImportSuccessfulFiles)
                 {
-                    ViewModel.Status = "Folder import canceled · No notebook was created";
+                    ViewModel.SetStatus("Shell.FolderImportCanceled");
                     return;
                 }
                 prepared.AcceptSuccessfulFiles();
@@ -92,7 +93,7 @@ public partial class MainWindow
             {
                 try
                 {
-                    completed = await DocumentOperationDialog.RunAsync(this, "Saving imported notebook", (token, progress) =>
+                    completed = await DocumentOperationDialog.RunAsync(this, L.Text("Shell.SavingImportedNotebook"), (token, progress) =>
                         prepared.SaveAsync(ViewModel.Repository, async () =>
                         {
                             CommitEditors();
@@ -100,14 +101,14 @@ public partial class MainWindow
                         }, progress, token));
                     if (!completed && !prepared.HasSaved)
                     {
-                        ViewModel.Status = "Folder import canceled · No notebook was created";
+                        ViewModel.SetStatus("Shell.FolderImportCanceled");
                         return;
                     }
                 }
                 catch (Exception ex)
                 {
                     if (ConfirmFolderImportRetry(_errors.Report(ex), false)) continue;
-                    ViewModel.Status = "Folder import not saved · No notebook was created";
+                    ViewModel.SetStatus("Shell.FolderImportNotSaved");
                     return;
                 }
             }
@@ -116,7 +117,7 @@ public partial class MainWindow
             {
                 try
                 {
-                    ViewModel.Operation = "Opening imported notebook…";
+                    ViewModel.SetOperation("Shell.OpeningImportedNotebook");
                     await prepared.OpenSavedAsync(async id =>
                     {
                         ViewModel.Search = ""; ViewModel.CategoryFilter = "";
@@ -130,29 +131,28 @@ public partial class MainWindow
                 }
                 catch (Exception ex)
                 {
-                    ViewModel.Status = $"\"{prepared.Notebook.Title}\" was saved · Could not finish opening it";
+                    ViewModel.SetStatus("Shell.NamedImportedNotebookSaved", prepared.Notebook.Title);
                     if (!ConfirmFolderImportRetry(_errors.Report(ex), true)) return;
                 }
             }
             var result = prepared.Summary;
-            ViewModel.Status = $"Imported {result.ReadyCount} {(result.ReadyCount == 1 ? "file" : "files")} · {result.PageCount} {(result.PageCount == 1 ? "page" : "pages")}"
-                + (result.FailedCount > 0 ? $" · {result.FailedCount} failed" : "")
-                + (result.SkippedCount > 0 ? $" · {result.SkippedCount} skipped" : "");
+            ViewModel.SetStatus(result.FailedCount > 0
+                ? result.SkippedCount > 0 ? "Shell.FolderImportCompletePartial" : "Shell.FolderImportCompleteFailed"
+                : result.SkippedCount > 0 ? "Shell.FolderImportCompleteSkipped" : "Shell.FolderImportComplete",
+                result.ReadyCount, result.PageCount, result.FailedCount, result.SkippedCount);
             if (result.SkippedCount > 0 && !result.RequiresConfirmation)
                 new FolderImportSummaryDialog(this, result).ShowDialog();
         }
         catch (OperationCanceledException)
         {
-            ViewModel.Status = prepared?.HasSaved == true
-                ? "The imported notebook was saved · Opening was interrupted"
-                : "Folder import canceled · No notebook was created";
+            ViewModel.SetStatus(prepared?.HasSaved == true ? "Shell.ImportedOpenInterrupted" : "Shell.FolderImportCanceled");
         }
         catch (Exception ex)
         {
             var saved = prepared?.HasSaved == true;
-            ViewModel.Status = saved ? "The imported notebook was saved · Could not finish opening it" : "Folder import failed · No notebook was created";
-            MessageBox.Show(this, (saved ? "The imported notebook is already saved in your library. Do not import the folder again to retry opening it.\n\n" : "No notebook was created.\n\n") + _errors.Report(ex),
-                saved ? "Notebook saved" : "Unable to import folder", MessageBoxButton.OK, MessageBoxImage.Warning);
+            ViewModel.SetStatus(saved ? "Shell.ImportedOpenFailed" : "Shell.FolderImportFailed");
+            MessageBox.Show(this, L.Text(saved ? "Shell.FolderImportSavedError" : "Shell.FolderImportUnsavedError", _errors.Report(ex)),
+                saved ? L.Text("Shell.NotebookSaved") : L.Text("Shell.FolderImportErrorTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         finally
         {
@@ -170,36 +170,36 @@ public partial class MainWindow
     {
         var dialog = new Window
         {
-            Owner = this, Title = alreadySaved ? "Notebook saved" : "Unable to save imported notebook",
+            Owner = this,
             Width = 560, MaxHeight = Math.Max(360, SystemParameters.WorkArea.Height - 24),
             SizeToContent = SizeToContent.Height, ResizeMode = ResizeMode.NoResize,
             WindowStartupLocation = WindowStartupLocation.CenterOwner, ShowInTaskbar = false
         };
+        L.Bind(dialog, Window.TitleProperty, alreadySaved ? "Shell.NotebookSaved" : "Shell.FolderImportSaveErrorTitle");
         var panel = new DockPanel { Margin = new Thickness(24) }; dialog.Content = panel;
         var actions = new WrapPanel { HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 16, 0, 0) };
         DockPanel.SetDock(actions, Dock.Bottom); panel.Children.Add(actions);
         var cancel = new Button
         {
-            Content = alreadySaved ? "Done" : "Cancel", IsCancel = true, MinHeight = 44, MinWidth = 100,
+            IsCancel = true, MinHeight = 44, MinWidth = 100,
             Style = TryFindResource("SecondaryButton") as Style
         };
-        AutomationProperties.SetName(cancel, alreadySaved ? "Keep saved notebook and close" : "Cancel folder import");
+        L.Bind(cancel, ContentControl.ContentProperty, alreadySaved ? "Shell.Done" : "Shell.Cancel");
+        L.Bind(cancel, AutomationProperties.NameProperty, alreadySaved ? "Shell.KeepSavedNotebookClose" : "Shell.CancelFolderImport");
         actions.Children.Add(cancel);
         var retry = new Button
         {
-            Content = alreadySaved ? "Retry Open" : "Retry Save", IsDefault = true, MinHeight = 44, MinWidth = 100,
+            IsDefault = true, MinHeight = 44, MinWidth = 100,
             Margin = new Thickness(8, 0, 0, 0), Style = TryFindResource("PrimaryButton") as Style
         };
-        AutomationProperties.SetName(retry, alreadySaved ? "Retry opening saved notebook" : "Retry saving imported notebook");
+        L.Bind(retry, ContentControl.ContentProperty, alreadySaved ? "Shell.RetryOpen" : "Shell.RetrySave");
+        L.Bind(retry, AutomationProperties.NameProperty, alreadySaved ? "Shell.RetryOpenSavedNotebook" : "Shell.RetrySaveImportedNotebook");
         retry.Click += (_, _) => dialog.DialogResult = true; actions.Children.Add(retry);
         var message = new TextBlock
         {
-            Text = (alreadySaved
-                ? "Your imported notebook is already saved in the library, but it could not be opened. Retry Open uses that same notebook; it does not import another copy."
-                : "The imported notebook has not been saved. Your existing notebook and any pending changes are kept. Retry Save uses the prepared files; Cancel discards this import.")
-                + "\n\n" + error,
             TextWrapping = TextWrapping.Wrap
         };
+        L.Bind(message, TextBlock.TextProperty, alreadySaved ? "Shell.RetryFolderOpenDescription" : "Shell.RetryFolderSaveDescription", error);
         panel.Children.Add(new ScrollViewer { Content = message, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, MaxHeight = 340 });
         return dialog.ShowDialog() == true;
     }

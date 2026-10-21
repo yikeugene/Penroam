@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Moye.Models;
 using Moye.ViewModels;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -20,7 +21,7 @@ public sealed class PageManagerDialog : Window
         public required int Number { get; init; }
         private BitmapSource? _thumbnail;
         public BitmapSource? Thumbnail { get => _thumbnail; set => Set(ref _thumbnail, value); }
-        public string Caption => $"{(Page.IsBookmarked ? "★ " : "")}{Number} · {(Page.Title.Length == 0 ? (Page.Pdf is null ? Page.Template.ToString() : "PDF") : Page.Title)}";
+        public string Caption => $"{(Page.IsBookmarked ? "★ " : "")}{Number} · {(Page.Title.Length == 0 ? (Page.Pdf is null ? PaperTemplatePicker.DisplayName(Page.Template) : "PDF") : Page.Title)}";
     }
     private readonly ListBox _pages = new() { SelectionMode = SelectionMode.Extended, AllowDrop = true, BorderThickness = new Thickness(0) };
     private readonly ComboBox _sections = new() { MinHeight = 44, MinWidth = 180, DisplayMemberPath = "Title", Margin = new Thickness(3) };
@@ -39,47 +40,47 @@ public sealed class PageManagerDialog : Window
     public PageManagerDialog(Window owner, NotebookDocument document, IReadOnlyDictionary<string, BitmapSource> thumbnails,
         Func<NotePage, Task<BitmapSource?>>? render = null)
     {
-        Owner = owner?.IsLoaded == true ? owner : null; Title = "Organize pages"; Width = 940; Height = 720; MinWidth = 660; MinHeight = 440;
+        Owner = owner?.IsLoaded == true ? owner : null; Title = L.Text("Controls.PageManager.Title"); Width = 940; Height = 720; MinWidth = 660; MinHeight = 440;
         MaxHeight = SystemParameters.WorkArea.Height; WindowStartupLocation = WindowStartupLocation.CenterOwner; ShowInTaskbar = false; Background = Brushes.White;
         EditedDocument = document.Snapshot(); _thumbnails = new(thumbnails); _render = render;
         var root = new DockPanel { Margin = new Thickness(20) }; var header = new StackPanel(); DockPanel.SetDock(header, Dock.Top);
-        header.Children.Add(new TextBlock { Text = "Organize pages", FontSize = 24, FontWeight = FontWeights.SemiBold });
-        header.Children.Add(new TextBlock { Text = "Use each page's checkbox or Ctrl/Shift-click to select. Drag pages before another page, or use Move up/down. Apply changes together as one undo step.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 8) });
+        header.Children.Add(new TextBlock { Text = L.Text("Controls.PageManager.Title"), FontSize = 24, FontWeight = FontWeights.SemiBold });
+        header.Children.Add(new TextBlock { Text = L.Text("Controls.PageManager.Intro"), TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 8, 0, 8) });
         var actions = new WrapPanel();
         void ActionButton(string text, Action action) => actions.Children.Add(OrganizationDialogUi.Button(this, text, action));
-        ActionButton("Select all", () => _pages.SelectAll());
-        ActionButton("Move up", () => Edit(ids => PageOrganization.MoveBy(EditedDocument, ids, -1)));
-        ActionButton("Move down", () => Edit(ids => PageOrganization.MoveBy(EditedDocument, ids, 1)));
-        ActionButton("Duplicate", () => { var ids = PageOrganization.Duplicate(EditedDocument, Selection()); Rebuild(ids); });
-        ActionButton("Title / bookmark", () =>
+        ActionButton(L.Text("Controls.Common.SelectAll"), () => _pages.SelectAll());
+        ActionButton(L.Text("Controls.PageManager.MoveUp"), () => Edit(ids => PageOrganization.MoveBy(EditedDocument, ids, -1)));
+        ActionButton(L.Text("Controls.PageManager.MoveDown"), () => Edit(ids => PageOrganization.MoveBy(EditedDocument, ids, 1)));
+        ActionButton(L.Text("Controls.Common.Duplicate"), () => { var ids = PageOrganization.Duplicate(EditedDocument, Selection()); Rebuild(ids); });
+        ActionButton(L.Text("Controls.PageManager.Details"), () =>
         {
-            if (_pages.SelectedItems.Count != 1) { _status.Text = "Select one page to edit its title and bookmark."; return; }
+            if (_pages.SelectedItems.Count != 1) { _status.Text = L.Text("Controls.PageManager.SelectOne"); return; }
             var page = ((PageCard)_pages.SelectedItems[0]!).Page;
             var dialog = new PageOrganizationDetailsDialog(this, page);
             if (dialog.ShowDialog() == true) { page.Title = dialog.PageTitle; page.IsBookmarked = dialog.IsBookmarked; Rebuild([page.Id]); }
         });
-        ActionButton("Delete selected", () => Edit(ids => PageOrganization.Delete(EditedDocument, ids)));
+        ActionButton(L.Text("Controls.PageManager.DeleteSelected"), () => Edit(ids => PageOrganization.Delete(EditedDocument, ids)));
         header.Children.Add(actions);
         var destinations = new WrapPanel(); _sections.ItemsSource = EditedDocument.Sections; _sections.SelectedIndex = 0;
-        AutomationProperties.SetName(_sections, "Destination section"); destinations.Children.Add(_sections);
-        destinations.Children.Add(OrganizationDialogUi.Button(this, "Move to section", () => { if (_sections.SelectedItem is NoteSection section) Edit(ids => PageOrganization.MoveToSection(EditedDocument, ids, section.Id)); }));
-        destinations.Children.Add(OrganizationDialogUi.Button(this, "Move / copy to notebook…", () =>
+        AutomationProperties.SetName(_sections, L.Text("Controls.Common.DestinationSection")); destinations.Children.Add(_sections);
+        destinations.Children.Add(OrganizationDialogUi.Button(this, L.Text("Controls.PageManager.MoveSection"), () => { if (_sections.SelectedItem is NoteSection section) Edit(ids => PageOrganization.MoveToSection(EditedDocument, ids, section.Id)); }));
+        destinations.Children.Add(OrganizationDialogUi.Button(this, L.Text("Controls.PageManager.Transfer"), () =>
         {
             TransferPageIds = Selection();
-            if (TransferPageIds.Count == 0) { _status.Text = "Select one or more pages first."; return; }
+            if (TransferPageIds.Count == 0) { _status.Text = L.Text("Controls.PageManager.SelectRequired"); return; }
             DialogResult = true;
         }));
         header.Children.Add(destinations); header.Children.Add(_status); root.Children.Add(header);
         var bottom = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 12, 0, 0) };
         DockPanel.SetDock(bottom, Dock.Bottom);
-        var cancel = OrganizationDialogUi.Button(this, "Cancel", () => DialogResult = false); cancel.IsCancel = true;
-        var apply = OrganizationDialogUi.Button(this, "Apply changes", () => DialogResult = true); apply.IsDefault = true;
+        var cancel = OrganizationDialogUi.Button(this, L.Text("Controls.Common.Cancel"), () => DialogResult = false); cancel.IsCancel = true;
+        var apply = OrganizationDialogUi.Button(this, L.Text("Controls.PageManager.Apply"), () => DialogResult = true); apply.IsDefault = true;
         bottom.Children.Add(cancel); bottom.Children.Add(apply); root.Children.Add(bottom);
         ScrollViewer.SetHorizontalScrollBarVisibility(_pages, ScrollBarVisibility.Disabled);
         ScrollViewer.SetVerticalScrollBarVisibility(_pages, ScrollBarVisibility.Auto);
         _pages.ItemsSource = _cards; _pages.ItemsPanel = new ItemsPanelTemplate(new FrameworkElementFactory(typeof(WrapPanel)));
         var card = new FrameworkElementFactory(typeof(StackPanel)); card.SetValue(FrameworkElement.WidthProperty, 154d); card.SetValue(FrameworkElement.MarginProperty, new Thickness(7));
-        var select = new FrameworkElementFactory(typeof(CheckBox)); select.SetValue(ContentControl.ContentProperty, "Select page"); select.SetValue(FrameworkElement.MinHeightProperty, 44d);
+        var select = new FrameworkElementFactory(typeof(CheckBox)); select.SetValue(ContentControl.ContentProperty, L.Text("Controls.PageManager.SelectPage")); select.SetValue(FrameworkElement.MinHeightProperty, 44d);
         select.SetBinding(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, new Binding("IsSelected") { RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(ListBoxItem), 1), Mode = BindingMode.TwoWay }); card.AppendChild(select);
         var image = new FrameworkElementFactory(typeof(Image)); image.SetBinding(Image.SourceProperty, new Binding(nameof(PageCard.Thumbnail)));
         image.SetValue(FrameworkElement.HeightProperty, 160d); image.SetValue(Image.StretchProperty, Stretch.Uniform);
@@ -88,8 +89,8 @@ public sealed class PageManagerDialog : Window
         var sectionLabel = new FrameworkElementFactory(typeof(TextBlock)); sectionLabel.SetBinding(TextBlock.TextProperty, new Binding(nameof(PageCard.Section)));
         sectionLabel.SetValue(TextBlock.TextWrappingProperty, TextWrapping.Wrap); sectionLabel.SetValue(TextBlock.FontSizeProperty, 11d); card.AppendChild(sectionLabel);
         card.AppendChild(image);
-        _pages.ItemTemplate = new DataTemplate { VisualTree = card }; AutomationProperties.SetName(_pages, "Page organizer grid");
-        _pages.SelectionChanged += (_, _) => _status.Text = $"{_pages.SelectedItems.Count} selected · {_cards.Count} pages · Cancel discards all organizer changes.";
+        _pages.ItemTemplate = new DataTemplate { VisualTree = card }; AutomationProperties.SetName(_pages, L.Text("Controls.PageManager.Grid"));
+        _pages.SelectionChanged += (_, _) => _status.Text = L.Text("Controls.PageManager.SelectionSummary", _pages.SelectedItems.Count, _cards.Count);
         _pages.PreviewMouseLeftButtonDown += (_, e) =>
         {
             var selected = FindCard(e.OriginalSource as DependencyObject);
@@ -126,7 +127,7 @@ public sealed class PageManagerDialog : Window
     private IReadOnlyList<string> Selection() => _pages.SelectedItems.Cast<PageCard>().Select(card => card.Page.Id).ToArray();
     private void Edit(Action<IReadOnlyList<string>> edit)
     {
-        var ids = Selection(); if (ids.Count == 0) { _status.Text = "Select one or more pages first."; return; }
+        var ids = Selection(); if (ids.Count == 0) { _status.Text = L.Text("Controls.PageManager.SelectRequired"); return; }
         edit(ids); Rebuild(ids);
     }
     private void Rebuild(IEnumerable<string> selection)
@@ -139,7 +140,7 @@ public sealed class PageManagerDialog : Window
                 _cards.Add(new PageCard { Page = page, Section = section.Title, Number = ++index, Thumbnail = _thumbnails.GetValueOrDefault(page.Id) });
         }
         foreach (var card in _cards.Where(card => ids.Contains(card.Page.Id))) _pages.SelectedItems.Add(card);
-        _status.Text = $"{_pages.SelectedItems.Count} selected · {_cards.Count} pages · Changes are not applied until you choose Apply.";
+        _status.Text = L.Text("Controls.PageManager.PendingSummary", _pages.SelectedItems.Count, _cards.Count);
         if (IsLoaded) _ = RenderMissingThumbnailsAsync();
     }
     private async Task RenderMissingThumbnailsAsync()

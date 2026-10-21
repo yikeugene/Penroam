@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using L = Moye.Localization.LocalizationService;
 
 [assembly: InternalsVisibleTo("Moye.Tests")]
 
@@ -53,12 +54,12 @@ public sealed class LibreOfficePdfConverter : IOfficePdfConverter
         cancellationToken.ThrowIfCancellationRequested();
         var source = LocalPath(sourcePath);
         var destination = LocalPath(outputPdfPath);
-        if (!SupportsExtension(source)) throw new NotSupportedException("LibreOffice conversion supports DOCX, ODT, PPTX, PPSX, and ODP files.");
+        if (!SupportsExtension(source)) throw new NotSupportedException(L.Text("Messages.Office.LibreOfficeSupported"));
         if (!string.Equals(Path.GetExtension(destination), ".pdf", StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("The conversion output must be a PDF file.", nameof(outputPdfPath));
+            throw new ArgumentException(L.Text("Messages.Office.PdfOutputRequired"), nameof(outputPdfPath));
         if (string.Equals(source, destination, StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("The conversion output must not replace the source document.", nameof(outputPdfPath));
-        if (!File.Exists(source)) throw new FileNotFoundException("The document to convert could not be found.", source);
+            throw new ArgumentException(L.Text("Messages.Office.PreserveSource"), nameof(outputPdfPath));
+        if (!File.Exists(source)) throw new FileNotFoundException(L.Text("Messages.Office.SourceMissing"), source);
         await Task.Run(() =>
         {
             if (OdfDocumentValidation.SupportsExtension(Path.GetExtension(source))) OdfDocumentValidation.Validate(source, cancellationToken);
@@ -66,7 +67,7 @@ public sealed class LibreOfficePdfConverter : IOfficePdfConverter
         }, cancellationToken).ConfigureAwait(false);
         var executable = _executablePath ?? FindInstalledExecutable();
         if (executable is null || !File.Exists(executable))
-            throw new NotSupportedException("LibreOffice is not installed. Install LibreOffice to convert this document, or save it as PDF in its original application.");
+            throw new NotSupportedException(L.Text("Messages.Office.LibreOfficeRequired"));
 
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         deadline.CancelAfter(_timeout);
@@ -87,7 +88,7 @@ public sealed class LibreOfficePdfConverter : IOfficePdfConverter
             var result = await _run(start, token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
             if (result.ExitCode != 0)
-                throw new IOException("LibreOffice could not convert the document. " + result.Error.Trim());
+                throw new IOException(L.Text("Messages.Office.LibreOfficeFailed", result.Error.Trim()));
             var converted = Path.Combine(convertedDirectory, Path.GetFileNameWithoutExtension(source) + ".pdf");
             await ValidatePdfAsync(converted, token).ConfigureAwait(false);
             Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
@@ -105,7 +106,7 @@ public sealed class LibreOfficePdfConverter : IOfficePdfConverter
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested && deadline.IsCancellationRequested)
         {
-            throw new TimeoutException("LibreOffice conversion took too long and was stopped. Try saving the document as PDF in its original application.");
+            throw new TimeoutException(L.Text("Messages.Office.LibreOfficeTimeout"));
         }
         catch (ProcessCleanupException) { canCleanWork = false; throw; }
         finally
@@ -120,7 +121,7 @@ public sealed class LibreOfficePdfConverter : IOfficePdfConverter
     internal static ProcessStartInfo CreateStartInfo(string executable, string source, string outputDirectory, string profile)
     {
         var extension = Path.GetExtension(source);
-        if (!SupportsExtension(source)) throw new NotSupportedException("The document format is not supported by the LibreOffice converter.");
+        if (!SupportsExtension(source)) throw new NotSupportedException(L.Text("Messages.Office.LibreOfficeUnsupported"));
         var filter = extension.Equals(".docx", StringComparison.OrdinalIgnoreCase) || extension.Equals(".odt", StringComparison.OrdinalIgnoreCase)
             ? "writer_pdf_Export" : "impress_pdf_Export";
         var start = new ProcessStartInfo
@@ -169,8 +170,8 @@ public sealed class LibreOfficePdfConverter : IOfficePdfConverter
     {
         using var process = new Process { StartInfo = start };
         cancellationToken.ThrowIfCancellationRequested();
-        try { if (!process.Start()) throw new IOException("LibreOffice could not be started."); }
-        catch (Win32Exception exception) { throw new IOException("LibreOffice could not be started. Check that it is installed and allowed to run on this device.", exception); }
+        try { if (!process.Start()) throw new IOException(L.Text("Messages.Office.LibreOfficeStartFailed")); }
+        catch (Win32Exception exception) { throw new IOException(L.Text("Messages.Office.LibreOfficeStartAdvice"), exception); }
         Task<string> stdout = Task.FromResult("");
         Task<string> stderr = Task.FromResult("");
         try
@@ -195,7 +196,7 @@ public sealed class LibreOfficePdfConverter : IOfficePdfConverter
             }
             catch (Exception cleanupError)
             {
-                throw new ProcessCleanupException("The document converter could not be confirmed stopped. Its temporary profile has been retained.",
+                throw new ProcessCleanupException(L.Text("Messages.Office.ConverterNotStopped"),
                     new AggregateException(conversionError, cleanupError));
             }
             throw;
@@ -214,21 +215,21 @@ public sealed class LibreOfficePdfConverter : IOfficePdfConverter
 
     private static async Task ValidatePdfAsync(string path, CancellationToken token)
     {
-        if (!File.Exists(path)) throw new IOException("LibreOffice did not produce a PDF. The document may be encrypted, damaged, or unsupported.");
+        if (!File.Exists(path)) throw new IOException(L.Text("Messages.Office.LibreOfficeNoPdf"));
         await using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true);
         var header = new byte[5];
         if (await file.ReadAsync(header, token).ConfigureAwait(false) != header.Length || !header.AsSpan().SequenceEqual("%PDF-"u8))
-            throw new IOException("LibreOffice did not produce a valid PDF file.");
+            throw new IOException(L.Text("Messages.Office.LibreOfficeInvalidPdf"));
     }
 
     private static string LocalPath(string path)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
         if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && (!uri.IsFile || uri.IsUnc))
-            throw new NotSupportedException("Office conversion requires local file paths.");
+            throw new NotSupportedException(L.Text("Messages.Office.LocalPathsRequired"));
         var fullPath = Path.GetFullPath(path);
         if (fullPath.StartsWith(@"\\", StringComparison.Ordinal))
-            throw new NotSupportedException("Office conversion requires local file paths.");
+            throw new NotSupportedException(L.Text("Messages.Office.LocalPathsRequired"));
         return fullPath;
     }
 

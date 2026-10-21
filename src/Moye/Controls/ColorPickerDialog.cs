@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.Controls;
 
@@ -10,8 +11,9 @@ public sealed class ColorPickerDialog : Window
     public Color SelectedColor { get; private set; }
     public ColorPickerSurface Picker { get; }
 
-    public ColorPickerDialog(Window owner, Color initialColor, string title = "Choose Color")
+    public ColorPickerDialog(Window owner, Color initialColor, string? title = null)
     {
+        title ??= L.Text("Controls.ColorPicker.Title");
         Owner = owner; Title = title; SelectedColor = initialColor;
         Width = 480; Height = 640; MinWidth = 420; MinHeight = 480;
         MaxHeight = Math.Max(480, SystemParameters.WorkArea.Height - 24);
@@ -23,8 +25,8 @@ public sealed class ColorPickerDialog : Window
         var titleBlock = new TextBlock { Text = title, FontSize = 23, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 0, 0, 14) };
         DockPanel.SetDock(titleBlock, Dock.Top); root.Children.Add(titleBlock);
         var footer = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 14, 0, 0) };
-        var cancel = new Button { Content = "Cancel", IsCancel = true, MinWidth = 88, MinHeight = 44, Margin = new Thickness(0, 0, 8, 0), Style = TryFindResource("SecondaryButton") as Style };
-        var apply = new Button { Content = "Apply", IsDefault = true, MinWidth = 88, MinHeight = 44, Background = new SolidColorBrush(Color.FromRgb(35, 100, 81)), Foreground = Brushes.White };
+        var cancel = new Button { Content = L.Text("Controls.Common.Cancel"), IsCancel = true, MinWidth = 88, MinHeight = 44, Margin = new Thickness(0, 0, 8, 0), Style = TryFindResource("SecondaryButton") as Style };
+        var apply = new Button { Content = L.Text("Controls.Common.Apply"), IsDefault = true, MinWidth = 88, MinHeight = 44, Background = new SolidColorBrush(Color.FromRgb(35, 100, 81)), Foreground = Brushes.White };
         if (TryFindResource("PrimaryButton") is Style primary)
         {
             apply.Style = primary;

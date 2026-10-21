@@ -7,6 +7,7 @@ using System.Windows.Threading;
 using Moye.Controls;
 using Moye.Models;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye;
 
@@ -14,6 +15,7 @@ public partial class MainWindow
 {
     private WorkspacePreferences _workspace = new();
     private WorkspacePreferencesStore? _workspaceStore;
+    private bool _workspacePreloaded;
     private DraftRecoveryStore? _draftRecovery;
     private LocalSafetyService? _localSafety;
     private ScheduledBackupService? _scheduledBackups;
@@ -24,10 +26,15 @@ public partial class MainWindow
     private CancellationTokenSource? _automaticBackupCancellation;
     private TaskCompletionSource? _automaticBackupCompletion;
 
-    private void InitializeWorkspace()
+    private void InitializeWorkspace(WorkspacePreferencesStore? workspaceStore = null, WorkspacePreferences? workspace = null)
     {
         var directory = Path.GetDirectoryName(_preferencesStore.FilePath)!;
-        _workspaceStore = new(Path.Combine(directory, "workspace-preferences.json"));
+        _workspaceStore = workspaceStore ?? new(Path.Combine(directory, "workspace-preferences.json"));
+        if (workspace is not null)
+        {
+            if (workspaceStore is null) throw new ArgumentException("Preloaded workspace requires its original store.", nameof(workspaceStore));
+            _workspace = workspace; _workspacePreloaded = true;
+        }
         _draftRecovery = new(Path.Combine(directory, "recovery", "drafts"));
         _localSafety = new(Path.Combine(directory, "recovery", "deleted"), ViewModel.Backup);
         _scheduledBackups = new(directory, ViewModel.Backup);
@@ -44,12 +51,15 @@ public partial class MainWindow
     private async Task LoadWorkspaceAsync()
     {
         if (_workspaceStore is null) return;
-        _workspace = await _workspaceStore.LoadAsync();
+        if (!_workspacePreloaded) _workspace = await _workspaceStore.LoadAsync();
+        _workspacePreloaded = false;
+        L.SetLanguage(_workspace.UiLanguage);
+        SynchronizeLanguageSelection();
         ApplyInitialPageLayout(); _workspaceLoaded = true;
         ViewModel.Autosave.RecoveryJournal = _draftRecovery;
         ApplyWorkspaceOptions();
         await RefreshRecoveryNoticeAsync();
-        if (_workspaceStore.Warning is not null) ViewModel.Status = _workspaceStore.Warning;
+        if (_workspaceStore.WarningMessage is { } warning) ViewModel.SetStatus(warning.Key, warning.Arguments);
         _backupTimer.Start();
         _ = Dispatcher.BeginInvoke(new Action(async () => await TryScheduledBackupAsync()), DispatcherPriority.ContextIdle);
     }
@@ -87,7 +97,7 @@ public partial class MainWindow
     {
         if (!_workspaceLoaded || _workspaceStore is null) return;
         try { await _workspaceStore.SaveAsync(_workspace); }
-        catch (Exception ex) { ViewModel.Status = "Workspace settings not saved · " + ex.Message; if (throwOnError) throw; }
+        catch (Exception ex) { ViewModel.SetStatus("Core.WorkspaceSaveFailed", ex.Message); if (throwOnError) throw; }
     }
 
     private async Task<bool> RestoreReadingPositionAsync()
@@ -118,7 +128,7 @@ public partial class MainWindow
     {
         if (ContinueLastButton is null) return;
         ContinueLastButton.IsEnabled = !string.IsNullOrWhiteSpace(_workspace.LastNotebookId);
-        ContinueLastButton.ToolTip = "Open the last notebook at your saved reading position";
+        L.Bind(ContinueLastButton, ToolTipProperty, "Core.ContinueHint");
     }
 
     private async void ContinueLastClick(object sender, RoutedEventArgs e)
@@ -134,13 +144,7 @@ public partial class MainWindow
         _touchNavigation.ZoomLocked = _workspace.LockZoom;
         FavouriteToolbar.Visibility = _workspace.CompactToolbar ? Visibility.Collapsed : Visibility.Visible;
         FocusToolbar.HorizontalAlignment = _workspace.FocusToolsOnRight ? HorizontalAlignment.Right : HorizontalAlignment.Left;
-        WorkspaceStateButton.Content = _workspace.TwoFingerNavigationOnly || _workspace.LockZoom ? "Writing guard ●" : "Workspace";
-        WorkspaceStateButton.ToolTip = $"{(_workspace.TwoFingerNavigationOnly ? "Two-finger navigation" : "One-finger navigation")} · {(_workspace.LockZoom ? "Zoom locked" : "Zoom unlocked")} · click to change";
-        foreach (var button in new[] { EditorGuardButton, FocusGuardButton })
-        {
-            button.Visibility = _workspace.TwoFingerNavigationOnly || _workspace.LockZoom ? Visibility.Visible : Visibility.Collapsed;
-            button.ToolTip = WorkspaceStateButton.ToolTip;
-        }
+        UpdateWorkspaceLabels();
         UpdateTextToolbar(); RefreshFocusPresets(); RefreshContinueButton(); ApplyFocusChrome();
     }
 
@@ -177,45 +181,45 @@ public partial class MainWindow
         ClearTouches(); CommitEditors();
         var commands = new List<WorkspaceCommand>
         {
-            new("Quick note", "Start writing immediately in your Inbox; organize the page later.", () => QuickNoteClick(this, new())),
-            new("Search notebook contents · Ctrl+F", "Find page names, bookmarks, topics and typed notes, then jump straight to the result.", () => SearchContentsClick(this, new())),
-            new("Workspace settings", "Two-finger navigation, zoom lock, compact toolbar, focus docking and scheduled local backups.", () => WorkspaceSettingsClick(this, new())),
-            new("Check for updates", "Find and install the latest Penroam release from GitHub.", () => CheckForUpdatesClick(this, new())),
-            new("Backup & recovery", "Recover deleted notebooks and pages, restore pending drafts, or choose which notebooks to restore from a backup.", () => SafetyCenterClick(this, new())),
-            new("New notebook", "Choose a name, category and paper style.", () => NewNoteClick(this, new())),
-            new("Continue last notebook", "Return to the page and zoom you last used.", () => ContinueLastClick(this, new()))
+            new(L.Text("Core.CommandQuickNote"), L.Text("Core.CommandQuickNoteHint"), () => QuickNoteClick(this, new())),
+            new(L.Text("Core.CommandSearch"), L.Text("Core.CommandSearchHint"), () => SearchContentsClick(this, new())),
+            new(L.Text("Core.CommandWorkspaceSettings"), L.Text("Core.CommandWorkspaceSettingsHint"), () => WorkspaceSettingsClick(this, new())),
+            new(L.Text("Core.CommandCheckUpdates"), L.Text("Core.CommandCheckUpdatesHint"), () => CheckForUpdatesClick(this, new())),
+            new(L.Text("Core.CommandRecovery"), L.Text("Core.CommandRecoveryHint"), () => SafetyCenterClick(this, new())),
+            new(L.Text("Core.CommandNewNotebook"), L.Text("Core.CommandNewNotebookHint"), () => NewNoteClick(this, new())),
+            new(L.Text("Core.CommandContinue"), L.Text("Core.CommandContinueHint"), () => ContinueLastClick(this, new()))
         };
         if (ViewModel.IsLibraryVisible)
-            commands.Add(new("Import Folder", "Create a notebook from first-level PDF and PowerPoint (.pptx) files, with a section for each document.", () => ImportFolderClick(this, new())));
+            commands.Add(new(L.Text("Core.CommandImportFolder"), L.Text("Core.CommandImportFolderHint"), () => ImportFolderClick(this, new())));
         if (ViewModel.IsEditorVisible)
         {
             commands.AddRange([
-                new(_twoPageView ? "Single Page" : "Single Page · Current", "Show one editable page per row.", () => ChangePageLayout(false)),
-                new(_twoPageView ? "Two Pages · Current" : "Two Pages", "Read and annotate pages 1–2, 3–4 side by side within this section.", () => ChangePageLayout(true)),
-                new(_twoPageView ? "Fit Spread" : "Fit Page", "Show the whole current page or spread. Unlock zoom in Workspace settings if necessary.", () => FitPage()),
-                new("Mark a question", "Anchor a question to this page or a chosen region.", () => AddStudyQuestionClick(this, new())),
-                new("Question inbox", "Follow questions from Need help through explanation and retry to Resolved.", () => StudyInboxClick(this, new())),
-                new("Leave a resume hint", "Write your next step so you can recover your train of thought.", () => SetResumeHintClick(this, new())),
-                new("Resume my thinking", "Read saved next steps and jump to their source regions.", () => ResumeStudyClick(this, new())),
-                new("Find by appearance", "Find ink and typed notes by color, location and section in this notebook.", () => VisualSearchClick(this, new())),
-                new("New practice attempt", "Capture the question and keep a separate solution for each attempt.", () => NewPracticeClick(this, new())),
-                new("Practice attempts", "Return to earlier solutions and record mistakes and a next approach.", () => PracticeAttemptsClick(this, new())),
-                new("Restore part of this page", "Restore complete objects in a region from this session's history, retaining other edits.", () => RestoreRegionClick(this, new())),
-                new("Manage pages", "Select multiple thumbnails; reorder, move, duplicate or delete them as one change.", () => ManagePagesClick(this, new())),
-                new("Extend page", "Add writing space on any side of this page, preserving the original PDF size and your notes.", () => ExtendPageClick(this, new())),
-                new("Reference view", "Read another notebook beside your writing area, with independent navigation and zoom.", () => ShowReferenceClick(this, new())),
-                new("Import document", "Preview a PDF or locally converted Office document and choose its pages and destination.", () => ImportDocumentWorkflowClick(this, new())),
-                new("Export PDF", "Choose pages and check text overflow before sharing.", () => ExportDocumentWorkflowClick(this, new())),
-                new("Continue text on next page", "Move overflowing text into a new page while retaining its formatting.", () => ContinueTextOnNextPageClick(this, new())),
-                new("Go to page · Ctrl+G", "Enter the page number within this section.", () => GoToPageClick(this, new())),
-                new("Focus mode · F11", "More writing space, with dockable tools and favorite pens.", () => ToggleFocus()),
-                new("Pen · B", "Write with pressure-sensitive ink. Hold a line briefly to straighten it.", () => SetTool(InkTool.Pen)),
-                new("Highlighter · H", "Mark important material using your selected highlighter.", () => SetTool(InkTool.Highlighter)),
-                new("Eraser · E", "Choose pixel or stroke erasing, size, and highlighter-only mode.", () => SetTool(_eraserTool)),
-                new("Lasso · L", "Circle ink, text and images to move or copy them together.", () => SetTool(InkTool.Lasso)),
-                new("Type · T", "Click anywhere to type without a visible box; ruled paper aligns text. Ctrl+Enter returns to Pen.", () => TypeClick(this, new())),
-                new("Undo · Ctrl+Z", "Undo a completed edit while this notebook stays open.", () => UndoClick(this, new())),
-                new("Fit width", "Fill the writing area. Unlock zoom in Workspace settings if necessary.", () => FitWidth())
+                new(_twoPageView ? L.Text("Core.SinglePage") : L.Text("Core.SinglePageCurrent"), L.Text("Core.SinglePageHint"), () => ChangePageLayout(false)),
+                new(_twoPageView ? L.Text("Core.TwoPagesCurrent") : L.Text("Core.TwoPages"), L.Text("Core.TwoPagesHint"), () => ChangePageLayout(true)),
+                new(_twoPageView ? L.Text("Core.FitSpread") : L.Text("Core.FitPage"), L.Text("Core.FitPageHint"), () => FitPage()),
+                new(L.Text("Core.CommandMarkQuestion"), L.Text("Core.CommandMarkQuestionHint"), () => AddStudyQuestionClick(this, new())),
+                new(L.Text("Core.CommandQuestionInbox"), L.Text("Core.CommandQuestionInboxHint"), () => StudyInboxClick(this, new())),
+                new(L.Text("Core.CommandLeaveHint"), L.Text("Core.CommandLeaveHintHint"), () => SetResumeHintClick(this, new())),
+                new(L.Text("Core.CommandResume"), L.Text("Core.CommandResumeHint"), () => ResumeStudyClick(this, new())),
+                new(L.Text("Core.CommandAppearance"), L.Text("Core.CommandAppearanceHint"), () => VisualSearchClick(this, new())),
+                new(L.Text("Core.CommandPractice"), L.Text("Core.CommandPracticeHint"), () => NewPracticeClick(this, new())),
+                new(L.Text("Core.CommandPracticeAttempts"), L.Text("Core.CommandPracticeAttemptsHint"), () => PracticeAttemptsClick(this, new())),
+                new(L.Text("Core.CommandRestoreRegion"), L.Text("Core.CommandRestoreRegionHint"), () => RestoreRegionClick(this, new())),
+                new(L.Text("Core.CommandManagePages"), L.Text("Core.CommandManagePagesHint"), () => ManagePagesClick(this, new())),
+                new(L.Text("Core.CommandExtendPage"), L.Text("Core.CommandExtendPageHint"), () => ExtendPageClick(this, new())),
+                new(L.Text("Core.CommandReference"), L.Text("Core.CommandReferenceHint"), () => ShowReferenceClick(this, new())),
+                new(L.Text("Core.CommandImportDocument"), L.Text("Core.CommandImportDocumentHint"), () => ImportDocumentWorkflowClick(this, new())),
+                new(L.Text("Core.CommandExportPdf"), L.Text("Core.CommandExportPdfHint"), () => ExportDocumentWorkflowClick(this, new())),
+                new(L.Text("Core.CommandContinueText"), L.Text("Core.CommandContinueTextHint"), () => ContinueTextOnNextPageClick(this, new())),
+                new(L.Text("Core.CommandGoTo"), L.Text("Core.CommandGoToHint"), () => GoToPageClick(this, new())),
+                new(L.Text("Core.CommandFocusMode"), L.Text("Core.CommandFocusModeHint"), () => ToggleFocus()),
+                new(L.Text("Core.CommandPen"), L.Text("Core.CommandPenHint"), () => SetTool(InkTool.Pen)),
+                new(L.Text("Core.CommandHighlighter"), L.Text("Core.CommandHighlighterHint"), () => SetTool(InkTool.Highlighter)),
+                new(L.Text("Core.CommandEraser"), L.Text("Core.CommandEraserHint"), () => SetTool(_eraserTool)),
+                new(L.Text("Core.CommandLasso"), L.Text("Core.CommandLassoHint"), () => SetTool(InkTool.Lasso)),
+                new(L.Text("Core.CommandType"), L.Text("Core.CommandTypeHint"), () => TypeClick(this, new())),
+                new(L.Text("Core.CommandUndo"), L.Text("Core.CommandUndoHint"), () => UndoClick(this, new())),
+                new(L.Text("Core.CommandFitWidth"), L.Text("Core.CommandFitWidthHint"), () => FitWidth())
             ]);
         }
         WorkspaceCommandDialog.Show(this, commands);
@@ -224,10 +228,10 @@ public partial class MainWindow
     private void GoToPageClick(object sender, RoutedEventArgs e)
     {
         if (!ViewModel.IsEditorVisible || ViewModel.Pages.Count == 0 || ViewModel.IsBusy) return;
-        var dialog = new InputDialog(this, "Go to page", ($"Page number (1–{ViewModel.Pages.Count})", ViewModel.SelectedPage?.Number.ToString() ?? "1"));
+        var dialog = new InputDialog(this, L.Text("Core.GoToPage"), (L.Text("Core.PageNumber", ViewModel.Pages.Count), ViewModel.SelectedPage?.Number.ToString() ?? "1"));
         if (dialog.ShowDialog() != true) return;
         if (!int.TryParse(dialog.Values[0], out var number) || number < 1 || number > ViewModel.Pages.Count)
-        { MessageBox.Show(this, "Enter a page number in this section.", "Go to page"); return; }
+        { MessageBox.Show(this, L.Text("Core.InvalidPage"), L.Text("Core.GoToPage")); return; }
         CommitEditors(); ClearTouches(); ViewModel.SelectedPage = ViewModel.Pages[number - 1]; ScrollToSelected();
     }
 }

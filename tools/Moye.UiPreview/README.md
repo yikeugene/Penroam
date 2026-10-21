@@ -35,6 +35,32 @@ Output files in `artifacts/`:
 - `ui-preview-document-import-{1400,1024}.png`: document conversion progress with an enabled Cancel Import button above the busy overlay.
 - `ui-preview-layout.md` and `ui-preview-layout.json`: button bounds, 44 DIP checks, overlaps, and controls outside the content area.
 
+## Bilingual detached coverage
+
+The normal detached run first checks English (`en`) and Traditional Chinese (`zh-TW`) in the same real `MainWindow` fixture. To build and run only this pass without invoking a PowerShell script, use these commands from the repository root (no execution-policy change is needed):
+
+```powershell
+.\.tools\dotnet\dotnet.exe build .\tools\Moye.UiPreview\Moye.UiPreview.csproj --configuration Release
+.\.tools\dotnet\dotnet.exe .\tools\Moye.UiPreview\bin\Release\net10.0-windows10.0.26100.0\Moye.UiPreview.dll . --bilingual-only
+```
+
+Omit `--bilingual-only` for the complete detached runner. Use an installed .NET 10 `dotnet` instead if the local SDK is unavailable. Initial restore still requires the appropriate packages; `--no-restore` is only appropriate after a successful restore.
+
+The bilingual pass produces `ui-preview-bilingual-{en,zh-TW}-{scene}-{1024,1400}.png` at 1024 × 700 and 1400 × 960 DIP, plus `ui-preview-bilingual-report.json`. Its scenes cover:
+
+- Populated home, empty home, no-result search, and search in an empty library (`library-recovery`, `library-empty-recovery`, `library-search-recovery`, `library-empty-search-recovery`). All include a visible synthetic recovery alert, so the language selector is checked alongside the extra header action in every home state.
+- The actual editor with a realized synthetic page (`editor`).
+- Actual `NotebookDialog` content at both the top and bottom of its scroll area (`notebook-dialog`, `notebook-dialog-bottom`), including all seven paper choices and the create/cancel actions.
+- Actual `UpdateNotification` available, downloading, ready, and error states (`update-available`, `update-downloading`, `update-ready`, `update-error`), switching each existing card in both directions and retaining scrollable release notes.
+
+Selection is made through the real `HomeLanguageSelector` items and `HomeLanguageChanged` handler, not by replacing labels in the preview. A real `WorkspacePreferencesStore` is read before being passed to the preloaded window constructor; the preview sets only the workspace-readiness gate normally established during `Loaded`. It verifies each persisted selection by reopening that isolated store under `artifacts/bilingual-preview-settings/`. The normal application `Loaded` lifecycle, recovery scanning, scheduled backups, and update checks are not run. No real user preferences or notebooks are accessed.
+
+Structural checks use control names/automation IDs, while localized label assertions use resource keys. Existing button 44-DIP, bounds, scrolling, and overlap checks are retained; additional measurements require the language selector and notebook fields to be visible, keyboard tab stops, labeled, at least 44 DIP, and nonoverlapping. Notebook text, titles, category, search queries, and release-note data remain unchanged. The root layout language intentionally stays `en-US`; the interface locale is restored to English in `finally` before the existing English-only scenes run.
+
+This pass verifies detached layout, binding updates, and the language selection/save handler only. It does not validate live keyboard focus, native combo-box popups, clipboard, IME composition, pen pressure, touch, palm rejection, or desktop DPI behavior.
+
+## Reading the layout results
+
 These images support internal layout review; they do not validate live UI interaction. Touch, pen input, Windows scaling, the system title bar, popup menus, and keyboard focus require separate verification. Images are rendered at 96 DPI, and their dimensions describe the content area without operating-system window borders. Button checks use declared `Visibility` and ancestor visibility because `IsVisible` does not describe layout in an offscreen tree without a presentation source.
 
 Each scene must contain its expected controls: the home requires New Notebook and notebook options; the editor requires every writing tool, Pen Settings, Undo, Redo, zoom controls, Fit Width, and Focus Mode; focus requires Add Page, Undo, Redo and Exit Focus, including both docking sides with writing guard enabled; the paper picker requires seven radio choices with exactly one selected; the eraser popup requires both eraser mode buttons; the pen popup requires Draw and Hold. Required actions must be visible without horizontal scrolling, including at 1024 × 700 DIP. Touch-target checks include the template radio cards, checkboxes and regular buttons, excluding native scrollbar parts. The process exits unsuccessfully when required controls are missing or button bounds are too small, overlapping, or outside the rendered area.
