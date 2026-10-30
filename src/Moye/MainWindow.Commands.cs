@@ -71,16 +71,16 @@ public partial class MainWindow
         return item;
     }
 
-    private PlacementMode FeatureMenuPlacement => _focusMode
+    private PlacementMode FeatureMenuPlacement => ChromeHidden
         ? (_workspace.FocusToolsOnRight ? PlacementMode.Left : PlacementMode.Right) : PlacementMode.Bottom;
 
-    private Button FeatureActionAnchor(Button preferred) => _focusMode ? FocusAllToolsButton :
+    private Button FeatureActionAnchor(Button preferred) => ChromeHidden ? FloatingToolAnchor(FocusAllToolsButton) :
         Sidebar.Visibility == Visibility.Visible && PagesPanel.Visibility == Visibility.Visible ? preferred : AllToolsButton;
 
     private void OpenFeatureGroup(string parentId, IReadOnlyList<WorkspaceCommand> commands)
     {
         if (!CanOrganize) return;
-        var menu = new ContextMenu { PlacementTarget = _focusMode ? FocusAllToolsButton : AllToolsButton,
+        var menu = new ContextMenu { PlacementTarget = ChromeHidden ? FloatingToolAnchor(FocusAllToolsButton) : AllToolsButton,
             Placement = FeatureMenuPlacement };
         foreach (var command in commands.Where(command => command.ParentId == parentId)) menu.Items.Add(CreateFeatureMenuItem(command));
         CloseSettingsPopups(); ClearTouches(); menu.IsOpen = true;
@@ -90,7 +90,11 @@ public partial class MainWindow
     {
         if (TwoPagesButton is null || ReferenceViewButton is null) return;
         SetState(TwoPagesButton, _twoPageView, L.Text("Features.Command.two-pages.Name"));
+        SetState(FocusTwoPagesButton, _twoPageView, L.Text("Features.Command.two-pages.Name"));
         SetState(ReferenceViewButton, ReferenceHost.Visibility == Visibility.Visible, L.Text("Features.Command.reference-view.Name"));
+        SetState(FocusReferenceButton, ReferenceHost.Visibility == Visibility.Visible, L.Text("Features.Command.reference-view.Name"));
+        SetState(FocusFullscreenButton, _focusMode, L.Text("Shell.Fullscreen"));
+        SetState(PaperOnlyButton, _paperOnlyMode, L.Text("Shell.PaperOnlyMode"));
         void SetState(Button button, bool active, string name)
         {
             button.Background = (Brush)FindResource(active ? "AccentSoft" : "Surface");
@@ -246,6 +250,7 @@ public partial class MainWindow
         Add("zoom-out", L.Text("Features.Command.zoom-out.Name"), "View", L.Text("Features.Command.zoom-out.Detail"), () => ZoomOutClick(this, new()), Zoom);
         Add("sidebar", L.Text("Features.Command.sidebar.Name"), "View", L.Text("Features.Command.sidebar.Detail"), ToggleSidebar, Notebook, "F9", check: () => Sidebar.Visibility == Visibility.Visible);
         Add("focus-mode", L.Text("Features.Command.focus-mode.Name"), "View", L.Text("Features.Command.focus-mode.Detail"), ToggleFocus, Notebook, "F11", check: () => _focusMode);
+        Add("paper-only", L.Text("Features.Command.paper-only.Name"), "View", L.Text("Features.Command.paper-only.Detail"), TogglePaperOnly, Notebook, "F10", keywords: "hide menus toolbars floating circle", check: () => _paperOnlyMode);
         Add("reference-view", L.Text("Features.Command.reference-view.Name"), "View", L.Text("Features.Command.reference-view.Detail"), () => ShowReferenceClick(this, new()), Notebook,
             check: () => ReferenceHost.Visibility == Visibility.Visible);
         Add("workspace-settings", L.Text("Features.Command.workspace-settings.Name"), "View", L.Text("Features.Command.workspace-settings.Detail"), () => ShowWorkspaceSettings());
@@ -362,7 +367,7 @@ public partial class MainWindow
     {
         if (!CanOrganize || ViewModel.IsLibraryVisible) return;
         CommitEditors(); CloseSettingsPopups();
-        PlaceWritingPopup(PenSettingsPopup, _focusMode ? FocusPenSettingsButton : PenSettingsButton);
+        PlaceWritingPopup(PenSettingsPopup, ChromeHidden ? FocusPenSettingsButton : PenSettingsButton);
         UpdateTool(); PenSettingsPopup.IsOpen = true;
         FocusSetting(focus);
     }
@@ -371,7 +376,7 @@ public partial class MainWindow
     {
         if (!CanOrganize || ViewModel.IsLibraryVisible) return;
         SetTool(_eraserTool);
-        PlaceWritingPopup(EraserSettingsPopup, _focusMode ? FocusEraserButton : EraserButton);
+        PlaceWritingPopup(EraserSettingsPopup, ChromeHidden ? FocusEraserButton : EraserButton);
         EraserSettingsPopup.IsOpen = true;
         FocusSetting(focus);
     }

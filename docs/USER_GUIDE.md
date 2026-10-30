@@ -171,7 +171,11 @@ In two-page view, **Fit Spread** shows the whole pair and **Fit Width** fits the
 
 The sidebar button or `F9` hides and shows the sidebar. Hold **Space** and drag with the left mouse button to pan temporarily; release Space to return to your writing tool.
 
-The **Focus Mode** icon or `F11` switches to a full-screen writing workspace and hides the notebook header, main writing toolbar, sidebar and footer. A compact floating toolbar keeps **Pen**, **Highlighter**, **Eraser**, **Lasso**, **Type**, **Select**, the first three favorite pens, **Pen Settings**, **Add page**, **Undo**, **Redo**, **All tools** and **Exit Focus** available. Choose **Add page**, select a paper template and click **Add Page** to insert after the current page in the current section. The editor moves to the new page and stays in full screen; **Cancel** leaves the notebook unchanged. **Workspace settings** docks the toolbar on the left or right. The selected tool is highlighted; the color button opens the same palette and thickness preview used in the normal editor. The eraser button offers Pixel and Stroke modes. Keyboard tool shortcuts still work, and save errors remain visible. Click **Exit Focus**, press `F11`, or press `Esc` to leave. When typing in a text box, `Esc` first leaves text editing. These controls change the display, not the paper's dimensions.
+Choose **View → Paper only**, use its editor button, or press `F10` to hide the notebook header, menus, writing toolbar, sidebar and footer while keeping the current window size. Only the paper workspace and a floating circle remain. Click the circle to open the floating writing toolbar; click it again to hide the tools. An open reference pane is temporarily hidden and restored when leaving Paper only, unless you choose a reference while in the mode. Save errors remain visible.
+
+The **Focus Mode** icon or `F11` switches to full-screen writing with the same floating toolbar. Paper only also works in full screen: `F11` changes full-screen state while retaining Paper only, and `F10` toggles Paper only without changing full-screen state. The toolbar keeps **Pen**, **Highlighter**, **Eraser**, **Lasso**, **Type**, **Select**, the first three favorite pens, **Pen Settings**, **Add page**, **Undo**, **Redo** and **All tools** available. It also provides direct **Two pages**, **Fit Page** (or **Fit Spread**), **Fit Width**, **Reference** and **Manage pages** controls, plus full-screen switching and **Restore workspace**.
+
+Choose **Add page**, select a paper template and click **Add Page** to insert after the current page in the current section. The editor moves to the new page and keeps the current writing mode; **Cancel** leaves the notebook unchanged. **Workspace settings** docks the floating tools on the left or right. The selected tool is highlighted; the color button opens the normal palette and thickness preview, and the eraser button offers Pixel and Stroke modes. Keyboard tool shortcuts still work. **Restore workspace** leaves both modes. In Paper only, `Esc` first hides an expanded tool panel, then restores the workspace; an open settings popup or active text box handles `Esc` first. These controls change the display, not the paper's dimensions.
 
 Open **Workspace** on the home screen or **View → Workspace settings…** to require two fingers for page movement, lock zoom while writing, hide the main favorite-pen row, or change focus-tool docking. When two-finger navigation or zoom lock is enabled, **Guard** appears in the editor footer and focus toolbar and opens these settings. These settings are stored on this device and do not change saved page coordinates. Physical pen/palm/touch behavior still needs device testing.
 
@@ -293,6 +297,7 @@ If saving fails, pending content stays in memory. Use **Retry Save**, or export 
 | All tools & help | `Ctrl+Shift+P` |
 | Save now | `Ctrl+S` |
 | Show or hide the sidebar | `F9` |
+| Paper only | `F10` |
 | Focus mode | `F11` |
 | Zoom | `Ctrl+mouse wheel` |
 | Temporary mouse pan | Hold `Space` and drag with the left mouse button |

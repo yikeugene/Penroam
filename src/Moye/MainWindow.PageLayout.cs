@@ -273,6 +273,10 @@ public partial class MainWindow
         L.Bind(FitPageButton, ContentControl.ContentProperty, key);
         L.Bind(FitPageButton, FrameworkElement.ToolTipProperty, _twoPageView ? "Shell.FitSpreadHint" : "Shell.FitPageHint");
         L.Bind(FitPageButton, AutomationProperties.NameProperty, key);
+        L.Bind(FocusFitPageButton, ContentControl.ContentProperty, key);
+        L.Bind(FocusFitPageButton, AutomationProperties.NameProperty, key);
+        L.Bind(FocusFitPageButton, FrameworkElement.ToolTipProperty, _twoPageView ? "Shell.FitSpreadHint" : "Shell.FitPageHint");
+        L.Bind(FocusFitWidthButton, FrameworkElement.ToolTipProperty, _twoPageView ? "Shell.FitSpreadWidthHint" : "Shell.FitWidthHint");
         L.Bind(FitWidthButton, FrameworkElement.ToolTipProperty, _twoPageView ? "Shell.FitSpreadWidthHint" : "Shell.FitWidthHint");
         UpdateFeatureNavigation();
     }

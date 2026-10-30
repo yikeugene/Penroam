@@ -96,7 +96,7 @@ public partial class MainWindow
     private void ShowTextFormatting(Control? focus = null)
     {
         if (!CanOrganize || ViewModel.IsLibraryVisible) return;
-        if (_focusMode) ToggleFocus();
+        if (ChromeHidden) ExitWritingModes();
         CloseSettingsPopups(); _textPanelOverride = true; UpdateTextToolbar();
         FocusSetting(focus ?? TextFormattingBackButton);
     }

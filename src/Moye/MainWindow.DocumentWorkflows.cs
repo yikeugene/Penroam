@@ -141,11 +141,12 @@ public partial class MainWindow
     private async void ShowReferenceClick(object sender, RoutedEventArgs e)
     {
         if (_referenceHost is null || ViewModel.IsBusy) return;
+        if (_paperOnlyMode) _referenceBeforePaperOnly = false;
         CommitEditors();
         if (_referencePane is null)
         {
             _referencePane = new ReferencePane(ViewModel.Repository, ViewModel.Pdf, () => ViewModel.Document);
-            _referencePane.CloseRequested += (_, _) => { _referenceHost.Visibility = Visibility.Collapsed; PageList.Focus(); };
+            _referencePane.CloseRequested += (_, _) => { _referenceBeforePaperOnly = false; _referenceHost.Visibility = Visibility.Collapsed; PageList.Focus(); };
             _referencePane.ReturnToEditor += (_, _) => { PageList.Focus(); CurrentEditor?.Focus(); };
             _referenceHost.Content = _referencePane; _referenceHost.Visibility = Visibility.Visible;
             await _referencePane.InitializeAsync();

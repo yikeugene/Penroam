@@ -174,7 +174,7 @@ public partial class MainWindow
             System.Windows.Automation.AutomationProperties.SetName(button, preset.Name);
             button.Click += (_, _) => ApplyPreset(preset, true); FocusPresetPanel.Children.Add(button);
         }
-        if (_focusMode) ApplyFocusChrome();
+        if (ChromeHidden) ApplyFocusChrome();
     }
 
     private void ShowCommandsClick(object sender, RoutedEventArgs e)

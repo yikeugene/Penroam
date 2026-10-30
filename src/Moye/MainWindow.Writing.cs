@@ -358,21 +358,4 @@ public partial class MainWindow
         if (!_mousePanning || e.ChangedButton != MouseButton.Left) return;
         _mousePanning = false; Viewport.ReleaseMouseCapture(); e.Handled = true;
     }
-    private void ApplyFocusChrome()
-    {
-        NotebookHeader.Visibility = _focusMode ? Visibility.Collapsed : Visibility.Visible;
-        WritingHeader.Visibility = _focusMode ? Visibility.Collapsed : Visibility.Visible;
-        EditorFooter.Visibility = _focusMode && !ViewModel.HasSaveError ? Visibility.Collapsed : Visibility.Visible;
-        FocusToolbar.Visibility = _focusMode ? Visibility.Visible : Visibility.Collapsed;
-        // Reserve the measured tools on their chosen side, including favorites.
-        // The reference pane shares this inset so neither reading nor writing
-        // can be hidden beneath the floating buttons.
-        if (_focusMode)
-        {
-            FocusToolbar.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            var inset = Math.Ceiling(FocusToolbar.DesiredSize.Width) + 8;
-            EditingSurface.Margin = _workspace.FocusToolsOnRight ? new Thickness(0, 0, inset, 0) : new Thickness(inset, 0, 0, 0);
-        }
-        else EditingSurface.Margin = new Thickness(0);
-    }
 }

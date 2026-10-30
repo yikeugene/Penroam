@@ -215,6 +215,7 @@ internal static partial class Program
             var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
             VerifyFocusTools(window, content, repository, output, reports);
             VerifyWorkspaceGuardTools(window, content, repository, output, reports);
+            VerifyPaperOnlyTools(window, content, output, reports);
 
             var presetFixture = WritingPreferences.CreateDefault();
             presetFixture.Presets[0].Width = .5; presetFixture.Presets[0].Opacity = .65;
@@ -898,7 +899,8 @@ internal static partial class Program
             Set("_focusMode", true); Call("ApplyFocusChrome");
             sidebar.Visibility = Visibility.Collapsed; sidebarColumn.Width = new GridLength(0);
             var focusButtons = new[] { "FocusPenButton", "FocusHighlighterButton", "FocusEraserButton", "FocusLassoButton",
-                "FocusPenSettingsButton", "FocusAddPageButton", "FocusUndoButton", "FocusRedoButton", "FocusAllToolsButton", "ExitFocusButton", "Focus Type", "Focus Select" };
+                "FocusPenSettingsButton", "FocusAddPageButton", "FocusUndoButton", "FocusRedoButton", "FocusAllToolsButton", "ExitFocusButton", "Focus Type", "Focus Select",
+                "FocusTwoPagesButton", "FocusFitPageButton", "FocusFitWidthButton", "FocusReferenceButton", "FocusManagePagesButton", "FocusFullscreenButton" };
             foreach (var (width, height) in new[] { (1400, 960), (1024, 700) })
             {
                 var fileName = $"ui-preview-focus-{width}.png";
@@ -1009,6 +1011,114 @@ internal static partial class Program
         SaveImage(output, restoreImage, RenderElement(content, 1024, 700));
         reports.Add(MeasureButtons(content, 1024, 700, restoreImage, "focus-restored", "PenButton", "PenSettingsButton", "FitWidthButton"));
         VerifyDetached(content, window);
+    }
+
+    private static void VerifyPaperOnlyTools(MainWindow window, FrameworkElement content, string output, List<PreviewReport> reports)
+    {
+        const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        void Call(string name) => typeof(MainWindow).GetMethod(name, flags)!.Invoke(window, null);
+        var readyField = typeof(MainWindow).GetField("_ready", flags)!;
+        var wasReady = (bool)readyField.GetValue(window)!;
+        var preferences = (WorkspacePreferences)typeof(MainWindow).GetField("_workspace", flags)!.GetValue(window)!;
+        var originalDock = preferences.FocusToolsOnRight;
+        var originalLanguage = Moye.Localization.LocalizationService.Current.LanguageCode;
+        var originalStyle = window.WindowStyle;
+        var originalState = window.WindowState;
+        var originalSize = new Size(window.Width, window.Height);
+        var sidebar = (FrameworkElement)window.FindName("Sidebar");
+        var sidebarColumn = (ColumnDefinition)window.FindName("SidebarColumn");
+        var originalSidebar = sidebar.Visibility;
+        var originalSidebarWidth = sidebarColumn.Width;
+        var reference = (ContentControl)window.FindName("ReferenceHost");
+        var originalReference = reference.Visibility;
+        var originalReferenceContent = reference.Content;
+        var toolbar = (FrameworkElement)window.FindName("FocusToolbar");
+        var circle = (Button)window.FindName("FloatingToolsButton");
+        var viewport = (FrameworkElement)window.FindName("Viewport");
+        for (DependencyObject? ancestor = circle; ancestor is not null; ancestor = VisualTreeHelper.GetParent(ancestor))
+            if (ancestor == viewport)
+                throw new InvalidOperationException("The floating circle must be outside the paper's pen and touch routes.");
+        var requiredTools = new[] { "FloatingToolsButton", "FocusPenButton", "FocusHighlighterButton", "FocusEraserButton", "FocusLassoButton",
+            "FocusPenSettingsButton", "FocusAddPageButton", "FocusUndoButton", "FocusRedoButton", "FocusAllToolsButton", "ExitFocusButton",
+            "FocusTwoPagesButton", "FocusFitPageButton", "FocusFitWidthButton", "FocusReferenceButton", "FocusManagePagesButton", "FocusFullscreenButton" };
+        try
+        {
+            readyField.SetValue(window, true);
+            reference.Content = new Border { Background = Brushes.White };
+            foreach (var language in new[] { "en", "zh-TW" })
+            foreach (var dockRight in new[] { false, true })
+            {
+                Moye.Localization.LocalizationService.SetLanguage(language);
+                preferences.FocusToolsOnRight = dockRight; Call("ApplyWorkspaceOptions");
+                sidebar.Visibility = Visibility.Visible; sidebarColumn.Width = new GridLength(224);
+                reference.Visibility = Visibility.Visible;
+                Call("TogglePaperOnly");
+                if (window.WindowStyle != originalStyle || window.WindowState != originalState || new Size(window.Width, window.Height) != originalSize ||
+                    sidebar.Visibility != Visibility.Collapsed || reference.Visibility != Visibility.Collapsed)
+                    throw new InvalidOperationException("Paper-only mode must retain the native window state and temporarily hide navigation and reference panes.");
+                foreach (var (width, height) in new[] { (1400, 960), (1024, 700) })
+                {
+                    foreach (var expanded in new[] { false, true })
+                    {
+                        if (expanded) circle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, circle));
+                        var scene = $"paper-only-{language}-{(dockRight ? "right" : "left")}-{(expanded ? "expanded" : "collapsed")}";
+                        var fileName = $"ui-preview-{scene}-{width}.png";
+                        SaveImage(output, fileName, RenderElement(content, width, height));
+                        VerifyDetached(content, window);
+                        var report = MeasureButtons(content, width, height, fileName, scene,
+                            expanded ? requiredTools : ["FloatingToolsButton"]);
+                        reports.Add(report);
+                        if (!expanded && report.Buttons.Count != 1)
+                            throw new InvalidOperationException($"{scene}: only the floating circle may remain visible beside the synthetic paper.");
+                        if (circle.Visibility != Visibility.Visible || toolbar.Visibility != (expanded ? Visibility.Visible : Visibility.Collapsed) ||
+                            new[] { "NotebookHeader", "WritingHeader", "EditorFooter" }.Any(name => ((FrameworkElement)window.FindName(name)).Visibility != Visibility.Collapsed))
+                            throw new InvalidOperationException($"{scene}: only the requested floating tools may accompany the paper.");
+                        if (viewport.ActualHeight < height - 1)
+                            throw new InvalidOperationException($"{scene}: paper-only mode must reclaim the full content height.");
+                        AssertPointerHit(circle, content, scene + ": floating circle");
+                        if (!circle.Focusable || !circle.IsTabStop || string.IsNullOrWhiteSpace(AutomationProperties.GetName(circle)))
+                            throw new InvalidOperationException($"{scene}: the floating circle must remain a labelled keyboard target.");
+                        if (expanded)
+                        {
+                            var toolbarBounds = toolbar.TransformToAncestor(content).TransformBounds(new Rect(toolbar.RenderSize));
+                            var viewportBounds = viewport.TransformToAncestor(content).TransformBounds(new Rect(viewport.RenderSize));
+                            if (toolbarBounds.IntersectsWith(viewportBounds))
+                                throw new InvalidOperationException($"{scene}: floating tools must leave the writing viewport clear.");
+                            foreach (var button in Descendants<Button>(toolbar).Where(HasVisibleAncestors))
+                            {
+                                AssertPointerHit(button, content, scene + ": " + ControlName(button));
+                                if (!button.Focusable || !button.IsTabStop || string.IsNullOrWhiteSpace(AutomationProperties.GetName(button)))
+                                    throw new InvalidOperationException($"{scene}: every floating action must remain labelled and keyboard reachable.");
+                            }
+                            foreach (var (popupName, triggerName) in new[] { ("PenSettingsPopup", "FocusPenSettingsButton"), ("EraserSettingsPopup", "FocusEraserButton") })
+                            {
+                                var popup = (Popup)window.FindName(popupName); var trigger = (Button)window.FindName(triggerName);
+                                typeof(MainWindow).GetMethod("PlaceWritingPopup", flags)!.Invoke(window, [popup, trigger]);
+                                if (popup.IsOpen || popup.PlacementTarget != trigger || popup.Placement != (dockRight ? PlacementMode.Left : PlacementMode.Right))
+                                    throw new InvalidOperationException($"{scene}: settings must anchor inward beside the visible floating action.");
+                            }
+                            circle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, circle));
+                        }
+                    }
+                }
+                Call("TogglePaperOnly");
+                if (sidebar.Visibility != Visibility.Visible || reference.Visibility != Visibility.Visible ||
+                    circle.Visibility != Visibility.Collapsed || toolbar.Visibility != Visibility.Collapsed)
+                    throw new InvalidOperationException("Leaving paper-only mode must restore prior navigation and reference visibility and hide floating tools.");
+            }
+        }
+        finally
+        {
+            Call("ExitWritingModes");
+            readyField.SetValue(window, wasReady);
+            preferences.FocusToolsOnRight = originalDock;
+            Moye.Localization.LocalizationService.SetLanguage(originalLanguage);
+            Call("ApplyWorkspaceOptions");
+            sidebar.Visibility = originalSidebar; sidebarColumn.Width = originalSidebarWidth;
+            reference.Content = originalReferenceContent;
+            reference.Visibility = originalReference;
+            Arrange(content, 1024, 700);
+        }
     }
 
     private static void VerifyFocusAddPageContent(MainWindow window)

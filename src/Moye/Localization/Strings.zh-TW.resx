@@ -3929,7 +3929,7 @@ PDF 與筆記會保持原始大小。</value>
     <value>專注模式</value>
   </data>
   <data name="Features.Command.focus-mode.Detail" xml:space="preserve">
-    <value>使用全螢幕書寫、精簡工具及所有工具。按 F11 或離開專注模式返回一般工作區。</value>
+    <value>使用全螢幕書寫、浮動工具及所有工具。F11 切換全螢幕，並保留已開啟的紙張模式。選擇返回一般工作區可還原完整介面。</value>
   </data>
   <data name="Features.Command.reference-view.Name" xml:space="preserve">
     <value>參考檢視</value>
@@ -4653,5 +4653,29 @@ PDF 與筆記會保持原始大小。</value>
   </data>
   <data name="Features.RenameNotebookName" xml:space="preserve">
     <value>重新命名筆記本 {0}</value>
+  </data>
+  <data name="Shell.PaperOnlyMode" xml:space="preserve">
+    <value>紙張模式</value>
+  </data>
+  <data name="Shell.PaperOnlyHint" xml:space="preserve">
+    <value>隱藏選單與工具列（F10）</value>
+  </data>
+  <data name="Shell.ShowFloatingTools" xml:space="preserve">
+    <value>展開書寫工具</value>
+  </data>
+  <data name="Shell.HideFloatingTools" xml:space="preserve">
+    <value>收起書寫工具</value>
+  </data>
+  <data name="Shell.RestoreWorkspace" xml:space="preserve">
+    <value>返回一般工作區</value>
+  </data>
+  <data name="Shell.Fullscreen" xml:space="preserve">
+    <value>全螢幕（F11）</value>
+  </data>
+  <data name="Features.Command.paper-only.Name" xml:space="preserve">
+    <value>紙張模式</value>
+  </data>
+  <data name="Features.Command.paper-only.Detail" xml:space="preserve">
+    <value>隱藏選單與工具列，保留目前視窗大小。點擊浮動圓圈即可展開書寫工具。F10 切換紙張模式；Esc 先收起已展開的工具面板，再按一次返回一般工作區。</value>
   </data>
 </root>

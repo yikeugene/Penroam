@@ -3929,7 +3929,7 @@ Drag to reorder. Use Manage pens to edit or hide.</value>
     <value>Focus mode</value>
   </data>
   <data name="Features.Command.focus-mode.Detail" xml:space="preserve">
-    <value>Use full-screen writing with compact tools and All tools. F11 or Exit Focus returns to the normal workspace.</value>
+    <value>Use full-screen writing with floating tools and All tools. F11 toggles full screen while keeping Paper only if enabled. Restore workspace returns to the normal workspace.</value>
   </data>
   <data name="Features.Command.reference-view.Name" xml:space="preserve">
     <value>Reference view</value>
@@ -4653,5 +4653,29 @@ Drag to reorder. Use Manage pens to edit or hide.</value>
   </data>
   <data name="Features.RenameNotebookName" xml:space="preserve">
     <value>Rename notebook {0}</value>
+  </data>
+  <data name="Shell.PaperOnlyMode" xml:space="preserve">
+    <value>Paper only</value>
+  </data>
+  <data name="Shell.PaperOnlyHint" xml:space="preserve">
+    <value>Hide menus and toolbars (F10)</value>
+  </data>
+  <data name="Shell.ShowFloatingTools" xml:space="preserve">
+    <value>Show writing tools</value>
+  </data>
+  <data name="Shell.HideFloatingTools" xml:space="preserve">
+    <value>Hide writing tools</value>
+  </data>
+  <data name="Shell.RestoreWorkspace" xml:space="preserve">
+    <value>Restore workspace</value>
+  </data>
+  <data name="Shell.Fullscreen" xml:space="preserve">
+    <value>Full screen (F11)</value>
+  </data>
+  <data name="Features.Command.paper-only.Name" xml:space="preserve">
+    <value>Paper only</value>
+  </data>
+  <data name="Features.Command.paper-only.Detail" xml:space="preserve">
+    <value>Hide menus and toolbars without changing the window size. Click the floating circle to open writing tools. F10 toggles Paper only; Esc first closes an open tool panel, then restores the workspace.</value>
   </data>
 </root>
