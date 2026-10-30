@@ -190,7 +190,43 @@
     <value>繼續匯出</value>
   </data>
   <data name="Controls.DocumentSelection.ExportHint" xml:space="preserve">
-    <value>依筆記本中的順序選擇頁面。新增的文字會在 PDF 中轉換為輪廓。</value>
+    <value>先篩選頁面，再勾選要匯出的內容。只會依筆記本順序匯出篩選結果中已勾選的頁面。</value>
+  </data>
+  <data name="Controls.DocumentSelection.SectionFilter" xml:space="preserve">
+    <value>章節或目前頁面</value>
+  </data>
+  <data name="Controls.DocumentSelection.SearchFilter" xml:space="preserve">
+    <value>搜尋頁面標題、章節或頁碼</value>
+  </data>
+  <data name="Controls.DocumentSelection.BookmarkedOnly" xml:space="preserve">
+    <value>只顯示書籤頁</value>
+  </data>
+  <data name="Controls.DocumentSelection.FilterRangeHelp" xml:space="preserve">
+    <value>筆記本頁碼，例如 1–5, 8。留空可顯示所有頁碼。</value>
+  </data>
+  <data name="Controls.DocumentSelection.FilterRange" xml:space="preserve">
+    <value>篩選頁碼</value>
+  </data>
+  <data name="Controls.DocumentSelection.ResetFilters" xml:space="preserve">
+    <value>重設篩選</value>
+  </data>
+  <data name="Controls.DocumentSelection.SelectAllFiltered" xml:space="preserve">
+    <value>全選篩選結果</value>
+  </data>
+  <data name="Controls.DocumentSelection.ClearFiltered" xml:space="preserve">
+    <value>取消勾選</value>
+  </data>
+  <data name="Controls.DocumentSelection.FilteredCount" xml:space="preserve">
+    <value>顯示 {0} / {1} 頁 · 已勾選 {2} 頁供匯出</value>
+  </data>
+  <data name="Controls.DocumentSelection.NoMatches" xml:space="preserve">
+    <value>沒有符合條件的頁面。請調整或重設篩選條件。</value>
+  </data>
+  <data name="Controls.DocumentSelection.ApplyRangeFirst" xml:space="preserve">
+    <value>請按「篩選頁碼」或 Enter 套用頁碼範圍，再繼續匯出。</value>
+  </data>
+  <data name="Controls.DocumentSelection.PageList" xml:space="preserve">
+    <value>要包含的頁面</value>
   </data>
   <data name="Controls.DocumentSelection.ExportScope" xml:space="preserve">
     <value>匯出範圍</value>

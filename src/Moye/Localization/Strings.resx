@@ -190,7 +190,43 @@
     <value>Continue to export</value>
   </data>
   <data name="Controls.DocumentSelection.ExportHint" xml:space="preserve">
-    <value>Choose pages in their notebook order. Added text is outlined in the PDF.</value>
+    <value>Filter pages, then check the ones to export. Only checked pages in the results are exported, in notebook order.</value>
+  </data>
+  <data name="Controls.DocumentSelection.SectionFilter" xml:space="preserve">
+    <value>Section or current page</value>
+  </data>
+  <data name="Controls.DocumentSelection.SearchFilter" xml:space="preserve">
+    <value>Search page title, section or number</value>
+  </data>
+  <data name="Controls.DocumentSelection.BookmarkedOnly" xml:space="preserve">
+    <value>Bookmarked pages only</value>
+  </data>
+  <data name="Controls.DocumentSelection.FilterRangeHelp" xml:space="preserve">
+    <value>Notebook page numbers, for example 1–5, 8. Leave blank for all pages.</value>
+  </data>
+  <data name="Controls.DocumentSelection.FilterRange" xml:space="preserve">
+    <value>Filter range</value>
+  </data>
+  <data name="Controls.DocumentSelection.ResetFilters" xml:space="preserve">
+    <value>Reset filters</value>
+  </data>
+  <data name="Controls.DocumentSelection.SelectAllFiltered" xml:space="preserve">
+    <value>Select all results</value>
+  </data>
+  <data name="Controls.DocumentSelection.ClearFiltered" xml:space="preserve">
+    <value>Clear selection</value>
+  </data>
+  <data name="Controls.DocumentSelection.FilteredCount" xml:space="preserve">
+    <value>Showing {0} of {1} pages · {2} selected for export</value>
+  </data>
+  <data name="Controls.DocumentSelection.NoMatches" xml:space="preserve">
+    <value>No pages match. Change or reset the filters to see more pages.</value>
+  </data>
+  <data name="Controls.DocumentSelection.ApplyRangeFirst" xml:space="preserve">
+    <value>Apply the page range with Filter range or Enter before continuing.</value>
+  </data>
+  <data name="Controls.DocumentSelection.PageList" xml:space="preserve">
+    <value>Pages to include</value>
   </data>
   <data name="Controls.DocumentSelection.ExportScope" xml:space="preserve">
     <value>Export scope</value>

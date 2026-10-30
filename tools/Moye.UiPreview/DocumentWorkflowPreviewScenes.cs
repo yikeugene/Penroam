@@ -100,21 +100,22 @@ internal static class DocumentWorkflowPreviewScenes
         var before = JsonSerializer.Serialize(document, DocumentJson.Options);
         if (!importing)
         {
-            var scope = Logical<ComboBox>(content).Single(box => AutomationProperties.GetName(box) == "Export scope");
+            var scope = Logical<ComboBox>(content).Single(box => AutomationProperties.GetAutomationId(box) == "ExportSectionFilter");
             if (dialog.SelectedPages.Count != 60) throw new InvalidOperationException("Export must initially select the current section only.");
             scope.SelectedIndex = 1;
             if (dialog.SelectedPages.Count != 1 || dialog.SelectedPages[0].Id != document.Pages[1].Id) throw new InvalidOperationException("Current-page export targets the wrong page.");
-            scope.SelectedIndex = 2;
+            scope.SelectedIndex = 0;
             if (dialog.SelectedPages.Count != 100) throw new InvalidOperationException("Whole-notebook export must include all sections.");
         }
-        var range = Logical<TextBox>(content).Single(box => AutomationProperties.GetName(box) == "Page range");
-        var apply = Logical<Button>(content).Single(button => Equals(button.Content, "Apply range"));
+        var range = Logical<TextBox>(content).Single(box => importing ? AutomationProperties.GetName(box) == "Page range" : AutomationProperties.GetAutomationId(box) == "ExportRangeFilter");
+        var apply = Logical<Button>(content).Single(button => importing ? Equals(button.Content, "Apply range") : AutomationProperties.GetAutomationId(button) == "ApplyExportRange");
         range.Text = "100, 1–3"; apply.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         if (!dialog.SelectedPages.Select(page => page.Id).SequenceEqual(new[] { document.Pages[0].Id, document.Pages[1].Id, document.Pages[2].Id, document.Pages[99].Id }))
             throw new InvalidOperationException("Page-range selection must retain displayed order.");
         range.Text = "101"; apply.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-        if (dialog.SelectedPages.Count != 4) throw new InvalidOperationException("A rejected range changed the selection.");
-        Logical<Button>(content).Single(button => Equals(button.Content, "Select all")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        if (dialog.SelectedPages.Count != (importing ? 4 : 0)) throw new InvalidOperationException("A rejected range has the wrong selected-page count.");
+        if (!importing) Logical<Button>(content).Single(button => AutomationProperties.GetAutomationId(button) == "ResetExportFilters").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Logical<Button>(content).Single(button => importing ? Equals(button.Content, "Select all") : AutomationProperties.GetAutomationId(button) == "SelectAllDocumentPages").RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         if (before != JsonSerializer.Serialize(document, DocumentJson.Options)) throw new InvalidOperationException("Preview actions changed the source notebook.");
     }
 
