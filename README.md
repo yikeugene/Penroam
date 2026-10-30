@@ -6,15 +6,15 @@ An offline handwriting notebook for Windows 11. Penroam, formerly Moye, combines
 
 ## Get started
 
-1. Download [Penroam-1.4.1-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.4.1/Penroam-1.4.1-Setup-win-x64.exe) from the [Releases page](https://github.com/yikeugene/Penroam/releases).
+1. Download [Penroam-1.5.1-Setup-win-x64.exe](https://github.com/yikeugene/Penroam/releases/download/v1.5.1/Penroam-1.5.1-Setup-win-x64.exe) from the [Releases page](https://github.com/yikeugene/Penroam/releases).
 2. Run the installer, then open the **Penroam** desktop or Start menu shortcut. The .NET runtime is included; no separate runtime installation or administrator account is needed.
 3. Choose **New Notebook**, select a paper template and start writing. A mouse works too; pressure input requires a Windows Ink-compatible active pen.
 
 Penroam requires **Windows 11 x64**. Writing and saving work without an account or an internet connection. The installer is currently unsigned; release assets include SHA-256 checksums.
 
-**Before upgrading an existing library, keep a backup made by your current app.** Penroam 1.4.1 retains **SQLite schema 5** and **`.moye` backup format 5** from Penroam 1.2, and reads backup formats 1–5. Penroam 1.1.0 and earlier cannot open the newer formats. Uninstalling does not reverse a migration. See [compatibility](docs/FILE_FORMAT.md#compatibility).
+**Before upgrading an existing library, keep a backup made by your current app.** Penroam 1.5.1 retains **SQLite schema 5** and **`.moye` backup format 5** from Penroam 1.2, and reads backup formats 1–5. Penroam 1.1.0 and earlier cannot open the newer formats. Uninstalling does not reverse a migration. See [compatibility](docs/FILE_FORMAT.md#compatibility).
 
-Version **1.4.1** adds English / Traditional Chinese interface switching, labelled feature menus and a searchable All tools browser with shortcuts and availability guidance. See the [current release notes](docs/RELEASE_NOTES_1.4.1.md); historical releases are listed on [GitHub Releases](https://github.com/yikeugene/Penroam/releases).
+Version **1.5.1** adds Paper only mode with a collapsible floating toolbar, more direct writing controls, and PDF export filters for sections, titles, bookmarks and page ranges. See the [current release notes](docs/RELEASE_NOTES_1.5.1.md); historical releases are listed on [GitHub Releases](https://github.com/yikeugene/Penroam/releases).
 
 ## Features
 
@@ -24,8 +24,8 @@ Version **1.4.1** adds English / Traditional Chinese interface switching, labell
 - **Typed notes and images:** free typing with ruled alignment, fixed text boxes, whole-box formatting, PNG/JPEG images and pasted screenshots. Move overflowing text to a new page explicitly.
 - **Organization:** notebooks, sections, page titles and bookmarks; pins and cover colors; batch page reordering, duplication and cross-notebook move/copy.
 - **Search and study:** local typed/PDF-text search, visual search by color and position, anchored questions, saved next-step hints, separate practice attempts and regional restore from the current editing session.
-- **Document workflows:** preview and choose PDF or locally converted Office pages before import, or import a folder of PDF/PPTX files as notebook sections. Export a page, section, notebook or selected pages, using original sizes or actual-size A4 tiling.
-- **Workspace:** labeled feature menus and a searchable All tools browser; remembered reading position, editable single/two-page layouts, Fit Page/Fit Spread/Fit Width, focus mode, writing guards, and a read-only reference pane.
+- **Document workflows:** preview and choose PDF or locally converted Office pages before import, or import a folder of PDF/PPTX files as notebook sections. Filter export pages by section, title, bookmark and page range, using original sizes or actual-size A4 tiling.
+- **Workspace:** labeled feature menus and a searchable All tools browser; remembered reading position, editable single/two-page layouts, Fit Page/Fit Spread/Fit Width, Paper only and full-screen focus modes with floating tools, writing guards, and a read-only reference pane.
 - **Backup and recovery:** editable `.moye` backups, optional local automatic backups while the app is open, best-effort interrupted-draft recovery and recently deleted notebook copies.
 
 See the [user guide](docs/USER_GUIDE.md) for commands, keyboard shortcuts and limits. The [roadmap](ROADMAP.md) contains future ideas, not a list of implemented capabilities. Infinite canvas, cloud sync, recording, handwriting recognition and AI features are not implemented.
@@ -44,7 +44,7 @@ New installations default to `%LOCALAPPDATA%\Programs\Penroam`. Upgrades recogni
 
 Normal launches check GitHub for newer stable releases. **Update now** downloads and verifies the installer checksum, saves pending notes and closes the app for installation. Manual checks are available through **Help → Check for updates…** or **Check for updates** on the notebook home screen. Update requests include the app version, not notebook content. Launching with `--data-dir` disables both startup and manual update checks.
 
-Install 1.4.1 manually when upgrading from 1.1.0 or earlier. Closing the app and running a newer installer remains a manual fallback. See [in-app updates](docs/USER_GUIDE.md#in-app-updates) for cancellation, retry and installation behavior.
+Install 1.5.1 manually when upgrading from 1.1.0 or earlier. Closing the app and running a newer installer remains a manual fallback. See [in-app updates](docs/USER_GUIDE.md#in-app-updates) for cancellation, retry and installation behavior.
 
 ## Build from source
 
@@ -73,7 +73,7 @@ See [CONTRIBUTING.md](https://github.com/yikeugene/Penroam/blob/master/CONTRIBUT
 
 ## Verification and limitations
 
-Use the [current release notes](docs/RELEASE_NOTES_1.4.1.md) and [GitHub Actions](https://github.com/yikeugene/Penroam/actions) for verification tied to a published build. Historical test counts do not establish the status of the current source.
+Use the [current release notes](docs/RELEASE_NOTES_1.5.1.md) and [GitHub Actions](https://github.com/yikeugene/Penroam/actions) for verification tied to a published build. Historical test counts do not establish the status of the current source.
 
 - Managed tests, detached WPF renders, packaged storage checks and installer checks cover different things. A detached render does not verify live keyboard focus, popups, IME composition, pen pressure, touch or palm rejection.
 - Physical pen/touch behavior, broader IME sessions, printer output and application-control compatibility require testing on the target device. Do not infer acceptance from a mouse test or successful CI run.

@@ -2,7 +2,7 @@
 
 ## Penroam 1.2.0 format 5
 
-Penroam 1.2.0–1.4.1 writes SQLite schema **5** and .moye backup format **5**, and reads formats 1–5. Released 1.1.0 remains schema/format 4 as described below. Upgrading schema 4 changes only user_version; existing metadata, ink and hashes are not rewritten by the migration. Older apps reject schema/format 5 instead of silently discarding new data.
+Penroam 1.2.0–1.5.1 writes SQLite schema **5** and .moye backup format **5**, and reads formats 1–5. Released 1.1.0 remains schema/format 4 as described below. Upgrading schema 4 changes only user_version; existing metadata, ink and hashes are not rewritten by the migration. Older apps reject schema/format 5 instead of silently discarding new data.
 
 Page JSON adds studyQuestions (default empty), resumeHint (default null) and practice (default null). Questions preserve ID, prompt, explanation, retryNotes, status (NeedHelp 0, Understood 1, TryAgain 2, Resolved 3), created/modified UTC timestamps and an optional rectangular anchor. Resume hints contain nextStep, modifiedUtc and optional anchor. Anchor x/y/width/height use page DIP coordinates and must be finite, positive in size and inside the canvas; page extension translates them with the content. Null anchors mean page-level references. Snapshot/history/draft/save/backup paths retain independent copies of these records.
 
