@@ -13,6 +13,23 @@
       <Setter Property="Width" Value="50"/><Setter Property="Height" Value="48"/>
       <Setter Property="Margin" Value="0,2"/><Setter Property="Padding" Value="6"/>
     </Style>
+    <Style x:Key="FocusActionButton" TargetType="Button" BasedOn="{StaticResource FocusToolButton}">
+      <Setter Property="Width" Value="104"/><Setter Property="FontSize" Value="12"/>
+      <Setter Property="ContentTemplate"><Setter.Value><DataTemplate><TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center"/></DataTemplate></Setter.Value></Setter>
+    </Style>
+    <Style x:Key="FloatingCircleButton" TargetType="Button" BasedOn="{StaticResource IconButton}">
+      <Setter Property="Width" Value="52"/><Setter Property="Height" Value="52"/><Setter Property="Background" Value="{StaticResource Accent}"/><Setter Property="Foreground" Value="White"/>
+      <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+        <Border x:Name="Circle" CornerRadius="26" Background="{TemplateBinding Background}" BorderThickness="2" BorderBrush="Transparent">
+          <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+        <ControlTemplate.Triggers>
+          <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Circle" Property="BorderBrush" Value="{StaticResource Ink}"/></Trigger>
+          <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Circle" Property="BorderBrush" Value="White"/></Trigger>
+          <Trigger Property="IsPressed" Value="True"><Setter TargetName="Circle" Property="Opacity" Value="0.8"/></Trigger>
+        </ControlTemplate.Triggers>
+      </ControlTemplate></Setter.Value></Setter>
+    </Style>
     <Style x:Key="SidebarTab" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}"><Setter Property="Width" Value="92"/><Setter Property="Padding" Value="8,6"/><Setter Property="FontSize" Value="12"/><Setter Property="Margin" Value="0"/><Setter Property="Foreground" Value="#65736D"/><Setter Property="FontWeight" Value="SemiBold"/></Style>
     <Style x:Key="HeaderActionButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
       <Setter Property="Padding" Value="10,8"/><Setter Property="FontSize" Value="12"/>
@@ -231,6 +248,7 @@
               <Button x:Name="FitPageButton" Content="{loc:Loc Shell.FitPage}" Click="FitPageClick" FontSize="12" Foreground="#52655B" ToolTip="{loc:Loc Shell.FitPageHint}"/>
               <Button x:Name="FitWidthButton" Content="{loc:Loc Shell.FitWidth}" Click="FitWidthClick" FontSize="12" Foreground="#52655B" ToolTip="{loc:Loc Shell.FitWidthHint}"/>
               <Border Width="1" Height="18" Background="#DDE3DC" Margin="8,0"/>
+              <Button x:Name="PaperOnlyButton" Style="{StaticResource IconButton}" Content="&#xE8A7;" Click="PaperOnlyClick" FontFamily="Segoe Fluent Icons" FontSize="18" ToolTip="{loc:Loc Shell.PaperOnlyHint}" AutomationProperties.Name="{loc:Loc Shell.PaperOnlyMode}"/>
               <Button Style="{StaticResource IconButton}" Content="&#xE740;" Click="FocusClick" x:Name="FocusButton" FontFamily="Segoe Fluent Icons" FontSize="18" ToolTip="{loc:Loc Shell.FocusModeHint}" AutomationProperties.Name="{loc:Loc Shell.FocusMode}"/>
             </StackPanel>
           </Grid>
@@ -239,40 +257,49 @@
     </Grid>
     <!-- Keep tool input outside the paper viewport's pen and touch routes. -->
     <Border x:Name="FocusToolbar" Grid.RowSpan="2" Panel.ZIndex="20" Visibility="Collapsed"
-            HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,18" Padding="7"
+            HorizontalAlignment="Left" VerticalAlignment="Center" Margin="14,18,14,80" Padding="7"
             Background="White" BorderBrush="#DDE3DC" BorderThickness="1" CornerRadius="14"
             AutomationProperties.Name="{loc:Loc Shell.FocusWritingTools}">
       <Border.Effect><DropShadowEffect BlurRadius="16" ShadowDepth="2" Opacity="0.12" Color="#445B50"/></Border.Effect>
-      <StackPanel x:Name="FocusWritingTools">
+      <StackPanel x:Name="FocusWritingTools" Width="208">
         <StackPanel x:Name="FocusPresetPanel" Orientation="Horizontal" HorizontalAlignment="Center"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
           <Button Style="{StaticResource FocusToolButton}" Content="T" Tag="Text" Click="TypeClick" ToolTip="{loc:Loc Shell.FocusTypeHint}" AutomationProperties.Name="{loc:Loc Shell.FocusType}"/>
           <Button Style="{StaticResource FocusToolButton}" Content="↖" Tag="Select" Click="ToolClick" ToolTip="{loc:Loc Shell.FocusSelectHint}" AutomationProperties.Name="{loc:Loc Shell.FocusSelect}"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
           <Button x:Name="FocusPenButton" Tag="Pen" Style="{StaticResource FocusToolButton}" Click="ToolClick" ToolTip="{loc:Loc Shell.FocusPenHint}" AutomationProperties.Name="{loc:Loc Shell.FocusPen}"><Path Data="M16,2 L22,8 10,20 3,22 5,15 Z M5,15 L10,20 M14,4 L20,10" Style="{StaticResource ToolIcon}"/></Button>
           <Button x:Name="FocusHighlighterButton" Tag="Highlighter" Style="{StaticResource FocusToolButton}" Click="ToolClick" ToolTip="{loc:Loc Shell.HighlighterHint}" AutomationProperties.Name="{loc:Loc Shell.FocusHighlighter}"><Path Data="M12,3 L21,8 14,19 5,14 Z M7,15 L5,19 10,21 12,18 M3,23 L13,23 M10,6 L18,11" Style="{StaticResource ToolIcon}"/></Button>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
           <Button x:Name="FocusEraserButton" Tag="PointEraser" Style="{StaticResource FocusToolButton}" Click="EraserToolClick" ToolTip="{loc:Loc Shell.FocusEraserHint}" AutomationProperties.Name="{loc:Loc Shell.FocusEraser}"><Path Data="M13,3 Q14,2 15,3 L22,10 Q23,11 22,12 L12,22 7,22 2,17 Q1,16 2,15 Z M7,10 L17,17 M12,22 L23,22" Style="{StaticResource ToolIcon}"/></Button>
           <Button x:Name="FocusLassoButton" Tag="Lasso" Style="{StaticResource FocusToolButton}" Click="ToolClick" ToolTip="{loc:Loc Shell.FocusLassoHint}" AutomationProperties.Name="{loc:Loc Shell.FocusLasso}"><Path Data="M8,20 C-1,17 0,4 12,3 C24,1 27,16 15,20 C8,23 4,21 6,17 C8,13 12,21 8,25" Style="{StaticResource ToolIcon}"/></Button>
-        </StackPanel>
         <Button x:Name="FocusPenSettingsButton" Style="{StaticResource FocusToolButton}" Click="PenSettingsClick" ToolTip="{loc:Loc Shell.PenSettingsHint}" AutomationProperties.Name="{loc:Loc Shell.FocusPenSettings}">
           <StackPanel><Ellipse Width="18" Height="18" Fill="{Binding Fill, ElementName=CurrentColor}" Stroke="#B8C2D1" StrokeThickness="0.5"/><TextBlock Text="{Binding Text, ElementName=CurrentWidth, StringFormat={}{0} mm}" FontSize="9" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
         </Button>
+        </StackPanel>
         <Border Height="1" Background="#DDE3DC" Margin="7,6"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
         <Button x:Name="FocusAddPageButton" Style="{StaticResource FocusToolButton}" Width="100" Padding="8,4" Click="AddPageClick" ToolTip="{loc:Loc Shell.FocusAddPageHint}" AutomationProperties.Name="{loc:Loc Shell.FocusAddPage}">
           <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE710;" FontFamily="Segoe Fluent Icons" FontSize="17" VerticalAlignment="Center"/><TextBlock Text="{loc:Loc Shell.AddPageShort}" FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0"/></StackPanel>
         </Button>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
           <Button x:Name="FocusUndoButton" Style="{StaticResource FocusToolButton}" Content="&#xE7A7;" Click="UndoClick" FontFamily="Segoe Fluent Icons" FontSize="18" IsEnabled="{Binding CanUndo}" ToolTip="{loc:Loc Shell.UndoHint}" AutomationProperties.Name="{loc:Loc Shell.FocusUndo}"/>
           <Button x:Name="FocusRedoButton" Style="{StaticResource FocusToolButton}" Content="&#xE7A6;" Click="RedoClick" FontFamily="Segoe Fluent Icons" FontSize="18" IsEnabled="{Binding CanRedo}" ToolTip="{loc:Loc Shell.RedoHint}" AutomationProperties.Name="{loc:Loc Shell.FocusRedo}"/>
         </StackPanel>
-        <Button x:Name="FocusAllToolsButton" Style="{StaticResource FocusToolButton}" Width="100" Content="{loc:Loc Features.AllTools}" Click="ShowCommandsClick" FontSize="12" ToolTip="{loc:Loc Features.BrowseOrSearchEveryToolCtrlShiftP}" AutomationProperties.Name="{loc:Loc Features.AllTools}"/>
-        <Button x:Name="ExitFocusButton" Style="{StaticResource FocusToolButton}" Content="&#xE73F;" Click="FocusClick" FontFamily="Segoe Fluent Icons" FontSize="18" ToolTip="{loc:Loc Shell.ExitFocusHint}" AutomationProperties.Name="{loc:Loc Shell.ExitFocus}"/>
+        <UniformGrid Columns="2">
+          <Button x:Name="FocusTwoPagesButton" Style="{StaticResource FocusActionButton}" Content="{loc:Loc Features.Command.two-pages.Name}" Click="ToggleTwoPagesClick" ToolTip="{loc:Loc Features.SwitchBetweenSinglePageAndEditableTwoPage}" AutomationProperties.Name="{loc:Loc Features.Command.two-pages.Name}"/>
+          <Button x:Name="FocusReferenceButton" Style="{StaticResource FocusActionButton}" Content="{loc:Loc Controls.Reference.Title}" Click="ShowReferenceClick" ToolTip="{loc:Loc Features.OpenAPageBesideYourWritingAsA}" AutomationProperties.Name="{loc:Loc Features.Command.reference-view.Name}"/>
+          <Button x:Name="FocusFitPageButton" Style="{StaticResource FocusActionButton}" Content="{loc:Loc Shell.FitPage}" Click="FitPageClick" ToolTip="{loc:Loc Shell.FitPageHint}" AutomationProperties.Name="{loc:Loc Shell.FitPage}"/>
+          <Button x:Name="FocusFitWidthButton" Style="{StaticResource FocusActionButton}" Content="{loc:Loc Shell.FitWidth}" Click="FitWidthClick" ToolTip="{loc:Loc Shell.FitWidthHint}" AutomationProperties.Name="{loc:Loc Shell.FitWidth}"/>
+          <Button x:Name="FocusManagePagesButton" Style="{StaticResource FocusActionButton}" Content="{loc:Loc Core.CommandManagePages}" Click="ManagePagesClick" ToolTip="{loc:Loc Features.ReorderMoveCopyOrDeletePages}" AutomationProperties.Name="{loc:Loc Core.CommandManagePages}"/>
+          <Button x:Name="FocusAllToolsButton" Style="{StaticResource FocusActionButton}" Content="{loc:Loc Features.AllTools}" Click="ShowCommandsClick" ToolTip="{loc:Loc Features.BrowseOrSearchEveryToolCtrlShiftP}" AutomationProperties.Name="{loc:Loc Features.AllTools}"/>
+          <Button x:Name="FocusFullscreenButton" Style="{StaticResource FocusActionButton}" Content="{loc:Loc Shell.Fullscreen}" Click="FocusClick" ToolTip="{loc:Loc Shell.FocusModeHint}" AutomationProperties.Name="{loc:Loc Shell.Fullscreen}"/>
+          <Button x:Name="ExitFocusButton" Style="{StaticResource FocusActionButton}" Content="{loc:Loc Shell.RestoreWorkspace}" Click="ExitWritingModesClick" ToolTip="{loc:Loc Shell.RestoreWorkspace}" AutomationProperties.Name="{loc:Loc Shell.RestoreWorkspace}"/>
+        </UniformGrid>
         <Button x:Name="FocusGuardButton" Style="{StaticResource FocusToolButton}" Content="{loc:Loc Shell.Guard}" Visibility="Collapsed" Click="WorkspaceSettingsClick" FontSize="11" AutomationProperties.Name="{loc:Loc Shell.GuardSettings}"/>
       </StackPanel>
     </Border>
+    <Button x:Name="FloatingToolsButton" Grid.RowSpan="2" Panel.ZIndex="21" Visibility="Collapsed" Style="{StaticResource FloatingCircleButton}"
+            HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="18" Click="FloatingToolsClick" FontFamily="Segoe Fluent Icons" FontSize="22"
+            Content="&#xE713;" ToolTip="{loc:Loc Shell.ShowFloatingTools}" AutomationProperties.Name="{loc:Loc Shell.ShowFloatingTools}"/>
     <Popup x:Name="PenSettingsPopup" PlacementTarget="{Binding ElementName=PenSettingsButton}" Placement="Bottom" VerticalOffset="10" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade" Closed="PenSettingsClosed">
       <Border Background="White" BorderBrush="#DDE3DC" BorderThickness="1" CornerRadius="12" Padding="14" Width="350" MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}">
         <ScrollViewer MaxHeight="520" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" PanningMode="VerticalOnly">

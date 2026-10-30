@@ -201,7 +201,7 @@ public partial class MainWindow : Window
             if (ViewModel.IsLibraryVisible)
             {
                 _fitWidthActive = false;
-                if (_focusMode) ToggleFocus();
+                if (ChromeHidden) ExitWritingModes();
             }
         });
         if (ViewModel.IsLibraryVisible) HomeSearch.Focus();
@@ -467,10 +467,10 @@ public partial class MainWindow : Window
     }
     private void PlaceWritingPopup(Popup popup, Button trigger)
     {
-        popup.PlacementTarget = trigger;
-        popup.Placement = _focusMode ? (_workspace.FocusToolsOnRight ? PlacementMode.Left : PlacementMode.Right) : PlacementMode.Bottom;
-        popup.HorizontalOffset = _focusMode ? (_workspace.FocusToolsOnRight ? -12 : 12) : 0;
-        popup.VerticalOffset = _focusMode ? 0 : 10;
+        popup.PlacementTarget = ChromeHidden ? FloatingToolAnchor(trigger) : trigger;
+        popup.Placement = ChromeHidden ? (_workspace.FocusToolsOnRight ? PlacementMode.Left : PlacementMode.Right) : PlacementMode.Bottom;
+        popup.HorizontalOffset = ChromeHidden ? (_workspace.FocusToolsOnRight ? -12 : 12) : 0;
+        popup.VerticalOffset = ChromeHidden ? 0 : 10;
     }
     private void PageSettingsClick(object sender, RoutedEventArgs e)
     {
@@ -630,9 +630,9 @@ public partial class MainWindow : Window
         PaperPickerHint.Text = addingPage ? L.Text("Core.AddPaperHint") : TemplatePicker.IsEnabled ? L.Text("Core.ChangePaperHint") : L.Text("Core.PdfPaperHint");
         ApplyPaperButton.Content = addingPage ? L.Text("Core.AddPage") : L.Text("Core.ApplyPaper");
         var thumbnailsVisible = Sidebar.Visibility == Visibility.Visible && PagesPanel.Visibility == Visibility.Visible;
-        PaperSettingsPopup.PlacementTarget = _focusMode ? (addingPage ? FocusAddPageButton : FocusPenSettingsButton)
+        PaperSettingsPopup.PlacementTarget = ChromeHidden ? FloatingToolAnchor(addingPage ? FocusAddPageButton : FocusPenSettingsButton)
             : thumbnailsVisible ? ThumbnailList : PenSettingsButton;
-        PaperSettingsPopup.Placement = _focusMode ? (_workspace.FocusToolsOnRight ? PlacementMode.Left : PlacementMode.Right)
+        PaperSettingsPopup.Placement = ChromeHidden ? (_workspace.FocusToolsOnRight ? PlacementMode.Left : PlacementMode.Right)
             : thumbnailsVisible ? PlacementMode.Right : PlacementMode.Bottom;
         Dispatcher.BeginInvoke(() => PaperSettingsPopup.IsOpen = true, DispatcherPriority.Input);
     }
@@ -758,13 +758,14 @@ public partial class MainWindow : Window
             ClearTouches(); CommitEditors(); CaptureReadingPosition(); await SaveWorkspaceAsync();
             await ViewModel.ReturnToLibraryAsync();
             _fitWidthActive = false;
-            if (_focusMode) ToggleFocus();
+            if (ChromeHidden) ExitWritingModes();
         });
         if (ViewModel.IsLibraryVisible) HomeSearch.Focus();
     }
     private void ShowPagesClick(object sender, RoutedEventArgs e) => ShowSidebarTab(false);
     private void ShowSidebarTab(bool notebooks)
     {
+        if (ChromeHidden) ExitWritingModes();
         Sidebar.Visibility = Visibility.Visible; SidebarColumn.Width = new GridLength(224);
         PagesPanel.Visibility = notebooks ? Visibility.Collapsed : Visibility.Visible;
         NotebooksPanel.Visibility = notebooks ? Visibility.Visible : Visibility.Collapsed;
@@ -775,18 +776,8 @@ public partial class MainWindow : Window
         CloseSettingsPopups();
     }
     private void ToggleSidebarClick(object sender, RoutedEventArgs e) => ToggleSidebar();
-    private void ToggleSidebar() { bool show = Sidebar.Visibility != Visibility.Visible; Sidebar.Visibility = show ? Visibility.Visible : Visibility.Collapsed; SidebarColumn.Width = new GridLength(show ? 224 : 0); CloseSettingsPopups(); }
+    private void ToggleSidebar() { if (ChromeHidden) { ExitWritingModes(); Sidebar.Visibility = Visibility.Visible; SidebarColumn.Width = new GridLength(224); return; } bool show = Sidebar.Visibility != Visibility.Visible; Sidebar.Visibility = show ? Visibility.Visible : Visibility.Collapsed; SidebarColumn.Width = new GridLength(show ? 224 : 0); CloseSettingsPopups(); }
     private void FocusClick(object sender, RoutedEventArgs e) => ToggleFocus();
-    private void ToggleFocus()
-    {
-        CloseSettingsPopups();
-        _focusMode = !_focusMode;
-        if (_focusMode) { _oldWindowState = WindowState; _sidebarBeforeFocus = Sidebar.Visibility == Visibility.Visible; WindowStyle = WindowStyle.None; WindowState = WindowState.Maximized; Sidebar.Visibility = Visibility.Collapsed; SidebarColumn.Width = new GridLength(0); }
-        else { WindowStyle = WindowStyle.SingleBorderWindow; WindowState = _oldWindowState; Sidebar.Visibility = _sidebarBeforeFocus ? Visibility.Visible : Visibility.Collapsed; SidebarColumn.Width = new GridLength(_sidebarBeforeFocus ? 224 : 0); }
-        FocusButton.Content = _focusMode ? "\uE73F" : "\uE740";
-        L.Bind(FocusButton, ToolTipProperty, _focusMode ? "Core.ExitFocus" : "Core.Focus");
-        ApplyFocusChrome();
-    }
     private void ZoomInClick(object sender, RoutedEventArgs e) => ChangeZoom(ViewModel.Zoom * 1.15, new Point(Viewport.ActualWidth / 2, Viewport.ActualHeight / 2));
     private void ZoomOutClick(object sender, RoutedEventArgs e) => ChangeZoom(ViewModel.Zoom / 1.15, new Point(Viewport.ActualWidth / 2, Viewport.ActualHeight / 2));
     private void FitWidthClick(object sender, RoutedEventArgs e) { ClearTouches(); FitWidth(); }
@@ -1001,6 +992,8 @@ public partial class MainWindow : Window
         { ClearSearchClick(sender, e); e.Handled = true; return; }
         if (e.Key == Key.Escape && (PenSettingsPopup.IsOpen || PaperSettingsPopup.IsOpen || EraserSettingsPopup.IsOpen)) { CloseSettingsPopups(); e.Handled = true; return; }
         if (e.Key == Key.F9) { ToggleSidebar(); e.Handled = true; return; }
+        if ((e.Key == Key.F10 || e.Key == Key.System && e.SystemKey == Key.F10) && Keyboard.Modifiers == ModifierKeys.None)
+        { TogglePaperOnly(); e.Handled = true; return; }
         if (e.Key == Key.F11) { ToggleFocus(); e.Handled = true; return; }
         bool ctrl = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
         if (ctrl && e.Key == Key.S) { CommitEditors(); await RunAsync("Saving…", () => ViewModel.Autosave.FlushAsync()); e.Handled = true; return; }
@@ -1024,7 +1017,7 @@ public partial class MainWindow : Window
         // Section navigation and its context-menu keys must not edit ink on
         // the current page. Notebook undo/redo remains available after a move.
         if (SectionList.IsKeyboardFocusWithin && !(ctrl && e.Key is Key.Z or Key.Y)) return;
-        if (e.Key == Key.Escape) { if (_focusMode) ToggleFocus(); else SetTool(InkTool.Pen); e.Handled = true; return; }
+        if (e.Key == Key.Escape) { if (_paperOnlyMode && _floatingToolsExpanded) ToggleFloatingTools(); else if (ChromeHidden) ExitWritingModes(); else SetTool(InkTool.Pen); e.Handled = true; return; }
         if (ctrl)
         {
             switch (e.Key)

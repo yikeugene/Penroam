@@ -325,6 +325,221 @@ public sealed class PageSpreadInteractionTests(PageSpreadTestApplication applica
         Assert.Equal(fitZoom, fixture.Model.Zoom);
     });
 
+    [Theory]
+    [InlineData(true, true)]
+    [InlineData(false, false)]
+    public void PaperOnlyModeRestoresPanelsWithoutChangingWindowBounds(bool sidebarVisible, bool referenceVisible) => application.Run(() =>
+    {
+        using var fixture = new ShellFixture(2);
+        var sidebar = (FrameworkElement)fixture.Window.FindName("Sidebar");
+        var column = (ColumnDefinition)fixture.Window.FindName("SidebarColumn");
+        var reference = (ContentControl)fixture.Window.FindName("ReferenceHost");
+        sidebar.Visibility = sidebarVisible ? Visibility.Visible : Visibility.Collapsed;
+        column.Width = new GridLength(sidebarVisible ? 224 : 0);
+        if (referenceVisible) reference.Content = new Border();
+        reference.Visibility = referenceVisible ? Visibility.Visible : Visibility.Collapsed;
+        fixture.Layout();
+        var bounds = (fixture.Window.Width, fixture.Window.Height, fixture.Window.WindowState, fixture.Window.WindowStyle);
+        var page = fixture.Model.SelectedPage;
+
+        Invoke(fixture.Window, "TogglePaperOnly"); fixture.Layout();
+
+        Assert.True(Get<bool>(fixture.Window, "_paperOnlyMode"));
+        Assert.Equal(bounds, (fixture.Window.Width, fixture.Window.Height, fixture.Window.WindowState, fixture.Window.WindowStyle));
+        foreach (var name in new[] { "NotebookHeader", "WritingHeader", "EditorFooter", "Sidebar", "ReferenceHost", "FocusToolbar" })
+            Assert.Equal(Visibility.Collapsed, ((FrameworkElement)fixture.Window.FindName(name)).Visibility);
+        Assert.Equal(0, column.Width.Value);
+        Assert.Equal(Visibility.Visible, ((Button)fixture.Window.FindName("FloatingToolsButton")).Visibility);
+
+        Invoke(fixture.Window, "TogglePaperOnly"); fixture.Layout();
+
+        Assert.False(Get<bool>(fixture.Window, "_paperOnlyMode"));
+        Assert.Equal(bounds, (fixture.Window.Width, fixture.Window.Height, fixture.Window.WindowState, fixture.Window.WindowStyle));
+        Assert.Equal(sidebarVisible ? Visibility.Visible : Visibility.Collapsed, sidebar.Visibility);
+        Assert.Equal(sidebarVisible ? 224 : 0, column.Width.Value);
+        Assert.Equal(referenceVisible ? Visibility.Visible : Visibility.Collapsed, reference.Visibility);
+        foreach (var name in new[] { "NotebookHeader", "WritingHeader", "EditorFooter" })
+            Assert.Equal(Visibility.Visible, ((FrameworkElement)fixture.Window.FindName(name)).Visibility);
+        Assert.Equal(Visibility.Collapsed, ((Button)fixture.Window.FindName("FloatingToolsButton")).Visibility);
+        Assert.Same(page, fixture.Model.SelectedPage);
+        Assert.False(fixture.Model.CanUndo); Assert.False(fixture.Model.Autosave.IsDirty);
+    });
+
+    [Fact]
+    public void PaperOnlyModeCommitsPendingTextOnBothPagesAndRetainsUndoAndSave() => application.Run(() =>
+    {
+        using var fixture = new ShellFixture(2, document => document.Pages.ForEach(page => page.Texts.Add(new() { Text = "Original" })));
+        fixture.Model.Zoom = .5; fixture.Mode(true);
+        var left = fixture.Model.Pages[0]; var right = fixture.Model.Pages[1];
+        Assert.Single(Descendants<TextBox>(fixture.Editor(left))).Text = "Pending left";
+        Assert.Single(Descendants<TextBox>(fixture.Editor(right))).Text = "Pending right";
+        var historyChanges = 0;
+        fixture.Model.HistoryChanged += (_, _) => historyChanges++;
+
+        Invoke(fixture.Window, "TogglePaperOnly"); fixture.Layout();
+        Invoke(fixture.Window, "ToggleFloatingTools"); fixture.Layout();
+        Invoke(fixture.Window, "ExitWritingModes"); fixture.Layout();
+
+        Assert.Equal("Pending left", fixture.Model.Document!.Pages[0].Texts[0].Text);
+        Assert.Equal("Pending right", fixture.Model.Document.Pages[1].Texts[0].Text);
+        Assert.Equal(2, historyChanges);
+        fixture.Model.Autosave.FlushAsync().GetAwaiter().GetResult();
+        Assert.Equal("Pending left", fixture.Repository.Saved!.Pages[0].Texts[0].Text);
+        Assert.Equal("Pending right", fixture.Repository.Saved.Pages[1].Texts[0].Text);
+        fixture.Model.Undo(); fixture.Model.Undo(); fixture.Layout();
+        Assert.All(fixture.Model.Document.Pages, page => Assert.Equal("Original", page.Texts[0].Text));
+        Assert.False(fixture.Model.CanUndo);
+    });
+
+    [Fact]
+    public void FloatingTwoPagesControlKeepsTheActivePageAndTracksBothLayouts() => application.Run(() =>
+    {
+        using var fixture = new ShellFixture(3);
+        fixture.Model.Zoom = .5;
+        var active = fixture.Model.Pages[1]; fixture.Navigate(active);
+        Invoke(fixture.Window, "TogglePaperOnly"); fixture.Layout();
+        var circle = (Button)fixture.Window.FindName("FloatingToolsButton");
+        circle.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent, circle));
+        fixture.Layout();
+        Assert.Equal(Visibility.Visible, ((FrameworkElement)fixture.Window.FindName("FocusToolbar")).Visibility);
+        var button = (Button)fixture.Window.FindName("FocusTwoPagesButton");
+
+        button.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent, button)); fixture.Layout();
+        Assert.True(Get<bool>(fixture.Window, "_twoPageView"));
+        Assert.Same(active, fixture.Model.SelectedPage);
+        Assert.Same(active, Assert.IsType<PageSpreadViewModel>(fixture.List.SelectedItem).Second);
+        Assert.Equal("Fit Spread", ((Button)fixture.Window.FindName("FocusFitPageButton")).Content);
+
+        button.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent, button)); fixture.Layout();
+        Assert.False(Get<bool>(fixture.Window, "_twoPageView"));
+        Assert.Same(active, fixture.Model.SelectedPage);
+        Assert.Equal("Fit Page", ((Button)fixture.Window.FindName("FocusFitPageButton")).Content);
+        Assert.True(Get<bool>(fixture.Window, "_paperOnlyMode"));
+        Assert.False(fixture.Model.CanUndo); Assert.False(fixture.Model.Autosave.IsDirty);
+    });
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void CollapsedFloatingToolsAnchorSettingsAndPageActionsToTheVisibleCircle(bool dockRight) => application.Run(() =>
+    {
+        using var fixture = new ShellFixture(1);
+        Get<WorkspacePreferences>(fixture.Window, "_workspace").FocusToolsOnRight = dockRight;
+        Invoke(fixture.Window, "ApplyWorkspaceOptions");
+        Invoke(fixture.Window, "TogglePaperOnly"); fixture.Layout();
+        var circle = (Button)fixture.Window.FindName("FloatingToolsButton");
+        var pageActions = (Button)fixture.Window.FindName("PageActionsButton");
+        Assert.True(circle.IsVisible);
+        Assert.Same(circle, Invoke(fixture.Window, "FeatureActionAnchor", pageActions));
+        foreach (var (popupName, buttonName) in new[]
+        {
+            ("PenSettingsPopup", "FocusPenSettingsButton"), ("EraserSettingsPopup", "FocusEraserButton")
+        })
+        {
+            var popup = (System.Windows.Controls.Primitives.Popup)fixture.Window.FindName(popupName);
+            var button = (Button)fixture.Window.FindName(buttonName);
+            Invoke(fixture.Window, "PlaceWritingPopup", popup, button);
+            Assert.Same(circle, popup.PlacementTarget);
+            Assert.Equal(dockRight ? System.Windows.Controls.Primitives.PlacementMode.Left : System.Windows.Controls.Primitives.PlacementMode.Right,
+                popup.Placement);
+            Assert.False(popup.IsOpen);
+        }
+
+        Invoke(fixture.Window, "ToggleFloatingTools"); fixture.Layout();
+        Assert.Same(fixture.Window.FindName("FocusAllToolsButton"), Invoke(fixture.Window, "FeatureActionAnchor", pageActions));
+        foreach (var (popupName, buttonName) in new[]
+        {
+            ("PenSettingsPopup", "FocusPenSettingsButton"), ("EraserSettingsPopup", "FocusEraserButton")
+        })
+        {
+            var popup = (System.Windows.Controls.Primitives.Popup)fixture.Window.FindName(popupName);
+            var button = (Button)fixture.Window.FindName(buttonName);
+            Assert.True(button.IsVisible);
+            Invoke(fixture.Window, "PlaceWritingPopup", popup, button);
+            Assert.Same(button, popup.PlacementTarget);
+            Assert.False(popup.IsOpen);
+        }
+    });
+
+    [Theory]
+    [InlineData(false, "TogglePaperOnly")]
+    [InlineData(true, "ExitWritingModes")]
+    public void ExplicitReferenceCloseInPaperOnlyModeIsNotUndoneOnExit(bool useCloseButton, string exitMethod) => application.Run(() =>
+    {
+        using var fixture = new ShellFixture(1);
+        var host = (ContentControl)fixture.Window.FindName("ReferenceHost");
+        Invoke(fixture.Window, "ShowReferenceClick", fixture.Window, new RoutedEventArgs()); fixture.Layout();
+        var reference = Assert.IsType<ReferencePane>(host.Content);
+        Assert.Equal(Visibility.Visible, host.Visibility);
+        Invoke(fixture.Window, "TogglePaperOnly"); fixture.Layout();
+        Assert.Equal(Visibility.Collapsed, host.Visibility);
+        Invoke(fixture.Window, "ShowReferenceClick", fixture.Window, new RoutedEventArgs()); fixture.Layout();
+        Assert.Equal(Visibility.Visible, host.Visibility);
+
+        if (useCloseButton)
+        {
+            var close = Descendants<Button>(reference).Single(button => System.Windows.Automation.AutomationProperties.GetName(button) ==
+                Moye.Localization.LocalizationService.Text("Controls.Common.Close"));
+            close.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent, close));
+        }
+        else Invoke(fixture.Window, "ShowReferenceClick", fixture.Window, new RoutedEventArgs());
+        fixture.Layout();
+        Assert.Equal(Visibility.Collapsed, host.Visibility);
+        Invoke(fixture.Window, exitMethod); fixture.Layout();
+        Assert.Equal(Visibility.Collapsed, host.Visibility);
+        Assert.Same(reference, host.Content);
+        Assert.False(fixture.Model.CanUndo); Assert.False(fixture.Model.Autosave.IsDirty);
+    });
+
+    [Fact]
+    public void PaperOnlyAndFullscreenComposeAndEscapeCollapsesToolsBeforeRestoringTheWindow() => application.Run(() =>
+    {
+        using var fixture = new ShellFixture(1);
+        var initialState = fixture.Window.WindowState;
+        Assert.True(fixture.PreviewWindowKey(Key.F10, fixture.List).Handled); fixture.Layout();
+        Assert.True(Get<bool>(fixture.Window, "_paperOnlyMode"));
+        Assert.True(fixture.PreviewWindowKey(Key.F11, fixture.List).Handled); fixture.Layout();
+        Assert.True(Get<bool>(fixture.Window, "_paperOnlyMode")); Assert.True(Get<bool>(fixture.Window, "_focusMode"));
+        Assert.Equal(WindowStyle.None, fixture.Window.WindowStyle);
+        Assert.Equal(WindowState.Maximized, fixture.Window.WindowState);
+        Assert.True(fixture.PreviewWindowKey(Key.F11, fixture.List).Handled); fixture.Layout();
+        Assert.True(Get<bool>(fixture.Window, "_paperOnlyMode")); Assert.False(Get<bool>(fixture.Window, "_focusMode"));
+        Assert.Equal(WindowStyle.SingleBorderWindow, fixture.Window.WindowStyle);
+        Assert.Equal(initialState, fixture.Window.WindowState);
+
+        Invoke(fixture.Window, "ToggleFloatingTools"); fixture.Layout();
+        Assert.True(fixture.PreviewWindowKey(Key.Escape, fixture.List).Handled); fixture.Layout();
+        Assert.True(Get<bool>(fixture.Window, "_paperOnlyMode"));
+        Assert.Equal(Visibility.Collapsed, ((FrameworkElement)fixture.Window.FindName("FocusToolbar")).Visibility);
+        Assert.True(fixture.PreviewWindowKey(Key.Escape, fixture.List).Handled); fixture.Layout();
+        Assert.False(Get<bool>(fixture.Window, "_paperOnlyMode")); Assert.False(Get<bool>(fixture.Window, "_focusMode"));
+        Assert.Equal(Visibility.Visible, ((FrameworkElement)fixture.Window.FindName("NotebookHeader")).Visibility);
+        Assert.Equal(initialState, fixture.Window.WindowState);
+    });
+
+    [Fact]
+    public Task PaperOnlySaveFailureKeepsRetryVisibleUntilThePendingContentIsSaved() => application.RunAsync(async () =>
+    {
+        using var fixture = new ShellFixture(1);
+        Invoke(fixture.Window, "TogglePaperOnly"); fixture.Layout();
+        var footer = (FrameworkElement)fixture.Window.FindName("EditorFooter");
+        Assert.Equal(Visibility.Collapsed, footer.Visibility);
+        fixture.Repository.FailSave = true;
+        fixture.Model.Rename("Unsaved synthetic title", "My Notes");
+
+        await Assert.ThrowsAsync<IOException>(() => fixture.Model.Autosave.FlushAsync()); fixture.Layout();
+
+        Assert.True(fixture.Model.HasSaveError);
+        Assert.Equal(Visibility.Visible, footer.Visibility);
+        Assert.Equal("Unsaved synthetic title", Assert.Single(fixture.Model.Autosave.PendingDocuments).Title);
+        Assert.True(Get<bool>(fixture.Window, "_paperOnlyMode"));
+        fixture.Repository.FailSave = false;
+        await fixture.Model.Autosave.RetryAsync(); fixture.Layout();
+        Assert.False(fixture.Model.HasSaveError);
+        Assert.Equal(Visibility.Collapsed, footer.Visibility);
+        Assert.Equal("Unsaved synthetic title", fixture.Repository.Saved!.Title);
+    });
+
     private static void AssertFitWidth(ShellFixture fixture)
     {
         fixture.Layout();
@@ -431,10 +646,15 @@ public sealed class PageSpreadInteractionTests(PageSpreadTestApplication applica
     internal sealed class ShellRepository(NotebookDocument document) : INotebookRepository
     {
         public NotebookDocument? Saved { get; private set; }
+        public bool FailSave { get; set; }
         public Task InitializeAsync() => Task.CompletedTask;
         public Task<IReadOnlyList<NotebookSummary>> ListAsync() => Task.FromResult<IReadOnlyList<NotebookSummary>>([]);
         public Task<NotebookDocument?> LoadAsync(string id) => Task.FromResult<NotebookDocument?>(document.Snapshot());
-        public Task SaveAsync(NotebookDocument value) { Saved = value.Snapshot(); return Task.CompletedTask; }
+        public Task SaveAsync(NotebookDocument value)
+        {
+            if (FailSave) return Task.FromException(new IOException("Synthetic save failure"));
+            Saved = value.Snapshot(); return Task.CompletedTask;
+        }
         public Task DeleteAsync(string id) => Task.CompletedTask;
         public Task<AssetData> PutAssetAsync(string name, string contentType, byte[] bytes) => throw new InvalidOperationException("No fixture assets");
         public Task<AssetData> GetAssetAsync(string id) => throw new InvalidOperationException("No fixture assets");

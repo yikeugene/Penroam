@@ -22,7 +22,7 @@ public sealed class FeatureDiscoveryTests(PageSpreadTestApplication application)
         ("Insert & export", "import-document import-folder insert-image export-pdf"),
         ("Search", "search-content search-appearance bookmarks go-to-page back-to-page"),
         ("Study", "mark-question question-inbox resume-hint resume-thinking new-practice practice-attempts restore-region"),
-        ("View", "single-page two-pages fit-page fit-width actual-size zoom-in zoom-out sidebar focus-mode reference-view workspace-settings"),
+        ("View", "single-page two-pages fit-page fit-width actual-size zoom-in zoom-out sidebar focus-mode paper-only reference-view workspace-settings"),
         ("Tools", "pen highlighter eraser lasso type select pen-settings manage-pens eraser-settings text-formatting selection-actions undo redo"),
         ("Backup", "save-now retry-save backup-notebook backup-all restore-backup backup-recovery automatic-backups"),
         ("Help", "check-updates writing-settings-warning keyboard-help pan-touch-help typing-help autosave-help document-help isolated-library-help")
@@ -94,6 +94,7 @@ public sealed class FeatureDiscoveryTests(PageSpreadTestApplication application)
         Assert.Equal("Ctrl+Shift+F", catalog["search-content"].Shortcut);
         Assert.Equal("Ctrl+G", catalog["go-to-page"].Shortcut);
         Assert.Equal("F11", catalog["focus-mode"].Shortcut);
+        Assert.Equal("F10", catalog["paper-only"].Shortcut);
         for (var number = 1; number <= 9; number++) Assert.Equal(number.ToString(), catalog[$"favorite-{number}"].Shortcut);
     });
 
@@ -138,7 +139,7 @@ public sealed class FeatureDiscoveryTests(PageSpreadTestApplication application)
             ("Ctrl+C", "copy-selection"), ("selection ten", "nudge-left"),
             ("Word ranges", "import-document"), ("A4 overlap", "a4-export"),
             ("interrupted drafts", "recover-drafts"), ("automatic interval", "backup-interval"),
-            ("GitHub", "check-updates"), ("palm pressure", "pan-touch-help")
+            ("GitHub", "check-updates"), ("palm pressure", "pan-touch-help"), ("floating circle", "paper-only")
         }) Assert.Contains(catalog.Where(command => command.Matches(query)), command => command.Id == id);
         Assert.DoesNotContain(catalog, command => command.Matches("no-such-feature-9a62"));
     });
@@ -193,7 +194,7 @@ public sealed class FeatureDiscoveryTests(PageSpreadTestApplication application)
         var home = fixture.Window.CreateFeatureCommands();
         foreach (var catalog in new[] { captured, home })
             foreach (var command in catalog.Where(command => command.Category is "Pages" or "Study" or "Tools" ||
-                         Ids("rename-notebook pin-notebook cover-color delete-notebook import-document insert-image export-pdf a4-export single-page two-pages fit-page fit-width actual-size zoom-in zoom-out sidebar focus-mode reference-view save-now backup-notebook").Contains(command.Id)))
+                         Ids("rename-notebook pin-notebook cover-color delete-notebook import-document insert-image export-pdf a4-export single-page two-pages fit-page fit-width actual-size zoom-in zoom-out sidebar focus-mode paper-only reference-view save-now backup-notebook").Contains(command.Id)))
                 AssertUnavailable(command, "Open a notebook first.", tryExecute: true);
         Assert.True(home.Single(command => command.Id == "import-folder").CanExecute);
         Assert.True(home.Single(command => command.Id == "restore-backup").CanExecute);
@@ -261,6 +262,24 @@ public sealed class FeatureDiscoveryTests(PageSpreadTestApplication application)
             AssertUnavailable(catalog[id], "Unlock zoom in Workspace settings first.", tryExecute: true);
         Get<WorkspacePreferences>(fixture.Window, "_workspace").LockZoom = false;
         Assert.True(catalog["fit-width"].CanExecute);
+        Assert.False(fixture.Model.CanUndo); Assert.False(fixture.Model.Autosave.IsDirty);
+    });
+
+    [Fact]
+    public void PaperOnlyCommandTracksCheckedStateWithoutEnteringFullscreen() => application.Run(() =>
+    {
+        using var fixture = new ShellFixture(1);
+        var command = fixture.Window.CreateFeatureCommands().Single(command => command.Id == "paper-only");
+        var state = fixture.Window.WindowState;
+        Assert.False(command.IsChecked);
+        Assert.True(command.TryExecute()); fixture.Layout();
+        Assert.True(command.IsChecked);
+        Assert.Equal(Visibility.Visible, Find<Button>(fixture, "FloatingToolsButton").Visibility);
+        Assert.Equal(WindowStyle.SingleBorderWindow, fixture.Window.WindowStyle);
+        Assert.Equal(state, fixture.Window.WindowState);
+        Assert.True(command.TryExecute()); fixture.Layout();
+        Assert.False(command.IsChecked);
+        Assert.Equal(Visibility.Collapsed, Find<Button>(fixture, "FloatingToolsButton").Visibility);
         Assert.False(fixture.Model.CanUndo); Assert.False(fixture.Model.Autosave.IsDirty);
     });
 
