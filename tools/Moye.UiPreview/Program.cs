@@ -34,15 +34,20 @@ internal static partial class Program
             Directory.CreateDirectory(output);
             if (args.Contains("--office-import-smoke", StringComparer.Ordinal))
                 return OfficeImportSmoke.RunAsync(repositoryRoot).GetAwaiter().GetResult();
+            if (args.Contains("--pdf-export-interactive", StringComparer.Ordinal))
+                return DocumentSelectionPreviewScenes.RunInteractive(ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml")),
+                    args.Contains("--compact", StringComparer.Ordinal), args.Contains("--zh-TW", StringComparer.Ordinal));
             if (args.Contains("--interactive", StringComparer.Ordinal))
                 return InteractivePreview.Run(ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml")),
                     output, args.Contains("--compact", StringComparer.Ordinal));
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
             var application = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
             application.Resources = ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml"));
+            if (args.Contains("--pdf-export-only", StringComparer.Ordinal)) { DocumentSelectionPreviewScenes.Run(output); return 0; }
             RunBilingualPreview(output);
             if (args.Contains("--bilingual-only", StringComparer.Ordinal)) return 0;
             DocumentWorkflowPreviewScenes.Run(output);
+            DocumentSelectionPreviewScenes.Run(output);
             PageExtensionPreviewScenes.Run(output);
             FreeTypingPreviewScenes.Run(output);
             StudyPreviewScenes.Run(output);
