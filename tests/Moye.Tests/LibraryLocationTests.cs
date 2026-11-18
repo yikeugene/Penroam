@@ -7,6 +7,44 @@ namespace Moye.Tests;
 public sealed class LibraryLocationTests
 {
     [Fact]
+    public void StartupWithoutDataDirectoryKeepsTheLegacyDefault()
+    {
+        var directory = App.ReadDataDirectoryArgument([]);
+        Assert.Null(directory);
+        Assert.Equal(LibraryLocation.Resolve(), LibraryLocation.Resolve(directory));
+    }
+
+    [Theory]
+    [InlineData("sample-library")]
+    [InlineData(".\\sample library\\中文筆記")]
+    [InlineData("C:\\Isolated Notes\\中文筆記")]
+    [InlineData(".\\-isolated")]
+    public void StartupWithDataDirectoryPreservesTheExplicitPathAndLibraryIdentity(string directory)
+    {
+        var parsed = App.ReadDataDirectoryArgument(["--data-dir", directory]);
+        Assert.Equal(directory, parsed);
+        Assert.Equal(LibraryLocation.Resolve(directory), LibraryLocation.Resolve(parsed));
+    }
+
+    public static IEnumerable<object[]> InvalidDataDirectoryArguments =>
+    [
+        [new[] { "--data-dir" }],
+        [new[] { "--data-dir", "" }],
+        [new[] { "--data-dir", " \t" }],
+        [new[] { "--data-dir", "--unknown-option" }],
+        [new[] { "--data-dir", "-h" }],
+        [new[] { "--data-dir", "--data-dir", "sample-library" }],
+        [new[] { "--data-dir", "first", "--data-dir", "second" }]
+    ];
+
+    [Theory]
+    [MemberData(nameof(InvalidDataDirectoryArguments))]
+    public void InvalidDataDirectoryNeverFallsBackToTheDefaultLibrary(string[] arguments)
+    {
+        Assert.Throws<ArgumentException>(() => App.ReadDataDirectoryArgument(arguments));
+    }
+
+    [Fact]
     public async Task PenroamReopensLegacyMoyeNotebooksAndPreferencesInPlace()
     {
         using var directory = new StorageTestDirectory();

@@ -20,7 +20,10 @@ public sealed class DocumentImportService(IPdfService pdf, IOfficePdfConverter c
         if (!IsSupported(path)) throw new NotSupportedException(L.Text("Messages.Import.UnsupportedDocument"));
         var source = Path.GetFullPath(path);
         if (Path.GetExtension(source).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+        {
+            AttachmentLimits.ValidateLength(new FileInfo(source).Length);
             return pdf is PdfService directPdf ? await directPdf.ImportAsync(source, progress, cancellationToken) : await pdf.ImportAsync(source, cancellationToken);
+        }
 
         // Conversion works on a disposable copy, including when Office writes
         // lock files next to the document. Nothing is added until PDF validation succeeds.
@@ -38,6 +41,7 @@ public sealed class DocumentImportService(IPdfService pdf, IOfficePdfConverter c
             cancellationToken.ThrowIfCancellationRequested();
             if (!File.Exists(output) || new FileInfo(output).Length == 0)
                 throw new InvalidDataException(L.Text("Messages.Import.NoConvertedPdf"));
+            AttachmentLimits.ValidateLength(new FileInfo(output).Length);
             return pdf is PdfService convertedPdf ? await convertedPdf.ImportAsync(output, progress, cancellationToken) : await pdf.ImportAsync(output, cancellationToken);
         }
         finally

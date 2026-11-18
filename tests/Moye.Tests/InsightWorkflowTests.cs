@@ -127,14 +127,23 @@ public sealed class InsightWorkflowTests
         var origin = new NotePage();
         var attempt = new NotePage { Practice = new() { SourcePageId = origin.Id, QuestionAssetId = asset.Id, Question = "Question", QuestionWidth = 500, QuestionHeight = 300, Reflection = "Reflection" },
             Texts = [new() { Text = "Free text", IsFreeFlow = true, LineSpacing = 32 }] };
-        var book = new NotebookDocument { Pages = [origin, attempt] };
+        var secondAttempt = new NotePage { Practice = attempt.Practice! with { Number = 2 } };
+        var book = new NotebookDocument { Pages = [origin, attempt, secondAttempt] };
         await source.SaveAsync(book);
         var saved = (await source.LoadAsync(book.Id))!; Assert.Equal(attempt.Practice, saved.Pages[1].Practice);
         var path = Path.Combine(directory.Root, "practice.moye");
         await new BackupService(source).ExportAsync(path, [book]);
         var restored = Assert.Single(await new BackupService(target).ImportAsync(path));
-        Assert.Equal(restored.Pages[0].Id, restored.Pages[1].Practice!.SourcePageId);
         Assert.NotEqual(origin.Id, restored.Pages[0].Id);
+        var restoredGroup = restored.Pages[1].Practice!.GroupId;
+        Assert.NotEqual(attempt.Practice!.GroupId, restoredGroup);
+        Assert.All(restored.Pages.Skip(1), page =>
+        {
+            Assert.Equal(restored.Pages[0].Id, page.Practice!.SourcePageId);
+            Assert.Equal(restoredGroup, page.Practice.GroupId);
+        });
+        var restoredAgain = Assert.Single(await new BackupService(target).ImportAsync(path));
+        Assert.NotEqual(restoredGroup, restoredAgain.Pages[1].Practice!.GroupId);
         Assert.Equal(asset.Bytes, (await target.GetAssetAsync(asset.Id)).Bytes);
         Assert.True(restored.Pages[1].Texts[0].IsFreeFlow); Assert.Equal(32, restored.Pages[1].Texts[0].LineSpacing);
         Assert.Equal("Reflection", restored.Pages[1].Practice!.Reflection);

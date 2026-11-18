@@ -207,6 +207,31 @@ public sealed class DocumentSelectionDialogTests(PageSpreadTestApplication appli
         Assert.Equal(fixture.VisibleIds, fixture.SelectedIds);
     });
 
+    [Fact]
+    public void UnappliedOrInvalidImportRangeCannotAcceptThePreviousChecklist() => application.Run(() =>
+    {
+        using var fixture = new SelectionFixture(importing: true);
+        var range = fixture.Control<TextBox>("ImportRangeSelection");
+        range.Text = "2-3";
+        Assert.False(fixture.Accept.IsEnabled);
+        fixture.Click("ApplyImportRange");
+        Assert.True(fixture.Accept.IsEnabled);
+        Assert.Equal(new[] { "page-2", "page-3" }, fixture.SelectedIds);
+
+        range.Text = "3-99";
+        fixture.Click("ApplyImportRange");
+        Assert.False(fixture.Accept.IsEnabled);
+        Assert.Equal(new[] { "page-2", "page-3" }, fixture.SelectedIds);
+        range.Clear();
+        Assert.True(fixture.Accept.IsEnabled);
+        Assert.Equal(new[] { "page-2", "page-3" }, fixture.SelectedIds);
+
+        range.Text = "4";
+        fixture.Click("ApplyImportRange");
+        Assert.Equal(new[] { "page-4" }, fixture.SelectedIds);
+        Assert.True(fixture.Accept.IsEnabled);
+    });
+
     private sealed class SelectionFixture : IDisposable
     {
         private readonly PageSpreadInteractionTests.ShellRepository _repository;

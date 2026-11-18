@@ -105,6 +105,25 @@ public sealed class OrganizationTests
     }
 
     [Fact]
+    public async Task MetadataSearchNavigatesToTheFirstPageAvailableUnderTheActiveFilter()
+    {
+        using var directory = new StorageTestDirectory();
+        using var model = new MainViewModel(new SqliteNotebookRepository(directory.DatabasePath));
+        var document = Sample();
+        document.Sections.Insert(0, new NoteSection { Title = "Empty" });
+        var exercises = document.Sections[^1];
+        var bookmark = new NotePage { SectionId = exercises.Id, IsBookmarked = true };
+        document.Pages.Add(bookmark);
+        document.Pages.Add(new NotePage { SectionId = exercises.Id, IsBookmarked = true });
+        await model.Repository.SaveAsync(document);
+
+        Assert.Equal(document.Pages[0].Id, Assert.Single(await model.SearchContentAsync(document.Title)).PageId);
+        foreach (var query in new[] { document.Title, document.Folder, exercises.Title })
+            Assert.Equal(bookmark.Id, Assert.Single(await model.SearchContentAsync(query, bookmarksOnly: true)).PageId);
+        Assert.Empty(await model.SearchContentAsync("Lectures", bookmarksOnly: true));
+    }
+
+    [Fact]
     public void OrganizerDragAndMultiPageMovesPreserveOrderAndMixedContent()
     {
         var document = Sample(); var sourceIds = document.Pages.Select(page => page.Id).ToArray();
@@ -192,6 +211,33 @@ public sealed class OrganizationTests
         Assert.Matches(@"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$", model.SelectedPage.Page.Title);
         await model.CreateQuickNoteAsync(); Assert.Equal(id, model.Document!.Id); Assert.Equal(2, model.Document.Pages.Count);
         Assert.NotEqual(first, model.SelectedPage!.Page.Id); Assert.Single(await model.Repository.ListAsync());
+    }
+
+    [Fact]
+    public async Task QuickNoteInTheOpenInboxIsOneUndoableEditAndPreservesEarlierHistory()
+    {
+        using var directory = new StorageTestDirectory();
+        using var model = new MainViewModel(new SqliteNotebookRepository(directory.DatabasePath));
+        await model.CreateQuickNoteAsync();
+        var firstPage = model.SelectedPage!.Page;
+        var originalTitle = firstPage.Title;
+        model.SetPageDetails(firstPage.Id, "First capture", true);
+
+        await model.CreateQuickNoteAsync();
+        var newPageId = model.SelectedPage!.Page.Id;
+        var notebookId = model.Document!.Id;
+        Assert.Equal(newPageId, (await model.Repository.LoadAsync(notebookId))!.Pages[^1].Id);
+
+        model.Undo();
+        Assert.Equal("First capture", Assert.Single(model.Document!.Pages).Title);
+        model.Undo();
+        Assert.Equal(originalTitle, Assert.Single(model.Document!.Pages).Title);
+        Assert.False(model.CanUndo);
+        model.Redo(); model.Redo();
+        await model.Autosave.FlushAsync();
+        var saved = (await model.Repository.LoadAsync(notebookId))!;
+        Assert.Equal(new[] { firstPage.Id, newPageId }, saved.Pages.Select(page => page.Id));
+        Assert.True(saved.Pages[0].IsBookmarked);
     }
 
     [Fact]

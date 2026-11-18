@@ -80,14 +80,9 @@ public sealed class DocumentSelectionDialog : Window
         _clear = AddButton(selection, L.Text(importing ? "Controls.DocumentSelection.Clear" : "Controls.DocumentSelection.ClearFiltered"), () => ApplySelection(_ => false), "ClearDocumentPages");
         if (importing)
         {
-            var range = new TextBox { Width = 155, MinHeight = 44, Margin = new Thickness(8, 0, 8, 0), ToolTip = L.Text("Controls.DocumentSelection.RangeHelp") };
-            Identify(range, "ImportRangeSelection", L.Text("Controls.DocumentSelection.Range")); selection.Children.Add(range);
-            AddButton(selection, L.Text("Controls.DocumentSelection.ApplyRange"), () =>
-            {
-                try { var indexes = DocumentWorkflows.ParsePageRange(range.Text, _choices.Count).ToHashSet(); ApplySelection(choice => indexes.Contains(choice.Number - 1)); }
-                catch (FormatException ex) { _message.Text = ex.Message; }
-                catch (ArgumentException ex) { _message.Text = ex.Message; }
-            }, "ApplyImportRange");
+            _range.Width = 155; _range.Margin = new Thickness(8, 0, 8, 0); _range.ToolTip = L.Text("Controls.DocumentSelection.RangeHelp");
+            Identify(_range, "ImportRangeSelection", L.Text("Controls.DocumentSelection.Range")); selection.Children.Add(_range);
+            AddButton(selection, L.Text("Controls.DocumentSelection.ApplyRange"), ApplyRange, "ApplyImportRange");
         }
         else
         {
@@ -149,6 +144,16 @@ public sealed class DocumentSelectionDialog : Window
             DialogResult = true;
         };
         actions.Children.Add(_accept); footer.Children.Add(actions); Content = root;
+        _range.TextChanged += (_, _) =>
+        {
+            if (_updating) return;
+            if (_importing && string.IsNullOrWhiteSpace(_range.Text))
+            {
+                _appliedRange = ""; _rangeValid = true; _filterError = "";
+            }
+            UpdateCount();
+        };
+        _range.PreviewKeyDown += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; ApplyRange(); } };
         foreach (var choice in _choices) choice.PropertyChanged += (_, e) =>
         {
             if (!_updating && e.PropertyName == nameof(PageChoice.Included)) { UpdateCount(); }
@@ -175,7 +180,7 @@ public sealed class DocumentSelectionDialog : Window
         rangePanel.Children.Add(new TextBlock { Text = L.Text("Controls.DocumentSelection.Range"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 8, 0) });
         _range.Margin = new Thickness(0, 0, 8, 0); _range.ToolTip = L.Text("Controls.DocumentSelection.FilterRangeHelp");
         Identify(_range, "ExportRangeFilter", L.Text("Controls.DocumentSelection.FilterRangeHelp")); rangePanel.Children.Add(_range);
-        AddButton(rangePanel, L.Text("Controls.DocumentSelection.FilterRange"), ApplyRangeFilter, "ApplyExportRange");
+        AddButton(rangePanel, L.Text("Controls.DocumentSelection.FilterRange"), ApplyRange, "ApplyExportRange");
         AddButton(rangePanel, L.Text("Controls.DocumentSelection.ResetFilters"), () =>
         {
             _updating = true;
@@ -185,23 +190,29 @@ public sealed class DocumentSelectionDialog : Window
         }, "ResetExportFilters");
         header.Children.Add(rangePanel);
         _scope.SelectionChanged += (_, _) => RefreshFilter(); _search.TextChanged += (_, _) => RefreshFilter();
-        _range.TextChanged += (_, _) => { if (!_updating) UpdateCount(); };
-        _range.PreviewKeyDown += (_, e) => { if (e.Key == Key.Enter) { ApplyRangeFilter(); e.Handled = true; } };
     }
 
-    private void ApplyRangeFilter()
+    private void ApplyRange()
     {
         _appliedRange = _range.Text.Trim();
+        if (_importing && _appliedRange.Length == 0) return;
         try
         {
-            _rangeIndexes = _appliedRange.Length == 0 ? null : DocumentWorkflows.ParsePageRange(_appliedRange, _choices.Count).ToHashSet();
+            var indexes = _appliedRange.Length == 0 ? null : DocumentWorkflows.ParsePageRange(_appliedRange, _choices.Count).ToHashSet();
             _rangeValid = true; _filterError = "";
+            if (_importing)
+            {
+                ApplySelection(choice => indexes!.Contains(choice.Number - 1));
+                return;
+            }
+            _rangeIndexes = indexes;
         }
         catch (Exception ex) when (ex is FormatException or ArgumentException)
         {
             _rangeValid = false; _filterError = ex.Message;
         }
-        RefreshFilter();
+        if (_importing) UpdateCount();
+        else RefreshFilter();
     }
 
     private void RefreshFilter()
@@ -235,12 +246,12 @@ public sealed class DocumentSelectionDialog : Window
     private void UpdateCount()
     {
         var count = SelectedPages.Count;
-        var pendingRange = !_importing && _range.Text.Trim() != _appliedRange;
+        var pendingRange = _range.Text.Trim() != _appliedRange;
         _count.Text = _importing ? L.Text("Controls.DocumentSelection.SelectedCount", count, _choices.Count) : L.Text("Controls.DocumentSelection.FilteredCount", _view.Count, _choices.Count, count);
-        if (_accept is not null) _accept.IsEnabled = count > 0 && !pendingRange;
+        if (_accept is not null) _accept.IsEnabled = count > 0 && _rangeValid && !pendingRange;
         if (_selectAll is not null) _selectAll.IsEnabled = !_view.IsEmpty;
         if (_clear is not null) _clear.IsEnabled = count > 0;
-        _message.Text = pendingRange ? L.Text("Controls.DocumentSelection.ApplyRangeFirst") : _filterError;
+        _message.Text = pendingRange ? L.Text(_importing ? "Controls.DocumentSelection.ApplyImportRangeFirst" : "Controls.DocumentSelection.ApplyRangeFirst") : _filterError;
     }
     private static void Identify(DependencyObject control, string id, string name)
     {

@@ -225,6 +225,9 @@
   <data name="Controls.DocumentSelection.ApplyRangeFirst" xml:space="preserve">
     <value>Apply the page range with Filter range or Enter before continuing.</value>
   </data>
+  <data name="Controls.DocumentSelection.ApplyImportRangeFirst" xml:space="preserve">
+    <value>Choose Apply range or press Enter to select these pages. Clear the range field to keep the current selection.</value>
+  </data>
   <data name="Controls.DocumentSelection.PageList" xml:space="preserve">
     <value>Pages to include</value>
   </data>
@@ -4713,5 +4716,26 @@ Drag to reorder. Use Manage pens to edit or hide.</value>
   </data>
   <data name="Features.Command.paper-only.Detail" xml:space="preserve">
     <value>Hide menus and toolbars without changing the window size. Click the floating circle to open writing tools. F10 toggles Paper only; Esc first closes an open tool panel, then restores the workspace.</value>
+  </data>
+  <data name="Core.DataDirectoryRequired" xml:space="preserve">
+    <value>--data-dir requires a folder path. Penroam has not opened a notebook library.</value>
+  </data>
+  <data name="Core.DataDirectoryRepeated" xml:space="preserve">
+    <value>Specify --data-dir only once. Penroam has not opened a notebook library.</value>
+  </data>
+  <data name="Controls.VisualSearch.LoadMore" xml:space="preserve">
+    <value>Load more</value>
+  </data>
+  <data name="Controls.VisualSearch.ShowingCount" xml:space="preserve">
+    <value>Showing {0} of {1} matching pages.</value>
+  </data>
+  <data name="Controls.VisualSearch.LoadingMore" xml:space="preserve">
+    <value>Loading previews… {0} of {1} pages shown.</value>
+  </data>
+  <data name="Controls.VisualSearch.Results" xml:space="preserve">
+    <value>Matching pages</value>
+  </data>
+  <data name="Messages.Import.AttachmentTooLarge" xml:space="preserve">
+    <value>This attachment exceeds the 512 MiB limit for editable notebook backups. Choose a smaller source file.</value>
   </data>
 </root>

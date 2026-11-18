@@ -214,6 +214,7 @@ public sealed class SqliteNotebookRepository : INotebookRepository, IAtomicNoteb
 
     public Task<AssetData> PutAssetAsync(string fileName, string contentType, byte[] bytes)
     {
+        AttachmentLimits.ValidateLength(bytes.LongLength);
         var snapshot = bytes.ToArray();
         return RunAsync(connection =>
         {

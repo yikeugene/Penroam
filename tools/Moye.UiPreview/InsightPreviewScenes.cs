@@ -8,9 +8,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Moye.Controls;
 using Moye.Models;
 using Moye.Services;
+using L = Moye.Localization.LocalizationService;
 
 namespace Moye.UiPreview;
 
@@ -42,25 +44,17 @@ internal static class InsightPreviewScenes
             Logical<ComboBox>(content).Single(box => AutomationProperties.GetName(box) == "Color").SelectedItem = NoteColor.Red;
             Logical<ComboBox>(content).Single(box => AutomationProperties.GetName(box) == "Position on page").SelectedItem = NotePosition.BottomLeft;
             Logical<ComboBox>(content).Single(box => AutomationProperties.GetName(box) == "Mark").SelectedItem = NoteMark.TypedText;
-            // Detached dialogs never become IsLoaded. Populate their read-only list
-            // from the real search result instead of creating a native window for Loaded.
+            // Run the real asynchronous search on the detached dispatcher tree.
+            CompleteDialogOperation(dialog, "SearchAsync");
             var list = Logical<ListBox>(content).Single();
-            foreach (var match in matches)
-            {
-                var row = new DockPanel { Margin = new Thickness(8) };
-                var image = new Image { Source = renderer.RenderAsync(page, 300).GetAwaiter().GetResult(), Width = 110, Height = 140, Stretch = Stretch.Uniform, Margin = new Thickness(0, 0, 18, 0) };
-                DockPanel.SetDock(image, Dock.Left); row.Children.Add(image);
-                var description = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-                description.Children.Add(new TextBlock { Text = match.Title, FontWeight = FontWeights.SemiBold, TextWrapping = TextWrapping.Wrap });
-                description.Children.Add(new TextBlock { Text = $"{match.Count} matching mark(s)", Margin = new Thickness(0, 8, 0, 0) }); row.Children.Add(description);
-                list.Items.Add(new ListBoxItem { Content = row, Tag = match, HorizontalContentAlignment = HorizontalAlignment.Stretch });
-            }
-            Field<TextBlock>(dialog, "_status").Text = "1 matching page · showing up to 60 previews";
+            if (list.Items.Count != 1 || Field<TextBlock>(dialog, "_status").Text != L.Text("Controls.VisualSearch.ShowingCount", 1, 1))
+                throw new InvalidOperationException("Appearance search lost its result count.");
             list.SelectedIndex = 0;
             if (dialog.Result?.PageId != page.Id || !Logical<Button>(content).Single(button => Equals(button.Content, "Open page")).IsEnabled)
                 throw new InvalidOperationException("Appearance result selection cannot open its source.");
             reports.Add(Render(dialog, output, $"insight-appearance-{width}", width, height)); dialog.Close();
         }
+        RunSearchBatches(output, reports);
 
         var group = Guid.NewGuid().ToString("N");
         var first = new NotePage { Practice = new() { GroupId = group, Number = 1, Question = "Explain why the substitution preserves the sign", Reflection = "I changed the sign too early." } };
@@ -106,6 +100,89 @@ internal static class InsightPreviewScenes
         File.WriteAllText(Path.Combine(output, "insight-preview-report.json"), JsonSerializer.Serialize(reports, new JsonSerializerOptions { WriteIndented = true }));
     }
 
+    public static int RunInteractive(ResourceDictionary resources, bool compact, bool traditionalChinese)
+    {
+        L.SetLanguage(traditionalChinese ? "zh-TW" : "en");
+        var application = new Application { Resources = resources, ShutdownMode = ShutdownMode.OnExplicitShutdown };
+        var dialog = new VisualNoteSearchDialog(null!, SearchNotebook(), new PagePreviewRenderer(new PreviewPdf(), _ => throw new NotSupportedException()));
+        dialog.Title = "Penroam · Synthetic Visual Search Test (memory only)";
+        dialog.ShowInTaskbar = true;
+        if (compact) { dialog.Width = 480; dialog.Height = 540; }
+        dialog.ShowDialog();
+        application.Shutdown();
+        return 0;
+    }
+
+    private static NotebookDocument SearchNotebook()
+    {
+        var section = new NoteSection { Title = "Synthetic search · 搜尋測試" };
+        return new NotebookDocument
+        {
+            Sections = [section], Pages = Enumerable.Range(1, 121).Select(number => new NotePage
+            {
+                Id = "visual-search-" + number, SectionId = section.Id, Title = $"Result {number:D3} · 搜尋結果", Width = 400, Height = 200,
+                Texts = [new() { X = 30, Y = 30, Width = 320, Height = 120, Text = $"Synthetic note {number:D3}\n測試筆記 {number:D3}",
+                    Color = number % 3 == 0 ? "#FF2255BB" : "#FFCC3333" }]
+            }).ToList()
+        };
+    }
+
+    private static void RunSearchBatches(string output, List<object> reports)
+    {
+        var language = L.Current.LanguageCode;
+        var book = SearchNotebook();
+        var original = JsonSerializer.Serialize(book, DocumentJson.Options);
+        try
+        {
+            foreach (var locale in new[] { "en", "zh-TW" })
+            foreach (var (width, height) in new[] { (780, 620), (480, 540) })
+            {
+                L.SetLanguage(locale);
+                var dialog = new VisualNoteSearchDialog(null!, book, new PagePreviewRenderer(new PreviewPdf(), _ => throw new NotSupportedException()));
+                try
+                {
+                    CompleteDialogOperation(dialog, "SearchAsync");
+                    var list = Field<ListBox>(dialog, "_results");
+                    var more = Field<Button>(dialog, "_loadMore");
+                    if (list.Items.Count != 60 || !more.IsEnabled || !more.Focusable || AutomationProperties.GetName(more) != L.Text("Controls.VisualSearch.LoadMore"))
+                        throw new InvalidOperationException("Appearance search must expose its remaining batches through an accessible button.");
+                    reports.Add(Render(dialog, output, $"insight-appearance-{locale}-first-batch-{width}", width, height));
+                    CompleteDialogOperation(dialog, "LoadMoreAsync");
+                    if (list.Items.Count != 120 || !more.IsEnabled) throw new InvalidOperationException("The second appearance batch lost matching pages.");
+                    CompleteDialogOperation(dialog, "LoadMoreAsync");
+                    if (list.Items.Count != 121 || more.Visibility != Visibility.Collapsed ||
+                        Field<TextBlock>(dialog, "_status").Text != L.Text("Controls.VisualSearch.ShowingCount", 121, 121))
+                        throw new InvalidOperationException("Appearance search cannot reach every match.");
+                    list.SelectedIndex = 120; list.ScrollIntoView(list.SelectedItem);
+                    if (dialog.Result?.PageId != book.Pages[120].Id) throw new InvalidOperationException("The final search result cannot be selected.");
+                    reports.Add(Render(dialog, output, $"insight-appearance-{locale}-last-batch-{width}", width, height));
+                }
+                finally { dialog.Close(); }
+            }
+            if (original != JsonSerializer.Serialize(book, DocumentJson.Options)) throw new InvalidOperationException("Appearance search mutated its source pages.");
+        }
+        finally { L.SetLanguage(language); }
+    }
+
+    private static void CompleteDialogOperation(VisualNoteSearchDialog dialog, string method)
+    {
+        var previous = SynchronizationContext.Current;
+        var dispatcher = Dispatcher.CurrentDispatcher;
+        SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(dispatcher));
+        try
+        {
+            var task = (Task)typeof(VisualNoteSearchDialog).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(dialog, null)!;
+            if (!task.IsCompleted)
+            {
+                var frame = new DispatcherFrame();
+                _ = task.ContinueWith(_ => dispatcher.BeginInvoke(new Action(() => frame.Continue = false)), TaskScheduler.Default);
+                Dispatcher.PushFrame(frame);
+            }
+            task.GetAwaiter().GetResult();
+        }
+        finally { SynchronizationContext.SetSynchronizationContext(previous); }
+    }
+
     private static T Field<T>(object owner, string name) => (T)owner.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(owner)!;
     private static object Render(Window window, string output, string name, int width, int height)
     {
@@ -128,6 +205,7 @@ internal static class InsightPreviewScenes
         using (var drawing = background.RenderOpen()) drawing.DrawRectangle(Brushes.White, null, new Rect(0, 0, width, height)); bitmap.Render(background); bitmap.Render(content);
         var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap));
         using (var file = File.Create(Path.Combine(output, "ui-preview-" + name + ".png"))) encoder.Save(file);
+        window.Content = content;
         return new { Name = name, Width = width, Height = height, Controls = controls };
     }
     private static bool Visible(FrameworkElement element)

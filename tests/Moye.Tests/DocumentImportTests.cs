@@ -16,6 +16,30 @@ public sealed class DocumentImportTests : IDisposable
     public DocumentImportTests() => Directory.CreateDirectory(_directory);
     public void Dispose() => Directory.Delete(_directory, true);
 
+    [Fact]
+    public async Task OversizedConverterOutputIsRejectedBeforeCallingThePdfImporter()
+    {
+        var source = WriteSource(".docx");
+        var converter = new FakeConverter
+        {
+            Convert = (_, output, _) =>
+            {
+                using var file = File.Create(output);
+                file.SetLength((long)AttachmentLimits.MaximumBytes + 1);
+                return Task.CompletedTask;
+            }
+        };
+        var pdf = new FakePdf();
+
+        var exception = await Assert.ThrowsAsync<InvalidDataException>(() => new DocumentImportService(pdf, converter).ImportAsync(source));
+
+        Assert.Equal(Moye.Localization.LocalizationService.Text("Messages.Import.AttachmentTooLarge"), exception.Message);
+        Assert.Equal(1, converter.Calls);
+        Assert.Equal(0, pdf.Calls);
+        Assert.Equal(SourceBytes, await File.ReadAllBytesAsync(source));
+        AssertConversionDirectoryRemoved(converter);
+    }
+
     [Theory]
     [InlineData(".pdf")]
     [InlineData(".PDF")]

@@ -170,6 +170,37 @@ public sealed class WorkspaceSafetyTests
     }
 
     [Fact]
+    public async Task DraftRecoveryKeepsPracticeDraftUntilItsHiddenQuestionAssetIsAvailable()
+    {
+        using var directory = new StorageTestDirectory();
+        using var repository = new SqliteNotebookRepository(directory.DatabasePath);
+        var store = new DraftRecoveryStore(Path.Combine(directory.Root, "drafts"));
+        byte[] questionBytes = [1, 4, 7];
+        var questionId = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(questionBytes));
+        var sourcePage = new NotePage();
+        var attempt = new PracticeAttempt { SourcePageId = sourcePage.Id, QuestionAssetId = questionId, Question = "Question 1", QuestionWidth = 200, QuestionHeight = 100 };
+        var document = new NotebookDocument { Pages = [sourcePage, new() { Practice = attempt }] };
+        await store.WriteAsync(document, 1);
+        var file = Assert.Single(await store.ReadAsync());
+        var draftBytes = await File.ReadAllBytesAsync(file.Path);
+
+        await Assert.ThrowsAsync<FileNotFoundException>(() => MainWindow.RecoverDraftAsCopyAsync(file, store, repository));
+
+        Assert.Empty(await repository.ListAsync());
+        Assert.Equal(draftBytes, await File.ReadAllBytesAsync(file.Path));
+        await repository.PutAssetAsync("question.png", "image/png", questionBytes);
+        await MainWindow.RecoverDraftAsCopyAsync(file, store, repository);
+
+        Assert.Empty(await store.ReadAsync());
+        var summary = Assert.Single(await repository.ListAsync());
+        Assert.NotEqual(document.Id, summary.Id);
+        var recovered = Assert.IsType<NotebookDocument>(await repository.LoadAsync(summary.Id));
+        Assert.Equal(recovered.Pages[0].Id, recovered.Pages[1].Practice!.SourcePageId);
+        Assert.Equal(questionId, recovered.Pages[1].Practice!.QuestionAssetId);
+        Assert.Empty(recovered.Pages[1].Images);
+    }
+
+    [Fact]
     public async Task ForgettingAStaleRecoveryListEntryKeepsTheNewerDraftByteForByte()
     {
         using var directory = new StorageTestDirectory();

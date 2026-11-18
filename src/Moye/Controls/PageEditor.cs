@@ -181,7 +181,14 @@ public sealed partial class PageEditor : Grid
         _ink.SetEraserShape(new EllipseStylusShape(_eraserSize, _eraserSize));
         // InkCanvas.Select changes EditingMode even when clearing a selection.
         // Clear first, then apply the requested tool so erasers stay erasers.
-        if (_tool != InkTool.Lasso && (_ink.GetSelectedStrokes().Count > 0 || _ink.GetSelectedElements().Count > 0)) _ink.Select(new StrokeCollection());
+        if (_tool != InkTool.Lasso && (_ink.GetSelectedStrokes().Count > 0 || _ink.GetSelectedElements().Count > 0))
+        {
+            // Clearing the lasso also clears its selected frame. Type should
+            // resume the chosen text box even when another box was edited last.
+            var typingTarget = _tool == InkTool.Text && SelectedText is not null ? _selectedItem : null;
+            _ink.Select(new StrokeCollection());
+            if (typingTarget is not null) SelectItem(typingTarget);
+        }
         _ink.SetRequestedMode(_tool switch
         {
             InkTool.Pen or InkTool.Highlighter => InkCanvasEditingMode.Ink,
@@ -234,10 +241,10 @@ public sealed partial class PageEditor : Grid
         protected override void OnRender(DrawingContext context) { base.OnRender(context); _stroke?.Draw(context); }
     }
 
-    public void AddImage(NoteImage item)
+    public void AddImage(NoteImage item, BitmapSource? preview = null)
     {
         Page.Images.Add(item);
-        var frame = AddImageFrame(item);
+        var frame = AddImageFrame(item, preview);
         _tool = InkTool.Select;
         ApplyTool();
         SelectItem(frame);
@@ -681,11 +688,12 @@ public sealed partial class PageEditor : Grid
         if (changed && ReferenceEquals(SelectedText, text)) NotifyTextSelectionChanged();
     }
 
-    private NoteItemFrame AddImageFrame(NoteImage image)
+    private NoteItemFrame AddImageFrame(NoteImage image, BitmapSource? preview = null)
     {
         var picture = new Image { Stretch = Stretch.Fill, SnapsToDevicePixels = true };
         var frame = AddFrame(image, picture, image.X, image.Y, image.Width, image.Height);
-        _ = LoadImageAsync(picture, image.AssetId, _generation);
+        if (preview is not null) picture.Source = preview;
+        else _ = LoadImageAsync(picture, image.AssetId, _generation);
         return frame;
     }
 

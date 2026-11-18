@@ -95,18 +95,32 @@ public sealed partial class MainViewModel
 
     public async Task CreateQuickNoteAsync()
     {
-        await Autosave.FlushAsync();
-        var inboxSummary = (await Repository.ListAsync()).FirstOrDefault(note => note.IsQuickInbox);
-        var inbox = inboxSummary is null ? new NotebookDocument { Title = "Quick Notes", Folder = "Inbox", IsQuickInbox = true, IsPinned = true }
-            : await Repository.LoadAsync(inboxSummary.Id) ?? throw new IOException(L.Text("Messages.Notebook.InboxUnavailable"));
-        NotebookStructure.Normalize(inbox);
+        var inbox = Document;
+        if (IsLibraryVisible || inbox?.IsQuickInbox != true)
+        {
+            await Autosave.FlushAsync();
+            var inboxSummary = (await Repository.ListAsync()).FirstOrDefault(note => note.IsQuickInbox);
+            inbox = inboxSummary is null ? new NotebookDocument { Title = "Quick Notes", Folder = "Inbox", IsQuickInbox = true, IsPinned = true }
+                : await Repository.LoadAsync(inboxSummary.Id) ?? throw new IOException(L.Text("Messages.Notebook.InboxUnavailable"));
+            NotebookStructure.Normalize(inbox);
+        }
         var page = new NotePage { Title = DateTime.Now.ToString("yyyy-MM-dd HH:mm"), SectionId = inbox.Sections[0].Id, Template = PaperTemplate.Ruled };
-        inbox.Pages.Add(page); inbox.ModifiedUtc = DateTimeOffset.UtcNow;
-        await Repository.SaveAsync(inbox);
+        inbox.Pages.Add(page);
+        if (!IsLibraryVisible && ReferenceEquals(inbox, Document))
+        {
+            RecordChange(true, page.SectionId, page.Id);
+            await Autosave.FlushAsync();
+        }
+        else
+        {
+            inbox.ModifiedUtc = DateTimeOffset.UtcNow;
+            await Repository.SaveAsync(inbox);
+            ReplaceDocumentCore(inbox, true, page.SectionId, page.Id);
+        }
+        IsLibraryVisible = false;
         Search = ""; CategoryFilter = "";
         await RefreshLibraryAsync();
-        ReplaceDocumentCore(inbox, true, page.SectionId, page.Id);
-        IsLibraryVisible = false; UpdateSaveStatus();
+        UpdateSaveStatus();
     }
 
     public async Task<IReadOnlyList<NotebookSearchResult>> SearchContentAsync(string query, bool bookmarksOnly = false, CancellationToken cancellationToken = default)
@@ -156,16 +170,20 @@ public sealed partial class MainViewModel
         foreach (var document in documents)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            var notebookMatch = Matches(document.Title) || Matches(document.Folder);
             foreach (var section in document.Sections)
             {
+                var sectionMatch = Matches(section.Title);
                 var pages = document.Pages.Where(page => page.SectionId == section.Id).ToArray();
                 for (var index = 0; index < pages.Length; index++)
                 {
                     var page = pages[index];
                     if (bookmarksOnly && !page.IsBookmarked) continue;
                     var typed = page.Texts.FirstOrDefault(text => Matches(text.Text))?.Text;
-                    var metadataMatch = Matches(page.Title) || (index == 0 && Matches(section.Title)) ||
-                        (section == document.Sections[0] && index == 0 && (Matches(document.Title) || Matches(document.Folder)));
+                    // Represent each matching notebook or section once, at its first eligible page.
+                    var metadataMatch = notebookMatch || sectionMatch || Matches(page.Title);
+                    notebookMatch = false;
+                    sectionMatch = false;
                     if (!metadataMatch && typed is null && !(bookmarksOnly && query.Length == 0)) continue;
                     var snippet = typed is null ? "" : SearchSnippet(typed, query);
                     results.Add(new(document.Id, section.Id, page.Id, document.Title, section.Title,
@@ -202,9 +220,7 @@ public sealed partial class MainViewModel
         var ids = pageIds.ToHashSet(StringComparer.Ordinal);
         var pages = source.Pages.Where(page => ids.Contains(page.Id)).ToArray();
         if (pages.Length == 0 || pages.Length != ids.Count) throw new IOException(L.Text("Messages.Transfer.PageMissing"));
-        var assets = pages.SelectMany(page => page.Images.Select(image => image.AssetId)
-            .Concat(page.Pdf is null ? [] : new[] { page.Pdf.AssetId })
-            .Concat(page.Practice is null ? [] : new[] { page.Practice.QuestionAssetId })).Distinct();
+        var assets = pages.SelectMany(page => page.ReferencedAssetIds()).Distinct(StringComparer.Ordinal);
         foreach (var asset in assets) await Repository.GetAssetAsync(asset);
         var transferredPages = new List<NotePage>();
         var transferredIds = new Dictionary<string, string>(StringComparer.Ordinal);

@@ -705,27 +705,28 @@ public partial class MainWindow : Window
     {
         var dialog = new OpenFileDialog { Filter = L.Text("Core.ImageFilter"), Title = L.Text("Core.InsertImage") };
         if (dialog.ShowDialog(this) != true) return;
-        await RunAsync(L.M("Core.InsertingImage"), async () => { await InsertImageAsync(await File.ReadAllBytesAsync(dialog.FileName), Path.GetFileName(dialog.FileName), Path.GetExtension(dialog.FileName).Equals(".png", StringComparison.OrdinalIgnoreCase) ? "image/png" : "image/jpeg"); });
+        await RunAsync(L.M("Core.InsertingImage"), async () => { await InsertImageAsync(await AttachmentLimits.ReadAllBytesAsync(dialog.FileName), Path.GetFileName(dialog.FileName), Path.GetExtension(dialog.FileName).Equals(".png", StringComparison.OrdinalIgnoreCase) ? "image/png" : "image/jpeg"); });
     }
     private async Task InsertImageAsync(byte[] bytes, string name, string contentType)
     {
         if (ViewModel.SelectedPage is null) return;
-        CommitEditors(); var bitmap = new BitmapImage(); using (var stream = new MemoryStream(bytes)) { bitmap.BeginInit(); bitmap.CacheOption = BitmapCacheOption.OnLoad; bitmap.StreamSource = stream; bitmap.EndInit(); bitmap.Freeze(); }
-        if (bitmap.PixelWidth > 20000 || bitmap.PixelHeight > 20000 || (long)bitmap.PixelWidth * bitmap.PixelHeight > 80_000_000) throw new InvalidDataException(L.Text("Core.ImageTooLarge"));
+        CommitEditors();
+        var prepared = await ImageImportPreparation.PrepareAsync(bytes);
         var asset = await ViewModel.Repository.PutAssetAsync(name, contentType, bytes);
-        var page = ViewModel.SelectedPage.Page; var width = Math.Min(Math.Max(1, page.Width - Math.Min(96, page.Width / 2)), bitmap.PixelWidth * .75); var height = width * bitmap.PixelHeight / bitmap.PixelWidth;
+        var page = ViewModel.SelectedPage.Page; var width = Math.Min(Math.Max(1, page.Width - Math.Min(96, page.Width / 2)), prepared.PixelWidth * .75); var height = width * prepared.PixelHeight / prepared.PixelWidth;
         var availableHeight = Math.Max(1, page.Height - Math.Min(96, page.Height / 2));
         if (height > availableHeight) { width *= availableHeight / height; height = availableHeight; }
         var position = GetPastePosition(page);
         var image = new NoteImage { AssetId = asset.Id, X = Math.Clamp(position.X, 0, Math.Max(0, page.Width - width)), Y = Math.Clamp(position.Y, 0, Math.Max(0, page.Height - height)), Width = width, Height = height };
         var editor = CurrentEditor;
-        if (editor is not null) editor.AddImage(image); else { page.Images.Add(image); ViewModel.Changed(true); }
+        if (editor is not null) editor.AddImage(image, prepared.Preview); else { page.Images.Add(image); ViewModel.Changed(true); }
         SetTool(InkTool.Select);
     }
     private async Task PasteImageAsync()
     {
         if (!Clipboard.ContainsImage()) return;
         var bitmap = Clipboard.GetImage(); if (bitmap is null) return;
+        ImageImportPreparation.ValidateDimensions(bitmap.PixelWidth, bitmap.PixelHeight);
         var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap)); using var stream = new MemoryStream(); encoder.Save(stream);
         await RunAsync(L.M("Core.PastingImage"), () => InsertImageAsync(stream.ToArray(), "Screenshot.png", "image/png"));
     }

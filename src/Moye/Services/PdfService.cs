@@ -35,7 +35,7 @@ public sealed class PdfService(INotebookRepository repository) : IPdfService
     public async Task<IReadOnlyList<NotePage>> ImportAsync(string path, IProgress<DocumentProgress>? progress, CancellationToken cancellationToken = default)
     {
         progress?.Report(new(L.M("Messages.Progress.ReadPdf")));
-        var bytes = await File.ReadAllBytesAsync(path, cancellationToken);
+        var bytes = await AttachmentLimits.ReadAllBytesAsync(path, cancellationToken);
         if (bytes.Length == 0) throw new InvalidDataException(L.Text("Messages.Pdf.EmptyFile"));
         // Validate both readers before storing an asset or adding notebook pages.
         var metadata = await RunStaAsync(() => ReadMetadata(bytes), cancellationToken);

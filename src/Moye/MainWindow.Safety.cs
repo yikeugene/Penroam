@@ -183,10 +183,7 @@ public partial class MainWindow
             window.Close();
             await RunAsync(L.M("Shell.RecoveringDraft"), async () =>
             {
-                var copy = MakeRecoveryCopy(file.Draft.Document);
-                foreach (var assetId in copy.Pages.SelectMany(page => page.Images.Select(image => image.AssetId).Concat(page.Pdf is { } pdf ? [pdf.AssetId] : Array.Empty<string>())).Distinct())
-                    await ViewModel.Repository.GetAssetAsync(assetId);
-                await ViewModel.Repository.SaveAsync(copy); await _draftRecovery.ForgetAsync(file);
+                await RecoverDraftAsCopyAsync(file, _draftRecovery, ViewModel.Repository);
                 await ViewModel.RefreshLibraryAsync(); await RefreshRecoveryNoticeAsync(); ViewModel.SetStatus("Shell.DraftRecovered");
             });
         }));
@@ -269,19 +266,30 @@ public partial class MainWindow
 
     private sealed record SafetyListItem(Moye.Localization.LocalizedMessage Label, object Value);
 
+    internal static async Task RecoverDraftAsCopyAsync(Services.RecoveryDraftFile file, Services.DraftRecoveryStore drafts, Services.INotebookRepository repository)
+    {
+        var copy = MakeRecoveryCopy(file.Draft.Document);
+        foreach (var id in copy.Pages.SelectMany(page => page.ReferencedAssetIds()).Distinct(StringComparer.Ordinal))
+            await repository.GetAssetAsync(id);
+        await repository.SaveAsync(copy);
+        await drafts.ForgetAsync(file);
+    }
+
     internal static NotebookDocument MakeRecoveryCopy(NotebookDocument document)
     {
         var copy = document.Snapshot(); copy.Id = Guid.NewGuid().ToString("N"); copy.Title += " (recovered copy)";
         copy.CreatedUtc = copy.ModifiedUtc = DateTimeOffset.UtcNow; copy.IsQuickInbox = false;
         NotebookStructure.Normalize(copy);
         var sectionIds = copy.Sections.ToDictionary(section => section.Id, _ => Guid.NewGuid().ToString("N"));
+        var pageIds = copy.Pages.ToDictionary(page => page.Id, _ => Guid.NewGuid().ToString("N"));
         copy.Sections = copy.Sections.Select(section => section with { Id = sectionIds[section.Id] }).ToList();
         foreach (var page in copy.Pages)
         {
-            page.Id = Guid.NewGuid().ToString("N"); page.SectionId = sectionIds[page.SectionId];
+            page.Id = pageIds[page.Id]; page.SectionId = sectionIds[page.SectionId];
             page.Texts = page.Texts.Select(text => text with { Id = Guid.NewGuid().ToString("N") }).ToList();
             page.Images = page.Images.Select(image => image with { Id = Guid.NewGuid().ToString("N") }).ToList();
         }
+        PracticePageLinks.RemapCopiedSources(copy.Pages, pageIds);
         return copy;
     }
 }

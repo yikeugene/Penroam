@@ -109,6 +109,12 @@ public sealed partial class NotePage
     public List<NoteText> Texts { get; set; } = [];
     public List<NoteImage> Images { get; set; } = [];
     public PdfPageSource? Pdf { get; set; }
+    internal IEnumerable<string> ReferencedAssetIds()
+    {
+        foreach (var image in Images) yield return image.AssetId;
+        if (Pdf is not null) yield return Pdf.AssetId;
+        if (Practice is not null) yield return Practice.QuestionAssetId;
+    }
     public NotePage Snapshot() => new() { Id = Id, SectionId = SectionId, Title = Title, IsBookmarked = IsBookmarked, Width = Width, Height = Height, Template = Template, Practice = Practice is null ? null : Practice with {}, StudyQuestions = StudyQuestions.Select(q => q with { Anchor = q.Anchor is null ? null : q.Anchor with {} }).ToList(), ResumeHint = ResumeHint is null ? null : ResumeHint with { Anchor = ResumeHint.Anchor is null ? null : ResumeHint.Anchor with {} }, PaperLayout = PaperLayout is null ? null : PaperLayout with {}, InkData = InkData, Texts = Texts.Select(t => t with {}).ToList(), Images = Images.Select(i => i with {}).ToList(), Pdf = Pdf is null ? null : Pdf with {} };
 }
 

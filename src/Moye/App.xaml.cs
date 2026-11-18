@@ -53,8 +53,18 @@ public partial class App : Application
             return;
         }
         // Keep one writer/UI per library. Test launches can use an isolated directory.
-        var dataIndex = Array.IndexOf(e.Args, "--data-dir");
-        var location = LibraryLocation.Resolve(dataIndex >= 0 && dataIndex + 1 < e.Args.Length ? e.Args[dataIndex + 1] : null);
+        string? dataDirectory;
+        LibraryLocation location;
+        try
+        {
+            dataDirectory = ReadDataDirectoryArgument(e.Args);
+            location = LibraryLocation.Resolve(dataDirectory);
+        }
+        catch (Exception exception) when (exception is ArgumentException or NotSupportedException or PathTooLongException)
+        {
+            MessageBox.Show(exception.Message, "Penroam", MessageBoxButton.OK, MessageBoxImage.Error);
+            Shutdown(1); return;
+        }
         var errors = new ErrorReporter(Path.Combine(Path.GetDirectoryName(location.DatabasePath)!, "error.log"));
         _instanceMutex = new(true, location.MutexName, out bool first);
         var workspaceStore = new WorkspacePreferencesStore(Path.Combine(Path.GetDirectoryName(location.PreferencesPath)!, "workspace-preferences.json"));
@@ -67,9 +77,22 @@ public partial class App : Application
             args.Handled = true;
         };
         var window = new MainWindow(new SqliteNotebookRepository(location.DatabasePath), new WritingPreferencesStore(location.PreferencesPath), errors,
-            dataIndex < 0 ? new GitHubUpdateService(GitHubUpdateService.CurrentVersion) : null,
+            dataDirectory is null ? new GitHubUpdateService(GitHubUpdateService.CurrentVersion) : null,
             workspaceStore: workspaceStore, workspace: workspace);
         MainWindow = window; window.Show();
     }
+
+    internal static string? ReadDataDirectoryArgument(string[] arguments)
+    {
+        var index = Array.IndexOf(arguments, "--data-dir");
+        if (index < 0) return null;
+        if (Array.LastIndexOf(arguments, "--data-dir") != index)
+            throw new ArgumentException(L.Text("Core.DataDirectoryRepeated"));
+        if (index + 1 >= arguments.Length || string.IsNullOrWhiteSpace(arguments[index + 1])
+            || arguments[index + 1].StartsWith("-", StringComparison.Ordinal))
+            throw new ArgumentException(L.Text("Core.DataDirectoryRequired"));
+        return arguments[index + 1];
+    }
+
     protected override void OnExit(ExitEventArgs e) { _instanceMutex?.Dispose(); base.OnExit(e); }
 }

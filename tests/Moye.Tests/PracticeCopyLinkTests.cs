@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Moye.Models;
 using Moye.Services;
 using Moye.ViewModels;
@@ -6,6 +7,53 @@ namespace Moye.Tests;
 
 public sealed class PracticeCopyLinkTests
 {
+    [Fact]
+    public async Task InterruptedDraftRecoveryKeepsSourceLinksAndIsolatesTheRecoveredGroup()
+    {
+        using var directory = new StorageTestDirectory();
+        using var repository = new SqliteNotebookRepository(directory.DatabasePath);
+        var asset = await repository.PutAssetAsync("question.png", "image/png", [2, 5, 8]);
+        var source = Sample(asset.Id);
+        var store = new DraftRecoveryStore(Path.Combine(directory.Root, "drafts"));
+        await store.WriteAsync(source, 12);
+        var draft = Assert.Single(await store.ReadAsync()).Draft.Document;
+        var before = JsonSerializer.Serialize(draft, DocumentJson.Options);
+
+        var copy = MainWindow.MakeRecoveryCopy(draft);
+
+        AssertCopyLinks(source, copy.Pages);
+        Assert.NotEqual(source.Id, copy.Id);
+        Assert.NotEqual(source.Sections[0].Id, copy.Sections[0].Id);
+        Assert.All(copy.Pages, page => Assert.Equal(copy.Sections[0].Id, page.SectionId));
+        Assert.Equal(before, JsonSerializer.Serialize(draft, DocumentJson.Options));
+        var secondCopy = MainWindow.MakeRecoveryCopy(draft);
+        AssertCopyLinks(source, secondCopy.Pages);
+        Assert.NotEqual(copy.Pages[1].Practice!.GroupId, secondCopy.Pages[1].Practice!.GroupId);
+
+        await repository.SaveAsync(copy);
+        var reopened = (await repository.LoadAsync(copy.Id))!;
+        AssertCopyLinks(source, reopened.Pages);
+        Assert.Equal(copy.Pages[1].Practice, reopened.Pages[1].Practice);
+        Assert.Equal(asset.Bytes, (await repository.GetAssetAsync(reopened.Pages[1].Practice!.QuestionAssetId)).Bytes);
+    }
+
+    [Fact]
+    public void RecoveringAnAttemptWithoutItsSourcePreservesTheMissingSourceIdentity()
+    {
+        var source = Sample(new string('d', 64));
+        source.Pages.RemoveAt(0);
+        var original = source.Pages[0].Practice!;
+
+        var recovered = MainWindow.MakeRecoveryCopy(source);
+
+        Assert.All(recovered.Pages, page =>
+        {
+            Assert.Equal(original.SourcePageId, page.Practice!.SourcePageId);
+            Assert.Equal(original.GroupId, page.Practice.GroupId);
+            Assert.NotSame(original, page.Practice);
+        });
+    }
+
     [Fact]
     public void InsertedQuestionSetKeepsInternalSourceLinksAndSharesANewGroup()
     {

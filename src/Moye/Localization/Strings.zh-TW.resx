@@ -225,6 +225,9 @@
   <data name="Controls.DocumentSelection.ApplyRangeFirst" xml:space="preserve">
     <value>請按「篩選頁碼」或 Enter 套用頁碼範圍，再繼續匯出。</value>
   </data>
+  <data name="Controls.DocumentSelection.ApplyImportRangeFirst" xml:space="preserve">
+    <value>請按「套用範圍」或 Enter 選取這些頁面。清空頁碼欄位可保留目前勾選的頁面。</value>
+  </data>
   <data name="Controls.DocumentSelection.PageList" xml:space="preserve">
     <value>要包含的頁面</value>
   </data>
@@ -4713,5 +4716,26 @@ PDF 與筆記會保持原始大小。</value>
   </data>
   <data name="Features.Command.paper-only.Detail" xml:space="preserve">
     <value>隱藏選單與工具列，保留目前視窗大小。點擊浮動圓圈即可展開書寫工具。F10 切換紙張模式；Esc 先收起已展開的工具面板，再按一次返回一般工作區。</value>
+  </data>
+  <data name="Core.DataDirectoryRequired" xml:space="preserve">
+    <value>--data-dir 後必須提供資料夾路徑。Penroam 尚未開啟任何筆記資料庫。</value>
+  </data>
+  <data name="Core.DataDirectoryRepeated" xml:space="preserve">
+    <value>--data-dir 只能指定一次。Penroam 尚未開啟任何筆記資料庫。</value>
+  </data>
+  <data name="Controls.VisualSearch.LoadMore" xml:space="preserve">
+    <value>載入更多</value>
+  </data>
+  <data name="Controls.VisualSearch.ShowingCount" xml:space="preserve">
+    <value>已顯示 {0}／{1} 個符合條件的頁面。</value>
+  </data>
+  <data name="Controls.VisualSearch.LoadingMore" xml:space="preserve">
+    <value>正在載入預覽…已顯示 {0}／{1} 頁。</value>
+  </data>
+  <data name="Controls.VisualSearch.Results" xml:space="preserve">
+    <value>符合條件的頁面</value>
+  </data>
+  <data name="Messages.Import.AttachmentTooLarge" xml:space="preserve">
+    <value>這個附件超過可編輯筆記備份的 512 MiB 上限。請選擇較小的來源檔案。</value>
   </data>
 </root>

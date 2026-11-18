@@ -37,6 +37,9 @@ internal static partial class Program
             if (args.Contains("--pdf-export-interactive", StringComparer.Ordinal))
                 return DocumentSelectionPreviewScenes.RunInteractive(ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml")),
                     args.Contains("--compact", StringComparer.Ordinal), args.Contains("--zh-TW", StringComparer.Ordinal));
+            if (args.Contains("--visual-search-interactive", StringComparer.Ordinal))
+                return InsightPreviewScenes.RunInteractive(ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml")),
+                    args.Contains("--compact", StringComparer.Ordinal), args.Contains("--zh-TW", StringComparer.Ordinal));
             if (args.Contains("--interactive", StringComparer.Ordinal))
                 return InteractivePreview.Run(ReadApplicationResources(Path.Combine(repositoryRoot, "src", "Moye", "App.xaml")),
                     output, args.Contains("--compact", StringComparer.Ordinal));

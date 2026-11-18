@@ -81,6 +81,40 @@ public sealed class TypingTests
         });
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TypeResumesTheLassoSelectedTextBoxBeforeTheMostRecentlyEditedOne(bool switchToolFirst)
+    {
+        Sta(() =>
+        {
+            var editor = CreateEditor(new());
+            var chosen = editor.AddTextAt(new Point(30, 40), "first note");
+            var last = editor.AddTextAt(new Point(80, 200), "last note");
+            var box = Boxes(editor).First();
+            box.Select(0, 5);
+            editor.SetTool(InkTool.Lasso, Colors.Black, 3);
+            editor.InkCanvas.Select(new[] { editor.InkCanvas.Children[0] });
+            Assert.Same(chosen, editor.SelectedText);
+            var changes = 0;
+            editor.ContentChanged += (_, _) => changes++;
+
+            if (switchToolFirst) editor.SetTool(InkTool.Text, Colors.Black, 3);
+            Assert.Same(chosen, editor.BeginTyping());
+
+            Assert.Empty(editor.InkCanvas.GetSelectedElements());
+            Assert.Same(chosen, editor.SelectedText);
+            Assert.False(box.IsReadOnly);
+            Assert.Equal("first", box.SelectedText);
+            Assert.Equal(0, changes);
+            box.SelectedText = "updated";
+            editor.CommitPendingEdits();
+            Assert.Equal("updated note", chosen.Text);
+            Assert.Equal("last note", last.Text);
+            Assert.Equal(1, changes);
+        });
+    }
+
     [Fact]
     public void WholeBoxFormattingIsOneUndoableEditAndKeepsSelection()
     {

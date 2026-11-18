@@ -12,7 +12,7 @@ namespace Moye.Services;
 public sealed class BackupService(INotebookRepository repository) : IBackupService
 {
     private const long MaxArchiveBytes = 2L * 1024 * 1024 * 1024;
-    private const int MaxPayloadBytes = 512 * 1024 * 1024;
+    private const int MaxPayloadBytes = AttachmentLimits.MaximumBytes;
     private const int MaxDocumentBytes = 64 * 1024 * 1024;
     private const int MaxEntries = 50_000;
 
@@ -84,9 +84,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
                                 await WriteAsync(archive, inkEntry.Path, ink, CompressionLevel.Optimal, cancellationToken).ConfigureAwait(false);
                                 entry.Inks.Add(inkEntry);
                                 page.InkData = [];
-                                foreach (var image in page.Images) assetIds.Add(image.AssetId);
-                                if (page.Practice is { } practice) assetIds.Add(practice.QuestionAssetId);
-                                if (page.Pdf is not null) assetIds.Add(page.Pdf.AssetId);
+                                assetIds.UnionWith(page.ReferencedAssetIds());
                             }
                             var json = JsonSerializer.SerializeToUtf8Bytes(document, DocumentJson.Options);
                             if (json.Length > MaxDocumentBytes) throw Invalid("The notebook data exceeds the backup size limit.");
@@ -99,7 +97,7 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
                         {
                             cancellationToken.ThrowIfCancellationRequested();
                             var asset = await repository.GetAssetAsync(id).ConfigureAwait(false);
-                            if (asset.Bytes.Length > MaxPayloadBytes) throw Invalid("An attachment exceeds the 512 MB backup limit.");
+                            AttachmentLimits.ValidateLength(asset.Bytes.LongLength);
                             var hash = Hash(asset.Bytes);
                             if (id != hash) throw Invalid("Attachment integrity check failed.");
                             AddBytes(ref total, asset.Bytes.Length);
@@ -206,11 +204,11 @@ public sealed class BackupService(INotebookRepository repository) : IBackupServi
                 foreach (var page in document.Pages)
                 {
                     page.Id = pageIds[page.Id];
-                    if (page.Practice is { } practice) practice.SourcePageId = pageIds.GetValueOrDefault(practice.SourcePageId, practice.SourcePageId);
                     page.SectionId = sectionIds[page.SectionId];
                     foreach (var text in page.Texts) text.Id = Guid.NewGuid().ToString("N");
                     foreach (var image in page.Images) image.Id = Guid.NewGuid().ToString("N");
                 }
+                PracticePageLinks.RemapCopiedSources(document.Pages, pageIds);
             }
             return documents;
         }

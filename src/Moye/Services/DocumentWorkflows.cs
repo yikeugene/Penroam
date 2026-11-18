@@ -110,8 +110,7 @@ public sealed class PreparedDocumentImport : IDisposable
         IProgress<DocumentProgress>? progress, CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        var ids = pages.SelectMany(page => page.Images.Select(image => image.AssetId)
-            .Concat(page.Pdf is null ? [] : new[] { page.Pdf.AssetId })).Distinct(StringComparer.Ordinal).ToArray();
+        var ids = pages.SelectMany(page => page.ReferencedAssetIds()).Distinct(StringComparer.Ordinal).ToArray();
         for (var i = 0; i < ids.Length; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();

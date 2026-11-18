@@ -15,7 +15,7 @@ public static class OfficePdfPreparation
     {
         cancellationToken.ThrowIfCancellationRequested();
         var destination = Path.GetFullPath(convertedPdf);
-        var bytes = await File.ReadAllBytesAsync(destination, cancellationToken);
+        var bytes = await AttachmentLimits.ReadAllBytesAsync(destination, cancellationToken);
         await Task.Run(() => Prepare(destination, bytes, cancellationToken), cancellationToken);
     }
 
